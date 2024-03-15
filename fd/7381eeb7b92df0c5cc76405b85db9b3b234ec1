@@ -1,0 +1,346 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=pass (p=none dis=none) header.from=inria.fr
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=uAfbAUXo;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=dFejcTio;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 736A6B80123
+	for <caml-list@tunbury.org>; Fri, 15 Mar 2024 09:28:47 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=jts5WC1I/6UHc5CGqUAZ7BWtquNqy9hETcuZ3QzzjS0=;
+  b=uAfbAUXoqur2xPhYkDyhtiOg9a1mVw+30Uxj67oO2bLNgHf5Dsp9u8Gt
+   oO511J9BV55HPKVbtOo8SjHXemP0nhuAozfxk20e9x4F44uxqsxSACK1c
+   cHLQWsJLeblOUbDHz/IfnKp2GpNpDN82aecPrb11Oc3jLz9rWy9iGrkSQ
+   M=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@inria.fr
+X-IronPort-AV: E=Sophos;i="6.07,128,1708383600"; 
+   d="scan'208,217";a="156811027"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 15 Mar 2024 10:28:43 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id B8A5AE0CDD; Fri, 15 Mar 2024 10:28:37 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id D0D2CE0145;
+	Fri, 15 Mar 2024 10:28:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:message-id:subject:mime-version;
+  bh=jts5WC1I/6UHc5CGqUAZ7BWtquNqy9hETcuZ3QzzjS0=;
+  b=dFejcTio02KbwN/S4gQDgWLz0iWw8RehbJ2QzljyEwom6ohp7uMpsm41
+   DMv8zHsNKxJ0tEHXwVsYSj6NeNzzTuwYR3yNDWrlVrU0r1aadePs1pfLU
+   chKuXAfkHkzf4XR/vYVqxsujGinV4+ctoMswjQx2b0re2K7CkQTq9G0M0
+   k=;
+X-IronPort-AV: E=Sophos;i="6.07,128,1708383600"; 
+   d="scan'208,217";a="156810705"
+Received: from zcs2-store1.inria.fr ([128.93.142.3])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 15 Mar 2024 10:28:33 +0100
+Date: Fri, 15 Mar 2024 10:28:33 +0100 (CET)
+From: Florian Angeletti <florian.angeletti@inria.fr>
+To: caml-list <caml-list@inria.fr>, caml-announce <caml-announce@inria.fr>
+Message-ID: <960450721.1956754.1710494913771.JavaMail.zimbra@inria.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="=_c540184b-5489-49fd-a7f4-e74dd50800be"
+X-Originating-IP: [128.93.162.88]
+X-Mailer: Zimbra 10.0.7_GA_4598 (ZimbraWebClient - FF123 (Linux)/10.0.7_GA_4598)
+Thread-Index: pl39YgHpQ9FWEWVGDqAg/MZP6Ckn9Q==
+Thread-Topic: OCaml 4.14.2 released
+Subject: [Caml-list] OCaml 4.14.2 released
+Reply-To: Florian Angeletti <florian.angeletti@inria.fr>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19101
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-03/960450721.1956754.1710494913771.JavaMail.zimbra%40inria.fr>
+
+--=_c540184b-5489-49fd-a7f4-e74dd50800be
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Dear OCaml users,=20
+
+We have the pleasure of celebrating the birthday of Grace Chisholm Young by=
+ announcing the release of OCaml version 4.14.2.=20
+
+This release is a collection of safe bug fixes, cherry-picked from the OCam=
+l 5 branch.=20
+If you are still using OCaml 4.14 and cannot yet upgrade to OCaml 5, this r=
+elease is for you.=20
+In particular, this release contains several fixes for issues with newer op=
+erating system configurations.=20
+
+The OCaml 4.14 branch is expected to receive updates for at least one year,=
+ while the OCaml 5 branch is stabilising.=20
+
+Thus don't hesitate to report any bugs on the OCaml issue tracker (at https=
+://github.com/ocaml/ocaml/issues).=20
+
+See the list of changes below for more details.=20
+
+Happy hacking,=20
+
+-- Florian Angeletti for the OCaml team.=20
+
+
+Installation Instructions=20
+------------------------------=20
+
+The base compiler can be installed as an opam switch with the following com=
+mands:=20
+
+opam update=20
+opam switch create 4.14.2=20
+
+The source code for the release candidate is also directly available on:=20
+
+* GitHub: https://github.com/ocaml/ocaml/archive/4.14.2.tar.gz=20
+* Inria archive: https://caml.inria.fr/pub/distrib/ocaml-4.14/ocaml-4.14.2.=
+tar.gz=20
+
+
+Changes since OCaml 4.14.1=20
+---------------------------------------=20
+
+### Runtime system:=20
+
+- [#11764](https://github.com/ocaml/ocaml/issues/11764), [#12577](https://g=
+ithub.com/ocaml/ocaml/issues/12577): Add prototypes to old-style C function=
+ definitions=20
+and declarations.=20
+(Antonin D=E9cimo, review by Xavier Leroy and Nick Barnes)=20
+
+- [#11763](https://github.com/ocaml/ocaml/issues/11763), [#11759](https://g=
+ithub.com/ocaml/ocaml/issues/11759), [#11861](https://github.com/ocaml/ocam=
+l/issues/11861), [#12509](https://github.com/ocaml/ocaml/issues/12509), [#1=
+2577](https://github.com/ocaml/ocaml/issues/12577): Use strict prototypes o=
+n primitives.=20
+(Antonin D=E9cimo, review by Xavier Leroy, David Allsopp, S=E9bastien=20
+Hinderer and Nick Barnes)=20
+
+* (*breaking change*) [#10723](https://github.com/ocaml/ocaml/issues/10723)=
+: do not use `-flat-namespace` linking for macOS.=20
+(Carlo Cabrera, review by Damien Doligez)=20
+
+- [#11332](https://github.com/ocaml/ocaml/issues/11332), [#12702](https://g=
+ithub.com/ocaml/ocaml/issues/12702): make sure `Bool_val(v)` has type `bool=
+` in C++=20
+(Xavier Leroy, report by ygrek, review by Gabriel Scherer)=20
+
+### Build system:=20
+
+- [#11590](https://github.com/ocaml/ocaml/issues/11590): Allow installing t=
+o a destination path containing spaces.=20
+(=C9lie Brami, review by S=E9bastien Hinderer and David Allsopp)=20
+
+- [#12372](https://github.com/ocaml/ocaml/issues/12372): Pass option -no-ex=
+ecute-only to the linker for OpenBSD >=3D 7.3=20
+so that code sections remain readable, as needed for closure marshaling.=20
+(Xavier Leroy and Anil Madhavapeddy, review by Anil Madhavapeddy and=20
+S=E9bastien Hinderer)=20
+
+- [#12903](https://github.com/ocaml/ocaml/issues/12903): Disable control fl=
+ow integrity on OpenBSD >=3D 7.4 to avoid=20
+illegal instruction errors on certain CPUs.=20
+(Michael Hendricks, review by Miod Vallat)=20
+
+### Bug fixes:=20
+
+- [#12061](https://github.com/ocaml/ocaml/issues/12061), [#12063](https://g=
+ithub.com/ocaml/ocaml/issues/12063): don't add inconsistent equalities when=
+ computing=20
+high-level error messages for functor applications and inclusions.=20
+(Florian Angeletti, review by Gabriel Scherer)=20
+
+- [#12878](https://github.com/ocaml/ocaml/issues/12878): fix incorrect trea=
+tment of injectivity for private recursive types.=20
+(Jeremy Yallop, review by Gabriel Scherer and Jacques Garrigue)=20
+
+- [#12971](https://github.com/ocaml/ocaml/issues/12971), [#12974](https://g=
+ithub.com/ocaml/ocaml/issues/12974): fix an uncaught Ctype.Escape exception=
+ on some=20
+invalid programs forming recursive types.=20
+(Gabriel Scherer, review by Florian Angeletti, report by Neven Villani)=20
+
+- [#12264](https://github.com/ocaml/ocaml/issues/12264), [#12289](https://g=
+ithub.com/ocaml/ocaml/issues/12289): Fix compact_allocate to avoid a pathol=
+ogical case=20
+that causes very slow compaction.=20
+(Damien Doligez, report by Arseniy Alekseyev, review by Sadiq Jaffer)=20
+
+- [#12513](https://github.com/ocaml/ocaml/issues/12513), [#12518](https://g=
+ithub.com/ocaml/ocaml/issues/12518): Automatically enable emulated `fma` fo=
+r Visual Studio 2019+=20
+to allow configuration with either pre-Haswell/pre-Piledriver CPUs or runni=
+ng=20
+in VirtualBox. Restores parity with the other Windows ports, which don't=20
+require explicit `--enable-imprecise-c99-float-ops`.=20
+(David Allsopp, report by Jonah Beckford and Kate Deplaix, review by=20
+S=E9bastien Hinderer)=20
+
+- [#11633](https://github.com/ocaml/ocaml/issues/11633), [#11636](https://g=
+ithub.com/ocaml/ocaml/issues/11636): bugfix in caml_unregister_frametable=
+=20
+(Fr=E9d=E9ric Recoules, review by Gabriel Scherer)=20
+
+- [#12636](https://github.com/ocaml/ocaml/issues/12636), [#12646](https://g=
+ithub.com/ocaml/ocaml/issues/12646): More prudent reinitialization of I/O m=
+utexes after a fork()=20
+(Xavier Leroy, report by Zach Baylin, review by Enguerrand Decorne)=20
+
+* (*breaking change*) [#10845](https://github.com/ocaml/ocaml/issues/10845)=
+ Emit frametable size on amd64 BSD (OpenBSD, FreeBSD, NetBSD) systems=20
+(emitted for Linux in [#8805](https://github.com/ocaml/ocaml/issues/8805))=
+=20
+(Hannes Mehnert, review by Nicol=E1s Ojeda B=E4r)=20
+
+- [#12958](https://github.com/ocaml/ocaml/issues/12958): Fix tail-modulo-co=
+ns compilation of try-with, && and ||=20
+expressions.=20
+(Gabriel Scherer and Nicol=E1s Ojeda B=E4r, report by Sylvain Boilard, revi=
+ew by=20
+Gabriel Scherer)=20
+
+- [#12116](https://github.com/ocaml/ocaml/issues/12116), [#12993](https://g=
+ithub.com/ocaml/ocaml/issues/12993): explicitly build non PIE executables o=
+n x86 32bits=20
+architectures=20
+(Florian Angeletti, review by David Allsopp)=20
+
+- [#13018](https://github.com/ocaml/ocaml/issues/13018): Don't pass duplica=
+te libraries to the linker when compiling ocamlc.opt=20
+and when using systhreads (new versions of lld emit a warning).=20
+(David Allsopp, review by Nicol=E1s Ojeda B=E4r)=20
+
+
+--=_c540184b-5489-49fd-a7f4-e74dd50800be
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<html><body><div style=3D"font-family: arial, helvetica, sans-serif; font-s=
+ize: 12pt; color: #000000"><div>Dear OCaml users,<br><br>We have the pleasu=
+re of celebrating the birthday of Grace Chisholm Young by announcing the re=
+lease of OCaml version 4.14.2.<br><br>This release is a collection of safe =
+bug fixes, cherry-picked from the OCaml 5 branch.<br>If you are still using=
+ OCaml 4.14 and cannot yet upgrade to OCaml 5, this release is for you.<br>=
+In particular, this release contains several fixes for issues with newer op=
+erating system configurations.<br><br>The OCaml 4.14 branch is expected to =
+receive updates for at least one year, while the OCaml 5 branch is stabilis=
+ing.<br><br>Thus don't hesitate to report any bugs on the OCaml issue track=
+er (at https://github.com/ocaml/ocaml/issues).<br><br>See the list of chang=
+es below for more details.<br><br>Happy hacking,<br><br>-- Florian Angelett=
+i for the OCaml team.<br><br><br>Installation Instructions<br>-------------=
+-----------------<br><br>The base compiler can be installed as an opam swit=
+ch with the following commands:<br><br>&nbsp;&nbsp;&nbsp; opam update<br>&n=
+bsp;&nbsp;&nbsp; opam switch create 4.14.2</div><div><br>The source code fo=
+r the release candidate is also directly available on:<br><br>* GitHub: htt=
+ps://github.com/ocaml/ocaml/archive/4.14.2.tar.gz<br>* Inria archive: https=
+://caml.inria.fr/pub/distrib/ocaml-4.14/ocaml-4.14.2.tar.gz<br><br><br>Chan=
+ges since OCaml 4.14.1<br>---------------------------------------<br><br>##=
+# Runtime system:<br><br>- [#11764](https://github.com/ocaml/ocaml/issues/1=
+1764), [#12577](https://github.com/ocaml/ocaml/issues/12577): Add prototype=
+s to old-style C function definitions<br>&nbsp;&nbsp; and declarations.<br>=
+&nbsp; (Antonin D=E9cimo, review by Xavier Leroy and Nick Barnes)<br><br>- =
+[#11763](https://github.com/ocaml/ocaml/issues/11763), [#11759](https://git=
+hub.com/ocaml/ocaml/issues/11759), [#11861](https://github.com/ocaml/ocaml/=
+issues/11861), [#12509](https://github.com/ocaml/ocaml/issues/12509), [#125=
+77](https://github.com/ocaml/ocaml/issues/12577): Use strict prototypes on =
+primitives.<br>&nbsp; (Antonin D=E9cimo, review by Xavier Leroy, David Alls=
+opp, S=E9bastien<br>&nbsp;&nbsp; Hinderer and Nick Barnes)<br><br>* (*break=
+ing change*) [#10723](https://github.com/ocaml/ocaml/issues/10723): do not =
+use `-flat-namespace` linking for macOS.<br>&nbsp; (Carlo Cabrera, review b=
+y Damien Doligez)<br><br>- [#11332](https://github.com/ocaml/ocaml/issues/1=
+1332), [#12702](https://github.com/ocaml/ocaml/issues/12702): make sure `Bo=
+ol_val(v)` has type `bool` in C++<br>&nbsp; (Xavier Leroy, report by ygrek,=
+ review by Gabriel Scherer)<br><br>### Build system:<br><br>- [#11590](http=
+s://github.com/ocaml/ocaml/issues/11590): Allow installing to a destination=
+ path containing spaces.<br>&nbsp; (=C9lie Brami, review by S=E9bastien Hin=
+derer and David Allsopp)<br><br>- [#12372](https://github.com/ocaml/ocaml/i=
+ssues/12372): Pass option -no-execute-only to the linker for OpenBSD &gt;=
+=3D 7.3<br>&nbsp; so that code sections remain readable, as needed for clos=
+ure marshaling.<br>&nbsp; (Xavier Leroy and Anil Madhavapeddy, review by An=
+il Madhavapeddy and<br>&nbsp; S=E9bastien Hinderer)<br><br>- [#12903](https=
+://github.com/ocaml/ocaml/issues/12903): Disable control flow integrity on =
+OpenBSD &gt;=3D 7.4 to avoid<br>&nbsp; illegal instruction errors on certai=
+n CPUs.<br>&nbsp; (Michael Hendricks, review by Miod Vallat)<br><br>### Bug=
+ fixes:<br><br>- [#12061](https://github.com/ocaml/ocaml/issues/12061), [#1=
+2063](https://github.com/ocaml/ocaml/issues/12063): don't add inconsistent =
+equalities when computing<br>&nbsp; high-level error messages for functor a=
+pplications and inclusions.<br>&nbsp; (Florian Angeletti, review by Gabriel=
+ Scherer)<br><br>- [#12878](https://github.com/ocaml/ocaml/issues/12878): f=
+ix incorrect treatment of injectivity for private recursive types.<br>&nbsp=
+; (Jeremy Yallop, review by Gabriel Scherer and Jacques Garrigue)<br><br>- =
+[#12971](https://github.com/ocaml/ocaml/issues/12971), [#12974](https://git=
+hub.com/ocaml/ocaml/issues/12974): fix an uncaught Ctype.Escape exception o=
+n some<br>&nbsp; invalid programs forming recursive types.<br>&nbsp; (Gabri=
+el Scherer, review by Florian Angeletti, report by Neven Villani)<br><br>- =
+[#12264](https://github.com/ocaml/ocaml/issues/12264), [#12289](https://git=
+hub.com/ocaml/ocaml/issues/12289): Fix compact_allocate to avoid a patholog=
+ical case<br>&nbsp; that causes very slow compaction.<br>&nbsp; (Damien Dol=
+igez, report by Arseniy Alekseyev, review by Sadiq Jaffer)<br><br>- [#12513=
+](https://github.com/ocaml/ocaml/issues/12513), [#12518](https://github.com=
+/ocaml/ocaml/issues/12518): Automatically enable emulated `fma` for Visual =
+Studio 2019+<br>&nbsp; to allow configuration with either pre-Haswell/pre-P=
+iledriver CPUs or running<br>&nbsp; in VirtualBox. Restores parity with the=
+ other Windows ports, which don't<br>&nbsp; require explicit `--enable-impr=
+ecise-c99-float-ops`.<br>&nbsp; (David Allsopp, report by Jonah Beckford an=
+d Kate Deplaix, review by<br>&nbsp;&nbsp; S=E9bastien Hinderer)<br><br>- [#=
+11633](https://github.com/ocaml/ocaml/issues/11633), [#11636](https://githu=
+b.com/ocaml/ocaml/issues/11636): bugfix in caml_unregister_frametable<br>&n=
+bsp; (Fr=E9d=E9ric Recoules, review by Gabriel Scherer)<br><br>- [#12636](h=
+ttps://github.com/ocaml/ocaml/issues/12636), [#12646](https://github.com/oc=
+aml/ocaml/issues/12646): More prudent reinitialization of I/O mutexes after=
+ a fork()<br>&nbsp; (Xavier Leroy, report by Zach Baylin, review by Enguerr=
+and Decorne)<br><br>* (*breaking change*) [#10845](https://github.com/ocaml=
+/ocaml/issues/10845) Emit frametable size on amd64 BSD (OpenBSD, FreeBSD, N=
+etBSD) systems<br>&nbsp; (emitted for Linux in [#8805](https://github.com/o=
+caml/ocaml/issues/8805))<br>&nbsp; (Hannes Mehnert, review by Nicol=E1s Oje=
+da B=E4r)<br><br>- [#12958](https://github.com/ocaml/ocaml/issues/12958): F=
+ix tail-modulo-cons compilation of try-with, &amp;&amp; and ||<br>&nbsp; ex=
+pressions.<br>&nbsp; (Gabriel Scherer and Nicol=E1s Ojeda B=E4r, report by =
+Sylvain Boilard, review by<br>&nbsp; Gabriel Scherer)<br><br>- [#12116](htt=
+ps://github.com/ocaml/ocaml/issues/12116), [#12993](https://github.com/ocam=
+l/ocaml/issues/12993): explicitly build non PIE executables on x86 32bits<b=
+r>&nbsp; architectures<br>&nbsp; (Florian Angeletti, review by David Allsop=
+p)<br><br>- [#13018](https://github.com/ocaml/ocaml/issues/13018): Don't pa=
+ss duplicate libraries to the linker when compiling ocamlc.opt<br>&nbsp; an=
+d when using systhreads (new versions of lld emit a warning).<br>&nbsp; (Da=
+vid Allsopp, review by Nicol=E1s Ojeda B=E4r)<br><br data-mce-bogus=3D"1"><=
+/div></div></body></html>
+--=_c540184b-5489-49fd-a7f4-e74dd50800be--
