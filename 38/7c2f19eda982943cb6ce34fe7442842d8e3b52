@@ -1,0 +1,429 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=pass (p=none dis=none) header.from=inria.fr
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=OYrDpbfY;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=H7Ijkfoc;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 29DE4B80123
+	for <caml-list@tunbury.org>; Mon, 25 Mar 2024 15:15:51 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:message-id:in-reply-to:references:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=LLVa5JU9d8X+K4o+bqMuKcv9MletWT3cPd7BXPpxJwQ=;
+  b=OYrDpbfYo4ad0TUb1L29uKK/qFYUKF1Kz0tpd17Jk0A+WTmMOQyIKBOf
+   r3lMR2ENHs3LtKkOnpz5l0vp5ASbWN9kkze3QC819RFYPDqh92lsU/ixd
+   KRT+qhpFM9sYitGT3rGT0ihSYwG1ejmgMtzkqARsl0MLkSrk4TRz1Iemq
+   I=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@inria.fr
+X-IronPort-AV: E=Sophos;i="6.07,153,1708383600"; 
+   d="scan'208,217";a="158352180"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Mar 2024 16:15:51 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 45B32E0145; Mon, 25 Mar 2024 16:15:50 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 41C32E0145
+	for <caml-list@sympa.inria.fr>; Mon, 25 Mar 2024 16:15:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:message-id:in-reply-to:references:subject:
+   mime-version;
+  bh=LLVa5JU9d8X+K4o+bqMuKcv9MletWT3cPd7BXPpxJwQ=;
+  b=H7IjkfocvsLgzMT8Je5Bp7EOEK5f+Oi9nJluUIqriznB27epJMowKQ6S
+   Xt02s4qxUy5f3DkoQXXBQL8PzB2jJwuvw5jqOSxEHYw84y7pvIBPA9WIi
+   PaH7MrNvu7amSA0WGZM3rl31Ieu6hxANTaon7R7JnztNhJczhKQJa8EON
+   Q=;
+X-IronPort-AV: E=Sophos;i="6.07,153,1708383600"; 
+   d="scan'208,217";a="158352155"
+Received: from zcs2-store1.inria.fr ([128.93.142.3])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Mar 2024 16:15:49 +0100
+Date: Mon, 25 Mar 2024 16:15:48 +0100 (CET)
+From: Florian Angeletti <florian.angeletti@inria.fr>
+To: caml-list <caml-list@inria.fr>
+Message-ID: <521387019.8365666.1711379748150.JavaMail.zimbra@inria.fr>
+In-Reply-To: <1337469696.7444873.1707300411976.JavaMail.zimbra@inria.fr>
+References: <1337469696.7444873.1707300411976.JavaMail.zimbra@inria.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="=_981b7606-d8bf-404f-b7ab-904a520df8a0"
+X-Originating-IP: [128.93.162.3]
+X-Mailer: Zimbra 10.0.7_GA_4598 (ZimbraWebClient - FF123 (Linux)/10.0.7_GA_4598)
+Thread-Topic: First beta release of OCaml 5.2.0
+Thread-Index: KuH15Xrfj0w7cAgGbhniega0brreZNVcrAjr
+Subject: [Caml-list] First beta release of OCaml 5.2.0
+Reply-To: Florian Angeletti <florian.angeletti@inria.fr>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19103
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-03/521387019.8365666.1711379748150.JavaMail.zimbra%40inria.fr>
+
+--=_981b7606-d8bf-404f-b7ab-904a520df8a0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Dear OCaml users,=20
+
+Nearly two months after the first alpha release, the release of OCaml 5.2.0=
+ is drawing near.=20
+
+We have thus released a first beta version of OCaml 5.2.0 to help you updat=
+e your softwares and libraries ahead of the release (see below for the inst=
+allation instructions).=20
+
+Compared to the alpha release, this beta contains a majority of runtime sys=
+tem fixes, and a handful of other fixes across various subsystems.=20
+
+Overall, the opam ecosystem looks in a good shape for the first beta releas=
+e.=20
+Most core development tools support OCaml 5.2.0 or have compatibility patch=
+es under review (for `odoc` and `ocamlformat`), and you can follow the last=
+ remaining wrinkles on the=20
+opam readiness for 5.2.0 meta-issue (https://github.com/ocaml/opam-reposito=
+ry/issues/25182).=20
+
+If you find any bugs, please report them on OCaml's issue tracker (https://=
+github.com/ocaml/ocaml/issues).=20
+
+Currently, the release is planned for the end of April or the beginning of =
+May.=20
+
+If you are interested in full list of features and bug fixes of the new OCa=
+ml version, the=20
+updated change log for OCaml 5.2.0 is available on GitHub (https://github.c=
+om/ocaml/ocaml/blob/5.2/Changes).=20
+
+Happy hacking,=20
+Florian Angeletti for the OCaml team.=20
+
+Installation Instructions=20
+------------------------------=20
+
+The base compiler can be installed as an opam switch with the following com=
+mands=20
+on opam 2.1:=20
+
+opam update=20
+opam switch create 5.2.0~beta1=20
+
+The source code for the alpha is also available at these addresses:=20
+
+* GitHub: https://github.com/ocaml/ocaml/archive/5.2.0-beta1.tar.gz=20
+* OCaml archives at Inria: https://caml.inria.fr/pub/distrib/ocaml-5.2/ocam=
+l-5.2.0~beta1.tar.gz=20
+
+Fine-Tuned Compiler Configuration=20
+-----------------------------------------------=20
+
+If you want to tweak the configuration of the compiler, you can switch to t=
+he option variant with:=20
+
+opam update=20
+opam switch create <switch_name> ocaml-variants.5.2.0~beta1+options <option=
+_list>=20
+
+where `option_list` is a space-separated list of `ocaml-option-*` packages.=
+ For instance, for a `flambda` and `no-flat-float-array` switch:=20
+
+opam switch create 5.2.0~beta1+flambda+nffa ocaml-variants.5.2.0~beta1+opti=
+ons ocaml-option-flambda ocaml-option-no-flat-float-array=20
+
+All available options can be listed with `opam search ocaml-option`.=20
+
+Changes since the first alpha=20
+---------------------------------------=20
+
+## Runtime System Fixes=20
+
+- [#12875](https://github.com/ocaml/ocaml/issues/12875), [#12879](https://g=
+ithub.com/ocaml/ocaml/issues/12879), [#12882](https://github.com/ocaml/ocam=
+l/issues/12882): Execute preemptive systhread switching as a=20
+delayed pending action. This ensures that one can reason within the=20
+FFI that no mutation happens on the same domain when allocating on=20
+the OCaml heap from C, consistently with OCaml 4. This also fixes=20
+further bugs with the multicore systhreads implementation.=20
+(Guillaume Munch-Maccagnoni, bug reports and suggestion by Mark=20
+Shinwell, review by Nick Barnes and Stephen Dolan)=20
+
+- [#12876](https://github.com/ocaml/ocaml/issues/12876): Port ThreadSanitiz=
+er support to Linux on POWER=20
+(Miod Vallat, review by Tim McGilchrist)=20
+
+- [#12678](https://github.com/ocaml/ocaml/issues/12678), [#12898](https://g=
+ithub.com/ocaml/ocaml/issues/12898): free channel buffers on close rather t=
+han on finalization=20
+(Damien Doligez, review by Jan Midtgaard and Gabriel Scherer, report=20
+by Jan Midtgaard)=20
+
+- [#12915](https://github.com/ocaml/ocaml/issues/12915): Port ThreadSanitiz=
+er support to Linux on s390x=20
+(Miod Vallat, review by Tim McGilchrist)=20
+
+- [#12914](https://github.com/ocaml/ocaml/issues/12914): Slightly change th=
+e s390x assembly dialect in order to build with=20
+Clang's integrated assembler.=20
+(Miod Vallat, review by Gabriel Scherer)=20
+
+- [#12897](https://github.com/ocaml/ocaml/issues/12897): fix locking bugs i=
+n Runtime_events=20
+(Gabriel Scherer and Thomas Leonard,=20
+review by Olivier Nicole, Vincent Laviron and Damien Doligez,=20
+report by Thomas Leonard)=20
+
+- [#12860](https://github.com/ocaml/ocaml/issues/12860): Fix an assertion t=
+hat wasn't taking into account the possibility of an=20
+ephemeron pointing at static data.=20
+(Mark Shinwell, review by Gabriel Scherer and KC Sivaramakrishnan)=20
+
+- [#11040](https://github.com/ocaml/ocaml/issues/11040), [#12894](https://g=
+ithub.com/ocaml/ocaml/issues/12894): Silence false data race observed betwe=
+en caml_shared_try_alloc=20
+and oldify. Introduces macros to call tsan annotations which help annotate=
+=20
+a ``happens before'' relationship.=20
+(Hari Hara Naveen S and Olivier Nicole,=20
+review by Gabriel Scherer and Miod Vallat)=20
+
+- [#12919](https://github.com/ocaml/ocaml/issues/12919): Fix register corru=
+ption in caml_callback2_asm on s390x.=20
+(Miod Vallat, review by Gabriel Scherer)=20
+
+- [#12969](https://github.com/ocaml/ocaml/issues/12969): Fix a data race in=
+ caml_darken_cont=20
+(Fabrice Buoro and Olivier Nicole, review by Gabriel Scherer and Miod Valla=
+t)=20
+
+## Standard Library Fix=20
+
+- [#12677](https://github.com/ocaml/ocaml/issues/12677), [#12889](https://g=
+ithub.com/ocaml/ocaml/issues/12889): make Domain.DLS thread-safe=20
+(Gabriel Scherer, review by Olivier Nicole and Damien Doligez,=20
+report by Vesa Karvonen)=20
+
+## Type System Fix=20
+
+- [#12924](https://github.com/ocaml/ocaml/issues/12924), [#12930](https://g=
+ithub.com/ocaml/ocaml/issues/12930): Rework package constraint checking to =
+improve interaction with=20
+immediacy=20
+(Chris Casinghino and Florian Angeletti, review by Florian Angeletti and=20
+Richard Eisenberg)=20
+
+## Compiler User-Interface Fix=20
+
+- [#12971](https://github.com/ocaml/ocaml/issues/12971), [#12974](https://g=
+ithub.com/ocaml/ocaml/issues/12974): fix an uncaught Ctype.Escape exception=
+ on some=20
+invalid programs forming recursive types.=20
+(Gabriel Scherer, review by Florian Angeletti, report by Neven Villani)=20
+
+## Build System Fixes=20
+
++ [#12198](https://github.com/ocaml/ocaml/issues/12198), [#12321](https://g=
+ithub.com/ocaml/ocaml/issues/12321), [#12586](https://github.com/ocaml/ocam=
+l/issues/12586), [#12616](https://github.com/ocaml/ocaml/issues/12616), [#1=
+2706](https://github.com/ocaml/ocaml/issues/12706), +[#13048](https://githu=
+b.com/ocaml/ocaml/issues/13048): continue the merge of the=20
+sub-makefiles into the root Makefile started with [#11243](https://github.c=
+om/ocaml/ocaml/issues/11243), [#11248](https://github.com/ocaml/ocaml/issue=
+s/11248),=20
+[#11268](https://github.com/ocaml/ocaml/issues/11268), [#11420](https://git=
+hub.com/ocaml/ocaml/issues/11420) and [#11675](https://github.com/ocaml/oca=
+ml/issues/11675).=20
+(S=E9bastien Hinderer, review by David Allsopp and Florian Angeletti)=20
+
++ [#12768](https://github.com/ocaml/ocaml/issues/12768), +[#13030](https://=
+github.com/ocaml/ocaml/issues/13030): Detect mingw-w64 coupling with GCC or=
+ LLVM, detect clang-cl,=20
+and fix C compiler feature detection on macOS.=20
+(Antonin D=E9cimo, review by Miod Vallat and S=E9bastien Hinderer)=20
+
+- [#13019](https://github.com/ocaml/ocaml/issues/13019): Remove linking ins=
+tructions for the Unix library from threads.cma=20
+(this was done for threads.cmxa in OCaml 3.11). Eliminates warnings from=20
+new lld when using threads.cma of duplicated libraries.=20
+(David Allsopp, review by Nicol=E1s Ojeda B=E4r)=20
+
++ [#12758](https://github.com/ocaml/ocaml/issues/12758), +[#12998](https://=
+github.com/ocaml/ocaml/issues/12998): Remove the `Marshal.Compression` flag=
+ to the=20
+`Marshal.to_*` functions. The compilers are still able to use=20
+ZSTD compression for compilation artefacts.=20
+This is a forward port and clean-up of the emergency fix that was introduce=
+d=20
+
+## Compiler Internals Fix=20
+
++ [#12389](https://github.com/ocaml/ocaml/issues/12389), [#12544](https://g=
+ithub.com/ocaml/ocaml/issues/12544), [#12984](https://github.com/ocaml/ocam=
+l/issues/12984), +[#12987](https://github.com/ocaml/ocaml/issues/12987): ce=
+ntralize the handling of metadata for=20
+compilation units and artifacts in preparation for better unicode support f=
+or=20
+OCaml source files.=20
+(Florian Angeletti, review by Vincent Laviron and Gabriel Scherer)=20
+
+--=_981b7606-d8bf-404f-b7ab-904a520df8a0
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<html><body><div style=3D"font-family: arial, helvetica, sans-serif; font-s=
+ize: 12pt; color: #000000"><div>Dear OCaml users,</div><div><br data-mce-bo=
+gus=3D"1"></div><div>Nearly two months after the first alpha release, the r=
+elease of OCaml 5.2.0 is drawing near.<br><br>We have thus released a first=
+ beta version of OCaml 5.2.0 to help you update your softwares and librarie=
+s ahead of the release (see below for the installation instructions).<br><b=
+r>Compared to the alpha release, this beta contains a majority of runtime s=
+ystem fixes, and a handful of other fixes across various subsystems.<br><br=
+>Overall, the opam ecosystem looks in a good shape for the first beta relea=
+se.<br>Most core development tools support OCaml 5.2.0 or have compatibilit=
+y patches under review (for `odoc` and `ocamlformat`), and you can follow t=
+he last remaining wrinkles on the<br>opam readiness for 5.2.0 meta-issue (h=
+ttps://github.com/ocaml/opam-repository/issues/25182).<br><br>If you find a=
+ny bugs, please report them on OCaml's issue tracker (https://github.com/oc=
+aml/ocaml/issues).<br><br>Currently, the release is planned for the end of =
+April or the beginning of May.<br><br>If you are interested in full list of=
+ features and bug fixes of the new OCaml version, the<br>updated change log=
+ for OCaml 5.2.0 is available on GitHub (https://github.com/ocaml/ocaml/blo=
+b/5.2/Changes).</div><div><br>Happy hacking,<br>Florian Angeletti for the O=
+Caml team.</div><div><br>Installation Instructions<br></div><div>----------=
+--------------------<br data-mce-bogus=3D"1"></div><div><br>The base compil=
+er can be installed as an opam switch with the following commands<br>on opa=
+m 2.1:<br><br>&nbsp;&nbsp;&nbsp; opam update<br>&nbsp;&nbsp;&nbsp; opam swi=
+tch create 5.2.0~beta1<br></div><div><br data-mce-bogus=3D"1"></div><div><b=
+r>The source code for the alpha is also available at these addresses:<br><b=
+r>* GitHub: https://github.com/ocaml/ocaml/archive/5.2.0-beta1.tar.gz<br>* =
+OCaml archives at Inria: https://caml.inria.fr/pub/distrib/ocaml-5.2/ocaml-=
+5.2.0~beta1.tar.gz<br><br>Fine-Tuned Compiler Configuration</div><div>-----=
+------------------------------------------<br><br>If you want to tweak the =
+configuration of the compiler, you can switch to the option variant with:<b=
+r><br><br>&nbsp;&nbsp;&nbsp; opam update<br>&nbsp;&nbsp;&nbsp; opam switch =
+create &lt;switch_name&gt; ocaml-variants.5.2.0~beta1+options &lt;option_li=
+st&gt;<br><br><br>where `option_list` is a space-separated list of `ocaml-o=
+ption-*` packages. For instance, for a `flambda` and `no-flat-float-array` =
+switch:<br><br><br>&nbsp;&nbsp;&nbsp; opam switch create 5.2.0~beta1+flambd=
+a+nffa ocaml-variants.5.2.0~beta1+options ocaml-option-flambda ocaml-option=
+-no-flat-float-array<br><br><br>All available options can be listed with `o=
+pam search ocaml-option`.<br><br><br>Changes since the first alpha</div><di=
+v>---------------------------------------<br data-mce-bogus=3D"1"></div><di=
+v><br>## Runtime System Fixes<br><br>- [#12875](https://github.com/ocaml/oc=
+aml/issues/12875), [#12879](https://github.com/ocaml/ocaml/issues/12879), [=
+#12882](https://github.com/ocaml/ocaml/issues/12882): Execute preemptive sy=
+sthread switching as a<br>&nbsp; delayed pending action. This ensures that =
+one can reason within the<br>&nbsp; FFI that no mutation happens on the sam=
+e domain when allocating on<br>&nbsp; the OCaml heap from C, consistently w=
+ith OCaml 4. This also fixes<br>&nbsp; further bugs with the multicore syst=
+hreads implementation.<br>&nbsp; (Guillaume Munch-Maccagnoni, bug reports a=
+nd suggestion by Mark<br>&nbsp;&nbsp; Shinwell, review by Nick Barnes and S=
+tephen Dolan)<br><br>- [#12876](https://github.com/ocaml/ocaml/issues/12876=
+): Port ThreadSanitizer support to Linux on POWER<br>&nbsp; (Miod Vallat, r=
+eview by Tim McGilchrist)<br><br>- [#12678](https://github.com/ocaml/ocaml/=
+issues/12678), [#12898](https://github.com/ocaml/ocaml/issues/12898): free =
+channel buffers on close rather than on finalization<br>&nbsp; (Damien Doli=
+gez, review by Jan Midtgaard and Gabriel Scherer, report<br>&nbsp;&nbsp; by=
+ Jan Midtgaard)<br><br>- [#12915](https://github.com/ocaml/ocaml/issues/129=
+15): Port ThreadSanitizer support to Linux on s390x<br>&nbsp; (Miod Vallat,=
+ review by Tim McGilchrist)<br><br>- [#12914](https://github.com/ocaml/ocam=
+l/issues/12914): Slightly change the s390x assembly dialect in order to bui=
+ld with<br>&nbsp; Clang's integrated assembler.<br>&nbsp; (Miod Vallat, rev=
+iew by Gabriel Scherer)<br><br>- [#12897](https://github.com/ocaml/ocaml/is=
+sues/12897): fix locking bugs in Runtime_events<br>&nbsp; (Gabriel Scherer =
+and Thomas Leonard,<br>&nbsp;&nbsp; review by Olivier Nicole, Vincent Lavir=
+on and Damien Doligez,<br>&nbsp;&nbsp; report by Thomas Leonard)<br><br>- [=
+#12860](https://github.com/ocaml/ocaml/issues/12860): Fix an assertion that=
+ wasn't taking into account the possibility of an<br>&nbsp; ephemeron point=
+ing at static data.<br>&nbsp; (Mark Shinwell, review by Gabriel Scherer and=
+ KC Sivaramakrishnan)<br><br>- [#11040](https://github.com/ocaml/ocaml/issu=
+es/11040), [#12894](https://github.com/ocaml/ocaml/issues/12894): Silence f=
+alse data race observed between caml_shared_try_alloc<br>&nbsp; and oldify.=
+ Introduces macros to call tsan annotations which help annotate<br>&nbsp; a=
+ ``happens before'' relationship.<br>&nbsp; (Hari Hara Naveen S and Olivier=
+ Nicole,<br>&nbsp;&nbsp; review by Gabriel Scherer and Miod Vallat)<br><br>=
+- [#12919](https://github.com/ocaml/ocaml/issues/12919): Fix register corru=
+ption in caml_callback2_asm on s390x.<br>&nbsp; (Miod Vallat, review by Gab=
+riel Scherer)<br><br>- [#12969](https://github.com/ocaml/ocaml/issues/12969=
+): Fix a data race in caml_darken_cont<br>&nbsp; (Fabrice Buoro and Olivier=
+ Nicole, review by Gabriel Scherer and Miod Vallat)<br><br>## Standard Libr=
+ary Fix<br><br>- [#12677](https://github.com/ocaml/ocaml/issues/12677), [#1=
+2889](https://github.com/ocaml/ocaml/issues/12889): make Domain.DLS thread-=
+safe<br>&nbsp; (Gabriel Scherer, review by Olivier Nicole and Damien Dolige=
+z,<br>&nbsp;&nbsp; report by Vesa Karvonen)<br><br>## Type System Fix<br><b=
+r>- [#12924](https://github.com/ocaml/ocaml/issues/12924), [#12930](https:/=
+/github.com/ocaml/ocaml/issues/12930): Rework package constraint checking t=
+o improve interaction with<br>&nbsp; immediacy<br>&nbsp; (Chris Casinghino =
+and Florian Angeletti, review by Florian Angeletti and<br>&nbsp;&nbsp; Rich=
+ard Eisenberg)<br><br>## Compiler User-Interface Fix<br><br>- [#12971](http=
+s://github.com/ocaml/ocaml/issues/12971), [#12974](https://github.com/ocaml=
+/ocaml/issues/12974): fix an uncaught Ctype.Escape exception on some<br>&nb=
+sp; invalid programs forming recursive types.<br>&nbsp; (Gabriel Scherer, r=
+eview by Florian Angeletti, report by Neven Villani)<br><br>## Build System=
+ Fixes<br><br>+ [#12198](https://github.com/ocaml/ocaml/issues/12198), [#12=
+321](https://github.com/ocaml/ocaml/issues/12321), [#12586](https://github.=
+com/ocaml/ocaml/issues/12586), [#12616](https://github.com/ocaml/ocaml/issu=
+es/12616), [#12706](https://github.com/ocaml/ocaml/issues/12706), +[#13048]=
+(https://github.com/ocaml/ocaml/issues/13048): continue the merge of the<br=
+>&nbsp;&nbsp; sub-makefiles into the root Makefile started with [#11243](ht=
+tps://github.com/ocaml/ocaml/issues/11243), [#11248](https://github.com/oca=
+ml/ocaml/issues/11248),<br>&nbsp;&nbsp; [#11268](https://github.com/ocaml/o=
+caml/issues/11268), [#11420](https://github.com/ocaml/ocaml/issues/11420) a=
+nd [#11675](https://github.com/ocaml/ocaml/issues/11675).<br>&nbsp;&nbsp; (=
+S=E9bastien Hinderer, review by David Allsopp and Florian Angeletti)<br><br=
+>+ [#12768](https://github.com/ocaml/ocaml/issues/12768), +[#13030](https:/=
+/github.com/ocaml/ocaml/issues/13030): Detect mingw-w64 coupling with GCC o=
+r LLVM, detect clang-cl,<br>&nbsp;&nbsp; and fix C compiler feature detecti=
+on on macOS.<br>&nbsp;&nbsp; (Antonin D=E9cimo, review by Miod Vallat and S=
+=E9bastien Hinderer)<br><br>- [#13019](https://github.com/ocaml/ocaml/issue=
+s/13019): Remove linking instructions for the Unix library from threads.cma=
+<br>&nbsp; (this was done for threads.cmxa in OCaml 3.11). Eliminates warni=
+ngs from<br>&nbsp; new lld when using threads.cma of duplicated libraries.<=
+br>&nbsp; (David Allsopp, review by Nicol=E1s Ojeda B=E4r)<br><br>+ [#12758=
+](https://github.com/ocaml/ocaml/issues/12758), +[#12998](https://github.co=
+m/ocaml/ocaml/issues/12998): Remove the `Marshal.Compression` flag to the<b=
+r>&nbsp;&nbsp; `Marshal.to_*` functions.&nbsp; The compilers are still able=
+ to use<br>&nbsp;&nbsp; ZSTD compression for compilation artefacts.<br>&nbs=
+p;&nbsp; This is a forward port and clean-up of the emergency fix that was =
+introduced<br><br>## Compiler Internals Fix<br><br>+ [#12389](https://githu=
+b.com/ocaml/ocaml/issues/12389), [#12544](https://github.com/ocaml/ocaml/is=
+sues/12544), [#12984](https://github.com/ocaml/ocaml/issues/12984), +[#1298=
+7](https://github.com/ocaml/ocaml/issues/12987): centralize the handling of=
+ metadata for<br>&nbsp; compilation units and artifacts in preparation for =
+better unicode support for<br>&nbsp; OCaml source files.<br>&nbsp; (Florian=
+ Angeletti, review by Vincent Laviron and Gabriel Scherer)<br data-mce-bogu=
+s=3D"1"></div></div></body></html>
+--=_981b7606-d8bf-404f-b7ab-904a520df8a0--
