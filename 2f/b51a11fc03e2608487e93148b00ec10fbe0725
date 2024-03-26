@@ -1,0 +1,1732 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=vP6iBCe5;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=XeRRDLnq;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 08441B80123
+	for <caml-list@tunbury.org>; Tue, 26 Mar 2024 07:11:12 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=olh3nqCV5UM3i/O0Wad/IBj+vLKQTdTSNRQxnJZPj4Y=;
+  b=vP6iBCe5GGZXLo4J6pZmBY5qfEsl+OhuP5Vk0mJMA+qstODdQ/X4A8QC
+   EvGShvpLbIjtcFfR9TBp0xy3h9LdOXpNmHzHdalnQCeJJfCpro0PAeSGF
+   D/C24OOa2cuPCd9EmyGyctBLy8lr4Wa4f3mnfiMm9sQMbf0DWuHjZEoco
+   M=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.07,155,1708383600"; 
+   d="scan'208,217";a="158438658"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 26 Mar 2024 08:11:11 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 88EDBE0149; Tue, 26 Mar 2024 08:11:11 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 5D2B7E0147
+	for <caml-list@sympa.inria.fr>; Tue, 26 Mar 2024 08:11:09 +0100 (CET)
+IronPort-SDR: 66026c64_zXxFfIZSlY2D4CIjP3fbfIjp+xiDIB0I44xFPiadeFA/8HY
+ m7HIZ+BIg4SILwN7xwKsvPUOiGBixcdgFZqMDyQ==
+X-IPAS-Result: =?us-ascii?q?A0EiBgCfcwJmjCIeaIFaFoJCgTaBAxkBYlYyBwhIhFaDT?=
+ =?us-ascii?q?44YgRaJM4k0hyiBD4FWFIEPHRYjFAEDAQ0uAQ4EAQIEAQEDAQIBgguCdAKIB?=
+ =?us-ascii?q?gIfBgEEMQgOAQIEAQEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABAQEBQ?=
+ =?us-ascii?q?BA1hWwNgkouI2tlCTcBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQECCAQBGYEDCQoTAQEpBwgYIwMJBwQBBgMCEQE1FwESFAaCZ?=
+ =?us-ascii?q?gGCGkUDBAEMBpU7mzp6gTKBAYIKAQEGgQg+AwEKAgUBDgkmrweBRxoJgTAYi?=
+ =?us-ascii?q?AwaAWpoAoQhhDwnD4FVRIEVgihKBQJvggI9CxcBAQEBgRcNBBQBAQJLCQmDH?=
+ =?us-ascii?q?IJogUBWgSobgRtXgWBEVIFbBoUOJoFRIQGFXANWFQ+CXoICcGACBg2GV4FMI?=
+ =?us-ascii?q?gN9CGsbEB43ERATDQMIbh0CMToDBQMEMgoSDAsfBVQDQwZICwMCGgUDAwSBL?=
+ =?us-ascii?q?QULGgIQLCYDAxJJAhAUAzgDAwYDCjEuT0EMUANnHzEJPA8MGgIbFA0kIwIsP?=
+ =?us-ascii?q?gMJChACFgMdFgQwEQkLJgMqBjYCEgwGBgZcIBYJBCMDCAQDUAMgcBEDBBoEC?=
+ =?us-ascii?q?wd2gUiBdQQTRAMQgTKHQYJVgz+CIIQ7SANEHUADC209NRQbKKNqeQIBLIE9L?=
+ =?us-ascii?q?w44BgIsYgcDCQgQFwkCDScCOAsCFxkbFRYfCwsCLZJqKgJzjiaOBJRNNAeEF?=
+ =?us-ascii?q?oFbBgyIe4EkiFaCf4ZAg1WEBYFWiyaReoc0IphAIII0hxyBJQmBbGmKAol1g?=
+ =?us-ascii?q?UmFUIFlATiBXDMaMEOCZwlGHA9XjVUWg1iBPi2CbjuKZAJCNQIBATcCBwEKA?=
+ =?us-ascii?q?QEDCYVFHQEBgz6BSAEB?=
+IronPort-PHdr: A9a23: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
+ p5Y1nnj
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:yQE/WaqPGt9hLwdWBf1qQ0kaV5o5eYIsimQD101hICG9E/b5qy
+ nAppsmPHPP4wr5O0tApTnoAsDpfZq2z/NICP4qUYtKMjONhEKYaK1DqbHP5BDNIGnXz9c178
+ ldT5Q=
+X-Talos-CUID: 9a23:CmmZGmx3+1dXavktWCXcBgUXFp57U3H/4EvNAB+7LGxEVp+JU2S5rfY=
+X-Talos-MUID: 9a23:kDNM8gW7m76dyBPq/Ba8ihc6G+BH2vyRDhwPnZw0mZigCBUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,155,1708383600"; 
+   d="scan'208,217";a="83090791"
+X-MGA-submission: =?us-ascii?q?MDHVCNuOmftB0IrSzbVId2rk8fhEfk5NrfFyl1?=
+ =?us-ascii?q?HXsqUdu84l7QzjVIA2snFC5BOLvr4gvsOndACw57N2bQCCn3306leOMa?=
+ =?us-ascii?q?kHW0r18Izz1/CmlAvQkyptbYFV7YDEkjZV9wp4RsEa9XokN+Jo1FpOlI?=
+ =?us-ascii?q?fFi607ygdvGh6x47s+OCQegw=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2024 07:32:12 +0100
+Received: from TM.local (unknown [90.85.64.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id E21AE5646DB;
+	Tue, 26 Mar 2024 07:32:12 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1711434733;
+	bh=13paivHn6/tYXF221qUfoElyKJzXxdVfANVd+AI8oRI=;
+	h=From:To:Subject:Date:Message-ID;
+	b=XeRRDLnqwFfq3yMMMeVlk0A3oPhOkyZcCW7zEkyywYDOVoCdpg03XOs7+w4cO+OL5
+	 UCv1J2N86cplMkmiBYPyS6+HpjMw5zrwyWPtTcCls2SWgbSOGv7+aUBaHf00zK/XQW
+	 6vH+U23h5ZtJ/62YCP7L/5qN0aRrCttFPr1tuioQ=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 26 Mar 2024 07:32:10 +0100
+Message-ID: <m234sdv6z9.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Mar 26 07:32:13 2024 +0100 (CET))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.405734, queueID=8D29A5646DC
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19104
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-03/m234sdv6z9.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of March 19 to 26,
+2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+The Flambda2 Snippets, by OCamlPro
+Eio 1.0: First major release
+ppx_minidebug 1.3.0: toward a logging framework
+Academic OCaml Users Testimonials!
+Volunteers for ICFP 2024 Artifact Evaluation Committee (AEC)
+First beta release for OCaml 5.2.0
+Other OCaml News
+Old CWN
+
+
+The Flambda2 Snippets, by OCamlPro
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/blog-the-flambda2-snippets-by-ocamlpro/14331=
+/1>
+
+
+OCamlPro announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80
+
+  Greetings Cameleers,
+
+  Today, we are excited to share with you a first glance at some
+  redactional work that has been brewing behind at the scenes at
+  OCamlPro for quite a some time now!
+
+  We are starting a series of blogposts on the Flambda2 project. The
+  goals are plenty, one of them being to give all readers an idea of the
+  inner workings of this great piece of software, 10 years of research &
+  development in the making.
+
+  The first two episodes are rather special to the series:
+
+  =E2=80=A2 [Episode 0] gives context and broader information on both the
+    Flambda2 Optimising Compiler project, and the series of blogposts
+    itself.
+
+  =E2=80=A2 [Episode 1], on the other hand, steps right into the subject at=
+ hand
+    and covers some of the foundational design decisions of this
+    compiler.
+
+  We await your feedback below, and hope that you will enjoy reading
+  these posts, and all ensuing ones!
+
+  Kind regards, The OCamlPro Team
+
+
+[Episode 0]
+<https://ocamlpro.com/blog/2024_03_18_the_flambda2_snippets_0/>
+
+[Episode 1]
+<https://ocamlpro.com/blog/2024_03_19_the_flambda2_snippets_1/>
+
+
+Eio 1.0: First major release
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-eio-1-0-first-major-release/14334/1>
+
+
+Sudha Parimala announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I'm happy to announce the release of [Eio 1.0], its first major
+  release. Eio started as an experimental effects-based library by the
+  same team that was working on Multicore OCaml. We did not initially
+  plan on upstreaming effects with OCaml 5.0. However, thanks to the
+  efforts from the multicore team and OCaml core developers, effect
+  handlers shipped with OCaml 5.0 (making it one of the first mainstream
+  languages to do so). This presented the opportunity to develop
+  effect-based concurrency libraries for OCaml, and Eio was the first of
+  the lot..
+
+  Find more about the journey of Eio in this post =E2=80=93 [ Eio 1.0 Relea=
+se:
+  Introducing a new Effects-Based I/O Library for OCaml]
+
+  This is the beginning of the journey towards effect-based schedulers!
+  We are keen to hear from you all to shape up what would be Eio 2.0.
+
+  If you're looking to get started with Eio, the [README] is a good
+  place to start.  Additionally, @talex5's [video introduction], and
+  [tutorial to port your Lwt applications to Eio] serve as good primers.
+
+  I'd like to thank all the contributors for their work and users for
+  their thoughtful feedback. As always, happy to hear feedback about
+  Eio.
+
+  Happy hacking!
+
+
+[Eio 1.0] <https://github.com/ocaml-multicore/eio/releases/tag/v1.0>
+
+[ Eio 1.0 Release: Introducing a new Effects-Based I/O Library for
+OCaml]
+<https://tarides.com/blog/2024-03-20-eio-1-0-release-introducing-a-new-effe=
+cts-based-i-o-library-for-ocaml/>
+
+[README] <https://github.com/ocaml-multicore/eio/blob/main/README.md>
+
+[video introduction] <https://watch.ocaml.org/w/1k1T919WGXoT4tjnRZEmMd>
+
+[tutorial to port your Lwt applications to Eio]
+<https://github.com/ocaml-multicore/icfp-2023-eio-tutorial>
+
+
+ppx_minidebug 1.3.0: toward a logging framework
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ppx-minidebug-1-3-0-toward-a-logging-fra=
+mework/14213/3>
+
+
+Lukasz Stafiniak announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  Happy to announce ppx_minidebug 1.5.0. It should soon propagate to the
+  opam repository. Two new features since 1.4.0:
+  =E2=80=A2 `[%log_entry header_string; body...]' syntax to explicitly crea=
+te
+    log subtrees without polluting with source location
+    information. Note that if you want the source location you could
+    always do `let _for_debug : type... =3D body... in...'.
+  =E2=80=A2 Minimalistic flame graphs. Example:
+
+    <https://global.discourse-cdn.com/business7/uploads/ocaml/optimized/2X/=
+c/ce80302bd2abf9dbefd401cd7297184da0fa2ad6_2_1380x414.png>
+
+    (Note that the output is very configurable, e.g. by default the `at
+    elapsed' time information is not printed.)
+
+
+Academic OCaml Users Testimonials!
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/academic-ocaml-users-testimonials/14338/1>
+
+
+Claire Vandenberghe announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  *Are you an academic user of OCaml?*
+
+  By sharing your testimonial, you're not only showcasing your expertise
+  and experience but also contributing to the OCaml community.
+
+  Your insights can help prospective users understand the academic value
+  of OCaml and inspire them to explore its potential further.
+
+  Your testimonial will be featured on our academic user page, inspiring
+  others to explore OCaml's potential.
+
+  *Tell us:*
+
+  1. Your name and academic affiliation.
+  2. A brief description of how you=E2=80=99ve used OCaml in your academic
+     endeavors.
+  3. Your thoughts on the benefits and challenges of using OCaml.
+
+  Thanks
+
+  OCaml.org Team
+
+
+UnixJunkie then replied
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Some years ago, I wrote a testimonial in an invited paper:
+
+  Chemoinformatics and structural bioinformatics in OCaml
+  <https://jcheminf.biomedcentral.com/articles/10.1186/s13321-019-0332-0>
+
+
+Volunteers for ICFP 2024 Artifact Evaluation Committee (AEC)
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/volunteers-for-icfp-2024-artifact-evaluation=
+-committee-aec/14355/1>
+
+
+Beno=C3=AEt Montagu announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Dear all,
+
+  We are looking for motivated people to be members of the ICFP 2024
+  Artifact Evaluation Committee (AEC). Students, researchers and people
+  from the industry or the free software community are all welcome. The
+  artifact evaluation process aims to improve the quality and
+  reproducibility of research artifacts for ICFP papers. In case you
+  want to nominate someone else (students, colleagues, etc.), please
+  send them the nomination form.
+
+  Nomination form: <https://forms.gle/KJAjtDzhm5VLxjVf9>
+
+  Deadline for nominations: Mon April 8th 2024
+
+  For more information, see the AEC webpage:
+    <https://icfp24.sigplan.org/track/icfp-2024-artifact-evaluation>
+
+  The primary responsibility of committee members is to review the
+  artifacts submitted corresponding to the already conditionally
+  accepted papers in the main research track. In particular, run the
+  associated tool or benchmark, check whether the results in the paper
+  can be reproduced, and inspect the tool and the data.
+
+  We expect evaluation of one artifact to take about a full day. Each
+  committee member will receive 2 to 3 artifacts to review.
+
+  All of the AEC work will be done remotely/online. The AEC will work in
+  June, with the review work happening between June 5th and July 5th.
+
+  Come join us in improving the quality of research in our field!
+
+  Best, the Artifact Evaluation chairs: Quentin Sti=C3=A9venart and Beno=C3=
+=AEt
+  Montagu
+
+
+First beta release for OCaml 5.2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/first-beta-release-for-ocaml-5-2-0/14356/1>
+
+
+octachron announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  Nearly two months after the first alpha release, the release of OCaml
+  5.2.0 is drawing near.
+
+  We have thus released a first beta version of OCaml 5.2.0 to help you
+  update your softwares and libraries ahead of the release (see below
+  for the installation instructions).
+
+  Compared to the alpha release, this beta contains a majority of
+  runtime system fixes, and a handful of other fixes across many
+  subsystems.
+
+  Overall, the opam ecosystem looks in a good shape for the first beta
+  release.  Most core development tools support OCaml 5.2.0 or have
+  compatibility patch under review (for `odoc' and `ocamlformat'), and
+  you can follow the last remaining wrinkles on the [opam readiness for
+  5.2.0 meta-issue].
+
+  If you find any bugs, please report them on [OCaml's issue tracker].
+
+  Currently, the release is planned for the end of April or the
+  beginning of May.
+
+  If you are interested in full list of features and bug fixes of the
+  new OCaml version, the updated change log for OCaml 5.2.0 is available
+  [on GitHub].
+
+
+[opam readiness for 5.2.0 meta-issue]
+<https://github.com/ocaml/opam-repository/issues/25182>
+
+[OCaml's issue tracker] <https://github.com/ocaml/ocaml/issues>
+
+[on GitHub] <https://github.com/ocaml/ocaml/blob/5.2/Changes>
+
+Installation Instructions
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The base compiler can be installed as an opam switch with the
+  following commands on opam 2.1:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create 5.2.0~beta1
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The source code for the alpha is also available at these addresses:
+
+  =E2=80=A2 [GitHub]
+  =E2=80=A2 [OCaml archives at Inria]
+
+
+[GitHub] <https://github.com/ocaml/ocaml/archive/5.2.0-beta1.tar.gz>
+
+[OCaml archives at Inria]
+<https://caml.inria.fr/pub/distrib/ocaml-5.2/ocaml-5.2.0~beta1.tar.gz>
+
+=E2=97=8A Fine-Tuned Compiler Configuration
+
+  If you want to tweak the configuration of the compiler, you can switch
+  to the option variant with:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create <switch_name> ocaml-variants.5.2.0~beta1+opt=
+ions <option_list>
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  where `option_list' is a space-separated list of `ocaml-option-*'
+  packages. For instance, for a `flambda' and `no-flat-float-array'
+  switch:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam switch create 5.2.0~beta1+flambda+nffa ocaml-variants.5.2.=
+0~beta1+options
+  =E2=94=82 ocaml-option-flambda ocaml-option-no-flat-float-array
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  All available options can be listed with `opam search ocaml-option'.
+
+
+Changes since the first alpha
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A Runtime System Fixes
+
+  =E2=80=A2 [#12875], [#12879], [#12882]: Execute preemptive systhread swit=
+ching
+    as a delayed pending action. This ensures that one can reason within
+    the FFI that no mutation happens on the same domain when allocating
+    on the OCaml heap from C, consistently with OCaml 4. This also fixes
+    further bugs with the multicore systhreads implementation.
+    (Guillaume Munch-Maccagnoni, bug reports and suggestion by Mark
+    Shinwell, review by Nick Barnes and Stephen Dolan)
+
+  =E2=80=A2 [#12876]: Port ThreadSanitizer support to Linux on POWER (Miod
+    Vallat, review by Tim McGilchrist)
+
+  =E2=80=A2 [#12678], [#12898]: free channel buffers on close rather than on
+    finalization (Damien Doligez, review by Jan Midtgaard and Gabriel
+    Scherer, report by Jan Midtgaard)
+
+  =E2=80=A2 [#12915]: Port ThreadSanitizer support to Linux on s390x (Miod
+    Vallat, review by Tim McGilchrist)
+
+  =E2=80=A2 [#12914]: Slightly change the s390x assembly dialect in order to
+    build with Clang's integrated assembler.  (Miod Vallat, review by
+    Gabriel Scherer)
+
+  =E2=80=A2 [#12897]: fix locking bugs in Runtime_events (Gabriel Scherer a=
+nd
+    Thomas Leonard, review by Olivier Nicole, Vincent Laviron and Damien
+    Doligez, report by Thomas Leonard)
+
+  =E2=80=A2 [#12860]: Fix an assertion that wasn't taking into account the
+    possibility of an ephemeron pointing at static data.  (Mark
+    Shinwell, review by Gabriel Scherer and KC Sivaramakrishnan)
+
+  =E2=80=A2 [#11040], [#12894]: Silence false data race observed between
+    caml_shared_try_alloc and oldify. Introduces macros to call tsan
+    annotations which help annotate a ~~happens before'' relationship.
+    (Hari Hara Naveen S and Olivier Nicole, review by Gabriel Scherer
+    and Miod Vallat)
+
+  =E2=80=A2 [#12919]: Fix register corruption in caml_callback2_asm on s390=
+x.
+    (Miod Vallat, review by Gabriel Scherer)
+
+  =E2=80=A2 [#12969]: Fix a data race in caml_darken_cont (Fabrice Buoro and
+    Olivier Nicole, review by Gabriel Scherer and Miod Vallat)
+
+
+  [#12875] <https://github.com/ocaml/ocaml/issues/12875>
+
+  [#12879] <https://github.com/ocaml/ocaml/issues/12879>
+
+  [#12882] <https://github.com/ocaml/ocaml/issues/12882>
+
+  [#12876] <https://github.com/ocaml/ocaml/issues/12876>
+
+  [#12678] <https://github.com/ocaml/ocaml/issues/12678>
+
+  [#12898] <https://github.com/ocaml/ocaml/issues/12898>
+
+  [#12915] <https://github.com/ocaml/ocaml/issues/12915>
+
+  [#12914] <https://github.com/ocaml/ocaml/issues/12914>
+
+  [#12897] <https://github.com/ocaml/ocaml/issues/12897>
+
+  [#12860] <https://github.com/ocaml/ocaml/issues/12860>
+
+  [#11040] <https://github.com/ocaml/ocaml/issues/11040>
+
+  [#12894] <https://github.com/ocaml/ocaml/issues/12894>
+
+  [#12919] <https://github.com/ocaml/ocaml/issues/12919>
+
+  [#12969] <https://github.com/ocaml/ocaml/issues/12969>
+
+
+=E2=97=8A Standard Library Fix
+
+  =E2=80=A2 [#12677], [#12889]: make Domain.DLS thread-safe (Gabriel Schere=
+r,
+    review by Olivier Nicole and Damien Doligez, report by Vesa
+    Karvonen)
+
+
+  [#12677] <https://github.com/ocaml/ocaml/issues/12677>
+
+  [#12889] <https://github.com/ocaml/ocaml/issues/12889>
+
+
+=E2=97=8A Type System Fix
+
+  =E2=80=A2 [#12924], [#12930]: Rework package constraint checking to impro=
+ve
+    interaction with immediacy (Chris Casinghino and Florian Angeletti,
+    review by Florian Angeletti and Richard Eisenberg)
+
+
+  [#12924] <https://github.com/ocaml/ocaml/issues/12924>
+
+  [#12930] <https://github.com/ocaml/ocaml/issues/12930>
+
+
+=E2=97=8A Compiler User-Interface Fix
+
+  =E2=80=A2 [#12971], [#12974]: fix an uncaught Ctype.Escape exception on s=
+ome
+    invalid programs forming recursive types.  (Gabriel Scherer, review
+    by Florian Angeletti, report by Neven Villani)
+
+
+  [#12971] <https://github.com/ocaml/ocaml/issues/12971>
+
+  [#12974] <https://github.com/ocaml/ocaml/issues/12974>
+
+
+=E2=97=8A Build System Fixes
+
+  =E2=80=A2 [#12198], [#12321], [#12586], [#12616], [#12706], [#13048]: con=
+tinue
+    the merge of the sub-makefiles into the root Makefile started with
+    [#11243], [#11248], [#11268], [#11420] and [#11675]. (S=C3=A9bastien
+    Hinderer, review by David Allsopp and Florian Angeletti)
+
+  =E2=80=A2 [#12768], [#13030]: Detect mingw-w64 coupling with GCC or LLVM,
+    detect clang-cl, and fix C compiler feature detection on macOS.
+    (Antonin D=C3=A9cimo, review by Miod Vallat and S=C3=A9bastien Hinderer)
+
+  =E2=80=A2 [#13019]: Remove linking instructions for the Unix library from
+    threads.cma (this was done for threads.cmxa in OCaml
+    3.11). Eliminates warnings from new lld when using threads.cma of
+    duplicated libraries.  (David Allsopp, review by Nicol=C3=A1s Ojeda B=
+=C3=A4r)
+
+  =E2=80=A2 [#12758], [#12998]: Remove the `Marshal.Compression' flag to the
+    `Marshal.to_*' functions.  The compilers are still able to use ZSTD
+    compression for compilation artefacts.  This is a forward port and
+    clean-up of the emergency fix that was introduced
+
+
+  [#12198] <https://github.com/ocaml/ocaml/issues/12198>
+
+  [#12321] <https://github.com/ocaml/ocaml/issues/12321>
+
+  [#12586] <https://github.com/ocaml/ocaml/issues/12586>
+
+  [#12616] <https://github.com/ocaml/ocaml/issues/12616>
+
+  [#12706] <https://github.com/ocaml/ocaml/issues/12706>
+
+  [#13048] <https://github.com/ocaml/ocaml/issues/13048>
+
+  [#11243] <https://github.com/ocaml/ocaml/issues/11243>
+
+  [#11248] <https://github.com/ocaml/ocaml/issues/11248>
+
+  [#11268] <https://github.com/ocaml/ocaml/issues/11268>
+
+  [#11420] <https://github.com/ocaml/ocaml/issues/11420>
+
+  [#11675] <https://github.com/ocaml/ocaml/issues/11675>
+
+  [#12768] <https://github.com/ocaml/ocaml/issues/12768>
+
+  [#13030] <https://github.com/ocaml/ocaml/issues/13030>
+
+  [#13019] <https://github.com/ocaml/ocaml/issues/13019>
+
+  [#12758] <https://github.com/ocaml/ocaml/issues/12758>
+
+  [#12998] <https://github.com/ocaml/ocaml/issues/12998>
+
+
+=E2=97=8A Compiler Internals Fix
+
+  =E2=80=A2 [#12389], [#12544], [#12984], +[#12987]: centralize the handlin=
+g of
+    metadata for compilation units and artifacts in preparation for
+    better unicode support for OCaml source files.  (Florian Angeletti,
+    review by Vincent Laviron and Gabriel Scherer)
+
+
+  [#12389] <https://github.com/ocaml/ocaml/issues/12389>
+
+  [#12544] <https://github.com/ocaml/ocaml/issues/12544>
+
+  [#12984] <https://github.com/ocaml/ocaml/issues/12984>
+
+  [#12987] <https://github.com/ocaml/ocaml/issues/12987>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Eio 1.0 Release: Introducing a new Effects-Based I/O Library f=
+or
+    OCaml]
+  =E2=80=A2 [CPS Representation and Foundational Design Decisions in Flambd=
+a2]
+  =E2=80=A2 [The Flambda2 Snippets, Episode 0 ]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Eio 1.0 Release: Introducing a new Effects-Based I/O Library for OCaml]
+<https://tarides.com/blog/2024-03-20-eio-1-0-release-introducing-a-new-effe=
+cts-based-i-o-library-for-ocaml>
+
+[CPS Representation and Foundational Design Decisions in Flambda2]
+<https://ocamlpro.com/blog/2024_03_19_the_flambda2_snippets_1>
+
+[The Flambda2 Snippets, Episode 0 ]
+<https://ocamlpro.com/blog/2024_03_18_the_flambda2_snippets_0>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-03-26 Tue 07:30 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.03.19.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.04.02.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of March 19 to 26, 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">The Flambda2 Snippets, by OCamlPro</a></li>
+<li><a href=3D"#2">Eio 1.0: First major release</a></li>
+<li><a href=3D"#3">ppx_minidebug 1.3.0: toward a logging framework</a></li>
+<li><a href=3D"#4">Academic OCaml Users Testimonials!</a></li>
+<li><a href=3D"#5">Volunteers for ICFP 2024 Artifact Evaluation Committee (=
+AEC)</a></li>
+<li><a href=3D"#6">First beta release for OCaml 5.2.0</a></li>
+<li><a href=3D"#7">Other OCaml News</a></li>
+<li><a href=3D"#orge52caa8">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">The Flambda2 Snippets, by OCamlPro</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/blog-the-flambda2-snippets-=
+by-ocamlpro/14331/1">https://discuss.ocaml.org/t/blog-the-flambda2-snippets=
+-by-ocamlpro/14331/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgef35e91" class=3D"outline-3">
+<h3 id=3D"orgef35e91">OCamlPro announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgef35e91">
+<p>
+Greetings Cameleers,
+</p>
+
+<p>
+Today, we are excited to share with you a first glance at some redactional =
+work
+that has been brewing behind at the scenes at OCamlPro for quite a some time
+now!
+</p>
+
+<p>
+We are starting a series of blogposts on the Flambda2 project. The goals are
+plenty, one of them being to give all readers an idea of the inner workings=
+ of
+this great piece of software, 10 years of research &amp; development in the=
+ making.
+</p>
+
+<p>
+The first two episodes are rather special to the series:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocamlpro.com/blog/2024_03_18_the_flambda2_snippets_0=
+/">Episode 0</a> gives context and broader information on both the Flambda2=
+ Optimising Compiler project, and the series of blogposts itself.</li>
+
+<li><a href=3D"https://ocamlpro.com/blog/2024_03_19_the_flambda2_snippets_1=
+/">Episode 1</a>, on the other hand, steps right into the subject at hand a=
+nd covers some of the foundational design decisions of this compiler.</li>
+</ul>
+
+<p>
+We await your feedback below, and hope that you will enjoy reading these po=
+sts, and all ensuing
+ones!
+</p>
+
+<p>
+Kind regards,
+The OCamlPro Team
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Eio 1.0: First major release</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-eio-1-0-first-major-rel=
+ease/14334/1">https://discuss.ocaml.org/t/ann-eio-1-0-first-major-release/1=
+4334/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org91b1cee" class=3D"outline-3">
+<h3 id=3D"org91b1cee">Sudha Parimala announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org91b1cee">
+<p>
+I'm happy to announce the release of <a href=3D"https://github.com/ocaml-mu=
+lticore/eio/releases/tag/v1.0">Eio
+1.0</a>, its first major release. Eio
+started as an experimental effects-based library by the same team that was =
+working on Multicore
+OCaml. We did not initially plan on upstreaming effects with OCaml 5.0. How=
+ever, thanks to the
+efforts from the multicore team and OCaml core developers, effect handlers =
+shipped with OCaml 5.0
+(making it one of the first mainstream languages to do so). This presented =
+the opportunity to
+develop effect-based concurrency libraries for OCaml, and Eio was the first=
+ of the lot..
+</p>
+
+<p>
+Find more about the journey of Eio in this post &#x2013; <a href=3D"https:/=
+/tarides.com/blog/2024-03-20-eio-1-0-release-introducing-a-new-effects-base=
+d-i-o-library-for-ocaml/"> Eio 1.0 Release: Introducing a new
+Effects-Based I/O Library for
+OCaml</a>
+</p>
+
+<p>
+This is the beginning of the journey towards effect-based schedulers! We ar=
+e keen to hear from you
+all to shape up what would be Eio 2.0.
+</p>
+
+<p>
+If you're looking to get started with Eio, the
+<a href=3D"https://github.com/ocaml-multicore/eio/blob/main/README.md">READ=
+ME</a> is a good place to start.
+Additionally, @talex5's <a href=3D"https://watch.ocaml.org/w/1k1T919WGXoT4t=
+jnRZEmMd">video introduction</a>,
+and <a href=3D"https://github.com/ocaml-multicore/icfp-2023-eio-tutorial">t=
+utorial to port your Lwt applications to
+Eio</a> serve as good primers.
+</p>
+
+<p>
+I'd like to thank all the contributors for their work and users for their t=
+houghtful feedback. As
+always, happy to hear feedback about Eio.
+</p>
+
+<p>
+Happy hacking!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">ppx_minidebug 1.3.0: toward a logging framework</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ppx-minidebug-1-3-0-tow=
+ard-a-logging-framework/14213/3">https://discuss.ocaml.org/t/ann-ppx-minide=
+bug-1-3-0-toward-a-logging-framework/14213/3</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc52e31b" class=3D"outline-3">
+<h3 id=3D"orgc52e31b">Lukasz Stafiniak announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc52e31b">
+<p>
+Happy to announce ppx_minidebug 1.5.0. It should soon propagate to the opam=
+ repository. Two new
+features since 1.4.0:
+</p>
+<ul class=3D"org-ul">
+<li><code>[%log_entry header_string; body...]</code> syntax to explicitly c=
+reate log subtrees without polluting with source location information. Note=
+ that if you want the source location you could always do <code>let _for_de=
+bug : type... =3D body... in...</code>.</li>
+<li><p>
+Minimalistic flame graphs. Example:
+</p>
+
+
+<div id=3D"orgb8a9587" class=3D"figure">
+<p><img src=3D"https://global.discourse-cdn.com/business7/uploads/ocaml/opt=
+imized/2X/c/ce80302bd2abf9dbefd401cd7297184da0fa2ad6_2_1380x414.png" alt=3D=
+"ce80302bd2abf9dbefd401cd7297184da0fa2ad6_2_1380x414.png" />
+</p>
+</div>
+
+<p>
+(Note that the output is very configurable, e.g. by default the <code>at el=
+apsed</code> time information is
+not printed.)
+</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Academic OCaml Users Testimonials!</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/academic-ocaml-users-testim=
+onials/14338/1">https://discuss.ocaml.org/t/academic-ocaml-users-testimonia=
+ls/14338/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org28cf150" class=3D"outline-3">
+<h3 id=3D"org28cf150">Claire Vandenberghe announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org28cf150">
+<p>
+<b>Are you an academic user of OCaml?</b>
+</p>
+
+<p>
+By sharing your testimonial, you're not only showcasing your expertise and =
+experience but also
+contributing to the OCaml community.
+</p>
+
+<p>
+Your insights can help prospective users understand the academic value of O=
+Caml and inspire them
+to explore its potential further.
+</p>
+
+<p>
+Your testimonial will be featured on our academic user page, inspiring othe=
+rs to explore OCaml's
+potential.=20
+</p>
+
+<p>
+<b>Tell us:</b>
+</p>
+
+<ol class=3D"org-ol">
+<li>Your name and academic affiliation.</li>
+<li>A brief description of how you=E2=80=99ve used OCaml in your academic e=
+ndeavors.</li>
+<li>Your thoughts on the benefits and challenges of using OCaml.</li>
+</ol>
+
+<p>
+Thanks
+</p>
+
+<p>
+OCaml.org Team
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orga2f2301" class=3D"outline-3">
+<h3 id=3D"orga2f2301">UnixJunkie then replied</h3>
+<div class=3D"outline-text-3" id=3D"text-orga2f2301">
+<p>
+Some years ago, I wrote a testimonial in an invited paper:
+</p>
+
+<p>
+Chemoinformatics and structural bioinformatics in OCaml
+<a href=3D"https://jcheminf.biomedcentral.com/articles/10.1186/s13321-019-0=
+332-0">https://jcheminf.biomedcentral.com/articles/10.1186/s13321-019-0332-=
+0</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Volunteers for ICFP 2024 Artifact Evaluation Committee (AEC)</=
+h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/volunteers-for-icfp-2024-ar=
+tifact-evaluation-committee-aec/14355/1">https://discuss.ocaml.org/t/volunt=
+eers-for-icfp-2024-artifact-evaluation-committee-aec/14355/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgca65070" class=3D"outline-3">
+<h3 id=3D"orgca65070">Beno=C3=AEt Montagu announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgca65070">
+<p>
+Dear all,
+</p>
+
+<p>
+We are looking for motivated people to be members of the ICFP 2024
+Artifact Evaluation Committee (AEC). Students, researchers and people
+from the industry or the free software community are all welcome. The
+artifact evaluation process aims to improve the quality and
+reproducibility of research artifacts for ICFP papers. In case you
+want to nominate someone else (students, colleagues, etc.), please
+send them the nomination form.
+</p>
+
+<p>
+Nomination form:
+  <a href=3D"https://forms.gle/KJAjtDzhm5VLxjVf9">https://forms.gle/KJAjtDz=
+hm5VLxjVf9</a>
+</p>
+
+<p>
+Deadline for nominations:
+  Mon April 8th 2024
+</p>
+
+<p>
+For more information, see the AEC webpage:
+  <a href=3D"https://icfp24.sigplan.org/track/icfp-2024-artifact-evaluation=
+">https://icfp24.sigplan.org/track/icfp-2024-artifact-evaluation</a>
+</p>
+
+<p>
+The primary responsibility of committee members is to review the
+artifacts submitted corresponding to the already conditionally
+accepted papers in the main research track. In particular, run the
+associated tool or benchmark, check whether the results in the paper
+can be reproduced, and inspect the tool and the data.
+</p>
+
+<p>
+We expect evaluation of one artifact to take about a full day. Each
+committee member will receive 2 to 3 artifacts to review.
+</p>
+
+<p>
+All of the AEC work will be done remotely/online. The AEC will work in
+June, with the review work happening between June 5th and July 5th.
+</p>
+
+<p>
+Come join us in improving the quality of research in our field!
+</p>
+
+<p>
+Best,
+the Artifact Evaluation chairs: Quentin Sti=C3=A9venart and Beno=C3=AEt Mon=
+tagu
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">First beta release for OCaml 5.2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/first-beta-release-for-ocam=
+l-5-2-0/14356/1">https://discuss.ocaml.org/t/first-beta-release-for-ocaml-5=
+-2-0/14356/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org9267b76" class=3D"outline-3">
+<h3 id=3D"org9267b76">octachron announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9267b76">
+<p>
+Nearly two months after the first alpha release, the release of OCaml 5.2.0=
+ is drawing near.
+</p>
+
+<p>
+We have thus released a first beta version of OCaml 5.2.0 to help you updat=
+e your softwares and
+libraries ahead of the release (see below for the installation instructions=
+).
+</p>
+
+<p>
+Compared to the alpha release, this beta contains a majority of runtime sys=
+tem fixes, and a
+handful of other fixes across many subsystems.
+</p>
+
+<p>
+Overall, the opam ecosystem looks in a good shape for the first beta releas=
+e.
+Most core development tools support OCaml 5.2.0 or have compatibility patch=
+ under review (for
+<code>odoc</code> and <code>ocamlformat</code>), and you can follow the las=
+t remaining wrinkles on the
+<a href=3D"https://github.com/ocaml/opam-repository/issues/25182">opam read=
+iness for 5.2.0 meta-issue</a>.
+</p>
+
+<p>
+If you find any bugs, please report them on <a href=3D"https://github.com/o=
+caml/ocaml/issues">OCaml's issue
+tracker</a>.
+</p>
+
+<p>
+Currently, the release is planned for the end of April or the beginning of =
+May.
+</p>
+
+<p>
+If you are interested in full list of features and bug fixes of the new OCa=
+ml version, the
+updated change log for OCaml 5.2.0 is available <a href=3D"https://github.c=
+om/ocaml/ocaml/blob/5.2/Changes">on
+GitHub</a>.
+</p>
+</div>
+<div id=3D"outline-container-org46f3441" class=3D"outline-4">
+<h4 id=3D"org46f3441">Installation Instructions</h4>
+<div class=3D"outline-text-4" id=3D"text-org46f3441">
+<p>
+The base compiler can be installed as an opam switch with the following com=
+mands
+on opam 2.1:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-shell">opam update
+opam switch create 5.2.0~beta1
+</pre>
+</div>
+
+<p>
+The source code for the alpha is also available at these addresses:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/archive/5.2.0-beta1.tar.gz">G=
+itHub</a></li>
+<li><a href=3D"https://caml.inria.fr/pub/distrib/ocaml-5.2/ocaml-5.2.0~beta=
+1.tar.gz">OCaml archives at Inria</a></li>
+</ul>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgf998df4"></a>Fine-Tuned Compiler Configuration<br />
+<div class=3D"outline-text-5" id=3D"text-orgf998df4">
+<p>
+If you want to tweak the configuration of the compiler, you can switch to t=
+he option variant with:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-shell">opam update
+opam switch create &lt;switch_name&gt; ocaml-variants.5.2.0~beta1+options &=
+lt;option_list&gt;
+</pre>
+</div>
+
+<p>
+where <code>option_list</code> is a space-separated list of <code>ocaml-opt=
+ion-*</code> packages. For instance, for a
+<code>flambda</code> and <code>no-flat-float-array</code> switch:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-shell">opam switch create 5.2.0~beta1+flambda+nffa oc=
+aml-variants.5.2.0~beta1+options
+ocaml-option-flambda ocaml-option-no-flat-float-array
+</pre>
+</div>
+
+<p>
+All available options can be listed with <code>opam search ocaml-option</co=
+de>.
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-org8b787fc" class=3D"outline-4">
+<h4 id=3D"org8b787fc">Changes since the first alpha</h4>
+<div class=3D"outline-text-4" id=3D"text-org8b787fc">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org52abe2f"></a>Runtime System Fixes<br />
+<div class=3D"outline-text-5" id=3D"text-org52abe2f">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12875">#12875</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12879">#12879</a>, <a href=3D=
+"https://github.com/ocaml/ocaml/issues/12882">#12882</a>: Execute preemptiv=
+e systhread switching as a
+delayed pending action. This ensures that one can reason within the
+FFI that no mutation happens on the same domain when allocating on
+the OCaml heap from C, consistently with OCaml 4. This also fixes
+further bugs with the multicore systhreads implementation.
+(Guillaume Munch-Maccagnoni, bug reports and suggestion by Mark
+ Shinwell, review by Nick Barnes and Stephen Dolan)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12876">#12876</a>: Por=
+t ThreadSanitizer support to Linux on POWER
+(Miod Vallat, review by Tim McGilchrist)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12678">#12678</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12898">#12898</a>: free chann=
+el buffers on close rather than on finalization
+(Damien Doligez, review by Jan Midtgaard and Gabriel Scherer, report
+ by Jan Midtgaard)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12915">#12915</a>: Por=
+t ThreadSanitizer support to Linux on s390x
+(Miod Vallat, review by Tim McGilchrist)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12914">#12914</a>: Sli=
+ghtly change the s390x assembly dialect in order to build with
+Clang's integrated assembler.
+(Miod Vallat, review by Gabriel Scherer)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12897">#12897</a>: fix=
+ locking bugs in Runtime_events
+(Gabriel Scherer and Thomas Leonard,
+ review by Olivier Nicole, Vincent Laviron and Damien Doligez,
+ report by Thomas Leonard)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12860">#12860</a>: Fix=
+ an assertion that wasn't taking into account the possibility of an
+ephemeron pointing at static data.
+(Mark Shinwell, review by Gabriel Scherer and KC Sivaramakrishnan)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/11040">#11040</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12894">#12894</a>: Silence fa=
+lse data race observed between caml_shared_try_alloc
+and oldify. Introduces macros to call tsan annotations which help annotate
+a ~~happens before'' relationship.
+(Hari Hara Naveen S and Olivier Nicole,
+ review by Gabriel Scherer and Miod Vallat)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12919">#12919</a>: Fix=
+ register corruption in caml_callback2_asm on s390x.
+(Miod Vallat, review by Gabriel Scherer)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12969">#12969</a>: Fix=
+ a data race in caml_darken_cont
+(Fabrice Buoro and Olivier Nicole, review by Gabriel Scherer and Miod Valla=
+t)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgaeffc75"></a>Standard Library Fix<br />
+<div class=3D"outline-text-5" id=3D"text-orgaeffc75">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12677">#12677</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12889">#12889</a>: make Domai=
+n.DLS thread-safe
+(Gabriel Scherer, review by Olivier Nicole and Damien Doligez,
+ report by Vesa Karvonen)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org9cbabd9"></a>Type System Fix<br />
+<div class=3D"outline-text-5" id=3D"text-org9cbabd9">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12924">#12924</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12930">#12930</a>: Rework pac=
+kage constraint checking to improve interaction with
+immediacy
+(Chris Casinghino and Florian Angeletti, review by Florian Angeletti and
+ Richard Eisenberg)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orga52c7a2"></a>Compiler User-Interface Fix<br />
+<div class=3D"outline-text-5" id=3D"text-orga52c7a2">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12971">#12971</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12974">#12974</a>: fix an unc=
+aught Ctype.Escape exception on some
+invalid programs forming recursive types.
+(Gabriel Scherer, review by Florian Angeletti, report by Neven Villani)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgb417973"></a>Build System Fixes<br />
+<div class=3D"outline-text-5" id=3D"text-orgb417973">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12198">#12198</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12321">#12321</a>, <a href=3D=
+"https://github.com/ocaml/ocaml/issues/12586">#12586</a>, <a href=3D"https:=
+//github.com/ocaml/ocaml/issues/12616">#12616</a>, <a href=3D"https://githu=
+b.com/ocaml/ocaml/issues/12706">#12706</a>, <a href=3D"https://github.com/o=
+caml/ocaml/issues/13048">#13048</a>: continue the merge of the sub-makefile=
+s into the root Makefile started with <a href=3D"https://github.com/ocaml/o=
+caml/issues/11243">#11243</a>, <a href=3D"https://github.com/ocaml/ocaml/is=
+sues/11248">#11248</a>, <a href=3D"https://github.com/ocaml/ocaml/issues/11=
+268">#11268</a>, <a href=3D"https://github.com/ocaml/ocaml/issues/11420">#1=
+1420</a> and <a href=3D"https://github.com/ocaml/ocaml/issues/11675">#11675=
+</a>. (S=C3=A9bastien Hinderer, review by David Allsopp and Florian Angelet=
+ti)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12768">#12768</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13030">#13030</a>: Detect min=
+gw-w64 coupling with GCC or LLVM, detect clang-cl,
+and fix C compiler feature detection on macOS.
+(Antonin D=C3=A9cimo, review by Miod Vallat and S=C3=A9bastien Hinderer)</l=
+i>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13019">#13019</a>: Rem=
+ove linking instructions for the Unix library from threads.cma
+(this was done for threads.cmxa in OCaml 3.11). Eliminates warnings from
+new lld when using threads.cma of duplicated libraries.
+(David Allsopp, review by Nicol=C3=A1s Ojeda B=C3=A4r)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12758">#12758</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12998">#12998</a>: Remove the=
+ <code>Marshal.Compression</code> flag to the
+<code>Marshal.to_*</code> functions.  The compilers are still able to use
+ZSTD compression for compilation artefacts.
+This is a forward port and clean-up of the emergency fix that was introduce=
+d</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org053c5c1"></a>Compiler Internals Fix<br />
+<div class=3D"outline-text-5" id=3D"text-org053c5c1">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/12389">#12389</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/12544">#12544</a>, <a href=3D=
+"https://github.com/ocaml/ocaml/issues/12984">#12984</a>, +<a href=3D"https=
+://github.com/ocaml/ocaml/issues/12987">#12987</a>: centralize the handling=
+ of metadata for
+compilation units and artifacts in preparation for better unicode support f=
+or
+OCaml source files.
+(Florian Angeletti, review by Vincent Laviron and Gabriel Scherer)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+</div>
+<div id=3D"outline-container-org6aeaf14" class=3D"outline-3">
+<h3 id=3D"org6aeaf14">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org6aeaf14">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2024-03-20-eio-1-0-release-introduc=
+ing-a-new-effects-based-i-o-library-for-ocaml">Eio 1.0 Release: Introducing=
+ a new Effects-Based I/O Library for OCaml</a></li>
+<li><a href=3D"https://ocamlpro.com/blog/2024_03_19_the_flambda2_snippets_1=
+">CPS Representation and Foundational Design Decisions in Flambda2</a></li>
+<li><a href=3D"https://ocamlpro.com/blog/2024_03_18_the_flambda2_snippets_0=
+">The Flambda2 Snippets, Episode 0 </a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-orge52caa8" class=3D"outline-2">
+<h2 id=3D"orge52caa8">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-orge52caa8">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org872d80d">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
