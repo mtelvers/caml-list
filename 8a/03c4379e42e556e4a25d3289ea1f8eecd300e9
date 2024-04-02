@@ -1,0 +1,2099 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=ugobJim4;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=DXQBGwja;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id A1EA9B80123
+	for <caml-list@tunbury.org>; Tue,  2 Apr 2024 15:31:31 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=pXRd2SNdZbQ4HmTlRUQSvM3nfgt6oVKqGM30I2QSnz4=;
+  b=ugobJim4PZeqDYCBnk0Q83LwPhiHMa8/fV12GETNCVzyWjhyD4bM+IL9
+   TjRydiWramhPP2Oc2m1zaCPywpQbVTsw6Oky+3CeTH/1caGYlZ9dW50q6
+   hPQEJ5KSwIV/0wnIzqVzhHDunVaWd+RY++ud3kWG92w9Qy3B2kcmUj6cF
+   o=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.07,175,1708383600"; 
+   d="scan'208,217";a="159539827"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Apr 2024 16:31:31 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id B1BF1E0157; Tue,  2 Apr 2024 16:31:30 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id F012DE0131
+	for <caml-list@sympa.inria.fr>; Tue,  2 Apr 2024 16:31:27 +0200 (CEST)
+IronPort-SDR: 660c16bd_wyTnIlbWeAFiQCokYzjlroXbX4WK6Z/6rTolxfQru79FV8e
+ ge2xuG+mbGGdnSxM0oa+fMDRNFFSVUZ84YUHD5Q==
+X-IPAS-Result: =?us-ascii?q?A0GVEABfFQxmlyIeaIFQChZ/gnlbKBkBYlYyBwhIA2uDa?=
+ =?us-ascii?q?INPjTRkgRaQL4g/gjCBaoEsFiMEEAEDAQ0uAQ4EAQIEAQEDAQIBgguCdAJPC?=
+ =?us-ascii?q?YcvAh8GAQQ0EwECBAEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGAQIQAQEBA?=
+ =?us-ascii?q?QEBAQE3BRA1hW0NgkoZFSNrgSUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQECCAQBJQQzASMaAgECBgoTAQEmDAYYIwMJCwEGA?=
+ =?us-ascii?q?wIRATUDARMBEhQGgmYBgl8DBQwGP5Jhmzp6gTKBAYIKAQEGew0+AwIJAgIDA?=
+ =?us-ascii?q?Q4JJQGvB4FhCYEwGIgNGgFqaAKEIwmENCcPgVVEgRU1gXNKB2+BUAFNIQsXA?=
+ =?us-ascii?q?gEBGH0CCQkBBwoCAQMFAhAPJAkJgxyCaIEXKVaBKoEANjEmgQpWRAMDTmt2h?=
+ =?us-ascii?q?A9+JoFyAYVOElcKCw9bggNmggpgAQEHDYEdhm2BTIEiCGsbEB43ERATDQMIb?=
+ =?us-ascii?q?h0CMToDBQMEMgoSDAsfBVQDQAZICwMCGgUDAwSBLAULGgIQLCYDAxJJAhAUA?=
+ =?us-ascii?q?zgDAwYDCjEuT0EMUANkHzEJPA8MGgIbFA0kIwIsPgMJChACFgMdFAQwEQkLJ?=
+ =?us-ascii?q?gMqBjYCEgwGBgZcIBYJBCMDCAQDUAMgcBEDBBoECwd2gUiBdQQTRAMQgTKHQ?=
+ =?us-ascii?q?oJYgz+CIIQ4ToFWLwNEHUADC209NRQbKKUUDQFvAgGBcwolDgouBgEBFRA0B?=
+ =?us-ascii?q?xMHDgMCAQcMCAoEAhMNAi4EBAgRGwUKBQ8TCw0EAQkCARIHDxkGCQILAi0Dk?=
+ =?us-ascii?q?jMMBAwYKgNysAxsNAeEFoFbBgyIe4EkkhWDVYQFgVaLJhqZFSKYQCCCNIZJU?=
+ =?us-ascii?q?wqBGwmCVZUUJgYEE4U5gXsjbD8eDAczGjBDDQiCUgkWMBwPV4dKhy0BCIIbK?=
+ =?us-ascii?q?IE+gRgOgXU7gkWULgNBNQEBAQEJLgIHAQoBAQMJhWIBAWmCIQEnBAiBSAEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:fRayKa0BprZrCUgTsQ7TVQqjBI8kLtp133Aq2lEZdPU1SL36qy
+ nKpp4mPHDP5gr5NEtMpTniAsm9qBHnlKKdiLN5VdyftWLd11dAQrsP0aLShxXeXwf++uRe2a
+ oISdkdNPTASX5gg4Lf6Am8euxQpOVvHZrY4Nvj8w==
+X-Talos-CUID: =?us-ascii?q?9a23=3A6Kz9FWucC4/PAzW2/MstsgWt6Is5e2OM83zAfHa?=
+ =?us-ascii?q?hMl4uWuCqTwO26oRNxp8=3D?=
+X-Talos-MUID: 9a23:4ZIUnARUL0BkkV7uRXTcjQg8CdhIz52AGWQdnZ8Pv8CCMg5vbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,175,1708383600"; 
+   d="scan'208,217";a="83673855"
+X-MGA-submission: =?us-ascii?q?MDGwNT1hxqvnWDbXb5VnFaas4dIC3lCTtabiAe?=
+ =?us-ascii?q?N1yw4+OQ+yPGoFphBd5uAky9MwwH3xz6cW9QqYS+ln9YBI4cv2Q/IbNp?=
+ =?us-ascii?q?sl/1t/A5S5yrHzc3/Py90ABxg7vF07JaZ4vFN6pzHthQCMxUuFD48ong?=
+ =?us-ascii?q?jv5t4rKIcQ+a0OyKotqWSABA=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 16:31:25 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 1227E5648D4;
+	Tue,  2 Apr 2024 16:31:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1712068284;
+	bh=rq4JqMrgO/KTyxLP2WPmlQZkswpkBAXpsP4+uDNq8KU=;
+	h=From:To:Subject:Date:Message-ID;
+	b=DXQBGwjawaMiPd9NudaXgtLY9o4mheA8YDSRHGr7F9wzmmKfF1Cf6OAj9myTAOqlj
+	 6bXl9YnLJxtKwkfpzbhCzyUNMRNs9ZPDO/A+q2jVSmOYQ8HDzc7iGVyoLNzcAbqfba
+	 3pYlt1xvqLqbI8Tanv9hIf4n+7Fuh96wfs7bkxoo=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 02 Apr 2024 16:31:22 +0200
+Message-ID: <m2plv7x2dh.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Apr  2 16:31:24 2024 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.499360, queueID=5578A5648D6
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19106
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-04/m2plv7x2dh.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of March 26 to April
+02, 2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Odoc 3.0 planning
+OCaml Platform Newsletter: February 2024
+Your Feedback Needed on OCaml Home Page Wireframe!
+OCaml Workshop 2024 at ICFP =E2=80=93 announcement and call for proposals
+down.0.2.0 and omod.0.4.0
+stdlib-random 1.2
+Other OCaml News
+Old CWN
+
+
+Odoc 3.0 planning
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive: <https://discuss.ocaml.org/t/odoc-3-0-planning/14360/1>
+
+
+Jon Ludlam announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80
+
+  For many years we've had a team here at Tarides working away on Odoc,
+  quietly adding new features, fixing bugs, speeding things up and
+  generally enabling OCaml package mantainers to write good
+  documentation. Up until recently, those improvements have mostly been
+  incremental, but with the recent addition of some larger new features
+  like search and source rendering we've found we need to think a bit
+  more broadly and consider how these changes will fit into the larger
+  ecosystem. We're also thinking of how to extend the abilities of Odoc
+  to handle more structure in the documentation, with better support for
+  images, an improved sidebar, and a better ability to link to the docs
+  of other packages.
+
+  We've therefore started the process that's going to lead to Odoc 3.0,
+  which will involve not only work on odoc itself, but also on
+  ocaml.org, the documentation pipeline that produces the docs for
+  ocaml.org, dune, and odig. It's being done incrementally, so we've
+  started with the core issues of how to structure your docs, how to do
+  references both within the docs and across packages, what the output
+  file structure will look like and how the breadcrumbs will reflect
+  that. What we've posted so far is by no means the final version, and
+  we'd love to get feedback on the suggestions we've got so far. Getting
+  this right is surprisingly complicated, so the more people we have
+  thinking about it, the better our chances of success!
+
+  So if you're interested in writing or reading docs, I encourage you to
+  head on over to [the discussion] we've just started on [ocaml/odoc]
+  and join in the conversation!
+
+
+[the discussion] <https://github.com/ocaml/odoc/discussions/1097>
+
+[ocaml/odoc] <https://github.com/ocaml/odoc/>
+
+
+OCaml Platform Newsletter: February 2024
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ocaml-platform-newsletter-february-2024/1436=
+1/1>
+
+
+Thibaut Mattio announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Welcome to the tenth edition of the OCaml Platform newsletter!
+
+  In this February 2024 edition, we are excited to bring you the latest
+  on the OCaml Platform, continuing our tradition of highlighting recent
+  developments as seen in [previous editions]. To understand the
+  direction we're headed, especially regarding development workflows and
+  user experience improvements, check out our [roadmap].
+
+  *Highlights:*
+  =E2=80=A2 The OCaml Platform tools have added support for OCaml 5.2. It's
+    available in the temporary releases
+    =E2=80=A2 [`Merlin 4.14-502~preview'] (@voodoos (Tarides))
+    =E2=80=A2 [`Ocaml-lsp-server 1.18.0~5.2preview'] (@voodoos (Tarides))
+    =E2=80=A2 [`Ppxlib 0.32.1~5.2preview'] (@NathanReb (partly funded by the
+      OCaml Software Foundation)).
+
+  *Releases:*
+  =E2=80=A2 [UTop 2.14.0]
+  =E2=80=A2 [Merlin 4.14]
+  =E2=80=A2 [Dune 3.14.0]
+  =E2=80=A2 [Ppxlib 0.31.2]
+  =E2=80=A2 [Dune 3.13.1]
+
+
+[previous editions] <https://discuss.ocaml.org/tag/platform-newsletter>
+
+[roadmap] <https://ocaml.org/docs/platform-roadmap>
+
+[`Merlin 4.14-502~preview']
+<https://ocaml.org/p/merlin/4.14-502~preview>
+
+[`Ocaml-lsp-server 1.18.0~5.2preview']
+<https://ocaml.org/p/ocaml-lsp-server/1.18.0~5.2preview>
+
+[`Ppxlib 0.32.1~5.2preview']
+<https://ocaml.org/p/ppxlib/0.32.1~5.2preview>
+
+[UTop 2.14.0] <https://ocaml.org/changelog/2024-02-27-utop-2.14.0>
+
+[Merlin 4.14] <https://ocaml.org/changelog/2024-02-26-merlin-4.14>
+
+[Dune 3.14.0] <https://ocaml.org/changelog/2024-02-12-dune.3.14.0>
+
+[Ppxlib 0.31.2] <https://ocaml.org/changelog/2024-02-07-ppxlib-0.32.0>
+
+[Dune 3.13.1] <https://ocaml.org/changelog/2024-02-05-dune-3.13.1>
+
+*[Dune]* Exploring Package Management in Dune ([W4])
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C
+
+  *Contributed by:* @rgrinberg (Tarides), @Leonidas-from-XIV (Tarides),
+   @gridbugs (Tarides), @kit-ty-kate (Tarides), @Alizter
+
+  *Why:* Unify OCaml tooling under a single command line for all
+  development workflows. This addresses one of the most important pain
+  points [reported by the community].
+
+  *What:* Prototyping the integration of package management into Dune
+  using opam as a library. We're introducing a `dune pkg lock' command
+  to generate a lock file and enhancing `dune build' to handle
+  dependencies in the lock file. More details in the [Dune RFC].
+
+  *Activities:*
+  =E2=80=A2 One of the main remaining blockers to make Dune package managem=
+ent
+    usable in real world project is to make some of the low level
+    dependencies, notably OCamlFind and the OCaml compiler,
+    relocatable. =E2=80=93 [ocaml/ocamlfind#72]
+  =E2=80=A2 We experimented with a Coq-platform patch to make OCamlFind
+    relocatable, but we faced issues with packages using `topkg' due to
+    `ocamlbuild' build failures. This led to identifying an error with
+    directory symlink handling in Dune [ocaml/dune#9873],
+    [ocaml/dune#9937]
+  =E2=80=A2 To track the buildability of opam packages with Dune package
+    management, we worked on a GitHub action that effectively provides
+    us with a dashboard of opam packages coverage on a select set of
+    packages. The repository is available at
+    [gridbugs/dune-pkg-dashboard].
+  =E2=80=A2 Based on the findings from the above, several issues were opene=
+d on
+    the Dune issue tracker. All the known issues are now tracked in the
+    [Package Management MVP] milestone on Dune's issue tracker.
+  =E2=80=A2 We also focused on improving features that were previously
+    implemented. Noteworthy changes include the addition of [workspace
+    package pins] and enhancements for correct path handling in packages
+    =E2=80=93 [ocaml/dune#9940]
+  =E2=80=A2 Work included updates and refactorings to improve source fetchi=
+ng,
+    particularly the removal of a rudimentary Git config parser in favor
+    of using `git config' directly ([ocaml/dune#9905]), and enhancements
+    to how Dune handles Git repositories, such as the checking out of
+    Git repos via `rev_store' ([ocaml/dune#10060]).
+  =E2=80=A2 Contributions also focused on refining and testing Dune's packa=
+ge
+    handling, including a fix to ensure that opam's untar code is not
+    used ([ocaml/dune#10085]), and improvements to Dune's handling of
+    recursive submodules in Git repos ([ocaml/dune#10130]).
+
+
+[W4] <https://ocaml.org/docs/platform-roadmap#w4-build-a-project>
+
+[reported by the community]
+<https://www.dropbox.com/s/omba1d8vhljnrcn/OCaml-user-survey-2020.pdf?dl=3D=
+0>
+
+[Dune RFC] <https://github.com/ocaml/dune/issues/7680>
+
+[ocaml/ocamlfind#72] <https://github.com/ocaml/ocamlfind/pull/72>
+
+[ocaml/dune#9873] <https://github.com/ocaml/dune/issues/9873>
+
+[ocaml/dune#9937] <https://github.com/ocaml/dune/pull/9937>
+
+[gridbugs/dune-pkg-dashboard]
+<https://github.com/gridbugs/dune-pkg-dashboard>
+
+[Package Management MVP]
+<https://github.com/ocaml/dune/issues?q=3Dis%3Aopen+is%3Aissue+milestone%3A=
+%22Package+Management+MVP%22>
+
+[workspace package pins] <https://github.com/ocaml/dune/pull/10072>
+
+[ocaml/dune#9940] <https://github.com/ocaml/dune/pull/9940>
+
+[ocaml/dune#9905] <https://github.com/ocaml/dune/pull/9905>
+
+[ocaml/dune#10060] <https://github.com/ocaml/dune/pull/10060>
+
+[ocaml/dune#10085] <https://github.com/ocaml/dune/pull/10085>
+
+[ocaml/dune#10130] <https://github.com/ocaml/dune/pull/10130>
+
+
+*[opam]* Native Support for Windows in opam 2.2 ([W5])
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  *Contributed by:* @rjbou (OCamlPro), @kit-ty-kate (Tarides), @dra27
+   (Tarides), @AltGr (OCamlPro)
+
+  *Why:* Enhance OCaml's viability on Windows by integrating native opam
+  and `opam-repository' support, fostering a larger community, and more
+  Windows-friendly packages.
+
+  *What:* Releasing opam 2.2 with native Windows support, making the
+   official `opam-repository' usable on Windows platforms.
+
+  *Activities:*
+  =E2=80=A2 Addressed the issue where the Windows loader would display bloc=
+king
+    dialogue boxes upon failing to find DLLs, adhering to best practices
+    by suppressing these dialogs, and opting for exit codes
+    instead. This enhancement eliminates disruptive interruptions,
+    ensuring a more seamless operation for automated tasks and CI
+    environments. =E2=80=93 [#5828]
+  =E2=80=A2 Fixed shell detection issues when opam is invoked via Cygwin's
+    `/usr/bin/env', enhancing compatibility and user experience for
+    those utilising Cygwin alongside `cmd' or PowerShell. =E2=80=93 [#5797]
+  =E2=80=A2 Recommend Developer Mode on Windows. To optimise storage and al=
+ign
+    with best practices, Developer Mode is recommended for enabling
+    symlink support. =E2=80=93 [#5831]
+  =E2=80=A2 Resolved issues related to environment variable handling,
+    specifically fixing bugs where updates or additions to environment
+    variables would incorrectly remove or alter them. =E2=80=93 [#5837]
+  =E2=80=A2 Addressed early loading of git location information, particular=
+ly
+    benefiting Windows users by ensuring correct retrieval and
+    application of git-related configurations. =E2=80=93 [#5842]
+  =E2=80=A2 Disabled ACL in Cygwin. By setting `noacl' in `/etc/fstab' for
+    `/cygdrive' mount, this change avoids permission mismatch errors,
+    enhancing reliability and usability for Cygwin users. =E2=80=93 [#5796]
+  =E2=80=A2 Introduced the ability to define the package manager path at
+    initialisation, improving customisation and integration capabilities
+    for Windows users. =E2=80=93 [#5847]
+  =E2=80=A2 Added `winsymlinks:native' to the Cygwin environment variable,
+    improving compatibility within the Cygwin ecosystem. =E2=80=93 [#5793]
+  =E2=80=A2 Fixed script generation issues related to path quoting, ensuring
+    smoother initialisation and setup processes, especially in
+    mixed-environment scenarios like Cygwin. =E2=80=93 [#5841]
+  =E2=80=A2 Corrected the precedence and handling of `git-location'
+    configurations during initialisation, streamlining Git integration
+    and providing clearer control over Git settings. =E2=80=93 [#5848]
+  =E2=80=A2 Extended the use of eval-variables to internal Cygwin installat=
+ions
+    and adjusted the setup to better accommodate Windows-specific
+    requirements, enhancing flexibility and system compiler
+    integration. =E2=80=93 [#5829]
+
+
+[W5] <https://ocaml.org/docs/platform-roadmap#w5-manage-dependencies>
+
+[#5828] <https://github.com/ocaml/opam/pull/5828>
+
+[#5797] <https://github.com/ocaml/opam/pull/5797>
+
+[#5831] <https://github.com/ocaml/opam/pull/5831>
+
+[#5837] <https://github.com/ocaml/opam/pull/5837>
+
+[#5842] <https://github.com/ocaml/opam/pull/5842>
+
+[#5796] <https://github.com/ocaml/opam/pull/5796>
+
+[#5847] <https://github.com/ocaml/opam/pull/5847>
+
+[#5793] <https://github.com/ocaml/opam/pull/5793>
+
+[#5841] <https://github.com/ocaml/opam/pull/5841>
+
+[#5848] <https://github.com/ocaml/opam/pull/5848>
+
+[#5829] <https://github.com/ocaml/opam/pull/5829>
+
+
+*[=E2=80=8B`odoc'=E2=80=8B]* Unify OCaml.org and Local Package Documentatio=
+n ([W25])
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  *Contributed by:* @jonludlam (Tarides), @julow (Tarides), @panglesd
+   (Tarides), Luke Maurer (Jane Street)
+
+  *Why:* Improving local documentation generation workflow will help
+  package authors write better documentation for their packages, and
+  consolidating the different `odoc' documentation generators will help
+  make continuous improvements to `odoc' available to a larger audience.
+
+  *What:* We will write conventions that drivers must follow to ensure
+  that their output will be functional. Once established, we will update
+  the Dune rules to follow these rules, access new `odoc' features
+  (e.g., source rendering), and provide similar functionalities to
+  docs.ocaml.org (a navigational sidebar, for instance). This will
+  effectively make Dune usable to generate OCaml.org package
+  documentation.
+
+  *Activities:*
+  =E2=80=A2 Work continued on the design for the new `odoc' drivers convent=
+ions
+    shared by Dune and OCaml.org, and we plan to publish the RFC in
+    March.
+  =E2=80=A2 We also started comparing and prototyping various approaches to=
+ add
+    sidebar support to `odoc'. Several prototypes have been developed
+    and discussed with the team, and we will resume work on the sidebar
+    implementation once the driver conventions have been adopted.
+
+
+[W25]
+<https://ocaml.org/docs/platform-roadmap#w25-generate-documentation>
+
+
+*[=E2=80=8B`odoc'=E2=80=8B]* Add Search Capabilities to `odoc' ([W25])
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C
+
+  *Contributed by:* @panglesd (Tarides), @EmileTrotignon (Tarides),
+   @julow (Tarides), @jonludlam (Tarides)
+
+  *Why:* Improve usability and navigability in OCaml packages
+  documentation, both locally and on OCaml.org, by offering advanced
+  search options like type-based queries.
+
+  *What:* Implementing a search engine interface in `odoc', complete
+  with a UI and a search index. Additionally, we're developing a default
+  client-side search engine based on Sherlodoc.
+
+  *Activities:*
+  =E2=80=A2 The implementation and refinement of sherlodoc's integration wi=
+th
+    odoc were our major focuses, this included making sherlodoc pass
+    opam CI on different architectures and adjusting the dune rules for
+    better usability =E2=80=93 [ocaml/dune#9956]
+  =E2=80=A2 After the big sherlodoc PR was merged and sherlodoc released la=
+st
+    month, work continued on refining the dune rules for sherlodoc and
+    on adjusting the search bar's scope based on discussions with the
+    team.
+  =E2=80=A2 We implemented keyboard navigation in the search bar to improve=
+ its
+    usability =E2=80=93 [ocaml/odoc#1088]
+
+
+[W25]
+<https://ocaml.org/docs/platform-roadmap#w25-generate-documentation>
+
+[ocaml/dune#9956] <https://github.com/ocaml/dune/pull/9956>
+
+[ocaml/odoc#1088] <https://github.com/ocaml/odoc/pull/1088>
+
+
+*[=E2=80=8B`odoc'=E2=80=8B]* Improving `odoc' Performance ([W25])
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  *Contributed by:* @jonludlam (Tarides), @julow (Tarides), @gpetiot
+   (Tarides)
+
+  *Why:* Address performance issues in `odoc', particularly for
+  large-scale documentation, to enhance efficiency and user experience
+  and unlock local documentation generation in large code bases.
+
+  *What:* Profiling `odoc' to identify the main performance bottlenecks
+   and optimising `odoc' with the findings.
+
+  *Activities:*
+  =E2=80=A2 Performance improvements were achieved by addressing issues with
+    source location lookups for non-existent identifiers, significantly
+    improving link time for large codebases.
+  =E2=80=A2 Several PRs from the module-type-of work were opened, including
+    fixes and tests aimed at enhancing `odoc''s handling of transitive
+    library dependencies, shape lookup, and module-type-of expansions =E2=
+=80=93
+    [ocaml/odoc#1078], [ocaml/odoc#1081]
+  =E2=80=A2 Improve the efficiency of finding `odoc' files in accessible pa=
+ths,
+    cutting the time to generate documentation by two in some of our
+    tests =E2=80=93 [ocaml/odoc#1075]
+
+
+[W25]
+<https://ocaml.org/docs/platform-roadmap#w25-generate-documentation>
+
+[ocaml/odoc#1078] <https://github.com/ocaml/odoc/pull/1078>
+
+[ocaml/odoc#1081] <https://github.com/ocaml/odoc/pull/1081>
+
+[ocaml/odoc#1075] <https://github.com/ocaml/odoc/pull/1075>
+
+
+*[Merlin]* Support for Project-Wide References in Merlin ([W19])
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  *Contributed by:* @voodoos (Tarides)
+
+  *Why:* Enhance code navigation and refactoring for developers by
+  providing project-wide reference editor features, aligning OCaml with
+  the editor experience found in other languages.
+
+  *What:* Introducing `ocamlmerlin server occurrences' and LSP
+  `textDocument/references' support, extending compiler's Shapes for
+  global occurrences and integrating these features in Dune, Merlin, and
+  OCaml LSP.
+
+  *Activities:*
+  =E2=80=A2 Continued investigations and improvements on Dune rules to addr=
+ess
+    configuration issues
+  =E2=80=A2 After adding support for OCaml 5.2 to `merlin-lib', we've rebas=
+ed
+    the project-wide occurrences work over it.
+  =E2=80=A2 We also started work with the Jane Stree team to test project w=
+ide
+    references at scale in their monorepo. Following our initial
+    integration, we focused on refining Merlin's indexing and occurrence
+    query capabilities, including addressing bottlenecks and regressions
+    in shape reductions =E2=80=93 [ocaml/ocaml#13001]
+
+
+[W19] <https://ocaml.org/docs/platform-roadmap#w19-navigate-code>
+
+[ocaml/ocaml#13001] <https://github.com/ocaml/ocaml/pull/13001>
+
+
+*[Merlin]* Improving Merlin's Performance ([W19])
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  *Contributed by:* @pitag (Tarides), @Engil (Tarides)
+
+  *Why:* Some Merlin queries have been shown to scale poorly in large
+  codebases, making the editor experience subpar. Users report that they
+  sometimes must wait a few seconds to get the answer. This is obviously
+  a major issue that hurts developer experience, so we're working on
+  improving Merlin performance when it falls short.
+
+  *What:* Developing benchmarking tools and optimising Merlin's
+  performance through targeted improvements based on profiling and
+  analysis of benchmark results.
+
+  *Activities:*
+  =E2=80=A2 In `merlin-lib', we've continued the work on a prototype to pro=
+cess
+    the buffer in parallel with the query computation. Parallelism
+    refers to OCaml 5 parallelism (domains).
+
+
+[W19] <https://ocaml.org/docs/platform-roadmap#w19-navigate-code>
+
+
+Your Feedback Needed on OCaml Home Page Wireframe!
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/your-feedback-needed-on-ocaml-home-page-wire=
+frame/14366/1>
+
+
+Claire Vandenberghe announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I'm reaching out to ask for a few minutes of your time to review the
+  wireframe designs for the OCaml Home, Industrial, and Academic pages.
+
+  After conducting user interviews with OCaml enthusiasts, we've
+  gathered valuable insights on what information newcomers find most
+  helpful when visiting the OCaml home.
+
+  As a result, we've been working on restructuring these three major
+  pages to better cater to user needs.
+
+  (*Please note that these wireframes primarily focus on navigation,
+  layout, and content, rather than the User Interface (UI).*)
+
+  Your feedback is crucial at this stage, so please feel free to leave
+  comments directly on Figma, via email, or let's schedule a quick call
+  to discuss. Thank you for taking part in this review.
+
+  *Figma Link*:
+  <https://www.figma.com/file/eLNSdvayxqvvfBsRsdbJXN/OCaml-Home-Page?type=
+=3Ddesign&node-id=3D5%3A2500&mode=3Ddesign&t=3DhHclskuVpoOzKP2u-1>
+
+
+OCaml Workshop 2024 at ICFP =E2=80=93 announcement and call for proposals
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ocaml-workshop-2024-at-icfp-announcement-and=
+-call-for-proposals/14371/1>
+
+
+Sonja Heinze announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  This year, [ICFP] (the International Conference on Functional
+  Programming) is going to take place in beautiful Milan.
+
+  <https://hackmd.io/_uploads/rJIS7LPAT.jpg>
+
+  Such as every year since 2012, on the last day of that conference,
+  i.e. on *September 7th (Saturday)*, we'll hold a workshop on
+  OCaml. The workshop is intended to cover all different kinds of
+  aspects of the OCaml programming language as well as the OCaml
+  ecosystem and its community, such as scientific and/or
+  research-oriented, engineering and/or user-oriented, as well as social
+  and/or community-oriented.
+
+
+[ICFP] <https://icfp24.sigplan.org/>
+
+Call for talk proposals
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The [call for talk proposals] for the workshop is open.
+
+
+[call for talk proposals]
+<https://icfp24.sigplan.org/home/ocaml-2024#Call-for-Papers>
+
+=E2=97=8A Dates
+
+  Here are the important dates:
+
+  =E2=80=A2 Talk proposal submission deadline: May 30th (Thursday)
+  =E2=80=A2 Author notification: July 4th (Thursday)
+  =E2=80=A2 Workshop: September 7th (Saturday)
+
+
+=E2=97=8A Submissions
+
+  Submissions are typically around 2 pages long (flexible), describing
+  the motivations of the work and what the presentation would be about.
+
+  We encourage everyone who might be interested in giving a talk to
+  submit a proposal! We truly mean everyone, and also have strongly
+  anyone in mind who belongs to a group that's traditionally
+  underrepresented at OCaml workshops, e.g. due to your gender(s) or
+  non-gender, where you're from or based or whatever other kinds of
+  characteristics you might have. You should all be able to find all
+  information you'll need to submit a proposal on the official [call for
+  talk proposals]. However, if you have any question, don't hesitate to
+  ask us.
+
+
+  [call for talk proposals]
+  <https://icfp24.sigplan.org/home/ocaml-2024#Call-for-Papers>
+
+
+=E2=97=8A Quota on accepted talks per affiliation
+
+  Even though none of us is a fan of quotas, last year's workshop
+  experimented with a quota of a maximum of four talks given by speakers
+  with the same company/university/institute affiliation. In order to
+  guarantee a coverage of a diverse range of topics and perspectives,
+  we'll experiment with the same affiliation quota again.
+
+  Do not hesitate to submit your talk proposal in any case: quotas, if
+  needed, will be taken into account by the PC after reviewing all
+  submissions, so there's no reason to self-select upfront.
+
+
+About the workshop itself
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  So far, we've only talked about talk proposals and formalities. The
+  really exciting part will be the workshop itself! It's going to be a
+  whole-day workshop and, similarly to previous years, it's likely going
+  to have four sessions of about four talks each. It's a rather informal
+  and interactive environment, where people engage in all kinds of
+  conversations about OCaml during the breaks and after the workshop.
+
+
+=E2=97=8A Hybrid attendance and cost for speakers
+
+  We're aiming to make the workshop hybrid with the same streaming
+  modalities as last year, meaning that *talks as well as participation
+  can be either in-person or remote*, and *remote attendance will be
+  free*. To promote a good atmosphere, communication and engagement, we
+  prefer to have most talks in-person, but remote talks will be most
+  welcome as well.
+
+  We know that giving the talk in-person comes with an economic
+  cost. We're very happy to announce that thanks to the [OCaml Software
+  Foundation], *registration fees will be covered for speakers* in case
+  they can't get them funded by other means (e.g. their employer).
+
+  We will do our best to provide the best workshop experience possible
+  for remote participants, within the constraints of the hybrid
+  format. While attending in-person does come with advantages, it also
+  comes with an environmental cost, and we strongly support
+  transitioning to a less plane-intensive organization for conferences
+  and community events :deciduous_tree: .
+
+
+  [OCaml Software Foundation] <https://ocaml-sf.org/>
+
+
+=E2=97=8A Related events
+
+  The day before the OCaml workshop, i.e. Sep 6th (Friday), is the day
+  of the [ML workshop], with focus on more theoretical aspects of OCaml
+  and the whole family of ML languages in general. The ML workshop [has
+  already been announced on the OCaml discuss] and tends to be very
+  interesting for OCaml lovers as well.
+
+  We're looking forward to the the talk submissions and to the workshop!
+  Let us know if you have any questions.  @Armael and @pitag
+
+
+  [ML workshop] <https://icfp24.sigplan.org/home/mlworkshop-2024>
+
+  [has already been announced on the OCaml discuss]
+  <https://discuss.ocaml.org/t/call-for-presentations-ml-2024-acm-sigplan-m=
+l-family-workshop/14284>
+
+
+down.0.2.0 and omod.0.4.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-down-0-2-0-and-omod-0-4-0/14380/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It's my pleasure to announce new releases for [down] and [omod] which
+  provide a nice `ocaml' toplevel user experience upgrade. Simply add to
+  your `.ocamlinit':
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 #use "down.top"
+  =E2=94=82 #use "omod.top"=20
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  And enjoy all the benefits you can learn about in the [down manual]
+  and in the [omod tutorial].
+
+  These are mainly maintenance releases but if you ever though that down
+  was a bit slow when pasting code, it now (well for almost two years=E2=80=
+=A6)
+  implements [bracketed pastes]. Thanks to @emillon for the reference.
+
+
+[down] <https://erratique.ch/software/down>
+
+[omod] <https://erratique.ch/software/omod>
+
+[down manual] <https://erratique.ch/software/down/doc/manual.html>
+
+[omod tutorial] <https://erratique.ch/software/omod/doc/tutorial.html>
+
+[bracketed pastes] <https://cirw.in/blog/bracketed-paste>
+
+
+stdlib-random 1.2
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-stdlib-random-1-2/14381/1>
+
+
+octachron announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  The library `stdlib-random' is a small compatibility library that
+  provides compiler-independent implementations of the PRNGs used in the
+  history of the standard library `Random':
+
+  =E2=80=A2 stdlib-random.v3: implement the PRNG used in OCaml 3.07 to 3.11
+  =E2=80=A2 stdlib-random.v4: implement the PRNG used in OCaml 3.12 to 4.14
+  =E2=80=A2 stdlib-random.v5: implement the PRNG currently used in OCaml 5
+  =E2=80=A2 stdlib-random.v5o: implement the PRNG currently used in OCaml 5=
+ in
+    pure OCaml
+
+  This library is targeted toward programs that need a deterministic and
+  stable behaviour of the `Random' module across OCaml versions.
+
+  The newly released version 1.2.0 updates all implementations to
+  provide the new `int_in_range' function (and its `int32_in_range',
+  `nativeint_in_range', `int64_in_range' variants) that will be
+  available in OCaml 5.2.0.
+
+  Note however that the implementations on the pre-OCaml 5 PRNGs are not
+  optimal, since I prioritised the maintenance cost over performance,
+  but that could be changed if required.
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [NetHSM: Bringing Open Source to the World of Hardware Security
+    Modules]
+  =E2=80=A2 [Frama-Clang v0.0.15 for Frama-C 28.0 Nickel]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[NetHSM: Bringing Open Source to the World of Hardware Security Modules]
+<https://tarides.com/blog/2024-03-27-nethsm-bringing-open-source-to-the-wor=
+ld-of-hardware-security-modules>
+
+[Frama-Clang v0.0.15 for Frama-C 28.0 Nickel]
+<https://frama-c.com/fc-plugins/frama-clang.html>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-04-02 Tue 16:29 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.03.26.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.04.09.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of March 26 to April 02,=
+ 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Odoc 3.0 planning</a></li>
+<li><a href=3D"#2">OCaml Platform Newsletter: February 2024</a></li>
+<li><a href=3D"#3">Your Feedback Needed on OCaml Home Page Wireframe!</a></=
+li>
+<li><a href=3D"#4">OCaml Workshop 2024 at ICFP &#x2013; announcement and ca=
+ll for proposals</a></li>
+<li><a href=3D"#5">down.0.2.0 and omod.0.4.0</a></li>
+<li><a href=3D"#6">stdlib-random 1.2</a></li>
+<li><a href=3D"#7">Other OCaml News</a></li>
+<li><a href=3D"#org824fa30">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Odoc 3.0 planning</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/odoc-3-0-planning/14360/1">=
+https://discuss.ocaml.org/t/odoc-3-0-planning/14360/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orge1b5ec7" class=3D"outline-3">
+<h3 id=3D"orge1b5ec7">Jon Ludlam announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orge1b5ec7">
+<p>
+For many years we've had a team here at Tarides working away on Odoc, quiet=
+ly adding new features, fixing bugs, speeding things up
+and generally enabling OCaml package mantainers to write good documentation=
+. Up until recently, those improvements have mostly been
+incremental, but with the recent addition of some larger new features like =
+search and source rendering we've found we need to think a
+bit more broadly and consider how these changes will fit into the larger ec=
+osystem. We're also thinking of how to extend the
+abilities of Odoc to handle more structure in the documentation, with bette=
+r support for images, an improved sidebar, and a better
+ability to link to the docs of other packages.
+</p>
+
+<p>
+We've therefore started the process that's going to lead to Odoc 3.0, which=
+ will involve not only work on odoc itself, but also on
+ocaml.org, the documentation pipeline that produces the docs for ocaml.org,=
+ dune, and odig. It's being done incrementally, so we've
+started with the core issues of how to structure your docs, how to do refer=
+ences both within the docs and across packages, what the
+output file structure will look like and how the breadcrumbs will reflect t=
+hat. What we've posted so far is by no means the final
+version, and we'd love to get feedback on the suggestions we've got so far.=
+ Getting this right is surprisingly complicated, so the
+more people we have thinking about it, the better our chances of success!
+</p>
+
+<p>
+So if you're interested in writing or reading docs, I encourage you to head=
+ on over to <a href=3D"https://github.com/ocaml/odoc/discussions/1097">the
+discussion</a> we've just started on <a href=3D"https://github.com/ocaml/od=
+oc/">ocaml/odoc</a> and
+join in the conversation!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">OCaml Platform Newsletter: February 2024</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocaml-platform-newsletter-f=
+ebruary-2024/14361/1">https://discuss.ocaml.org/t/ocaml-platform-newsletter=
+-february-2024/14361/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org0313ac3" class=3D"outline-3">
+<h3 id=3D"org0313ac3">Thibaut Mattio announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org0313ac3">
+<p>
+Welcome to the tenth edition of the OCaml Platform newsletter!
+</p>
+
+<p>
+In this February 2024 edition, we are excited to bring you the latest on th=
+e OCaml Platform, continuing our tradition of highlighting
+recent developments as seen in <a href=3D"https://discuss.ocaml.org/tag/pla=
+tform-newsletter">previous editions</a>. To understand the direction
+we're headed, especially regarding development workflows and user experienc=
+e improvements, check out our
+<a href=3D"https://ocaml.org/docs/platform-roadmap">roadmap</a>.
+</p>
+
+<p>
+<b>Highlights:</b>
+</p>
+<ul class=3D"org-ul">
+<li>The OCaml Platform tools have added support for OCaml 5.2. It's availab=
+le in the temporary releases
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/p/merlin/4.14-502~preview"><code>Merlin 4.=
+14-502~preview</code></a> (@voodoos (Tarides))</li>
+<li><a href=3D"https://ocaml.org/p/ocaml-lsp-server/1.18.0~5.2preview"><cod=
+e>Ocaml-lsp-server 1.18.0~5.2preview</code></a> (@voodoos (Tarides))</li>
+<li><a href=3D"https://ocaml.org/p/ppxlib/0.32.1~5.2preview"><code>Ppxlib 0=
+.32.1~5.2preview</code></a> (@NathanReb (partly funded by the OCaml Softwar=
+e Foundation)).</li>
+</ul></li>
+</ul>
+
+<p>
+<b>Releases:</b>
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/changelog/2024-02-27-utop-2.14.0">UTop 2.1=
+4.0</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2024-02-26-merlin-4.14">Merlin 4=
+.14</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2024-02-12-dune.3.14.0">Dune 3.1=
+4.0</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2024-02-07-ppxlib-0.32.0">Ppxlib=
+ 0.31.2</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2024-02-05-dune-3.13.1">Dune 3.1=
+3.1</a></li>
+</ul>
+</div>
+<div id=3D"outline-container-org3fb8790" class=3D"outline-4">
+<h4 id=3D"org3fb8790"><b>[Dune]</b> Exploring Package Management in Dune (<=
+a href=3D"https://ocaml.org/docs/platform-roadmap#w4-build-a-project">W4</a=
+>)</h4>
+<div class=3D"outline-text-4" id=3D"text-org3fb8790">
+<p>
+<b>Contributed by:</b> @rgrinberg (Tarides), @Leonidas-from-XIV (Tarides), =
+@gridbugs (Tarides), @kit-ty-kate (Tarides), @Alizter
+</p>
+
+<p>
+<b>Why:</b> Unify OCaml tooling under a single command line for all develop=
+ment workflows. This addresses one of the most important pain
+points <a href=3D"https://www.dropbox.com/s/omba1d8vhljnrcn/OCaml-user-surv=
+ey-2020.pdf?dl=3D0">reported by the community</a>.
+</p>
+
+<p>
+<b>What:</b> Prototyping the integration of package management into Dune us=
+ing opam as a library. We're introducing a <code>dune pkg lock</code>
+command to generate a lock file and enhancing <code>dune build</code> to ha=
+ndle dependencies in the lock file. More details in the <a href=3D"https://=
+github.com/ocaml/dune/issues/7680">Dune
+RFC</a>.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+<ul class=3D"org-ul">
+<li>One of the main remaining blockers to make Dune package management usab=
+le in real world project is to make some of the low level dependencies, not=
+ably OCamlFind and the OCaml compiler, relocatable. &#x2013; <a href=3D"htt=
+ps://github.com/ocaml/ocamlfind/pull/72">ocaml/ocamlfind#72</a></li>
+<li>We experimented with a Coq-platform patch to make OCamlFind relocatable=
+, but we faced issues with packages using <code>topkg</code> due to <code>o=
+camlbuild</code> build failures. This led to identifying an error with dire=
+ctory symlink handling in Dune <a href=3D"https://github.com/ocaml/dune/iss=
+ues/9873">ocaml/dune#9873</a>, <a href=3D"https://github.com/ocaml/dune/pul=
+l/9937">ocaml/dune#9937</a></li>
+<li>To track the buildability of opam packages with Dune package management=
+, we worked on a GitHub action that effectively provides us with a dashboar=
+d of opam packages coverage on a select set of packages. The repository is =
+available at <a href=3D"https://github.com/gridbugs/dune-pkg-dashboard">gri=
+dbugs/dune-pkg-dashboard</a>.</li>
+<li>Based on the findings from the above, several issues were opened on the=
+ Dune issue tracker. All the known issues are now tracked in the <a href=3D=
+"https://github.com/ocaml/dune/issues?q=3Dis%3Aopen+is%3Aissue+milestone%3A=
+%22Package+Management+MVP%22">Package Management MVP</a> milestone on Dune'=
+s issue tracker.</li>
+<li>We also focused on improving features that were previously implemented.=
+ Noteworthy changes include the addition of <a href=3D"https://github.com/o=
+caml/dune/pull/10072">workspace package pins</a> and enhancements for corre=
+ct path handling in packages &#x2013; <a href=3D"https://github.com/ocaml/d=
+une/pull/9940">ocaml/dune#9940</a></li>
+<li>Work included updates and refactorings to improve source fetching, part=
+icularly the removal of a rudimentary Git config parser in favor of using <=
+code>git config</code> directly (<a href=3D"https://github.com/ocaml/dune/p=
+ull/9905">ocaml/dune#9905</a>), and enhancements to how Dune handles Git re=
+positories, such as the checking out of Git repos via <code>rev_store</code=
+> (<a href=3D"https://github.com/ocaml/dune/pull/10060">ocaml/dune#10060</a=
+>).</li>
+<li>Contributions also focused on refining and testing Dune's package handl=
+ing, including a fix to ensure that opam's untar code is not used (<a href=
+=3D"https://github.com/ocaml/dune/pull/10085">ocaml/dune#10085</a>), and im=
+provements to Dune's handling of recursive submodules in Git repos (<a href=
+=3D"https://github.com/ocaml/dune/pull/10130">ocaml/dune#10130</a>).</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org9415817" class=3D"outline-4">
+<h4 id=3D"org9415817"><b>[opam]</b> Native Support for Windows in opam 2.2 =
+(<a href=3D"https://ocaml.org/docs/platform-roadmap#w5-manage-dependencies"=
+>W5</a>)</h4>
+<div class=3D"outline-text-4" id=3D"text-org9415817">
+<p>
+<b>Contributed by:</b> @rjbou (OCamlPro), @kit-ty-kate (Tarides), @dra27 (T=
+arides), @AltGr (OCamlPro)
+</p>
+
+<p>
+<b>Why:</b> Enhance OCaml's viability on Windows by integrating native opam=
+ and <code>opam-repository</code> support, fostering a larger community,
+and more Windows-friendly packages.
+</p>
+
+<p>
+<b>What:</b> Releasing opam 2.2 with native Windows support, making the off=
+icial <code>opam-repository</code> usable on Windows platforms.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+<ul class=3D"org-ul">
+<li>Addressed the issue where the Windows loader would display blocking dia=
+logue boxes upon failing to find DLLs, adhering to best practices by suppre=
+ssing these dialogs, and opting for exit codes instead. This enhancement el=
+iminates disruptive interruptions, ensuring a more seamless operation for a=
+utomated tasks and CI environments. &#x2013; <a href=3D"https://github.com/=
+ocaml/opam/pull/5828">#5828</a></li>
+<li>Fixed shell detection issues when opam is invoked via Cygwin's <code>/u=
+sr/bin/env</code>, enhancing compatibility and user experience for those ut=
+ilising Cygwin alongside <code>cmd</code> or PowerShell. &#x2013; <a href=
+=3D"https://github.com/ocaml/opam/pull/5797">#5797</a></li>
+<li>Recommend Developer Mode on Windows. To optimise storage and align with=
+ best practices, Developer Mode is recommended for enabling symlink support=
+. &#x2013; <a href=3D"https://github.com/ocaml/opam/pull/5831">#5831</a></l=
+i>
+<li>Resolved issues related to environment variable handling, specifically =
+fixing bugs where updates or additions to environment variables would incor=
+rectly remove or alter them. &#x2013; <a href=3D"https://github.com/ocaml/o=
+pam/pull/5837">#5837</a></li>
+<li>Addressed early loading of git location information, particularly benef=
+iting Windows users by ensuring correct retrieval and application of git-re=
+lated configurations. &#x2013; <a href=3D"https://github.com/ocaml/opam/pul=
+l/5842">#5842</a></li>
+<li>Disabled ACL in Cygwin. By setting <code>noacl</code> in <code>/etc/fst=
+ab</code> for <code>/cygdrive</code> mount, this change avoids permission m=
+ismatch errors, enhancing reliability and usability for Cygwin users. &#x20=
+13; <a href=3D"https://github.com/ocaml/opam/pull/5796">#5796</a></li>
+<li>Introduced the ability to define the package manager path at initialisa=
+tion, improving customisation and integration capabilities for Windows user=
+s. &#x2013; <a href=3D"https://github.com/ocaml/opam/pull/5847">#5847</a></=
+li>
+<li>Added <code>winsymlinks:native</code> to the Cygwin environment variabl=
+e, improving compatibility within the Cygwin ecosystem. &#x2013; <a href=3D=
+"https://github.com/ocaml/opam/pull/5793">#5793</a></li>
+<li>Fixed script generation issues related to path quoting, ensuring smooth=
+er initialisation and setup processes, especially in mixed-environment scen=
+arios like Cygwin. &#x2013; <a href=3D"https://github.com/ocaml/opam/pull/5=
+841">#5841</a></li>
+<li>Corrected the precedence and handling of <code>git-location</code> conf=
+igurations during initialisation, streamlining Git integration and providin=
+g clearer control over Git settings. &#x2013; <a href=3D"https://github.com=
+/ocaml/opam/pull/5848">#5848</a></li>
+<li>Extended the use of eval-variables to internal Cygwin installations and=
+ adjusted the setup to better accommodate Windows-specific requirements, en=
+hancing flexibility and system compiler integration. &#x2013; <a href=3D"ht=
+tps://github.com/ocaml/opam/pull/5829">#5829</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org7b1efc2" class=3D"outline-4">
+<h4 id=3D"org7b1efc2"><b>[=E2=80=8B<code>odoc</code>=E2=80=8B]</b> Unify OC=
+aml.org and Local Package Documentation (<a href=3D"https://ocaml.org/docs/=
+platform-roadmap#w25-generate-documentation">W25</a>)</h4>
+<div class=3D"outline-text-4" id=3D"text-org7b1efc2">
+<p>
+<b>Contributed by:</b> @jonludlam (Tarides), @julow (Tarides), @panglesd (T=
+arides), Luke Maurer (Jane Street)
+</p>
+
+<p>
+<b>Why:</b> Improving local documentation generation workflow will help pac=
+kage authors write better documentation for their packages,
+and consolidating the different <code>odoc</code> documentation generators =
+will help make continuous improvements to <code>odoc</code> available to a
+larger audience.
+</p>
+
+<p>
+<b>What:</b> We will write conventions that drivers must follow to ensure t=
+hat their output will be functional. Once established, we
+will update the Dune rules to follow these rules, access new <code>odoc</co=
+de> features (e.g., source rendering), and provide similar
+functionalities to docs.ocaml.org (a navigational sidebar, for instance). T=
+his will effectively make Dune usable to generate
+OCaml.org package documentation.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+<ul class=3D"org-ul">
+<li>Work continued on the design for the new <code>odoc</code> drivers conv=
+entions shared by Dune and OCaml.org, and we plan to publish the RFC in Mar=
+ch.</li>
+<li>We also started comparing and prototyping various approaches to add sid=
+ebar support to <code>odoc</code>. Several prototypes have been developed a=
+nd discussed with the team, and we will resume work on the sidebar implemen=
+tation once the driver conventions have been adopted.</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org982b163" class=3D"outline-4">
+<h4 id=3D"org982b163"><b>[=E2=80=8B<code>odoc</code>=E2=80=8B]</b> Add Sear=
+ch Capabilities to <code>odoc</code> (<a href=3D"https://ocaml.org/docs/pla=
+tform-roadmap#w25-generate-documentation">W25</a>)</h4>
+<div class=3D"outline-text-4" id=3D"text-org982b163">
+<p>
+<b>Contributed by:</b> @panglesd (Tarides), @EmileTrotignon (Tarides), @jul=
+ow (Tarides), @jonludlam (Tarides)
+</p>
+
+<p>
+<b>Why:</b> Improve usability and navigability in OCaml packages documentat=
+ion, both locally and on OCaml.org, by offering advanced
+search options like type-based queries.
+</p>
+
+<p>
+<b>What:</b> Implementing a search engine interface in <code>odoc</code>, c=
+omplete with a UI and a search index. Additionally, we're developing a
+default client-side search engine based on Sherlodoc.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+<ul class=3D"org-ul">
+<li>The implementation and refinement of sherlodoc's integration with odoc =
+were our major focuses, this included making sherlodoc pass opam CI on diff=
+erent architectures and adjusting the dune rules for better usability &#x20=
+13; <a href=3D"https://github.com/ocaml/dune/pull/9956">ocaml/dune#9956</a>=
+</li>
+<li>After the big sherlodoc PR was merged and sherlodoc released last month=
+, work continued on refining the dune rules for sherlodoc and on adjusting =
+the search bar's scope based on discussions with the team.</li>
+<li>We implemented keyboard navigation in the search bar to improve its usa=
+bility &#x2013; <a href=3D"https://github.com/ocaml/odoc/pull/1088">ocaml/o=
+doc#1088</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org1077ca6" class=3D"outline-4">
+<h4 id=3D"org1077ca6"><b>[=E2=80=8B<code>odoc</code>=E2=80=8B]</b> Improvin=
+g <code>odoc</code> Performance (<a href=3D"https://ocaml.org/docs/platform=
+-roadmap#w25-generate-documentation">W25</a>)</h4>
+<div class=3D"outline-text-4" id=3D"text-org1077ca6">
+<p>
+<b>Contributed by:</b> @jonludlam (Tarides), @julow (Tarides), @gpetiot (Ta=
+rides)
+</p>
+
+<p>
+<b>Why:</b> Address performance issues in <code>odoc</code>, particularly f=
+or large-scale documentation, to enhance efficiency and user experience
+and unlock local documentation generation in large code bases.
+</p>
+
+<p>
+<b>What:</b> Profiling <code>odoc</code> to identify the main performance b=
+ottlenecks and optimising <code>odoc</code> with the findings.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+<ul class=3D"org-ul">
+<li>Performance improvements were achieved by addressing issues with source=
+ location lookups for non-existent identifiers, significantly improving lin=
+k time for large codebases.</li>
+<li>Several PRs from the module-type-of work were opened, including fixes a=
+nd tests aimed at enhancing <code>odoc</code>'s handling of transitive libr=
+ary dependencies, shape lookup, and module-type-of expansions &#x2013;  <a =
+href=3D"https://github.com/ocaml/odoc/pull/1078">ocaml/odoc#1078</a>, <a hr=
+ef=3D"https://github.com/ocaml/odoc/pull/1081">ocaml/odoc#1081</a></li>
+<li>Improve the efficiency of finding <code>odoc</code> files in accessible=
+ paths, cutting the time to generate documentation by two in some of our te=
+sts &#x2013; <a href=3D"https://github.com/ocaml/odoc/pull/1075">ocaml/odoc=
+#1075</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-orgf7b8b7f" class=3D"outline-4">
+<h4 id=3D"orgf7b8b7f"><b>[Merlin]</b> Support for Project-Wide References i=
+n Merlin (<a href=3D"https://ocaml.org/docs/platform-roadmap#w19-navigate-c=
+ode">W19</a>)</h4>
+<div class=3D"outline-text-4" id=3D"text-orgf7b8b7f">
+<p>
+<b>Contributed by:</b> @voodoos (Tarides)
+</p>
+
+<p>
+<b>Why:</b> Enhance code navigation and refactoring for developers by provi=
+ding project-wide reference editor features, aligning OCaml
+with the editor experience found in other languages.
+</p>
+
+<p>
+<b>What:</b> Introducing <code>ocamlmerlin server occurrences</code> and LS=
+P <code>textDocument/references</code> support, extending compiler's Shapes=
+ for
+global occurrences and integrating these features in Dune, Merlin, and OCam=
+l LSP.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+<ul class=3D"org-ul">
+<li>Continued investigations and improvements on Dune rules to address conf=
+iguration issues</li>
+<li>After adding support for OCaml 5.2 to <code>merlin-lib</code>, we've re=
+based the project-wide occurrences work over it.</li>
+<li>We also started work with the Jane Stree team to test project wide refe=
+rences at scale in their monorepo. Following our initial integration, we fo=
+cused on refining Merlin's indexing and occurrence query capabilities, incl=
+uding addressing bottlenecks and regressions in shape reductions &#x2013; <=
+a href=3D"https://github.com/ocaml/ocaml/pull/13001">ocaml/ocaml#13001</a><=
+/li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org94e2a2b" class=3D"outline-4">
+<h4 id=3D"org94e2a2b"><b>[Merlin]</b> Improving Merlin's Performance (<a hr=
+ef=3D"https://ocaml.org/docs/platform-roadmap#w19-navigate-code">W19</a>)</=
+h4>
+<div class=3D"outline-text-4" id=3D"text-org94e2a2b">
+<p>
+<b>Contributed by:</b> @pitag (Tarides), @Engil (Tarides)
+</p>
+
+<p>
+<b>Why:</b> Some Merlin queries have been shown to scale poorly in large co=
+debases, making the editor experience subpar. Users report
+that they sometimes must wait a few seconds to get the answer. This is obvi=
+ously a major issue that hurts developer experience, so
+we're working on improving Merlin performance when it falls short.
+</p>
+
+<p>
+<b>What:</b> Developing benchmarking tools and optimising Merlin's performa=
+nce through targeted improvements based on profiling and
+analysis of benchmark results.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+<ul class=3D"org-ul">
+<li>In <code>merlin-lib</code>, we've continued the work on a prototype to =
+process the buffer in parallel with the query computation. Parallelism refe=
+rs to OCaml 5 parallelism (domains).</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Your Feedback Needed on OCaml Home Page Wireframe!</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/your-feedback-needed-on-oca=
+ml-home-page-wireframe/14366/1">https://discuss.ocaml.org/t/your-feedback-n=
+eeded-on-ocaml-home-page-wireframe/14366/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org33b2151" class=3D"outline-3">
+<h3 id=3D"org33b2151">Claire Vandenberghe announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org33b2151">
+<p>
+I'm reaching out to ask for a few minutes of your time to review the wirefr=
+ame designs for the OCaml Home, Industrial, and Academic
+pages.
+</p>
+
+<p>
+After conducting user interviews with OCaml enthusiasts, we've gathered val=
+uable insights on what information newcomers find most
+helpful when visiting the OCaml home.
+</p>
+
+<p>
+As a result, we've been working on restructuring these three major pages to=
+ better cater to user needs.=20
+</p>
+
+<p>
+(<b>Please note that these wireframes primarily focus on navigation, layout=
+, and content, rather than the User Interface (UI).</b>)
+</p>
+
+<p>
+Your feedback is crucial at this stage, so please feel free to leave commen=
+ts directly on Figma, via email, or let's schedule a quick
+call to discuss. Thank you for taking part in this review.=20
+</p>
+
+<p>
+<b>Figma Link</b>:
+<a href=3D"https://www.figma.com/file/eLNSdvayxqvvfBsRsdbJXN/OCaml-Home-Pag=
+e?type=3Ddesign&amp;node-id=3D5%3A2500&amp;mode=3Ddesign&amp;t=3DhHclskuVpo=
+OzKP2u-1">https://www.figma.com/file/eLNSdvayxqvvfBsRsdbJXN/OCaml-Home-Page=
+?type=3Ddesign&amp;node-id=3D5%3A2500&amp;mode=3Ddesign&amp;t=3DhHclskuVpoO=
+zKP2u-1</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">OCaml Workshop 2024 at ICFP &#x2013; announcement and call for=
+ proposals</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocaml-workshop-2024-at-icfp=
+-announcement-and-call-for-proposals/14371/1">https://discuss.ocaml.org/t/o=
+caml-workshop-2024-at-icfp-announcement-and-call-for-proposals/14371/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orga5785a0" class=3D"outline-3">
+<h3 id=3D"orga5785a0">Sonja Heinze announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga5785a0">
+<p>
+This year, <a href=3D"https://icfp24.sigplan.org/">ICFP</a> (the Internatio=
+nal Conference on Functional Programming) is going to take place in
+beautiful Milan.
+</p>
+
+
+<div id=3D"org56f7a2a" class=3D"figure">
+<p><img src=3D"https://hackmd.io/_uploads/rJIS7LPAT.jpg" alt=3D"rJIS7LPAT.j=
+pg" />
+</p>
+</div>
+
+<p>
+Such as every year since 2012, on the last day of that conference, i.e. on =
+<b>September 7th (Saturday)</b>, we'll hold a workshop on
+OCaml. The workshop is intended to cover all different kinds of aspects of =
+the OCaml programming language as well as the OCaml
+ecosystem and its community, such as scientific and/or research-oriented, e=
+ngineering and/or user-oriented, as well as social and/or
+community-oriented.
+</p>
+</div>
+<div id=3D"outline-container-org8ceaf86" class=3D"outline-4">
+<h4 id=3D"org8ceaf86">Call for talk proposals</h4>
+<div class=3D"outline-text-4" id=3D"text-org8ceaf86">
+<p>
+The <a href=3D"https://icfp24.sigplan.org/home/ocaml-2024#Call-for-Papers">=
+call for talk proposals</a> for the workshop is open.
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org080ae9e"></a>Dates<br />
+<div class=3D"outline-text-5" id=3D"text-org080ae9e">
+<p>
+Here are the important dates:
+</p>
+
+<ul class=3D"org-ul">
+<li>Talk proposal submission deadline: May 30th (Thursday)</li>
+<li>Author notification: July 4th (Thursday)</li>
+<li>Workshop: September 7th (Saturday)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org2970b30"></a>Submissions<br />
+<div class=3D"outline-text-5" id=3D"text-org2970b30">
+<p>
+Submissions are typically around 2 pages long (flexible), describing the mo=
+tivations of the work and what the presentation would be
+about.
+</p>
+
+<p>
+We encourage everyone who might be interested in giving a talk to submit a =
+proposal! We truly mean everyone, and also have strongly
+anyone in mind who belongs to a group that's traditionally underrepresented=
+ at OCaml workshops, e.g. due to your gender(s) or
+non-gender, where you're from or based or whatever other kinds of character=
+istics you might have. You should all be able to find all
+information you'll need to submit a proposal on the official <a href=3D"htt=
+ps://icfp24.sigplan.org/home/ocaml-2024#Call-for-Papers">call for talk
+proposals</a>. However, if you have any question, don't hesitate to ask us.
+</p>
+</div>
+</li>
+<li><a id=3D"org0ffc349"></a>Quota on accepted talks per affiliation<br />
+<div class=3D"outline-text-5" id=3D"text-org0ffc349">
+<p>
+Even though none of us is a fan of quotas, last year's workshop experimente=
+d with a quota of a maximum of four talks given by
+speakers with the same company/university/institute affiliation. In order t=
+o guarantee a coverage of a diverse range of topics and
+perspectives, we'll experiment with the same affiliation quota again.
+</p>
+
+<p>
+Do not hesitate to submit your talk proposal in any case: quotas, if needed=
+, will be taken into account by the PC after reviewing all
+submissions, so there's no reason to self-select upfront.
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-orgd820883" class=3D"outline-4">
+<h4 id=3D"orgd820883">About the workshop itself</h4>
+<div class=3D"outline-text-4" id=3D"text-orgd820883">
+<p>
+So far, we've only talked about talk proposals and formalities. The really =
+exciting part will be the workshop itself! It's going to
+be a whole-day workshop and, similarly to previous years, it's likely going=
+ to have four sessions of about four talks each. It's a
+rather informal and interactive environment, where people engage in all kin=
+ds of conversations about OCaml during the breaks and
+after the workshop.
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org3429bb0"></a>Hybrid attendance and cost for speakers<br />
+<div class=3D"outline-text-5" id=3D"text-org3429bb0">
+<p>
+We're aiming to make the workshop hybrid with the same streaming modalities=
+ as last year, meaning that <b>talks as well as
+participation can be either in-person or remote</b>, and <b>remote attendan=
+ce will be free</b>. To promote a good atmosphere,
+communication and engagement, we prefer to have most talks in-person, but r=
+emote talks will be most welcome as well.
+</p>
+
+<p>
+We know that giving the talk in-person comes with an economic cost. We're v=
+ery happy to announce that thanks to the <a href=3D"https://ocaml-sf.org/">=
+OCaml Software
+Foundation</a>, <b>registration fees will be covered for speakers</b> in ca=
+se they can't get them funded by other
+means (e.g. their employer).
+</p>
+
+<p>
+We will do our best to provide the best workshop experience possible for re=
+mote participants, within the constraints of the hybrid
+format. While attending in-person does come with advantages, it also comes =
+with an environmental cost, and we strongly support
+transitioning to a less plane-intensive organization for conferences and co=
+mmunity events :deciduous_tree: .
+</p>
+</div>
+</li>
+<li><a id=3D"org61ef82e"></a>Related events<br />
+<div class=3D"outline-text-5" id=3D"text-org61ef82e">
+<p>
+The day before the OCaml workshop, i.e. Sep 6th (Friday), is the day of the=
+ <a href=3D"https://icfp24.sigplan.org/home/mlworkshop-2024">ML
+workshop</a>, with focus on more theoretical aspects of OCaml and the whole=
+ family of
+ML languages in general. The ML workshop <a href=3D"https://discuss.ocaml.o=
+rg/t/call-for-presentations-ml-2024-acm-sigplan-ml-family-workshop/14284">h=
+as already been announced on the OCaml
+discuss</a> and tends to be very
+interesting for OCaml lovers as well.
+</p>
+
+<p>
+We're looking forward to the the talk submissions and to the workshop!
+Let us know if you have any questions.
+@Armael and @pitag
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">down.0.2.0 and omod.0.4.0</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-down-0-2-0-and-omod-0-4=
+-0/14380/1">https://discuss.ocaml.org/t/ann-down-0-2-0-and-omod-0-4-0/14380=
+/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgf882469" class=3D"outline-3">
+<h3 id=3D"orgf882469">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgf882469">
+<p>
+It's my pleasure to announce new releases for <a href=3D"https://erratique.=
+ch/software/down">down</a> and
+<a href=3D"https://erratique.ch/software/omod">omod</a> which provide a nic=
+e <code>ocaml</code> toplevel user experience upgrade. Simply add to your
+<code>.ocamlinit</code>:=20
+</p>
+
+<pre class=3D"example" id=3D"orgfeab929">
+#use "down.top"
+#use "omod.top"=20
+</pre>
+
+<p>
+And enjoy all the benefits you can learn about in the <a href=3D"https://er=
+ratique.ch/software/down/doc/manual.html">down manual</a> and in the
+<a href=3D"https://erratique.ch/software/omod/doc/tutorial.html">omod tutor=
+ial</a>.
+</p>
+
+<p>
+These are mainly maintenance releases but if you ever though that down was =
+a bit slow when pasting code, it now (well for almost two
+years=E2=80=A6) implements <a href=3D"https://cirw.in/blog/bracketed-paste"=
+>bracketed pastes</a>. Thanks to @emillon for the reference.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">stdlib-random 1.2</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-stdlib-random-1-2/14381=
+/1">https://discuss.ocaml.org/t/ann-stdlib-random-1-2/14381/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org048e62b" class=3D"outline-3">
+<h3 id=3D"org048e62b">octachron announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org048e62b">
+<p>
+The library <code>stdlib-random</code> is a small compatibility library tha=
+t provides compiler-independent implementations of the PRNGs used in
+the history of the standard library <code>Random</code>:
+</p>
+
+<ul class=3D"org-ul">
+<li>stdlib-random.v3: implement the PRNG used in OCaml 3.07 to 3.11</li>
+<li>stdlib-random.v4: implement the PRNG used in OCaml 3.12 to 4.14</li>
+<li>stdlib-random.v5: implement the PRNG currently used in OCaml 5</li>
+<li>stdlib-random.v5o: implement the PRNG currently used in OCaml 5 in pure=
+ OCaml</li>
+</ul>
+
+<p>
+This library is targeted toward programs that need a deterministic and stab=
+le behaviour of the <code>Random</code> module across OCaml versions.
+</p>
+
+<p>
+The newly released version 1.2.0 updates all implementations to provide the=
+ new <code>int_in_range</code> function (and its <code>int32_in_range</code=
+>,
+<code>nativeint_in_range</code>, <code>int64_in_range</code> variants)  tha=
+t will be available in OCaml 5.2.0.
+</p>
+
+<p>
+Note however that the implementations on the pre-OCaml 5 PRNGs are not opti=
+mal, since I prioritised the maintenance cost over
+performance, but that could be changed if required.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+</div>
+<div id=3D"outline-container-orgc64d8de" class=3D"outline-3">
+<h3 id=3D"orgc64d8de">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc64d8de">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2024-03-27-nethsm-bringing-open-sou=
+rce-to-the-world-of-hardware-security-modules">NetHSM: Bringing Open Source=
+ to the World of Hardware Security Modules</a></li>
+<li><a href=3D"https://frama-c.com/fc-plugins/frama-clang.html">Frama-Clang=
+ v0.0.15 for Frama-C 28.0 Nickel</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org824fa30" class=3D"outline-2">
+<h2 id=3D"org824fa30">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org824fa30">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgd86ed06">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
