@@ -1,0 +1,379 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=RCOKyXWT;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=AoSNv5Rv;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 5D899B80123
+	for <caml-list@tunbury.org>; Tue,  9 Apr 2024 10:15:25 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:sender:from:date:message-id:to:subject:
+   reply-to:list-id:list-help:list-subscribe:
+   list-unsubscribe:list-post:list-owner:list-archive;
+  bh=4MAQVl7GyYzdtDAlYBdj6LotOgUYawv6STE0QKmsG0k=;
+  b=RCOKyXWTKGHoVWa75lxKY7TknykOvFwgi++JrKnCVwVGQVYB7P+p7pfA
+   TdSyBm8fIXhHRCPmNQtE5M39LO4EaZN2fs8PUI1b0wmThhsjO9/QvGfNn
+   OcSX/HiCgtMTs5MavNGwj2WXvR7gyhH4TCYR3fZuLA4l4hvmzxorKBjHv
+   c=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.07,189,1708383600"; 
+   d="scan'208";a="160634115"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 09 Apr 2024 11:15:24 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 1A0C8E0CD6; Tue,  9 Apr 2024 11:15:24 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id E76C9E0131
+	for <caml-list@sympa.inria.fr>; Tue,  9 Apr 2024 11:15:18 +0200 (CEST)
+IronPort-SDR: 66150726_4tny/7HwjPipD5DLUGD+33DvAJuGjzgBz9IRxUZqhH1LVwE
+ HMG4nCBZkrAPzUR53UFKWQtGT6BipF6d+tQos0A==
+X-IPAS-Result: =?us-ascii?q?A0FXBQBIBhVmhiunVdFagQmEE3xVMwQLSIRWkWeLc5IYg?=
+ =?us-ascii?q?T8WKA8BAwENFAEBIwsEAQEDBIR7AogZAh4HAQRHAQIEAQEBAQMCAwEBAQEBA?=
+ =?us-ascii?q?QgBAQUBAQECAQECBAYBAhABAQEhGQcOECeFbQ2CYIEmXgMCBQM7AQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBBQINBxg9OAsGHQEbCwEMB?=
+ =?us-ascii?q?gMNBRAPAiYCIwERAQUBIhsBGYJeAYIqAQMxAxGgeYIhgQVCizuBFQUCFoEBg?=
+ =?us-ascii?q?gsG2lkKGSgNb4FeAgcUgQaFDiWDBR0BgVaJBYEYgRCBSoMzgQWBXASBNYQEg?=
+ =?us-ascii?q?mgEgVeFAYJ0hjUjFYVbdoFrXIZhCAEGFwMHBwcEBQQcBgUFAkIJCAUKEgMEA?=
+ =?us-ascii?q?wQEAQILEwkDAwIOAggDAggGAQEOEwE/EgQJDAsDAgEFAxYJBAIJEQYCAgsCD?=
+ =?us-ascii?q?AYFAQQBAgIBAwMDAgQCAgMBAgICAgIDAQIKAgEHAgUDBQICAwIBAQEBAgIEA?=
+ =?us-ascii?q?wEOBwIDBQUCAQUJAwMCAgQDAQICAwICAgMBBAUUAwQCBQoDCAICBwIOAwEFA?=
+ =?us-ascii?q?gEBAgICAgEBAgIDCAISBAIBAgMCAggCAgcBAQIKBwMBAQQEBAMGAgIFBA0DC?=
+ =?us-ascii?q?AUBAQICBAEKAgkPBQICAwMCAwEBAQIKAwkBBQICAQMCAgQEBwEGAwUDAwQEA?=
+ =?us-ascii?q?gMDAgwBBQEFAQUBBQQCBgETAhQCAgsFBgMGDgMLBAQBAgIFBAYMCQQCAgIGA?=
+ =?us-ascii?q?QIRAwECAQcBAwMCCgEEAQILCAEFCAIMBAIBBAIDBhACCAUGBQICAQECAgIBC?=
+ =?us-ascii?q?AYPAwYHAgMCBgMFBQMDAgICBwQEAgECAgIBEwYEBAIDAgMEAQUEBAMCFwgNA?=
+ =?us-ascii?q?gUHAQkKCAwBBAYCBAIEBwMIBQUEAgMEBBEHCwMCAwQCAgYDEQIDBAIKAgQEB?=
+ =?us-ascii?q?wIDAQQNBgQECgILAwcBAQIFAwMJBwYCAwMFBAMGAgUDAwMCAwINAgICAQkBA?=
+ =?us-ascii?q?QECFAIDDgIEAgECBQUMBBMCAgMCBggCAgIHAwMEAgMGCwIBEAMCAgICBQMEA?=
+ =?us-ascii?q?gIUAwkEAgQGAgQBBgMDAgQGBQoEAgIFAgEBAgoCAQ8KBAMEAwUDBwkCBQUDA?=
+ =?us-ascii?q?gQCAgcJAQECAgIDAwMDAgMCAgMDAgcDAwMHAwUDBAIDBgUHAwUFAwICAhQBB?=
+ =?us-ascii?q?gIFCgYDBwYLBQUHAgYCBAgDBQICAwMDAwIGCggDAwMCAQYCAgMDAQIIAw8GA?=
+ =?us-ascii?q?gIDBQYDAwMDBggDAwIGAwMCAwIDAgMDAQMCAwICAwICAggCAgMCBQQFAgIDB?=
+ =?us-ascii?q?AIIGgICAgIDAwgDAwoEAgIEAQQCBAIEAgYDBAICAQcCBQMCAwIHAgIEAgICA?=
+ =?us-ascii?q?gMCAgYIAgIDAwMCAgIBCQIFAQEGAgQDAgMFAwkDBAUCAwgBAQICBwcDAwQDA?=
+ =?us-ascii?q?QIBBQQCAgYFAgMCAgQEBAUDAgMCBgYCAQMCCgYDBQMDAwMCAwMCAwMCBQIIA?=
+ =?us-ascii?q?gIEBAUEAgcEAgQDAwMBCgIGAwICBQEBAgIFAwIEBAcCAgIHDwMCBwUCBQUFA?=
+ =?us-ascii?q?ggBBgUCAgMCCAECAgYBBgIEAQICDQEBAgICAwQDAwcCBAMCCAIDAxEBAwMJB?=
+ =?us-ascii?q?gUEBQQDCQQPAgQBCAMBAQQIAgQDAgwCAiECBQsEBAESCggDAQEDAQECAgICA?=
+ =?us-ascii?q?g4DAgMCAgMKAgMCCgMGBAICBgEBAQQGAQQCAQIJBA4JBQgIAQMCAQoBAhIFD?=
+ =?us-ascii?q?wIJAwMGBAIQBgoFAwIDBQECBRUDCAMCCQIEDAMNAgMDAgYDBgIGAQYDBwsBA?=
+ =?us-ascii?q?QkIBQMDAwIWAQICEAgGBg8HAgMDBAQPAxICBg4DAwIDAgECAgIDBQQFAgcDA?=
+ =?us-ascii?q?w0FAgIHAwIIBQMHCQQKAggFAQIGAwICAgIFDQEBAQECAwIFAwcJCAgEBQQDA?=
+ =?us-ascii?q?QEGBgwlAgIDBBADCwMGCwEFBQEDAgICDgMFAwIDBgYBDQQBBQQJAgUHBgUCA?=
+ =?us-ascii?q?RQXBwUCCgIHAgICAwECAwULCAIDAgoEAQ4EGgMFAQICAgMCAwgCAwICFAMDB?=
+ =?us-ascii?q?QQGAwICAgIDAgEKCwMCBQMDAwMFBQMDAhwCAwMCAQIKBQIMBQEEAwQCAgECH?=
+ =?us-ascii?q?gMBBQIDCgEFCQMFAQIBQx0CCQMjDwMLCQgTPQELBzIENAEUFAcnAQYhClacR?=
+ =?us-ascii?q?QGDXlIBT04XGQQTLwIXBUYDkkIlkWWgagcBhBWMDpU3M6lPZJhiozcCE4UoE?=
+ =?us-ascii?q?SMSgV0MgVwzGiOBAYI2CUYDGQ8xJo1gAoNhhHAklmgmMjsCBwsBAQMJiG4CJ?=
+ =?us-ascii?q?gcFgUgBAQ?=
+IronPort-PHdr: A9a23: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
+ RAPxOGhRWz2HoL+0k1mLFJ9mdaSc3c=
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:wGvTY66HzkjPD2mkgwPXwOnXdLJyesId70hD6qkRc20vTiX8ra
+ qTdZsgpHvJYVoqKRQdcLO7Scq9qBHnhPhICOAqVN/IPWnbUUSTXeNfBODZskTd8kPFh5ZgPG
+ RbH5SWyuecMXFKyej95ge8H5IbzN6L/LvtrfvCzh5WPGZXgm1bgDuRwzz0LnFL
+X-Talos-CUID: 9a23:PCKun2BPR2pgERr6E3dm/mJTPd4iTlnE10bhPmDiU3duFJTAHA==
+X-Talos-MUID: 9a23:+afC8gb7Jx4I6+BT6B7OtWF6EM5S0b2rI1w1zJ9WspnDOnkl
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,189,1708383600"; 
+   d="scan'208";a="160634047"
+X-MGA-submission: =?us-ascii?q?MDGUJWqX594JkdZPQdw1tV6mtPcQenYMzd6suu?=
+ =?us-ascii?q?IpR3jfuFd0ZmDo6crJve8momkQuurTNGuC/Fu44SowziMCxHRqRayU1z?=
+ =?us-ascii?q?r9iltXyCoRWLDE3cJN4j6RfdFI3bFeCVpevwTj2+IUl4t5HNbVkeLBhh?=
+ =?us-ascii?q?UGymxVflAwhj9nqj2EGML3fw=3D=3D?=
+Received: from mail-lf1-f43.google.com ([209.85.167.43])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 11:15:18 +0200
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-516d1c8dc79so5798157e87.1
+        for <caml-list@inria.fr>; Tue, 09 Apr 2024 02:15:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1712654117; x=1713258917; darn=inria.fr;
+        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4MAQVl7GyYzdtDAlYBdj6LotOgUYawv6STE0QKmsG0k=;
+        b=AoSNv5RvZNAYV+wNGhtZMX172ppD7/xM4UwCA66/81Ddetm968Aw8rUyq/7NmlyxWS
+         BMH1BwpQRudE7Eq35JkjLy5Q6iVHPRj9YheYHVDSexB366UG9y3Jh2hMdBW080bv3+9b
+         efa1QtgKSOG67ii8FRTnh0dMHAim45VrcAojs2MupMij1I/GDNKYXQYKD7jEV1CqrwfS
+         MtC3ns/Mw9ApN15xaE1sIM0Yscy++8B4Mi26bGGJeDh0a5bKhsq1snktHr5NkAFIeuJX
+         l4GMr9ZCvWeTZrn2ymJMaiepo2I6tTpPhH/hGq/GZA6vDzGMuCgCUtD+uJAco+rHzfQ7
+         bzyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712654117; x=1713258917;
+        h=to:subject:message-id:date:from:sender:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4MAQVl7GyYzdtDAlYBdj6LotOgUYawv6STE0QKmsG0k=;
+        b=k2PpG2TJe2SfPuCBg7MkvL80zrO7Wxte/jV3UA2v522vKf5exX/ecS90QZ7RTy02Fq
+         qQhx0EuyU1GzA2HpYs8l9UozhicGAbCAu8GxIP7zbaVo2udzpr219iLczZ+oHkx6ptus
+         SFCF/Q7o/IHrcJtPBmzk/jH8R2tOeCIQJXa6TjzLSR27IsaoW9quXtqKCKSe1Y8CrKDN
+         Jshfv7D9N7ifOnn+vH1/FVZDt5y5wm3xZbF8iZtq1JUC51caCxrZlLTTO38AE9Bz2/Ky
+         obroOUEHfxMVO/WbKPo2FdP3O2osLwIS8UWNtDj91/F1JatjWWNzunUlUTkTcClBKleD
+         iLHA==
+X-Gm-Message-State: AOJu0YyzxlYVVnbHj+aIkzDc+ubjLMDGQpC94Qk0bJ5iMeRayC0wZwkr
+	OtbEykfjlDfH+zoPvJYwCeEgct7DqNSgo/TTJfFQ2uBuatBsSqj9fQaW9gP48JvKVLqPLEppMBQ
+	NS6kjXXnF022QYhJ87o1zrIQafQiOkMoE
+X-Google-Smtp-Source: AGHT+IH/9eFyIA5aqaexE8kZkPQ9rv4gBjZwTENYSsrrzubHGF/RsUSXBXcvQZCjo+MwEcqkd9Th538h/BHVV97efXg=
+X-Received: by 2002:a2e:978c:0:b0:2d6:ed35:5bc1 with SMTP id
+ y12-20020a2e978c000000b002d6ed355bc1mr8349325lji.24.1712654117070; Tue, 09
+ Apr 2024 02:15:17 -0700 (PDT)
+Received: from 52669349336 named unknown by gmailapi.google.com with HTTPREST;
+ Tue, 9 Apr 2024 02:15:16 -0700
+Received: from 52669349336 named unknown by gmailapi.google.com with HTTPREST;
+ Tue, 9 Apr 2024 02:15:16 -0700
+MIME-Version: 1.0
+Sender: caml-list-request@inria.fr
+From: Mart Lubbers <ifl21.publicity@gmail.com>
+Date: Tue, 9 Apr 2024 02:15:16 -0700
+X-Google-Sender-Auth: BeBqNMrS2WjxsbG2L4Oz0Ci9NHY
+Message-ID: <CAGtcRvDCOsJKM3EP7wabpAJw_JAxNudMPy6e91XjUY0AyBgiwg@mail.gmail.com>
+To: Caml-List <caml-list@inria.fr>
+Content-Type: text/plain; charset="UTF-8"
+Subject: [Caml-list] IFL 2024: First call for papers
+Reply-To: Mart Lubbers <ifl21.publicity@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19107
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-04/CAGtcRvDCOsJKM3EP7wabpAJw_JAxNudMPy6e91XjUY0AyBgiwg%40mail.gmail.com>
+
+=======================================================================
+                                IFL 2024
+
+36rd Symposium on Implementation and Application of Functional Languages
+
+
+            venue: Radboud University Nijmegen, The Netherlands
+                        August 26 - 28 2024
+
+                       https://ifl24.cs.ru.nl
+
+=======================================================================
+
+### Scope
+
+The goal of the IFL symposia is to bring together researchers actively
+engaged in the implementation and application of functional and
+function-based programming languages. IFL 2024 will be a venue for
+researchers to present and discuss new ideas and concepts, work in
+progress, and publication-ripe results related to the implementation and
+application of functional languages and function-based programming.
+
+
+### Industrial track and topics of interest
+
+Topics of interest to IFL include, but are not limited to:
+
+- language concepts
+- type systems, type checking, type inferencing
+- compilation techniques
+- staged compilation
+- run-time function specialisation
+- run-time code generation
+- partial evaluation
+- (abstract) interpretation
+- meta-programming
+- generic programming
+- automatic program generation
+- array processing
+- concurrent/parallel programming
+- concurrent/parallel program execution
+- embedded systems
+- web applications
+- (embedded) domain specific languages
+- security
+- novel memory management techniques
+- run-time profiling performance measurements
+- debugging and tracing
+- virtual/abstract machine architectures
+- validation, verification of functional programs
+- tools and programming techniques
+
+
+### Peer-review process
+
+Following IFL tradition, IFL 2024 will use a post-symposium review
+process to produce the formal proceedings.
+
+Before the symposium authors submit draft papers. These draft papers
+will be screened by the program chairs to make sure that they are within
+the scope of IFL. The draft papers will be made available to all
+participants at the symposium. Each draft paper is presented by one of
+the authors at the symposium.
+
+After the symposium, a formal review process will take place, conducted
+by the program committee. Reviewing is single blind. There will be at
+least 3 reviews per paper. The reviewers have 6 weeks to write their
+reviews. For the camera-ready version the authors can make minor
+revisions which are accepted without further reviewing.
+
+
+### Important dates
+
+Submission deadline of draft papers          August 4th, 2024
+Notification of acceptance for presentation  August 6th, 2024
+Early registration deadline                  August 11th, 2024
+Late registration deadline                   August 21th, 2024
+IFL symposium                                August 26-28, 2024
+Submission of papers for proceedings         December 1st, 2024
+Notification of acceptance                   February 2nd, 2025
+Camera-ready version                         March 2nd, 2025
+
+
+### Submission details
+
+All contributions must be written in English. Papers must use the ACM
+two columns conference format, which can be found at:
+
+    http://www.acm.org/publications/proceedings-template
+
+
+### Peter Landin Prize
+
+The Peter Landin Prize is awarded to the best paper presented at the
+symposium every year. The honoured article is selected by the program
+committee based on the submissions received for the formal review
+process. The prize carries a cash award equivalent to 150 Euros.
+
+
+### Organisation
+
+PC Chairs:
+Mart Lubbers Radboud University, The Netherlands
+
+Local Chairs:
+Peter Achten Radboud University, The Netherlands
+Sven-Bodo Scholz, Radboud University, The Netherlands
+
+
+### Program committee:
+
+t.b.d.
+
+
+### Venue
+
+IFL 2024 will be held physically in Nijmegen, the Netherlands. See the
+website for more information.
+
+    https://ifl24.cs.ru.nl (under construction)
+
+
+### Acknowledgments
+
+This call-for-papers is an adaptation and evolution of content from
+previous instances of IFL. We are grateful to prior organisers for their
+work, which is reused here.
