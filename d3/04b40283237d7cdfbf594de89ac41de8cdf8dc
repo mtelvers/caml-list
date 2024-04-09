@@ -1,0 +1,541 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=tu-dresden.de
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=cFLXveAg;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=tu-dresden.de header.i=@tu-dresden.de header.a=rsa-sha256 header.s=dkim2022 header.b=I0TAQiuP;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id AC35BB80123
+	for <caml-list@tunbury.org>; Tue,  9 Apr 2024 15:29:35 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=gUwHZuC/YJcZBCW9+34wxiqe5JNUXjstay95J1hBEdk=;
+  b=cFLXveAgFmpj4eIpKZM0TWlcQALo14IgpQMBfgPOR6Gmt7Vk9GgZMy+u
+   AfGOwLf9ewQODaLZX5jAORKGcHuEYL5DcX7Dok5H/p6lBl3f7ZbJF0AHA
+   RiQ6VFAlnCRY/L0tQwD1/EGwTYCYopbYBtUhM4Znlirp/Y8wACJMpvS4F
+   s=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@tu-dresden.de
+X-IronPort-AV: E=Sophos;i="6.07,189,1708383600"; 
+   d="p7s'346?scan'346,208,217,346";a="160716882"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 09 Apr 2024 16:29:34 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id E6970E0CDD; Tue,  9 Apr 2024 16:29:33 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 715A6E0131;
+	Tue,  9 Apr 2024 16:29:30 +0200 (CEST)
+IronPort-SDR: 661550c9_ZLwDkE/8Nr7j7sAgcM8AXPHiyA1LWTeqvbwP7miChkhj5sF
+ apcwvxtZZBDtaOc19zO/zKH0VygnDSRcXoakYjg==
+X-IPAS-Result: =?us-ascii?q?A0E5AABITxVmmEtDHo1aDgwBAQEBAQEBAQEBAwEBAQESA?=
+ =?us-ascii?q?QEBAQICAQEBAYIPghwoegIrKjMEC0gEBIROg0+Ld4IigRaSAYwzFigIBwEDA?=
+ =?us-ascii?q?QgEATQQBAEBAwEDhH+IFwIeBwEENBMBAgQBAQEBAwIDAQEBAQEBCAEBBQEBA?=
+ =?us-ascii?q?QIBAQIEBgECEAEBAQEBAQEBHhkFEAMLJ4VtDYJggSZjCDoBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBARMCCAUCBVUBAUEGHQEBJhIRAUoCBC8nBAEgghpYAYJOE?=
+ =?us-ascii?q?QcNBrB7gTKBAYIKAQEGgQjbFIFaBwmBSAGBVoE2gWSDLBABJIEvAgKCfIVkJ?=
+ =?us-ascii?q?4FkRIEVJxuCMAWBdoFcBBiBRS6DLjmCL4JDhwiFflmFBYFjgW+HMUpvgRAhE?=
+ =?us-ascii?q?wFVFR4XCToLBAwaAhsUDSQjAiw+AwkKEAIWAx0UBDARCQsmAyoGNgISDAYGB?=
+ =?us-ascii?q?lsgFgkEIwMIBANQAyBwEQMEBBYECwccWYM9BBNEAxCBMgaKEIMVAgUjBIIeg?=
+ =?us-ascii?q?SmDC02BMV8CgkADCQMHBSwdQAMLGA1IESw1Bg4bBiIfbweaawEQcwEBPAGCQ?=
+ =?us-ascii?q?nIwIgoREBMNAlcCChgoCAQTgROSX7JaB4I2gWCGVYMugguVaoVbkWsGkmeHd?=
+ =?us-ascii?q?pBsIIp2gXVplUUTV4Q4AgQCBAUCF4F7I4FcTSRPKgGCPAk2EAMZD1eNSRcCg?=
+ =?us-ascii?q?2EzhGGKIAgBjDJGMgIBAQE2AgcBCgEBAwmJIoFIAQE?=
+IronPort-PHdr: A9a23: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
+ ruF/mfCb9KfQZI6eHoBUoYCcH47CpTSpg==
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:6ql7DKBEL5gdioXlHelx55DYdb4zR+YMi2TDj3oBLSC9Afbo8P
+ xG/c5rriMc7Qx7ZJhOo6HjBEDtexzhHP1OkPMs1NWZLWzbUQKTRekJgOffKlbbehEWg9Qttp
+ uIBJIfNDSfNzZHZI3BkW+F+p4bsaC62ZHtuNvyi0hsVh1xL5tr5wB/BgvzKDwKeOHXbaBJbK
+ ah2g==
+X-Talos-CUID: 9a23:cdUbO27XiRG+AHRpf9ss03Q5Jd4dUWbhz3KBDRWcBDtwTZiOVgrF
+X-Talos-MUID: 9a23:FlmD2wVX83vwXzzq/GHquWA9JcFs2a6vDB0RjqUEksTUGRUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,189,1708383600"; 
+   d="p7s'346?scan'346,208,217,346";a="160716843"
+X-MGA-submission: =?us-ascii?q?MDExWTPO8orazM7FXQ1J2/bDdgmQMEpW9Oj4IL?=
+ =?us-ascii?q?kN4FuCxHI0CaVLEi+mYCXgTIA+AvLMPd255TyZE/Rmmx6b/z6aDPqXlH?=
+ =?us-ascii?q?XSL+IzZ190jc1+LmmKQgXEKnRM80dtRCHI4qTnt6kWqeCYCwVLqeIMyB?=
+ =?us-ascii?q?H/rQVwZCzQ6fT+6fw0T4Pe2A=3D=3D?=
+Received: from mailout4.zih.tu-dresden.de ([141.30.67.75])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 16:29:29 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=tu-dresden.de; s=dkim2022; h=MIME-Version:Content-Type:Message-ID:Date:
+	Subject:To:From:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=gUwHZuC/YJcZBCW9+34wxiqe5JNUXjstay95J1hBEdk=; b=I0TAQiuPYq6TSFilr/Wqkcgnzh
+	glxI3DU4I7zdKaecqVvj4NUhjz26zXqVKpitIOthabdKqts8EXJGyh/qddSkeFZ7yZQ4a3QZR6bXa
+	7AM9EPQm16gIHOkFmPs4gNQXMyG/SKfNRzEVbJRlD3I83vKqD7thzZMomMivj+138Q3xO5KQUYLrS
+	1swtccePeHsxf0RSuXXOdv2FGU3J3oiOAginCOs1p0hzRxpOey3cdJY/nFkySg0QXJHCpGN6v2d0/
+	oDfRFOva58RlGeI8gaDru9ahNzQgnHcsTBfRSZQMbv71BqepNAz2vD1qSsxoNRF/5JI2QC9Xap1Zw
+	/IwYmw5w==;
+Received: from [172.26.35.111] (helo=msx.tu-dresden.de)
+	by mailout4.zih.tu-dresden.de with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <oliver.fernandez@tu-dresden.de>)
+	id 1ruCTW-007z2z-J4; Tue, 09 Apr 2024 16:29:29 +0200
+Received: from MSX-T313.msx.ad.zih.tu-dresden.de (172.26.35.113) by
+ MSX-T311.msx.ad.zih.tu-dresden.de (172.26.35.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.37; Tue, 9 Apr 2024 16:29:13 +0200
+Received: from MSX-T313.msx.ad.zih.tu-dresden.de ([172.26.35.113]) by
+ MSX-T313.msx.ad.zih.tu-dresden.de ([172.26.35.113]) with mapi id
+ 15.01.2507.037; Tue, 9 Apr 2024 16:29:13 +0200
+From: Oliver Fernandez Gil <oliver.fernandez@tu-dresden.de>
+To: "rewriting@ens-lyon.fr" <rewriting@ens-lyon.fr>, "coq-club@inria.fr"
+	<coq-club@inria.fr>, "caml-list@inria.fr" <caml-list@inria.fr>,
+	"ProofTheory@lists.bath.ac.uk" <ProofTheory@lists.bath.ac.uk>,
+	"fscd.conference@dcc.fc.up.pt" <fscd.conference@dcc.fc.up.pt>,
+	"theory-logic@cs.cmu.edu" <theory-logic@cs.cmu.edu>,
+	"cl-isabelle-users@lists.cam.ac.uk" <cl-isabelle-users@lists.cam.ac.uk>
+Thread-Topic: UNIF 2024 - 2nd Call for Papers (Extended Deadline)
+Thread-Index: AQHaiopLvGvxBonGMEyJA8bVrKZxUQ==
+Date: Tue, 9 Apr 2024 14:29:13 +0000
+Message-ID: <36F7B537-9C15-4B84-99D2-E7A9A43C25D0@tu-dresden.de>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+x-mailer: Apple Mail (2.3608.120.23.2.7)
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_4F201734-CBED-457A-B1F7-F2ED3E4BD481";
+	protocol="application/pkcs7-signature"; micalg=sha-256
+MIME-Version: 1.0
+X-TUD-Virus-Scanned: mailout4.zih.tu-dresden.de
+Subject: [Caml-list] UNIF 2024 - 2nd Call for Papers (Extended Deadline)
+Reply-To: Oliver Fernandez Gil <oliver.fernandez@tu-dresden.de>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19110
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-04/36F7B537-9C15-4B84-99D2-E7A9A43C25D0%40tu-dresden.de>
+
+--Apple-Mail=_4F201734-CBED-457A-B1F7-F2ED3E4BD481
+Content-Type: multipart/alternative;
+	boundary="Apple-Mail=_5A69B2AA-3032-477B-8241-3AD6F5690AE8"
+
+
+--Apple-Mail=_5A69B2AA-3032-477B-8241-3AD6F5690AE8
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
+
+[Apologies for multiple copies]
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+			                             UNIF 2024
+	                  The 38th International Workshop on Unification
+	      	                       Nancy, France, July 2, 2024
+               A satellite workshop of CADE/IJCAR, affiliated with IJCAR
+		               https://lat.inf.tu-dresden.de/unif2024 =
+<https://lat.inf.tu-dresden.de/unif2024>
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+UNIF 2024 is the 38th event in a series of international meetings
+devoted to unification theory and its applications. Unification is
+concerned with the problem of making two given terms equal, either
+syntactically or modulo an equational theory. It is a fundamental
+process used in various areas of computer science, including automated
+reasoning, term rewriting, logic programming, natural language
+processing, program analysis, knowledge representation, types, etc.
+
+The International Workshop on Unification (UNIF) is a forum for
+researchers in unification theory and related fields to present recent
+(even unfinished) work, and to discuss new ideas and trends. It is also
+a good opportunity for students, young researchers and scientists =
+working
+in related areas to get an overview of the current state of the art in
+unification theory.
+
+
+Topics
+---------
+A non-exhaustive list of topics of interest includes:
+
+ * syntactic and equational unification algorithms
+ * matching and constraint solving
+ * higher-order unification
+ * unification in modal, temporal, and description logics
+ * admissibility of inference rules
+ * narrowing
+ * disunification
+ * anti-unification
+ * complexity issues =20
+ * combination methods
+ * implementation techniques
+ * applications
+
+
+Submission
+----------------
+Short papers or extended abstracts, up to 5 pages in EasyChair style,
+should be submitted electronically as PDF files through the EasyChair
+submission site:
+
+ https://easychair.org/conferences/?conf=3Dunif2024 =
+<https://easychair.org/conferences/?conf=3Dunif2024>
+
+Abstracts will be evaluated by the Program Committee regarding their
+significance for the workshop. We allow submissions of work presented/
+submitted in/to another conference.
+
+Accepted abstracts will be presented at the workshop and included in
+the informal proceedings of the workshop, available in electronic form
+on the Web page of UNIF 2024. At least one of the authors should =
+register
+for the workshop.
+
+Based on the number and quality of submissions we will decide whether to
+organize a special journal issue.
+
+
+Important Dates
+----------------------
+ * Paper submission:               April 25, 2024 (EXTENDED)
+ * Author notification:               May 23, 2024
+ * Camera-ready version:        June 7, 2024
+
+All dates above are =E2=80=98Anywhere on Earth=E2=80=99 (23:59 UTC-12).
+
+ * UNIF 2024:                         July 2, 2024
+
+
+Invited Speakers
+-----------------------
+* George Metcalfe (University of Bern)
+* Daniele Nantes-Sobrinho (Universidade de Bras=C3=ADlia)
+
+
+--Apple-Mail=_5A69B2AA-3032-477B-8241-3AD6F5690AE8
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html;
+	charset=utf-8
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; =
+charset=3Dutf-8"></head><body style=3D"word-wrap: break-word; =
+-webkit-nbsp-mode: space; line-break: after-white-space;" class=3D""><div =
+class=3D"">[Apologies for multiple copies]<br class=3D""></div><div =
+class=3D""><br =
+class=3D""></div>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<br =
+class=3D""><span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span><span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span><span class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UNIF 2024<br class=3D""><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The 38th International Workshop =
+on Unification<br class=3D""><span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	=
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	=
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nan=
+cy, France, July 2, 2024<br =
+class=3D"">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;A satellite workshop of CADE/IJCAR, =
+affiliated with IJCAR<br class=3D""><span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span><span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	=
+</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;<a href=3D"https://lat.inf.tu-dresden.de/unif2024" =
+class=3D"">https://lat.inf.tu-dresden.de/unif2024</a><br =
+class=3D"">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<br class=3D""><br =
+class=3D"">UNIF 2024 is the 38th event in a series of international =
+meetings<br class=3D"">devoted to unification theory and its =
+applications. Unification is<br class=3D"">concerned with the problem of =
+making two given terms equal, either<br class=3D"">syntactically or =
+modulo an equational theory. It is a fundamental<br class=3D"">process =
+used in various areas of computer science, including automated<br =
+class=3D"">reasoning, term rewriting, logic programming, natural =
+language<br class=3D"">processing, program analysis, knowledge =
+representation, types, etc.<br class=3D""><br class=3D"">The =
+International Workshop on Unification (UNIF) is a forum for<br =
+class=3D"">researchers in unification theory and related fields to =
+present recent<br class=3D"">(even unfinished) work, and to discuss new =
+ideas and trends. It is also<br class=3D"">a good opportunity for =
+students, young researchers and scientists working<br class=3D"">in =
+related areas to get an overview of the current state of the art in<br =
+class=3D"">unification theory.<br class=3D""><br class=3D""><br =
+class=3D"">Topics<br class=3D"">---------<br class=3D"">A non-exhaustive =
+list of topics of interest includes:<br class=3D""><br class=3D"">&nbsp;* =
+syntactic and equational unification algorithms<br class=3D"">&nbsp;* =
+matching and constraint solving<br class=3D"">&nbsp;* higher-order =
+unification<br class=3D"">&nbsp;* unification in modal, temporal, and =
+description logics<br class=3D"">&nbsp;* admissibility of inference =
+rules<br class=3D"">&nbsp;* narrowing<br class=3D"">&nbsp;* =
+disunification<br class=3D"">&nbsp;* anti-unification<br =
+class=3D"">&nbsp;* complexity issues &nbsp;<br class=3D"">&nbsp;* =
+combination methods<br class=3D"">&nbsp;* implementation techniques<br =
+class=3D"">&nbsp;* applications<br class=3D""><br class=3D""><br =
+class=3D"">Submission<br class=3D"">----------------<br class=3D"">Short =
+papers or extended abstracts, up to 5 pages in EasyChair style,<br =
+class=3D"">should be submitted electronically as PDF files through the =
+EasyChair<br class=3D"">submission site:<br class=3D""><br =
+class=3D"">&nbsp;<a =
+href=3D"https://easychair.org/conferences/?conf=3Dunif2024" =
+class=3D"">https://easychair.org/conferences/?conf=3Dunif2024</a><br =
+class=3D""><br class=3D"">Abstracts will be evaluated by the Program =
+Committee regarding their<br class=3D"">significance for the workshop. =
+We allow submissions of work presented/<br class=3D"">submitted in/to =
+another conference.<br class=3D""><br class=3D"">Accepted abstracts will =
+be presented at the workshop and included in<br class=3D"">the informal =
+proceedings of the workshop, available in electronic form<br class=3D"">on=
+ the Web page of UNIF 2024. At least one of the authors should =
+register<br class=3D"">for the workshop.<br class=3D""><br =
+class=3D"">Based on the number and quality of submissions we will decide =
+whether to<br class=3D"">organize a special journal issue.<br =
+class=3D""><br class=3D""><br class=3D"">Important Dates<br =
+class=3D"">----------------------<br class=3D"">&nbsp;* Paper =
+submission: =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;April 25, 2024 (EXTENDED)<br class=3D"">&nbsp;* Author =
+notification: =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;May 23, 2024<br class=3D"">&nbsp;* Camera-ready version: =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;June 7, 2024<br class=3D""><br =
+class=3D"">All dates above are =E2=80=98Anywhere on Earth=E2=80=99 =
+(23:59 UTC-12).<br class=3D""><br class=3D"">&nbsp;* UNIF 2024: =
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;July=
+ 2, 2024<br class=3D""><br class=3D""><br class=3D"">Invited Speakers<br =
+class=3D"">-----------------------<br class=3D"">* George Metcalfe =
+(University of Bern)<br class=3D"">* Daniele Nantes-Sobrinho =
+(Universidade de Bras=C3=ADlia)<div class=3D""><br =
+class=3D""></div></body></html>=
+
+--Apple-Mail=_5A69B2AA-3032-477B-8241-3AD6F5690AE8--
+
+--Apple-Mail=_4F201734-CBED-457A-B1F7-F2ED3E4BD481
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCDlAw
+ggbmMIIEzqADAgECAhAxAnDUNb6bJJr4VtDh4oVJMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
+EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
+FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
+aW9uIEF1dGhvcml0eTAeFw0yMDAyMTgwMDAwMDBaFw0zMzA1MDEyMzU5NTlaMEYxCzAJBgNVBAYT
+Ak5MMRkwFwYDVQQKExBHRUFOVCBWZXJlbmlnaW5nMRwwGgYDVQQDExNHRUFOVCBQZXJzb25hbCBD
+QSA0MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAs0riIl4nW+kEWxQENTIgFK600jFA
+xs1QwB6hRMqvnkphfy2Q3mKbM2otpELKlgE8/3AQPYBo7p7yeORuPMnAuA+oMGRb2wbeSaLcZbpw
+XgfCvnKxmq97/kQkOFX706F9O7/h0yehHhDjUdyMyT0zMs4AMBDRrAFn/b2vR3j0BSYgoQs16oSq
+adM3p+d0vvH/YrRMtOhkvGpLuzL8m+LTAQWvQJ92NwCyKiHspoP4mLPJvVpEpDMnpDbRUQdftSpZ
+zVKTNORvPrGPRLnJ0EEVCHR82LL6oz915WkrgeCY9ImuulBn4uVsd9ZpubCgM/EXvVBlViKqusCh
+SsZEn7juIsGIiDyaIhhLsd3amm8BS3bgK6AxdSMROND6hiHT182Lmf8C+gRHxQG9McvG35uUvRu8
+v7bPZiJRaT7ZC2f50P4lTlnbLvWpXv5yv7hheO8bMXltiyLweLB+VNvg+GnfL6TW3Aq1yF1yrZAZ
+zR4MbpjTWdEdSLKvz8+0wCwscQ81nbDOwDt9vyZ+0eJXbRkWZiqScnwAg5/B1NUD4TrYlrI4n6zF
+p2pyYUOiuzP+as/AZnz63GvjFK69WODR2W/TK4D7VikEMhg18vhuRf4hxnWZOy0vhfDR/g3aJbds
+Gac+diahjEwzyB+UKJOCyzvecG8bZ/u/U8PsEMZg07iIPi8CAwEAAaOCAYswggGHMB8GA1UdIwQY
+MBaAFFN5v1qqK0rPVIDh2JvAnfKyA2bLMB0GA1UdDgQWBBRpAKHHIVj44MUbILAK3adRvxPZ5DAO
+BgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHSUEFjAUBggrBgEFBQcDAgYI
+KwYBBQUHAwQwOAYDVR0gBDEwLzAtBgRVHSAAMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
+by5jb20vQ1BTMFAGA1UdHwRJMEcwRaBDoEGGP2h0dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9VU0VS
+VHJ1c3RSU0FDZXJ0aWZpY2F0aW9uQXV0aG9yaXR5LmNybDB2BggrBgEFBQcBAQRqMGgwPwYIKwYB
+BQUHMAKGM2h0dHA6Ly9jcnQudXNlcnRydXN0LmNvbS9VU0VSVHJ1c3RSU0FBZGRUcnVzdENBLmNy
+dDAlBggrBgEFBQcwAYYZaHR0cDovL29jc3AudXNlcnRydXN0LmNvbTANBgkqhkiG9w0BAQwFAAOC
+AgEACgVOew2PHxM5AP1v7GLGw+3tF6rjAcx43D9Hl110Q+BABABglkrPkES/VyMZsfuds8fcDGvG
+E3o5UfjSno4sij0xdKut8zMazv8/4VMKPCA3EUS0tDUoL01ugDdqwlyXuYizeXyH2ICAQfXMtS+r
+az7mf741CZvO50OxMUMxqljeRfVPDJQJNHOYi2pxuxgjKDYx4hdZ9G2o+oLlHhu5+anMDkE8g0tf
+fjRKn8I1D1BmrDdWR/IdbBOj6870abYvqys1qYlPotv5N5dm+XxQ8vlrvY7+kfQaAYeO3rP1DM8B
+GdpEqyFVa+I0rpJPhaZkeWW7cImDQFerHW9bKzBrCC815a3WrEhNpxh72ZJZNs1HYJ+29NTB6uu4
+NJjaMxpk+g2puNSm4b9uVjBbPO9V6sFSG+IBqE9ckX/1XjzJtY8Grqoo4SiRb6zcHhp3mxj3oqWi
+8SKNohAOKnUc7RIP6ss1hqIFyv0xXZor4N9tnzD0Fo0JDIURjDPEgo5WTdti/MdGTmKFQNqxyZuT
+9uSI2Xvhz8p+4pCYkiZqpahZlHqMFxdw9XRZQgrP+cgtOkWEaiNkRBbvtvLdp7MCL2OsQhQEdEbU
+vDM9slzZXdI7NjJokVBq3O4pls3VD2z3L/bHVBe0rBERjyM2C/HSIh84rfmAqBgklzIOqXhd+4Rz
+adUwggdiMIIFSqADAgECAhBHy5E80x4gVfEvdAFbAdVqMA0GCSqGSIb3DQEBDAUAMEYxCzAJBgNV
+BAYTAk5MMRkwFwYDVQQKExBHRUFOVCBWZXJlbmlnaW5nMRwwGgYDVQQDExNHRUFOVCBQZXJzb25h
+bCBDQSA0MB4XDTI0MDIwNTAwMDAwMFoXDTI2MDIwNDIzNTk1OVowgdMxCzAJBgNVBAYTAkRFMRAw
+DgYDVQQIEwdTYWNoc2VuMSgwJgYDVQQKEx9UZWNobmlzY2hlIFVuaXZlcnNpdGFldCBEcmVzZGVu
+MREwDwYDVQRhEwhHT1ZERStTTjEtMCsGCSqGSIb3DQEJARYeb2xpdmVyLmZlcm5hbmRlekB0dS1k
+cmVzZGVuLmRlMRYwFAYDVQQEEw1GZXJuYW5kZXogR2lsMQ8wDQYDVQQqEwZPbGl2ZXIxHTAbBgNV
+BAMTFE9saXZlciBGZXJuYW5kZXogR2lsMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA
+sgbWnR9AveDJUV9bwgXHqUe50O/hekIgiyPRDRKBs0kpWbQEOjC+y5cr9KodbiOC/st/xfMTPhWH
+2DYcEYlJC+r4WUT+RI2udqYUNoCWiarVCqHWSYTWolQjVLCWqk75hcyIfsF91NEnPrJGUrww8beS
+b++V5XxYyLo9rjhRwEBP/fNMWn1Zc0QXAHpDD7mVDkk+7V2RwbDvzuN/rx4vRdv/34px6uJFRLzo
+QmdUsgDX10rp7rEN/enmKw4zXCTajOq1hM3wclzheM6UZCzkjZXyoBDzvjrIRitZQU0ffR16mugV
+HxCDtX2D/cxdovXx0Z6wvMkBPylnRgmpmZ0rz9CBQ+LlEQ+j9/KUFyQEMGoCI8QYPhBSpE0l2Us1
+rBjGbFXStlyoM9BtOMrq/aAtnuAnH28vZKxJjArY7Q5pWj4KpRiqOQrE3iSLpj0d8jUNGN7bfs9S
+fj8rsXj2EE28CFT257jnAEMPhZtMggQkwTVJijGW3eGDgINrFrCrXhinDtnZ0nfdDdohfJxaE5NJ
+xqtKdJRvbgIvc1QzhH2R/jiJcD9xN0tHJ+9+qbgr0BKpUT1SXGk8FktE54R8w9axcg1aha/s8Xgh
+nGvJ4tixtaGcdyYwpxUmnsVdD5hGRMO7MpvQhONMgo4y5suzmk4SK6pjFWRvIf1J9ZxPHAEcj7kC
+AwEAAaOCAbwwggG4MB8GA1UdIwQYMBaAFGkAocchWPjgxRsgsArdp1G/E9nkMB0GA1UdDgQWBBR4
+eB7bkGllIt8T/Zk8l2V3m99WKjAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUE
+FjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwUAYDVR0gBEkwRzA6BgwrBgEEAbIxAQIBCgQwKjAoBggr
+BgEFBQcCARYcaHR0cHM6Ly9zZWN0aWdvLmNvbS9TTUlNRUNQUzAJBgdngQwBBQMCMEIGA1UdHwQ7
+MDkwN6A1oDOGMWh0dHA6Ly9HRUFOVC5jcmwuc2VjdGlnby5jb20vR0VBTlRQZXJzb25hbENBNC5j
+cmwweAYIKwYBBQUHAQEEbDBqMD0GCCsGAQUFBzAChjFodHRwOi8vR0VBTlQuY3J0LnNlY3RpZ28u
+Y29tL0dFQU5UUGVyc29uYWxDQTQuY3J0MCkGCCsGAQUFBzABhh1odHRwOi8vR0VBTlQub2NzcC5z
+ZWN0aWdvLmNvbTApBgNVHREEIjAggR5vbGl2ZXIuZmVybmFuZGV6QHR1LWRyZXNkZW4uZGUwDQYJ
+KoZIhvcNAQEMBQADggIBADXuBEOeqAYC1nlEZovxGsfXayC3hZWVpeTfvUYUJ8UxBDQUYHU8Tnk/
+8vHUtSG1JQs9rdNlR2SAQQbNqKae3iAxHXDnpvPsFrA741NVbr+NpFDkTLl9OpXNv7WWX+QzpPuY
+jRv/pr2e5yi4ow1Oue7SQ8Za8170IjHZzhJnT9RHaWmO1jtc3BLQjtNL3IqmHEN9pxUFz80WckYH
+6b0aYsp1EaaQwIDhLpPpvDfijKLrfm7KW2svaKHHRflPEvyTuH8HRbJNVIRCaqX8piqGY0m1zu7s
+cRcLBSGJ0WC4+7BiGloF3z3U+2WXDcDPbLK0qfd7R9PYmNWtYib44iMChRD5izkMmnFQUViTLSKV
+8p9FuRvbpAq6pOUR/ieaSxza4VbOWEP5QTbqfmAS/PCnw4AvmHFYqG4k1qKHjUlCIjQQkozOj2al
+rIp3KQKQCD/fUd5a5w6qkf+/NtWCm4RL2uOizEBd0QoFL8bcCSesTX03792iQ/PRHfpkEbA7r5Wj
+8IvhlsfsDDNkwI/R8P5Ixik9rZD22IheBXC2T1WsLP63Ao9R5l17yRT7elOkp1WFw63tXWtIu85N
+PwpmsBnRM5CYILa4K0SPv2/r1TCDOfhGmr7DX/TSfnECepLHFCuIgSlsVg0lIQPk/coplDvndui7
+HgrRS4VlrmKZS54BBS3oMYIDyjCCA8YCAQEwWjBGMQswCQYDVQQGEwJOTDEZMBcGA1UEChMQR0VB
+TlQgVmVyZW5pZ2luZzEcMBoGA1UEAxMTR0VBTlQgUGVyc29uYWwgQ0EgNAIQR8uRPNMeIFXxL3QB
+WwHVajANBglghkgBZQMEAgEFAKCCAUEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjQwNDA5MTQyOTEyWjAvBgkqhkiG9w0BCQQxIgQga8iThJve+utS7jTiUjwWIhev
+tK/DSiQlLAql1RCxlhwwaQYJKwYBBAGCNxAEMVwwWjBGMQswCQYDVQQGEwJOTDEZMBcGA1UEChMQ
+R0VBTlQgVmVyZW5pZ2luZzEcMBoGA1UEAxMTR0VBTlQgUGVyc29uYWwgQ0EgNAIQR8uRPNMeIFXx
+L3QBWwHVajBrBgsqhkiG9w0BCRACCzFcoFowRjELMAkGA1UEBhMCTkwxGTAXBgNVBAoTEEdFQU5U
+IFZlcmVuaWdpbmcxHDAaBgNVBAMTE0dFQU5UIFBlcnNvbmFsIENBIDQCEEfLkTzTHiBV8S90AVsB
+1WowDQYJKoZIhvcNAQEBBQAEggIAVAAxRRLdTWy6w+VaLRsqNhdkn7foIBw1Opc5W1RYvCjMkz5d
+tOZwfWNxG2Vz0DcD8sMS0aqcrC0ux5zRa1euAl9Gl6hLEW9Rgj9DjqZ2zmAWiDFjbsm4+o0tDUlx
+Y4mpixMR7S6hdZ9m+t9ST95iS0vnuAV0AN3WmmfaJXnwc8nhQryeRSUNYh3xLk+08j3fr2Shu6gN
+CG9GohgfddqJW+ziGdobWaYbnYjAmqlnrbjC4S3bjpoL3At7eyAfVI7f96IIGaxW05W2OGt1T7bH
+9BaUiCOmuf0bk4BNDn7eSrpuRERI4Q/dR9Kyhn1+yoJz7eZuc80BiQAobshVqdDQDfDDWsOLNPs8
+myrNob49n7VrrP2dsopb7Cy37Nry/idw2a1i0d9KvZyeDKnwqO+pyPFS470grcjXYeXDVhHfdEU3
+X/SzetmwvTfrTKbQAz5x1O/WQO8YIGEEcecXSa9HonW9mftuWes1mN+M+3hV98Nna8NRd2Dq/IjI
+ac8U3eQHGkl7LdjlNMAiLlfeI+Tdusw1lyZUZbfA586NuncPIGn+s+sPldXr88PIQxos3xiG95f/
+nM3CfVnbCIWRYKXOZpQudulJ11+JG96hGCatpZ4oNpH+VheynJhftkn+pv79Oxt6F0cy5IVFPGNU
+gRqUBzTCQ+ecMRJn6/2svuUonhoAAAAAAAA=
+
+--Apple-Mail=_4F201734-CBED-457A-B1F7-F2ED3E4BD481--
