@@ -1,0 +1,498 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=P+S+DRql;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=hLv3jHuI;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 82F77B80123
+	for <caml-list@tunbury.org>; Sat, 13 Apr 2024 12:00:16 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=u5p8TzQXD9rBJCxUS2+0MEYcnev8LJWemMceWxG3w54=;
+  b=P+S+DRql31tzUuk1ZFjeNzsPxvWWhp4o4+bA6rFV4khJN5AvdZjXE7Eb
+   NQ2SL3if5G7WfZ+jCzQoGEbi/95UoUur7acBDPJmFiWmc8N8B6kI3+ZXk
+   EzH4g0fU9nCf0HgGEOzL1HxRnyfXEpc3cjHOgc3ODt0bnxkwUwqUCOcKj
+   A=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.07,199,1708383600"; 
+   d="scan'208,217";a="161406099"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 13 Apr 2024 13:00:15 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 259EAE0CCA; Sat, 13 Apr 2024 13:00:15 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id D737FE0AF1
+	for <caml-list@sympa.inria.fr>; Sat, 13 Apr 2024 13:00:10 +0200 (CEST)
+IronPort-SDR: 661a65b9_yJr5gI5eAmm+VvRBXMCG1H61SwiXM3HHqJ7BMQe2/utOd/i
+ odoGemPNP3YucHdJKYPu326dpCTCXrUm3hkEH4Q==
+X-IPAS-Result: =?us-ascii?q?A0EHCgCdZBpmhimgVdFaHQEBPAEFBQECAQkBgWQCgT+BA?=
+ =?us-ascii?q?3xVMwQLSIRWgSOCLIt3UwgBAQaBPAECi3OTWD4PAQMBDRQBAQECIAsEAQEDA?=
+ =?us-ascii?q?QOCC4J0iBoCHgcBBDMGDgECBAEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGA?=
+ =?us-ascii?q?QIQAQEBIRkHDhAnhW0NgmA7a2ECBQM6AQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQUCFBg9OBEdARsRDQMSEDcCIwERAQUBNSKCXgGCK?=
+ =?us-ascii?q?gEDMQMRogGCIYEFQos7gRUFAhaBAYILBoEJPgXZDgoZKA1sA4FeAgEGFIE0A?=
+ =?us-ascii?q?YRlJYMjAYFVAgKHaYEhG32BEIFKggU/hV+DLoJoBJZWgVYSg0uFeAgHFwMHB?=
+ =?us-ascii?q?wcEBQQcBgUFAkIJBwEPEgMEAwQEAQILCQoJAwMCDgIIAwIIBg4QAQEKNRIEE?=
+ =?us-ascii?q?wsFAgIKAgwGBQEEAwIBAwMDAgQCAgMBAgICAgIDAQIKAgEHAgUDBQICAwIBA?=
+ =?us-ascii?q?QEBAgIEAwEOBwIDBQUCAQUJAwMCAgQDAQICAwICAgMBBAUUAwQCBQoDCAICB?=
+ =?us-ascii?q?wIOAwEFAgEBAgICAgEBAgIDCAISBAIBAgMCAggCAgcBAQIKBwMBAQIEBAQDB?=
+ =?us-ascii?q?gICBQQNAwgFAQECAgQBCgIJDwUCAgMDAgMBAQECCgMJAQUCAgEDAgIEBAcBB?=
+ =?us-ascii?q?gMFAwMEBAIDAwIMAQUBBQEFAQUEAgYBEwIUAgILBQYDBg4DCwQEAQICBQQGD?=
+ =?us-ascii?q?AkEAgICBgECEQMBAgEHAQMDAgoBBAECCwgBBQgCDAQCAQQCAwYQAggFBgUCA?=
+ =?us-ascii?q?gEBAgICAQgGDwMGBwIDAgYDBQUDAwICAgcEBAIBAgICARMGBAQCAwIDBAEFB?=
+ =?us-ascii?q?AQDAhcIDQIFBwEJCggMAQQGAgQCBAcDBgUFBAIDBAQRBwsDAgMEAgIGAxECA?=
+ =?us-ascii?q?wQCCgIEBAcCAwEEDQYEBAoCCwMHAQECBQMDCQcGAgMDBQQDBgIFAwMDAgMCD?=
+ =?us-ascii?q?QICAgEJAQEBAhQCAw4CBAIBAgUFDAQTAgIDAgYIAgICBwMDBAIDBgsBAhADA?=
+ =?us-ascii?q?gICAgUDBAICFAMJBAIEBgIEAQYDAwIEBgUKBAICBQIBAQIKAgEPCgQDBAMFA?=
+ =?us-ascii?q?wcJAgUFAwIEAgIHCQEBAgICAwMDAwIDAgIDAwIHAwMDBwMFAwQCAwYFBwMFB?=
+ =?us-ascii?q?QMCAgIUAQYCBQoGAwcGCwUFBwIGAgQIAwUCAgMDAwMCBgoIAwMDAgEGAgIDA?=
+ =?us-ascii?q?wECCAMPBgICAwUGAwMDAwYIAwMCBgMDAgMCAwIDAwEDAgMCAgMCAgIIAgIDA?=
+ =?us-ascii?q?gUEBQICAwQCCBoCAgICAwMIAwMKBAICBAEEAgQCBAIGAwQCAgEHAgUDAgMCB?=
+ =?us-ascii?q?wICBAICAgIDAgIGCAICAwMDAgICAQkCBQEBBgIEAwIDBQMJAwQFAgMIAQECA?=
+ =?us-ascii?q?gcHAwMEAwECAQUEAgIGBQIDAgIEBAQFAwIDAgYGAgEDAgoGAwUDAwMDAgMDA?=
+ =?us-ascii?q?gMDAgUCCAICBAQFBAIFBAIEAwMDAQoCBgMCAgUBAQICBQMCBAQHAgICBw8DA?=
+ =?us-ascii?q?gcFAgUFBQIIAQYFAgIDAggBAgIGAQYCBAECAg0BAQICAgMEAwMHAgQDAggCA?=
+ =?us-ascii?q?wMRAQMDCQYFBAUEAwkEDwIEAQgDAQEECAIEAwIMAgIhAgULBAQBEgoIAwEBA?=
+ =?us-ascii?q?wEBAgICAgIOAwIDAgIDCgIDAgoDBgQCAgYBAQEEBgEEAgECBwQOCQUICAEDA?=
+ =?us-ascii?q?gEKAQISBQIPAgkDAwYEAhAGCgUDAgMFAQIFFQMIAwIJAgQMAw0CAwMCBgMGA?=
+ =?us-ascii?q?gYBBgMHCwEBCQgFAwMDAhcBAgIQCAYGDwcCAwMEBA8DEgIGDgMDAgMCAQICA?=
+ =?us-ascii?q?gMFBAUCBwMDDQUCAgcDAggFAwcJBAoCCAUBAgYDAgICAgUNAQEBAQIDAgUDB?=
+ =?us-ascii?q?wkICAQFBAMBAQYGDCUCAgMEDwMJAwYLAQUFAQMCAgIOAwUDAgMGBgENBAEFB?=
+ =?us-ascii?q?AkCBQcGBQIBFBcHBQIKAgcCAgIDAQIICwgCAwIKBAEOBBoCBQECAgMCAwcCA?=
+ =?us-ascii?q?wICFAMDBQQGAwICAgIDAgEKCwMCBQMDAwMFBQMDAhoCAwIDAgEKBQIMBQQDB?=
+ =?us-ascii?q?AICAQIeAwEFAgMKAQUJAwYCAgMCBQIDBgUCBAEKDgEBAQMGCwcEFwICAgwIA?=
+ =?us-ascii?q?wkFAgMFDQILBAMDBQICCwUVAQIBQx0CCQMjDwMLCQgTPQELBzIENAEUFAcnA?=
+ =?us-ascii?q?QYhX50fAYNYQSEJCmgVQRdVkxGyY2eDNowOlTkzhAWMfpkxh2aQfI10lSuFV?=
+ =?us-ascii?q?REjEoFFJIFcTSMVbII2TwMZD1eNYoNhgm6bPkQyOwIHAQoBAQMJhkuCV4FIA?=
+ =?us-ascii?q?QE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:8xZsSqwNhj6lfy2RimtNKrPwIb1zdoMgy1knxilNoH1uA6ulfq
+ WV9sjzuiWE6wr5NEtBpTniAsi9qBHnhPxICOAqVN/IYOCMghrMEGgN1/qH/9QiIUHDHyxmuJ
+ uIv5IQNDQ4NzZHsfo=
+X-Talos-CUID: 9a23:TQB/Zm0fMdnDLPTVpEZATbxfGuk/KETy93LremS8JWd1WOO1U3Kd5/Yx
+X-Talos-MUID: =?us-ascii?q?9a23=3A/m0rcQwVsXfl992gGuAGvHab3YaaqLiCJ1wzzLc?=
+ =?us-ascii?q?UgcarMG9PHziiqAaLYaZyfw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,199,1708383600"; 
+   d="scan'208,217";a="84687553"
+X-MGA-submission: =?us-ascii?q?MDH5SeDyUOS+YxXvkHEGG8DwsEh0X6HTjd5RUg?=
+ =?us-ascii?q?gAMe24QHB7M+cpMm+Lh9YWZLaTPQR47tFuduCKcIROb24TK9JyKkEXIX?=
+ =?us-ascii?q?pQVNkg5v2Hvma1MxmcC3kw5LOS/n/AWKIpODVhAOJ3A4AnWNIUa+iHh2?=
+ =?us-ascii?q?oxmrpg+z0GhS6hGXP0YLHlsQ=3D=3D?=
+Received: from mail-oa1-f41.google.com ([209.85.160.41])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2024 13:00:09 +0200
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-22e6b61d652so656401fac.0
+        for <caml-list@inria.fr>; Sat, 13 Apr 2024 04:00:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713006007; x=1713610807; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=u5p8TzQXD9rBJCxUS2+0MEYcnev8LJWemMceWxG3w54=;
+        b=hLv3jHuIYc9BeMgOd5wHx7ptqdSKpiOCT8STTGUhOACisCLlh10IiuEOKNAG/yL0V2
+         eHeG/6sMg+BEUhjuCjETLlQntbE9LM64qOwVsqB7cVvXzj0O+DsyIC3VPo7EvUy3Y5JY
+         30qRX4yskGnRVF3O4HPPuAWJJFPosA9NOzF7UVGQgct6DKjqHcY6balITT4mfPsXwuPB
+         bQTq+tiTkbIR+SOmEf9dN8A0HWLjfW6VK/v3i0+IkVVr+NSoPVFuYmG+xiWoeTUaDNPQ
+         IERqfxOrEEi7FnHI65yMWQpJ9sHUobGYCROmDKA+89xMm+pxhrZaC1kHLys3hX7wkoC9
+         b77Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713006007; x=1713610807;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=u5p8TzQXD9rBJCxUS2+0MEYcnev8LJWemMceWxG3w54=;
+        b=m5TONfe1g01PLceHzigZ5O6CKvQMfyBnxz+bb4PmxFk60RnCAm4oEIgkgFSalmWD+q
+         zZfz0ewwF00l3BFAMSNm2LDprfiktguTYPz77UwA2YhqJiNuoayc3C4Q+2tY5QHmyDnz
+         yUkASfQFWT3PU1cPxZYLckT+y4bCtWZIkQQzNEZzLEFIImU2Pfyecu3HdKl/Cc3nTElK
+         MpwXZm7/ZzOAAxSI9xss6E96akJjHRBLq+zX4CEgIybxFQmr4efz1alwPVI/z570Q8+/
+         kfMpnGTI0/aE/KIw3uBP7Qg2bYu/RFpaMVoStae7jjwKCB1UiVs7yQ4DvjVERbUqOXRV
+         NGNg==
+X-Gm-Message-State: AOJu0YyswbZC2EH3eUrz9Y3uMvJNw8AbzNf3D1t15veP8mgoYeW/gDxt
+	ktM5U6ZmnMWgABp/C+SLs5bhAfJbt9v0z9d0IEpz8pRMQ7/kE1/yi+H902j4G3BNKmVegPsyOZ3
+	E04/Pi5B8ibIW05NQdM2iYFzgRjUsNw==
+X-Google-Smtp-Source: AGHT+IHoKT1VxP7Qnt5NCV8LFZ1mGTb4U/GRS51nuBoTl+cHia0eq6AnYozWGYPy0cMYRmzBpCgNGnRfjmh7GWC/7J4=
+X-Received: by 2002:a05:6871:68b:b0:22e:7a61:5747 with SMTP id
+ l11-20020a056871068b00b0022e7a615747mr5391543oao.3.1713006005574; Sat, 13 Apr
+ 2024 04:00:05 -0700 (PDT)
+MIME-Version: 1.0
+From: Letterio Galletta <lillocpp@gmail.com>
+Date: Sat, 13 Apr 2024 13:00:00 +0200
+Message-ID: <CAE=HoKVxScDT6aUUAe++ApgEJVwZti1E7d6x8tmh+nP6hk-PWA@mail.gmail.com>
+To: caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="00000000000075e2b90615f84abd"
+Subject: [Caml-list] Fully-funded Ph.D. Positions in Computer Science @ IMT
+ Lucca, Italy
+Reply-To: Letterio Galletta <lillocpp@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19111
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-04/CAE%3DHoKVxScDT6aUUAe%2B%2BApgEJVwZti1E7d6x8tmh%2BnP6hk-PWA%40mail.gmail.com>
+
+--00000000000075e2b90615f84abd
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+[apologies for multiple copies, please forward it to interested parties]
+
+
+IMT School for Advanced Studies Lucca=E2=80=94recently ranked one of Italy=
+=E2=80=99s top
+universities for computer science in the last national research evaluation
+exercise=E2=80=94invites applications for up to nine fully-funded Ph.D. pos=
+itions
+in Computer Science within the Software Quality
+<https://sys.imtlucca.it/program-overview/software-quality-sq> track of
+IMT=E2=80=99s Ph.D. program in Systems Science <https://sys.imtlucca.it>.
+
+Successful applicants will receive the following benefits:
+
+   -
+
+   Enjoy a monthly stipend of approximately =E2=82=AC1,300.
+   -
+
+   Live at no cost in full-board, serviced housing on the breathtaking IMT
+   campus in historic Lucca, Tuscany=E2=80=94valued at around =E2=82=AC800 =
+per month.
+   -
+
+   Benefit from a 50% increase in your scholarship for international
+   research stays.
+   -
+
+   Receive ample funding to support your innovative research efforts.
+
+
+The program is fully funded for three years, with the possibility of a
+scholarship extension of up to one year.
+
+Working closely with IMT's SySMA group <https://sysma.imtlucca.it>, we
+welcome outstanding applicants interested in several areas of computer
+science, including formal methods, machine learning, modeling and simulatio=
+n,
+program verification, cybersecurity, and software engineering.
+
+IMT Lucca fosters an international environment. The working language is
+English.
+
+The application deadline is 21 June 2024. Applications must be submitted
+through the online form available here
+<https://pica.cineca.it/imtlucca/imtlucca-phd-2024/>. Further information
+about the Ph.D. program in Software Quality is available here
+<https://sys.imtlucca.it/program-overview/software-quality-sq>.
+
+Interested candidates are welcome to direct informal inquiries to
+sysma@imtlucca.it.
+
+--00000000000075e2b90615f84abd
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><span id=3D"m_2253561500268744837gmail-docs-internal-guid-=
+e947f637-7fff-a707-75a0-3e0a05df1c27"><p dir=3D"ltr" style=3D"line-height:1=
+.38;text-align:justify;margin-top:0pt;margin-bottom:0pt"><span style=3D"fon=
+t-size:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26);background-col=
+or:transparent;font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;vertical-align:baseline">[apologies for multi=
+ple copies, please forward it to interested parties]</span></p><p dir=3D"lt=
+r" style=3D"line-height:1.38;text-align:justify;margin-top:0pt;margin-botto=
+m:0pt"><span style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb=
+(14,16,26);background-color:transparent;font-variant-numeric:normal;font-va=
+riant-east-asian:normal;font-variant-alternates:normal;vertical-align:basel=
+ine"><br></span></p><p dir=3D"ltr" style=3D"line-height:1.38;text-align:jus=
+tify;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;font-f=
+amily:Arial,sans-serif;color:rgb(14,16,26);background-color:transparent;fon=
+t-variant-numeric:normal;font-variant-east-asian:normal;font-variant-altern=
+ates:normal;vertical-align:baseline">IMT School for Advanced Studies Lucca=
+=E2=80=94recently ranked one of Italy=E2=80=99s top universities for comput=
+er science in the last national research evaluation exercise=E2=80=94invite=
+s applications for up to nine fully-funded Ph.D. positions in Computer Scie=
+nce within the </span><a href=3D"https://sys.imtlucca.it/program-overview/s=
+oftware-quality-sq" style=3D"text-decoration-line:none" target=3D"_blank"><=
+span style=3D"font-size:11pt;font-family:Arial,sans-serif;background-color:=
+transparent;font-variant-numeric:normal;font-variant-east-asian:normal;font=
+-variant-alternates:normal;text-decoration-line:underline;vertical-align:ba=
+seline">Software Quality</span></a><span style=3D"font-size:11pt;font-famil=
+y:Arial,sans-serif;color:rgb(14,16,26);background-color:transparent;font-va=
+riant-numeric:normal;font-variant-east-asian:normal;font-variant-alternates=
+:normal;vertical-align:baseline"> track of IMT=E2=80=99s Ph.D. program in <=
+/span><a href=3D"https://sys.imtlucca.it" style=3D"text-decoration-line:non=
+e" target=3D"_blank"><span style=3D"font-size:11pt;font-family:Arial,sans-s=
+erif;background-color:transparent;font-variant-numeric:normal;font-variant-=
+east-asian:normal;font-variant-alternates:normal;text-decoration-line:under=
+line;vertical-align:baseline">Systems Science</span></a><span style=3D"font=
+-size:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26);background-colo=
+r:transparent;font-variant-numeric:normal;font-variant-east-asian:normal;fo=
+nt-variant-alternates:normal;vertical-align:baseline">.=C2=A0</span></p><br=
+><p dir=3D"ltr" style=3D"line-height:1.38;text-align:justify;margin-top:0pt=
+;margin-bottom:0pt"><span style=3D"font-size:11pt;font-family:Arial,sans-se=
+rif;color:rgb(14,16,26);background-color:transparent;font-variant-numeric:n=
+ormal;font-variant-east-asian:normal;font-variant-alternates:normal;vertica=
+l-align:baseline">Successful applicants will receive the following benefits=
+:</span></p><ul style=3D"margin-top:0px;margin-bottom:0px"><li dir=3D"ltr" =
+style=3D"list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;c=
+olor:rgb(14,16,26);background-color:transparent;font-variant-numeric:normal=
+;font-variant-east-asian:normal;font-variant-alternates:normal;vertical-ali=
+gn:baseline;white-space:pre-wrap"><p dir=3D"ltr" style=3D"line-height:1.38;=
+text-align:justify;margin-top:0pt;margin-bottom:0pt" role=3D"presentation">=
+<span style=3D"font-size:11pt;background-color:transparent;font-variant-num=
+eric:normal;font-variant-east-asian:normal;font-variant-alternates:normal;v=
+ertical-align:baseline">Enjoy a monthly stipend of approximately =E2=82=AC1=
+,300.</span></p></li><li dir=3D"ltr" style=3D"list-style-type:disc;font-siz=
+e:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26);background-color:tr=
+ansparent;font-variant-numeric:normal;font-variant-east-asian:normal;font-v=
+ariant-alternates:normal;vertical-align:baseline;white-space:pre-wrap"><p d=
+ir=3D"ltr" style=3D"line-height:1.38;text-align:justify;margin-top:0pt;marg=
+in-bottom:0pt" role=3D"presentation"><span style=3D"font-size:11pt;backgrou=
+nd-color:transparent;font-variant-numeric:normal;font-variant-east-asian:no=
+rmal;font-variant-alternates:normal;vertical-align:baseline">Live at no cos=
+t in full-board, serviced housing on the breathtaking IMT campus in histori=
+c Lucca, Tuscany=E2=80=94valued at around =E2=82=AC800 per month.=C2=A0</sp=
+an></p></li><li dir=3D"ltr" style=3D"list-style-type:disc;font-size:11pt;fo=
+nt-family:Arial,sans-serif;color:rgb(14,16,26);background-color:transparent=
+;font-variant-numeric:normal;font-variant-east-asian:normal;font-variant-al=
+ternates:normal;vertical-align:baseline;white-space:pre-wrap"><p dir=3D"ltr=
+" style=3D"line-height:1.38;text-align:justify;margin-top:0pt;margin-bottom=
+:0pt" role=3D"presentation"><span style=3D"font-size:11pt;background-color:=
+transparent;font-variant-numeric:normal;font-variant-east-asian:normal;font=
+-variant-alternates:normal;vertical-align:baseline">Benefit from a 50% incr=
+ease in your scholarship for international research stays.</span></p></li><=
+li dir=3D"ltr" style=3D"list-style-type:disc;font-size:11pt;font-family:Ari=
+al,sans-serif;color:rgb(14,16,26);background-color:transparent;font-variant=
+-numeric:normal;font-variant-east-asian:normal;font-variant-alternates:norm=
+al;vertical-align:baseline;white-space:pre-wrap"><p dir=3D"ltr" style=3D"li=
+ne-height:1.38;text-align:justify;margin-top:0pt;margin-bottom:0pt" role=3D=
+"presentation"><span style=3D"font-size:11pt;background-color:transparent;f=
+ont-variant-numeric:normal;font-variant-east-asian:normal;font-variant-alte=
+rnates:normal;vertical-align:baseline">Receive ample funding to support you=
+r innovative research efforts.</span></p></li></ul><p dir=3D"ltr" style=3D"=
+line-height:1.38;text-align:justify;margin-top:0pt;margin-bottom:0pt"><span=
+ style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26);b=
+ackground-color:transparent;font-variant-numeric:normal;font-variant-east-a=
+sian:normal;font-variant-alternates:normal;vertical-align:baseline"><br></s=
+pan><span style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14=
+,16,26);background-color:transparent;font-variant-numeric:normal;font-varia=
+nt-east-asian:normal;font-variant-alternates:normal;vertical-align:baseline=
+">The program is fully funded for three years, with the possibility of a sc=
+holarship extension of up to one year.=C2=A0</span></p><br><p dir=3D"ltr" s=
+tyle=3D"line-height:1.38;text-align:justify;margin-top:0pt;margin-bottom:0p=
+t"><span style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14,=
+16,26);background-color:transparent;font-variant-numeric:normal;font-varian=
+t-east-asian:normal;font-variant-alternates:normal;vertical-align:baseline"=
+>Working closely with IMT&#39;s </span><a href=3D"https://sysma.imtlucca.it=
+" style=3D"text-decoration-line:none" target=3D"_blank"><span style=3D"font=
+-size:11pt;font-family:Arial,sans-serif;background-color:transparent;font-v=
+ariant-numeric:normal;font-variant-east-asian:normal;font-variant-alternate=
+s:normal;text-decoration-line:underline;vertical-align:baseline">SySMA grou=
+p</span></a><span style=3D"font-size:11pt;font-family:Arial,sans-serif;colo=
+r:rgb(14,16,26);background-color:transparent;font-variant-numeric:normal;fo=
+nt-variant-east-asian:normal;font-variant-alternates:normal;vertical-align:=
+baseline">, we welcome outstanding applicants interested in several areas o=
+f computer science, including </span><span style=3D"font-size:11pt;font-fam=
+ily:Arial,sans-serif;color:rgb(14,16,26);background-color:transparent;font-=
+weight:700;font-variant-numeric:normal;font-variant-east-asian:normal;font-=
+variant-alternates:normal;vertical-align:baseline">formal methods</span><sp=
+an style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26)=
+;background-color:transparent;font-variant-numeric:normal;font-variant-east=
+-asian:normal;font-variant-alternates:normal;vertical-align:baseline">, </s=
+pan><span style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14=
+,16,26);background-color:transparent;font-weight:700;font-variant-numeric:n=
+ormal;font-variant-east-asian:normal;font-variant-alternates:normal;vertica=
+l-align:baseline">machine learning</span><span style=3D"font-size:11pt;font=
+-family:Arial,sans-serif;color:rgb(14,16,26);background-color:transparent;f=
+ont-variant-numeric:normal;font-variant-east-asian:normal;font-variant-alte=
+rnates:normal;vertical-align:baseline">, </span><span style=3D"font-size:11=
+pt;font-family:Arial,sans-serif;color:rgb(14,16,26);background-color:transp=
+arent;font-weight:700;font-variant-numeric:normal;font-variant-east-asian:n=
+ormal;font-variant-alternates:normal;vertical-align:baseline">modeling and =
+simulation</span><span style=3D"font-size:11pt;font-family:Arial,sans-serif=
+;color:rgb(14,16,26);background-color:transparent;font-variant-numeric:norm=
+al;font-variant-east-asian:normal;font-variant-alternates:normal;vertical-a=
+lign:baseline">, </span><span style=3D"font-size:11pt;font-family:Arial,san=
+s-serif;color:rgb(14,16,26);background-color:transparent;font-weight:700;fo=
+nt-variant-numeric:normal;font-variant-east-asian:normal;font-variant-alter=
+nates:normal;vertical-align:baseline">program verification</span><span styl=
+e=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26);backgr=
+ound-color:transparent;font-variant-numeric:normal;font-variant-east-asian:=
+normal;font-variant-alternates:normal;vertical-align:baseline">, </span><sp=
+an style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26)=
+;background-color:transparent;font-weight:700;font-variant-numeric:normal;f=
+ont-variant-east-asian:normal;font-variant-alternates:normal;vertical-align=
+:baseline">cybersecurity</span><span style=3D"font-size:11pt;font-family:Ar=
+ial,sans-serif;color:rgb(14,16,26);background-color:transparent;font-varian=
+t-numeric:normal;font-variant-east-asian:normal;font-variant-alternates:nor=
+mal;vertical-align:baseline">, and </span><span style=3D"font-size:11pt;fon=
+t-family:Arial,sans-serif;color:rgb(14,16,26);background-color:transparent;=
+font-weight:700;font-variant-numeric:normal;font-variant-east-asian:normal;=
+font-variant-alternates:normal;vertical-align:baseline">software engineerin=
+g</span><span style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rg=
+b(14,16,26);background-color:transparent;font-variant-numeric:normal;font-v=
+ariant-east-asian:normal;font-variant-alternates:normal;vertical-align:base=
+line">.=C2=A0=C2=A0</span></p><br><p dir=3D"ltr" style=3D"line-height:1.38;=
+text-align:justify;margin-top:0pt;margin-bottom:0pt"><span style=3D"font-si=
+ze:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26);background-color:t=
+ransparent;font-variant-numeric:normal;font-variant-east-asian:normal;font-=
+variant-alternates:normal;vertical-align:baseline">IMT Lucca fosters an int=
+ernational environment. The working language is English.</span></p><br><p d=
+ir=3D"ltr" style=3D"line-height:1.38;text-align:justify;margin-top:0pt;marg=
+in-bottom:0pt"><span style=3D"font-size:11pt;font-family:Arial,sans-serif;c=
+olor:rgb(14,16,26);background-color:transparent;font-variant-numeric:normal=
+;font-variant-east-asian:normal;font-variant-alternates:normal;vertical-ali=
+gn:baseline">The application</span><span style=3D"font-size:11pt;font-famil=
+y:Arial,sans-serif;color:rgb(14,16,26);background-color:transparent;font-we=
+ight:700;font-variant-numeric:normal;font-variant-east-asian:normal;font-va=
+riant-alternates:normal;vertical-align:baseline"> deadline is 21 June 2024<=
+/span><span style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(=
+14,16,26);background-color:transparent;font-variant-numeric:normal;font-var=
+iant-east-asian:normal;font-variant-alternates:normal;vertical-align:baseli=
+ne">. Applications must be submitted through the online form available </sp=
+an><a href=3D"https://pica.cineca.it/imtlucca/imtlucca-phd-2024/" style=3D"=
+text-decoration-line:none" target=3D"_blank"><span style=3D"font-size:11pt;=
+font-family:Arial,sans-serif;background-color:transparent;font-variant-nume=
+ric:normal;font-variant-east-asian:normal;font-variant-alternates:normal;te=
+xt-decoration-line:underline;vertical-align:baseline">here</span></a><span =
+style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26);ba=
+ckground-color:transparent;font-variant-numeric:normal;font-variant-east-as=
+ian:normal;font-variant-alternates:normal;vertical-align:baseline">. Furthe=
+r information about the Ph.D. program in Software Quality is available </sp=
+an><a href=3D"https://sys.imtlucca.it/program-overview/software-quality-sq"=
+ style=3D"text-decoration-line:none" target=3D"_blank"><span style=3D"font-=
+size:11pt;font-family:Arial,sans-serif;background-color:transparent;font-va=
+riant-numeric:normal;font-variant-east-asian:normal;font-variant-alternates=
+:normal;text-decoration-line:underline;vertical-align:baseline">here</span>=
+</a><span style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14=
+,16,26);background-color:transparent;font-variant-numeric:normal;font-varia=
+nt-east-asian:normal;font-variant-alternates:normal;vertical-align:baseline=
+">.=C2=A0</span></p><br><span style=3D"font-size:11pt;font-family:Arial,san=
+s-serif;color:rgb(14,16,26);background-color:transparent;font-variant-numer=
+ic:normal;font-variant-east-asian:normal;font-variant-alternates:normal;ver=
+tical-align:baseline">Interested candidates are welcome to direct informal =
+inquiries to </span><a href=3D"mailto:sysma@imtlucca.it" style=3D"text-deco=
+ration-line:none" target=3D"_blank"><span style=3D"font-size:11pt;font-fami=
+ly:Arial,sans-serif;background-color:transparent;font-variant-numeric:norma=
+l;font-variant-east-asian:normal;font-variant-alternates:normal;text-decora=
+tion-line:underline;vertical-align:baseline">sysma@imtlucca.it</span></a><s=
+pan style=3D"font-size:11pt;font-family:Arial,sans-serif;color:rgb(14,16,26=
+);background-color:transparent;font-variant-numeric:normal;font-variant-eas=
+t-asian:normal;font-variant-alternates:normal;vertical-align:baseline">.</s=
+pan></span><br><br></div>
+
+--00000000000075e2b90615f84abd--
