@@ -1,0 +1,394 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=reject dis=none) header.from=umn.edu
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=S5a8tJ/R;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=umn.edu header.i=@umn.edu header.a=rsa-sha256 header.s=google header.b=MTd6As1X;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id B799BB80123
+	for <caml-list@tunbury.org>; Sun, 21 Apr 2024 15:34:56 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:cc:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=fiNvJirZChmKMRwQqWzFNS+cIAOc+t5Nc9YGis0uJdM=;
+  b=S5a8tJ/RqpRegsz9KcrcarcpzSvAzy7emBO47CXu4sJyAwHaJmi2/oU/
+   ROfSbak7oVUh2IAobLxQXOvU9gemuT6fBcI36FYif0wPZdi4aDnA0rKsl
+   TqdnmtexNvVQuAy4DOT2HhKX29/vtmzwmRCxqHnSAKRYT6LgigqgkTv+F
+   Q=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@umn.edu
+X-IronPort-AV: E=Sophos;i="6.07,218,1708383600"; 
+   d="scan'208,217";a="162594959"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 21 Apr 2024 16:34:55 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id B1DE4E013D; Sun, 21 Apr 2024 16:34:55 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id ED527E0035
+	for <caml-list@sympa.inria.fr>; Sun, 21 Apr 2024 16:34:48 +0200 (CEST)
+IronPort-SDR: 662523f7_QlfSjGWCFdpPXEGIo5E1/F63qZuUb1XNf1hzyKwT4kTL3N+
+ MbIsb0dxXgQhkq+KCILanPPz3/A9cYl7kbGt9AA==
+X-IPAS-Result: =?us-ascii?q?A0FwAwB/IyVmh83EVIZaDoJKgkR8VzMHCEiEVoEjjn4BB?=
+ =?us-ascii?q?4E/lzqEfIFWgUA+BgkBAwENOQsEAQEDBIFLAYF8cUaIJAIfBgEEMgcOAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABAQEBIhcHEA4nhXANgmcBg?=
+ =?us-ascii?q?R5eSAEBAQEBAQEBAQEBAQEBAQEBAQEBARQCDQdVASEWCwYdAQEmDAUBGA03A?=
+ =?us-ascii?q?iMSAQUBIxoMBweCXgGCZAMRmS6PMoEFQos7gTKBAYIMAQEG3AYBCYFuCRSBN?=
+ =?us-ascii?q?IguAYFVAgKEI4NGgSEbfYEQgRU1gkKBdoE6IgSBNlWDLoJojksBWYZggjuCY?=
+ =?us-ascii?q?YcpJgMHBxArSRABIQMmMyETAVUTGBQNJCMCKT4DCQoQAhYDHRQEMBEJCyYDK?=
+ =?us-ascii?q?gY5AhIMBgYGWyAWCQQjAwgEA1ADIHARAwQaBAsHdYMpAQcEE0cQK4EHBooKg?=
+ =?us-ascii?q?xUCBSEEJQ+BaIEmUIIwS4EsXgKCd4F7AQ0BaV0dQAMLYgs8ATUGDhsoJzidb?=
+ =?us-ascii?q?gIBgh2CASoBWC0TAwIlAwwULyY9kmqPSIIdoGuEHYN8iBKVODOFW4FIkCGSc?=
+ =?us-ascii?q?JhiII1UlUUThSgRI4EfKQ4lgVxNJRMaUgaCMAlGAxkPV40nOQKDYWqEKoogl?=
+ =?us-ascii?q?T8lNTsCBwEKAQEDCYhvM4FIAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ TBdeF2oi31XhaI8/QiMtpKV9NwkUOvT8ggV
+IronPort-HdrOrdr: A9a23:+xRkPq76XAPIGCg1QQPXwALXdLJyesId70hD6qm+c20rTiX4rb
+ HRoBx4vSWbtN91YhEdcTHsAsa9qBznhOVICOUqTM+ftWrdyRKVxeNZnPHfKlTbckWUm4I96U
+ 4KSdkCNDSfNykHse/KpCa/CMgp29SK/eSFgu3E325xQQwCUdAD0+67MHf/LqS1fngkOXP0Lu
+ v62iOPnUvFCBIqhxuAbEU4Yw==
+X-Talos-CUID: 9a23:bnbdV26W2aFrJYgZctss23YQPeEUYiHklVzpJVCYD2NTEb6yRgrF
+X-Talos-MUID: 9a23:b2wv7Qh/u+YdLIAHlz5x6cMpEe1Cs42KMVA31pgfo+WvDzNIFzyhtWHi
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,218,1708383600"; 
+   d="scan'208,217";a="162594932"
+X-MGA-submission: =?us-ascii?q?MDH9d3QAqjjdYzj/Ez0FjcEo/GRXGt7zkJOJp7?=
+ =?us-ascii?q?cm33FLpTRx0Uc4k5bSezR4wvAR370Ui59t1uABIem7twJxR7GDyJktyD?=
+ =?us-ascii?q?hiqWnfeMPaP4eZBqPx2vp0Ooj4zrIMeTeLePgXIq5l5gkHASqqAgLBnr?=
+ =?us-ascii?q?JxcCMBUD9bvW+dv1gYP//Y+g=3D=3D?=
+Received: from mta-p5.oit.umn.edu ([134.84.196.205])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2024 16:34:31 +0200
+Received: from localhost (unknown [127.0.0.1])
+	by mta-p5.oit.umn.edu (Postfix) with ESMTP id 4VMrVs2Y7hz9vJ4l
+	for <caml-list@inria.fr>; Sun, 21 Apr 2024 14:34:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p5.oit.umn.edu ([127.0.0.1])
+	by localhost (mta-p5.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LfzJMwAw4Oiq for <caml-list@inria.fr>;
+	Sun, 21 Apr 2024 09:34:29 -0500 (CDT)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mta-p5.oit.umn.edu (Postfix) with ESMTPS id 4VMrVr5rxKz9vJ4j
+	for <caml-list@inria.fr>; Sun, 21 Apr 2024 09:34:28 -0500 (CDT)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p5.oit.umn.edu 4VMrVr5rxKz9vJ4j
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p5.oit.umn.edu 4VMrVr5rxKz9vJ4j
+Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-a5190b1453fso206585166b.2
+        for <caml-list@inria.fr>; Sun, 21 Apr 2024 07:34:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google; t=1713710067; x=1714314867; darn=inria.fr;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=fiNvJirZChmKMRwQqWzFNS+cIAOc+t5Nc9YGis0uJdM=;
+        b=MTd6As1XNfbFQ5hzUjaiUCOxx4eExlzJbntYlwEPN4VLMqrzbBDK8Hd5CsAlI7aTu3
+         v52R23+d1lUkhQ9yfNhupcAZFj1r3rId4aZI9wyLjWkbNDzvmze3/wCPpAW0xTUVU4c3
+         vTYS1NtDlQSC12tbSrJ88WhUO4QfZtKBAIZMVJiiIfwtq7nam92X5/N7E0Xi1BTJrAUp
+         dQwpOD1MZOjKKvxQfIXWDsj9d8+yZazYZNcB22tdTXO6YU7dLvJ6RfbuiaJ1Pql258sF
+         afaQS5JAoEVa2++Sh3CouaYtRVIEBytaRSRfLv/V7MYrmHN/a7HzumfxX/fcWvNWRH64
+         8oUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713710067; x=1714314867;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fiNvJirZChmKMRwQqWzFNS+cIAOc+t5Nc9YGis0uJdM=;
+        b=BPRHl/2GAU8kWxuiTrHJAxS1VcQbxEvL8043LQJacOVc5/elw2AAmOG0D8Jwyw6LWS
+         7SdxepqGWbQa69t0tiOipluoiriuPlyBFCmhVF3dM+dqsh28VU4GXyogD9KgLiLAQZpO
+         EOYuNt+Gut/fYzeo/8shwmrFkR6E13IqFMdiZ/EnvSO/lK2vZvGv1kP2ycVDOusEpJQe
+         JR8N3lojGMYxDjPBm2DHiqeMxUvPr77zeUqZF2TMgT2Qb/xkBFWv6KIrTWX885pApc2/
+         JHbkrVz6dQdQzWsf3a2oFA0JyDUTlHY3DghMSCDU/IXWRTgwSWTsr8l9JdHOgfzkIYA6
+         MJYA==
+X-Forwarded-Encrypted: i=1; AJvYcCVii+tgb0iUjs35GlSolMQCxRZl1RfO6CV7W/HEivggO+7cuDpdgCxEjI1QVCwv5TUpM8uSySoi1yhtGsKmUb0ffEQ=
+X-Gm-Message-State: AOJu0YxV1nm6DmPyjQZVseBYJXNyqC20oghGV5Gs9PMf5irfYaAGtk7+
+	HKlhK2mEMaDU+uXUfqjeQSLoF+MdBQy+x5CdQ4V8Jx3DWK/sgzhs47im7TgY1B5C90n21aIrs0u
+	gZQ6RLeqbHwbmQiLRnR+ITu6EmWQpJHWTC5+qBTt8BGkUU58ilvt2J2E51bdshWSspIUiLFzpSe
+	PKoHyleB0Bzrbg2QJEMvUXxImsFfE=
+X-Received: by 2002:a17:907:2d25:b0:a55:358f:783c with SMTP id gs37-20020a1709072d2500b00a55358f783cmr5463097ejc.24.1713710067426;
+        Sun, 21 Apr 2024 07:34:27 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFIlYh+/0DzHTM+whtC45NktYMBniZEozCQrHaVS8I/HnCFqyNg/trMzGNJ+8urB3TLDF34XBBDuRQSyVe6nDc=
+X-Received: by 2002:a17:907:2d25:b0:a55:358f:783c with SMTP id
+ gs37-20020a1709072d2500b00a55358f783cmr5463085ejc.24.1713710066839; Sun, 21
+ Apr 2024 07:34:26 -0700 (PDT)
+MIME-Version: 1.0
+From: Favonia <kbh@umn.edu>
+Date: Sun, 21 Apr 2024 09:33:50 -0500
+Message-ID: <CAH_+rveE+-6jrwtyG302ML9vF8RWt9mExPptHjp9XfihQfuZaw@mail.gmail.com>
+To: sci-diku-prog-lang@list.ku.dk, types-announce@lists.seas.upenn.edu, 
+	haskell-cafe@haskell.org, agda@lists.chalmers.se, coq-club@inria.fr, 
+	caml-list@inria.fr, idris-lang@googlegroups.com
+Cc: "Morris, Garrett" <garrett-morris@uiowa.edu>
+Content-Type: multipart/alternative; boundary="000000000000c844e106169c3784"
+Subject: [Caml-list] Student Research Competition (SRC) at ICFP 2024
+Reply-To: Favonia <kbh@umn.edu>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19115
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-04/CAH_%2BrveE%2B-6jrwtyG302ML9vF8RWt9mExPptHjp9XfihQfuZaw%40mail.gmail.com>
+
+--000000000000c844e106169c3784
+Content-Type: text/plain; charset="UTF-8"
+
+ICFP 2024 Student Research Competition
+
+       Call for Submissions
+
+
+ICFP 2024 invites students to participate in the Student Research
+Competition in order to present their research and get feedback from
+prominent members of the programming language research community.
+
+The SRC consists of three rounds:
+
+* Submission of an extended abstract
+* Poster session at ICFP 2024
+* Finalists' presentations at ICFP 2024
+
+During the first round students submit an extended abstract detailing
+their research to be reviewed by the program committee. Those students
+whose abstracts get accepted advance to the poster session round which
+will take place during ICFP 2024. Winners of the poster session
+advance to the next round, where they will give a 5-minute presentation
+about their work on the ICFP main stage in front of a live audience.
+
+### IMPORTANT DATES AND TIMES
+
+* Submission Deadline: 23 May 2024 (Thursday)
+* Author Notification: 14 June 2024 (Friday) 12:00 PM CST
+* ICFP 2024 Conference in Milan, Italy:
+  2 September 2024 (Monday) - 7 September 2024 (Saturday)
+
+### SUBMISSION OF EXTENDED ABSTRACTS
+
+* Submission Website: https://icfp24src.hotcrp.com
+
+Each submission (referred to as "abstract" below) should include the
+student author's name and e-mail address; institutional affiliation;
+research advisor's name; ACM student member number; category
+(undergraduate or graduate); research title; and an extended abstract
+addressing the following:
+
+* Problem and Motivation: Clearly state the problem being addressed and
+  explain the reasons for seeking a solution to this problem.
+
+* Background and Related Work: Describe the specialized (but
+  pertinent) background necessary to appreciate the work in the
+  context of ICFP areas of interest. Include references to the
+  literature where appropriate, and briefly explain where your work
+  departs from that done by others.
+
+* Approach and Uniqueness: Describe your approach in addressing the
+  problem and clearly state how your approach is novel.
+
+* Results and Contributions: Clearly show how the results of your work
+  contribute to programming language design and implementation in
+  particular and to computer science in general; explain the
+  significance of those results.
+
+* Submissions must be original research that is not already published
+  at ICFP or another conference or journal. One of the goals of the
+  SRC is to give students feedback on ongoing, unpublished
+  work. Furthermore, the abstract must be authored solely by the
+  student. If the work is collaborative with others and/or part of a
+  larger group project, the abstract should make clear what the
+  student's role was and should focus on that portion of the work.
+
+* Formatting: Submissions must be in PDF format, printable in black
+  and white on US Letter sized paper, and interpretable by common PDF
+  tools. All submissions must adhere to the "ACM Small" template that
+  is available (in both LaTeX and Word formats) from
+  https://www.acm.org/publications/authors/submissions. For authors
+  using LaTeX, a lighter-weight package, including only the essential
+  files, is available from
+  http://sigplan.org/Resources/Author/#acmart-format. The submission
+  must not exceed 3 pages in PDF format. Reference lists do not count
+  towards the 3-page limit.
+
+Further information is available at the ICFP SRC website:
+https://icfp24.sigplan.org/track/icfp-2024-student-research-competition
+
+--000000000000c844e106169c3784
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><span style=3D"font-family:monospace">ICFP 2024 Student Re=
+search Competition<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0Call for Submissions<b=
+r></span><div><span style=3D"font-family:monospace"><br></span></div><div><=
+span style=3D"font-family:monospace"><br></span></div><span style=3D"font-f=
+amily:monospace">ICFP 2024 invites students to participate in the Student R=
+esearch<br>Competition in order to present their research and get feedback =
+from<br>prominent members of the programming language research community.<b=
+r><br>The SRC consists of three rounds:<br><br>* Submission of an extended =
+abstract<br>* Poster session at ICFP 2024<br>* Finalists&#39; presentations=
+ at ICFP 2024<br><br>During the first round students submit an extended abs=
+tract detailing<br>their research to be reviewed by the program committee. =
+Those students<br>whose abstracts get accepted advance to the poster sessio=
+n round which<br>will take place during ICFP 2024. Winners of the poster se=
+ssion<br>advance to the next round, where they will give a 5-minute present=
+ation<br>about their work on the ICFP main stage in front of a live audienc=
+e.<br><br>### IMPORTANT DATES AND TIMES<br><br>* Submission Deadline: 23 Ma=
+y 2024 (Thursday)<br>* Author Notification: 14 June 2024 (Friday) 12:00 PM =
+CST<br>* ICFP 2024 Conference in Milan, Italy:<br>=C2=A0 2 September 2024 (=
+Monday) - 7 September 2024 (Saturday)<br><br>### SUBMISSION OF EXTENDED ABS=
+TRACTS<br><br>* Submission Website: <a href=3D"https://icfp24src.hotcrp.com=
+" target=3D"_blank">https://icfp24src.hotcrp.com</a><br><br>Each submission=
+ (referred to as &quot;abstract&quot; below) should include the<br>student =
+author&#39;s name and e-mail address; institutional affiliation;<br>researc=
+h advisor&#39;s name; ACM student member number; category<br>(undergraduate=
+ or graduate); research title; and an extended abstract<br>addressing the f=
+ollowing:<br><br>* Problem and Motivation: Clearly state the problem being =
+addressed and<br>=C2=A0 explain the reasons for seeking a solution to this =
+problem.<br><br>* Background and Related Work: Describe the specialized (bu=
+t<br>=C2=A0 pertinent) background necessary to appreciate the work in the<b=
+r>=C2=A0 context of ICFP areas of interest. Include references to the<br>=
+=C2=A0 literature where appropriate, and briefly explain where your work<br=
+>=C2=A0 departs from that done by others.<br><br>* Approach and Uniqueness:=
+ Describe your approach in addressing the<br>=C2=A0 problem and clearly sta=
+te how your approach is novel.<br><br>* Results and Contributions: Clearly =
+show how the results of your work<br>=C2=A0 contribute to programming langu=
+age design and implementation in<br>=C2=A0 particular and to computer scien=
+ce in general; explain the<br>=C2=A0 significance of those results.<br><br>=
+* Submissions must be original research that is not already published<br>=
+=C2=A0 at ICFP or another conference or journal. One of the goals of the<br=
+>=C2=A0 SRC is to give students feedback on ongoing, unpublished<br>=C2=A0 =
+work. Furthermore, the abstract must be authored solely by the<br>=C2=A0 st=
+udent. If the work is collaborative with others and/or part of a<br>=C2=A0 =
+larger group project, the abstract should make clear what the<br>=C2=A0 stu=
+dent&#39;s role was and should focus on that portion of the work.<br><br>* =
+Formatting: Submissions must be in PDF format, printable in black<br>=C2=A0=
+ and white on US Letter sized paper, and interpretable by common PDF<br>=C2=
+=A0 tools. All submissions must adhere to the &quot;ACM Small&quot; templat=
+e that<br>=C2=A0 is available (in both LaTeX and Word formats) from<br>=C2=
+=A0 <a href=3D"https://www.acm.org/publications/authors/submissions" target=
+=3D"_blank">https://www.acm.org/publications/authors/submissions</a>. For a=
+uthors<br>=C2=A0 using LaTeX, a lighter-weight package, including only the =
+essential<br>=C2=A0 files, is available from<br>=C2=A0 <a href=3D"http://si=
+gplan.org/Resources/Author/#acmart-format" target=3D"_blank">http://sigplan=
+.org/Resources/Author/#acmart-format</a>. The submission<br>=C2=A0 must not=
+ exceed 3 pages in PDF format. Reference lists do not count<br>=C2=A0 towar=
+ds the 3-page limit.<br><br>Further information is available at the ICFP SR=
+C website:<br></span><div><span style=3D"font-family:monospace"><a href=3D"=
+https://icfp24.sigplan.org/track/icfp-2024-student-research-competition" ta=
+rget=3D"_blank">https://icfp24.sigplan.org/track/icfp-2024-student-research=
+-competition</a></span></div></div>
+
+--000000000000c844e106169c3784--
