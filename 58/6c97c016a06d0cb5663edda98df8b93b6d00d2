@@ -1,0 +1,2583 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=s+KTz5gi;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=TWiSCdw8;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id EA05BB80123
+	for <caml-list@tunbury.org>; Tue, 23 Apr 2024 13:17:29 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=IcU469DZb01Ww7OkAc+nL1Pahm68fa+NZ6ZVqljQfU0=;
+  b=s+KTz5giz+3eCN5889rqUJCbP61LfDKlEBcBp6rElBE1bJxtYrmb0MDv
+   mGbI/P4V6aYeVGvOLUMet1ZpFKXrOVv0oHPZRWN0N7yVj7B6Q4LqftN3p
+   DfZqkF6YVyb5nEP7ytyYirU6iXaZG4AhmoiAACf2xnPGQ1ZxQ8ycFjzKt
+   g=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.07,222,1708383600"; 
+   d="scan'208,217";a="162928978"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 23 Apr 2024 14:17:27 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 8112BE0D5E; Tue, 23 Apr 2024 14:17:26 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 99900E0141
+	for <caml-list@sympa.inria.fr>; Tue, 23 Apr 2024 14:17:20 +0200 (CEST)
+IronPort-SDR: 6627a6ce_E8ZRt2wksfhPLyd5EHDbSUmP4L1sfLn5J+d2j2pLwFvopmz
+ 6f4M4gL0I7HAsN7bWQkWMiLmiFTwBaK+dEH1Y1g==
+X-IPAS-Result: =?us-ascii?q?A0FuEAD3pSdmlyIeaIFQChZ/gwRbKBkBYlczBwhIBF0Ng?=
+ =?us-ascii?q?yw8g0+NNWSBFQGQL4FThm6BMYJpgREDGBYjFAEDAQ0uAQ4EAQIEAQEDAQIBg?=
+ =?us-ascii?q?guCdAJPCYdKAh8GAQQ0EwECBAEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGA?=
+ =?us-ascii?q?QIQAQEBAQEBAQE3BRA1hTsBBS8NgkotASNRGmUJBgEBAQEBAQEBAQIBAQEiA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQIIB?=
+ =?us-ascii?q?AEHKQdHAgMLDgEIBAYTAQEjCAEGBhgjAxQBBgMCEQEXHhcBEhqCDlgBgmQDB?=
+ =?us-ascii?q?QwGnBSbOnp/M4EBggwBAQaBCD4CAQIJAgUBDgkm2gSBYQmBSIgLCRoBJEhpA?=
+ =?us-ascii?q?oQlCYQ3Jw+BVUSBFTWCPQdvgVABbgUdAQEBAQEXQkYRBAEGAQEGAwFDCYMlg?=
+ =?us-ascii?q?miCOIMpfiaBbAGFWU4IFWqCJkGBGzoCL18SgQovGW+COwQFBhGBNoY1gUtLM?=
+ =?us-ascii?q?yETAVUTGBANJCMCKT4DCQoQAhYDHRQEMBEJCyYDKgY2AhIMBgYGWyAWCQQjA?=
+ =?us-ascii?q?wgEA1ADIHARAwQaBAsHdYFEgW0EE0QDEIEyhzuCU4M9gh6EJkuFAoF7DmqBH?=
+ =?us-ascii?q?R1AAwttPTUUGyieLwQ4AgEsgXYlDh8ZBgIwDCYYCQUFCAwIDgIgAg0gAQQEC?=
+ =?us-ascii?q?QUVCgwKAgMTAR0DBgUGAwQXAgEFCB8LCwIeDwOSLgsJCQcKCwMqdY4mg0+Jb?=
+ =?us-ascii?q?kiTRxxsNAeEFoFbBgyIfYEkhzOFeog+hAWBVoU3hDSBPYpIhzOFJYIRIphAI?=
+ =?us-ascii?q?II0hx0KgRsJgWweS4hpjBwQLAQPExOFF4F7I4ErAR0MBzMaMEMNAgeCHQEzC?=
+ =?us-ascii?q?Qo8HA+IXIRtYhdwgmgQWlSBGwuBPDk7gkEElmNBNQEBAQEHMAIHAQoBAQMJh?=
+ =?us-ascii?q?WIBAYMKAQEmDIFIAQE?=
+IronPort-PHdr: A9a23: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
+ UEL6gBd+A8LlolxZ/3opo3SQ80VowM=
+IronPort-Data: A9a23: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
+ w==
+IronPort-HdrOrdr: A9a23:SPNJo6zLQMSO41FzlP4hKrPwEb1zdoMgy1knxilNoH1uA6+lfq
+ WV9sjzuiWbtN98YhwdcLO7WJVoI0m8yXcd2+B4VotKNzOIhILHFu1fxLqn6wKlMSzz/OxQ2M
+ 5bAspDIey1K0N1yeLz4AzQKadF/DBrytHMudvj
+X-Talos-CUID: 9a23:U2d0PW/Uccx+WCk9T86Vv0JPB9sHSy368CjJLhPhUCV4R4HFFnbFrQ==
+X-Talos-MUID: =?us-ascii?q?9a23=3AVcQjhA97cum9PG6DApmegyKQf+kx3JX2CFEurak?=
+ =?us-ascii?q?h5JilFQB8CS2kih3iFw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,222,1708383600"; 
+   d="scan'208,217";a="162928925"
+X-URL-ContentFilter: 
+X-MGA-submission: =?us-ascii?q?MDGW2Z6nhesSB3c+xhJwy3Ea51yqOoczqEi459?=
+ =?us-ascii?q?mwEgHYmz6I4w2YqeG6f4xNGn90McrRhyIFVvubue/gKo15ySfjI5gGf+?=
+ =?us-ascii?q?dXnxdxLCnSyTAdUGX/RTVstklFJ/Oy8ztUAdefhLZYs9TKXVkovgmrjo?=
+ =?us-ascii?q?BI3fdZ6dy7jaaHqlv1szJaaQ=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 14:17:18 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 976A5561234;
+	Tue, 23 Apr 2024 14:17:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1713874637;
+	bh=epcQzwOSffBygac57Wi37p4cC6TnuSgVUbva4mOxyA4=;
+	h=From:To:Subject:Date:Message-ID;
+	b=TWiSCdw8gLjHr2vSnLUrW0ZKQJOaWY8ydZGQyVS19rWDVX6oj250ShxheqyBo8LAW
+	 fHqqO1d/+s3XFeWHTNeeCEjCr+ltNLOVD7yuQY5s9ThjwtFNjyiOnQnXU95T72vySm
+	 HM6+OHPlrI3Q2VJUo4ulQQle/v0vu9XeUT/wqoIk=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 23 Apr 2024 14:17:17 +0200
+Message-ID: <m2a5lkp92q.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Apr 23 14:17:18 2024 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.459420, queueID=D3FB8561235
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19117
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-04/m2a5lkp92q.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of April 16 to 23,
+2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+A second beta for OCaml 5.2.0
+An implementation of purely functional double-ended queues
+Feedback / Help Wanted: Upcoming OCaml.org Cookbook Feature
+Picos =E2=80=94 Interoperable effects based concurrency
+Ppxlib dev meetings
+Ortac 0.2.0
+OUPS meetup april 2024
+Mirage 4.5.0 released
+patricia-tree 0.9.0 - library for patricia tree based maps and sets
+OCANNL 0.3.1: a from-scratch deep learning (i.e. dense tensor optimization)=
+ framework
+Other OCaml News
+Old CWN
+
+
+A second beta for OCaml 5.2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/a-second-beta-for-ocaml-5-2-0/14498/1>
+
+
+octachron announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  Last week, we merged in the 5.2 branch of OCaml an update to the
+  compiler-libs "shape" API for querying definition information from the
+  compiler.
+
+  Unfortunately, this small change of API breaks compatibility with at
+  least odoc. Generally, we try to avoid this kind of changes during the
+  beta releases of the compiler. However, after discussions we concluded
+  that it will be easier on the long term to fix the API right now in
+  order to avoid multiplying the number of supported versions of the
+  shape API in the various OCaml developer tools .
+
+  We have thus released a second beta version of OCaml 5.2.0 to give the
+  time to developer tools to update their 5.2.0 version ahead of the
+  release (see below for the installation instructions).
+
+  Beyond this changes of API, the new beta contains three minor bug
+  fixes and three documentation updates, which is a good sign in term of
+  stability.
+
+  As usual, you can follow the last remaining compatibility slags on the
+  [opam readiness for 5.2.0 meta-issue].
+
+  If you find any bugs, please report them on [OCaml's issue tracker].
+
+  Currently, the release is planned for the beginning of May.
+
+  If you are interested in full list of features and bug fixes of the
+  new OCaml version, the updated change log for OCaml 5.2.0 is available
+  [on GitHub].
+
+
+[opam readiness for 5.2.0 meta-issue]
+<https://github.com/ocaml/opam-repository/issues/25182>
+
+[OCaml's issue tracker] <https://github.com/ocaml/ocaml/issues>
+
+[on GitHub] <https://github.com/ocaml/ocaml/blob/5.2/Changes>
+
+Installation Instructions
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The base compiler can be installed as an opam switch with the
+  following commands on opam 2.1:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create 5.2.0~beta2
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The source code for the beta is also available at these addresses:
+
+  =E2=80=A2 [GitHub]
+  =E2=80=A2 [OCaml archives at Inria]
+
+
+[GitHub] <https://github.com/ocaml/ocaml/archive/5.2.0-beta2.tar.gz>
+
+[OCaml archives at Inria]
+<https://caml.inria.fr/pub/distrib/ocaml-5.2/ocaml-5.2.0~beta2.tar.gz>
+
+
+Fine-Tuned Compiler Configuration
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  If you want to tweak the configuration of the compiler, you can switch
+  to the option variant with:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create <switch_name> ocaml-variants.5.2.0~beta2+opt=
+ions <option_list>
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  where `option_list' is a space-separated list of `ocaml-option-*'
+  packages. For instance, for a `flambda' and `no-flat-float-array'
+  switch:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam switch create 5.2.0~beta2+flambda+nffa ocaml-variants.5.2.=
+0~beta2+options ocaml-option-flambda ocaml-option-no-flat-float-array
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  All available options can be listed with `opam search ocaml-option'.
+
+
+Changes since the first beta
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A Compiler-libs API Changes
+
+  =E2=80=A2 [#13001]: do not read_back entire shapes to get aliases' uids w=
+hen
+    building the usages index (Ulysse G=C3=A9rard, review by Gabriel Scherer
+    and Nathana=C3=ABlle Courant)
+
+
+  [#13001] <https://github.com/ocaml/ocaml/issues/13001>
+
+
+=E2=97=8A Bug Fixes
+
+  =E2=80=A2 [#13058]: Add TSan instrumentation to caml_call_gc(), since it =
+may
+    raise exceptions.  (Fabrice Buoro, Olivier Nicole, Gabriel Scherer
+    and Miod Vallat)
+  =E2=80=A2 [#13079]: Save and restore frame pointer across Iextcall on ARM=
+64
+    (Tim McGilchrist, review by KC Sivaramakrishnan and Miod Vallat)
+  =E2=80=A2 [#13094]: Fix undefined behavior of left-shifting a negative nu=
+mber.
+    (Antonin D=C3=A9cimo, review by Miod Vallat and Nicol=C3=A1s Ojeda B=C3=
+=A4r)
+
+
+  [#13058] <https://github.com/ocaml/ocaml/issues/13058>
+
+  [#13079] <https://github.com/ocaml/ocaml/issues/13079>
+
+  [#13094] <https://github.com/ocaml/ocaml/issues/13094>
+
+
+=E2=97=8A Documentation Updates
+
+  =E2=80=A2 [#13078]: update Format tutorial on structural boxes to mention
+    alignment questions.  (Edwin T=C3=B6r=C3=B6k, review by Florian Angelet=
+ti)
+  =E2=80=A2 [#13092]: document the existence of the `[@@poll error]' built-=
+in
+    attribute (Florian Angeletti, review by Gabriel Scherer)
+  =E2=80=A2 [#13066], update OCAMLRUNPARAM documentation for the stack size
+    parameter l (Florian Angeletti, review by Nicol=C3=A1s Ojeda B=C3=A4r, =
+Tim
+    McGilchrist, and Miod Vallat)
+
+
+  [#13078] <https://github.com/ocaml/ocaml/issues/13078>
+
+  [#13092] <https://github.com/ocaml/ocaml/issues/13092>
+
+  [#13066] <https://github.com/ocaml/ocaml/issues/13066>
+
+
+An implementation of purely functional double-ended queues
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/an-implementation-of-purely-functional-doubl=
+e-ended-queues/14499/1>
+
+
+Humza Shahid announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I have some code that might be useful to others here. I had the idea
+  of a new purely functional implementation for double ended queues, and
+  I implemented it (<https://github.com/hummy123/bro-deque>)[here].
+
+  The idea is pretty simple, and it proves to be quite fast in
+  benchmarks.
+
+  The idea is to have a record containing:
+  =E2=80=A2 A head array representing the start of the queue, with a limit =
+on
+    the number of elements it can have.
+  =E2=80=A2 A tail array representing the end of the queue, also with a lim=
+it on
+    the number of elements it can have.
+  =E2=80=A2 A balanced binary tree based on the rope data structure. (The
+    internal nodes pointing to other nodes contain integer metadata
+    indicating the number of elements on the left and right subtrees,
+    and leaf nodes contain an array of elements.)
+
+  When trying to insert into either the head or tail array when the
+  array is at max capacity, the array is either appended or prepended to
+  the tree and the array/element we wanted to insert is now either the
+  head or tail.
+
+  I was looking for some way to test the performance and adapted (this
+  code)[<https://discuss.ocaml.org/t/ocaml-speed-recursive-function-optimiz=
+ation/13502/3>]
+  to use it, and it's pretty fast - only about 4x slower than the
+  standard library's mutable queue. (Although this was really
+  implemented in mind aiming for fast access time rather than fast
+  insertion/removal time.)
+
+  It has some non-standard functions for double ended queues too, like
+  O(log n) insert/removal/indexing at any arbitrary location (with a
+  constant that makes this faster than on a typical binary tree - a
+  typical binary tree contains on element per node, increasing height,
+  but this contains arrays of elements at the leaves so more data is
+  packed and the height is shorter).
+
+  Some other people might find it useful, so here it is for others to
+  copy-and-paste. I don't know if it's worth putting on opam (I don't
+  have a use for this myself in any of my projects but curiosity led me
+  to implement it.)
+
+
+Feedback / Help Wanted: Upcoming OCaml.org Cookbook Feature
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/feedback-help-wanted-upcoming-ocaml-org-cook=
+book-feature/14127/12>
+
+
+Cuihtlauac Alvarado announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We've just updated the cookbook:
+  <https://staging.ocaml.org/cookbook>. We'd love to have your feedback
+  on it. The corresponding PR is still the same:
+  <https://github.com/ocaml/ocaml.org/pull/1839>
+
+  The visual design is not yet final, but it works. It is organized in
+  recipes, tasks and categories.
+
+        A task is something that needs to be done inside a
+        project. A recipe is a code sample and explanation of how
+        to perform a task using a combination of packages. Some
+        tasks can be performed using different combination of
+        libraries, each is a different recipe.  Categories are
+        groups of tasks or categories
+
+  You'll see most tasks don't have any recipes. We hope to collect the
+  best recipes. Categories are also open for discussion.
+
+
+Picos =E2=80=94 Interoperable effects based concurrency
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-picos-interoperable-effects-based-concur=
+rency/14507/1>
+
+
+polytypic announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  [Picos] is a framework for building interoperable elements such as
+
+  =E2=80=A2 schedulers that multiplex large numbers of user level fibers to=
+ run
+    on a small number of system level threads,
+  =E2=80=A2 mechanisms for managing fibers and for structuring concurrency,
+  =E2=80=A2 communication and synchronization primitives, such as mutexes a=
+nd
+    condition variables, message queues, STMs, and more, and
+  =E2=80=A2 integrations with low level asynchronous IO systems,
+
+  of effects based cooperative concurrent programming models.
+
+
+[Picos] <https://github.com/ocaml-multicore/picos>
+
+
+polytypic then announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I'm happy to announce that version 0.2.0 of Picos is now available on
+  opam.
+
+  A small core [picos] framework allows concurrent abstractions
+  [implemented in Picos] to communicate with [Picos compatible]
+  schedulers.
+
+  In addition to the core framework, the `picos' package comes with a
+  couple of sample schedulers and some scheduler agnostic libraries as
+  well as bunch of auxiliary libraries.
+
+  Sample schedulers:
+
+  =E2=80=A2 [picos.fifos] =E2=80=94 Basic single-threaded effects based Pic=
+os compatible
+    scheduler for OCaml 5.
+  =E2=80=A2 [picos.threaded] =E2=80=94 Basic Thread based Picos compatible =
+scheduler for
+    OCaml 4.
+
+  Scheduler agnostic libraries:
+
+  =E2=80=A2 [picos.sync] =E2=80=94 Basic communication and synchronization =
+primitives
+    for Picos.
+  =E2=80=A2 [picos.stdio] =E2=80=94 Basic IO facilities based on OCaml stan=
+dard
+    libraries for Picos.
+  =E2=80=A2 [picos.select] =E2=80=94 Basic `Unix.select' based IO event loo=
+p for Picos.
+
+  Auxiliary libraries:
+
+  =E2=80=A2 [picos.domain] =E2=80=94 Minimalistic domain API available both=
+ on OCaml 5
+    and on OCaml 4.
+  =E2=80=A2 [picos.exn_bt] =E2=80=94 Wrapper for exceptions with backtraces.
+  =E2=80=A2 [picos.fd] =E2=80=94 Externally reference counted file descript=
+ors.
+  =E2=80=A2 [picos.htbl] =E2=80=94 Lock-free hash table.
+  =E2=80=A2 [picos.mpsc_queue] =E2=80=94 Multi-producer, single-consumer qu=
+eue.
+  =E2=80=A2 [picos.rc] =E2=80=94 External reference counting tables for dis=
+posable
+    resources.
+  =E2=80=A2 [picos.thread] =E2=80=94 Minimalistic thread API available with=
+ or without
+    `threads.posix'.
+
+  All of the above are entirely opt-in and you are free to mix-and-match
+  with any other Picos compatible [future] schedulers and libraries
+  implemented in Picos or develop your own.
+
+  See the [reference manual] for further information.
+
+
+[picos]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos/index.html>
+
+[implemented in Picos]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/index.html#implemented=
+-in-picos>
+
+[Picos compatible]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/index.html#picos-compa=
+tible>
+
+[picos.fifos]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_fifos/index.html>
+
+[picos.threaded]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_threaded/index.h=
+tml>
+
+[picos.sync]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_sync/index.html>
+
+[picos.stdio]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_stdio/index.html>
+
+[picos.select]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_select/index.htm=
+l>
+
+[picos.domain]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_domain/index.htm=
+l>
+
+[picos.exn_bt]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_exn_bt/index.htm=
+l>
+
+[picos.fd]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_fd/index.html>
+
+[picos.htbl]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_htbl/index.html>
+
+[picos.mpsc_queue]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_mpsc_queue/index=
+.html>
+
+[picos.rc]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_rc/index.html>
+
+[picos.thread]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_thread/index.htm=
+l>
+
+[future]
+<https://discuss.ocaml.org/t/ann-miou-a-simple-scheduler-for-ocaml-5/12963/=
+14>
+
+[reference manual]
+<https://ocaml-multicore.github.io/picos/0.2.0/picos/index.html>
+
+
+Ppxlib dev meetings
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ppxlib-dev-meetings/12441/21>
+
+
+Nathan Rebours announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  You can find our last meeting's notes [here].
+
+  We had three guests yesterday: @shonfeder @lubegasimon and
+  @moazzammoriani.
+
+  You are always welcome to join whether you have a specific topic you
+  want to bring up or you just want to tag along. We'll post the link
+  here ahead of the meeting.
+
+
+[here] <https://github.com/ocaml-ppx/ppxlib/wiki/Dev-Meeting-2024-04-16>
+
+
+Ortac 0.2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-ortac-0-2-0/14510/1>
+
+
+Nicolas Osborne announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We are very excited to announce this new Ortac release!
+
+  Ortac is a set of tools that translate Gospel specifications into
+  OCaml code and use these translations to generate programs that check
+  at runtime that the OCaml implementation respects the Gospel
+  specifications.
+
+  You can find the project on [this repo] and install it via `opam'.
+
+  This new release contains four packages:
+
+  =E2=80=A2 `ortac-core'
+  =E2=80=A2 `ortac-runtime'
+  =E2=80=A2 `ortac-qcheck-stm'
+  =E2=80=A2 `ortac-runtime-qcheck-stm'
+
+  The main improvements that brings this release concern the
+  `ortac-qcheck-stm' plugin (the other three packages are mainly
+  released for compatibility reasons).
+
+  `ortac-qcheck-stm' provides a plugin for Ortac. It generates
+  QCheck-STM tests for a module specified with Gospel. QCheck-STM is a
+  model-based testing framework and Ortac/QCheck-STM relies on the
+  Gospel models you gave in the specifications to build the QCheck-STM
+  tests.
+
+  I'd like to highlight two of these improvements.
+
+  The first one is that type invariants for what we call the system
+  under test are now checked. Let's say you want to generate QCheck-STM
+  tests for a fixed-size container. You can give the following
+  specification to your type:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 type 'a t
+  =E2=94=82 (*@ mutable model contents : 'a list
+  =E2=94=82     model size : int
+  =E2=94=82     with t invariant List.length t.contents <=3D t.size *)
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Now, the generated tests will check that the invariant is respected at
+  initialisation of the system under test (the value of type `'a t') and
+  that it is preserved by the functions being tested.
+
+  The second improvement concerns the test failure message. In order to
+  make the failure more informative, a message stating which part of the
+  Gospel specifications has been violated and a small OCaml program that
+  demonstrates the unexpected behaviour will be displayed.
+
+  For example, with an artificial bug in the `Array.length' function,
+  running the Ortac/QCheck-STM-generated test will print the following
+  failure message:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 random seed: 172339461
+  =E2=94=82 generated error fail pass / total     time test name
+  =E2=94=82 [=E2=9C=97]    1    0    1    0 / 1000     0.0s Array STM tests=
+ (generating)
+  =E2=94=82=20
+  =E2=94=82 --- Failure ---------------------------------------------------=
+-----------------
+  =E2=94=82=20
+  =E2=94=82 Test Array STM tests failed (5 shrink steps):
+  =E2=94=82=20
+  =E2=94=82    length sut
+  =E2=94=82=20
+  =E2=94=82 +++ Messages ++++++++++++++++++++++++++++++++++++++++++++++++++=
+++++++++++++++++++
+  =E2=94=82=20
+  =E2=94=82 Messages for test Array STM tests:
+  =E2=94=82=20
+  =E2=94=82 Gospel specification violation in function length
+  =E2=94=82=20
+  =E2=94=82   File "array.mli", line 7, characters 12-22:
+  =E2=94=82     i =3D t.size
+  =E2=94=82=20
+  =E2=94=82 when executing the following sequence of operations:
+  =E2=94=82=20
+  =E2=94=82   open Array
+  =E2=94=82   let protect f =3D try Ok (f ()) with e -> Error e
+  =E2=94=82   let sut =3D make 16 'a'
+  =E2=94=82   let r =3D length sut
+  =E2=94=82   assert (r =3D 16)
+  =E2=94=82   (* returned 42 *)
+  =E2=94=82=20
+  =E2=94=82 =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+  =E2=94=82 failure (1 tests failed, 0 tests errored, ran 1 tests)
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Although it has already helped find and fix some bugs, this project is
+  still fairly new. So, feel free to try it and report any [issue].
+
+  Happy testing!
+
+
+[this repo] <https://github.com/ocaml-gospel/ortac>
+
+[issue] <https://github.com/ocaml-gospel/ortac/issues>
+
+
+OUPS meetup april 2024
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/oups-meetup-april-2024/14512/1>
+
+
+zapashcanon announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The next OUPS meetup will take place on *Thursday, 25th of April*
+  2024. It will start at *7pm* at the *4 place Jussieu* in Paris.
+
+  :warning: :trumpet: It will be in the in the *Esclangon building*
+  (amphi Astier). :trumpet: :warning:
+
+  Please, *[register on meetup ]* as soon as possible to let us know how
+  many pizza we should order.
+
+  For more details, you may check the [OUPS=E2=80=99 website ].
+
+  This month will feature the following talks :
+
+  *Symbolic execution for all with [Owi] and Wasm =E2=80=93 L=C3=A9o Andr=
+=C3=A8s*
+
+  WebAssembly (Wasm) is a new binary compilation target adopted by many
+  high-level programming languages such as C/C++, Rust, Java, and
+  Go. Building on this foundation, we present Owi, a toolkit to work
+  with Wasm within the OCaml ecosystem. In particular, Owi features a
+  reference interpreter for Wasm capable of performing both concrete and
+  symbolic execution.  In this presentation, we describe how we designed
+  reusable components and a modular interpreter from a concrete one,
+  enabling the sharing of code between the concrete and symbolic
+  interpreters. Additionally, we demonstrate how it is possible to
+  perform symbolic execution of other languages by compiling them to
+  Wasm using the symbolic interpreter. We provide examples of symbolic
+  execution applied to C and Rust code and describe our current work to
+  extend this functionality to support OCaml and other garbage-collected
+  languages by integrating WasmGC into Owi.
+
+  *[Smt.ml] - A Multi Back-end Front-end for SMT Solvers in OCaml =E2=80=93
+   Filipe Marques*
+
+  SMT solvers are crucial tools in fields such as Software Verification,
+  Program Synthesis, and Test-Case Generation. However, using their
+  APIs, especially in typed functional languages like OCaml, can be
+  challenging due to their complexity and lack of user-friendly
+  interfaces. To address this, we propose Smt.ml, an open-source library
+  that serves as a single interface for multiple SMT solvers in
+  OCaml. Currently supporting solvers such as Z3, Colibri2, and
+  Bitwuzla, Smt.ml enables users to seamlessly work with different
+  solvers using one unified syntax. The library incorporates built-in
+  optimizations to handle both concrete and symbolic expressions
+  efficiently. Smt.ml has been successfully integrated with Owi, an
+  interpreter and toolkit for WebAssembly. This integration allowed Owi
+  to perform static symbolic execution and test-case generation for
+  WebAssembly programs. Notably, Owi was able to identify known
+  vulnerabilities in a widely-used C data structure libraries.
+
+
+[register on meetup ]
+<https://www.meetup.com/fr-FR/ocaml-paris/events/300474192>
+
+[OUPS=E2=80=99 website ] <https://oups.frama.io>
+
+[Owi] <https://github.com/ocamlpro/owi>
+
+[Smt.ml] <https://github.com/formalsec/encoding>
+
+
+Mirage 4.5.0 released
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/mirage-4-5-0-released/14518/1>
+
+
+Thomas Gazagnaire announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80
+
+  On behalf of the Mirage team, I'm happy to announce the release of
+  MirageOS 4.5.0. This was merged in `opam-repository' last week, so it
+  should be available just in time for the upcoming [14th MirageOS hack
+  retreat]!
+
+  This release introduces a significant change in the Mirage tool by
+  splitting the definition of command-line arguments used at
+  configure-time and runtime. Command-line arguments used in the
+  configure script (also called 'configuration keys' and defined in the
+  `Key' module) are essential during the setup of module dependencies
+  for the unikernel, allowing for specialized production of a unikernel
+  for a given target runtime environment. On the other hand,
+  command-line arguments that the unikernel can use a runtime (defined
+  in the `Runtime_arg' module) are helpful for customizing deployments
+  without altering the dependencies of the unikernels.
+
+  =E2=80=A2 API changes:
+    =E2=80=A2 There is no more `~stage' parameter for `Key.Arg.info'.
+    =E2=80=A2 `Key' now define command-line arguments for the configuration
+      tool.
+    =E2=80=A2 There is a new module `Runtime_arg' to define command-line
+      arguments for the unikernel.
+    =E2=80=A2 As there are no more keys type `'Both', users are now expecte=
+d to
+      create two separated keys in that case (one for configure-time,
+      one for runtime) or decide if the key is useful at runtime of
+      configure-time.
+  =E2=80=A2 Intended use of configuration keys (values of type `'a key'):
+    =E2=80=A2 Used to set up module dependencies of the unikernel, such as =
+the
+      target (hvt, xen, etc.) and whether to use DHCP or a fixed IP
+      address.
+    =E2=80=A2 Enable the production of specialized unikernels suitable for
+      specific target runtime environments and dedicated network and
+      storage stacks.
+    =E2=80=A2 Similar keys will produce reproducible binaries to be uploade=
+d to
+      artifact repositories like Docker Hub or
+      <https://builds.robur.coop/>.
+  =E2=80=A2 Intended use of command-line runtime arguments (values of type =
+`a
+    runtime_arg'):
+    =E2=80=A2 Allow users to customize deployments by changing device
+      configuration, like IP addresses, secrets, block device names,
+      etc., post downloading of binaries.
+    =E2=80=A2 These keys don=E2=80=99t alter the dependencies of the uniker=
+nels.
+    =E2=80=A2 A runtime keys is just a reference to a normal Cmdliner term.
+  =E2=80=A2 `key_gen.ml' is not generated anymore, so users cannot refer to
+    `Key_gen.<key_name>' directly.
+    =E2=80=A2 Any runtime argument has to be declared (using `runtime_arg' =
+and
+      registered on the device (using `~runtime_args'). The value of
+      that argument will then be passed as an extra parameter of the
+      `connect' function of that device.
+    =E2=80=A2 Configuration keys are not available at runtime anymore. For
+      instance, `Key_gen.target' has been removed.
+  =E2=80=A2 Code migration:
+    =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+    =E2=94=82   (* in config.ml *)
+    =E2=94=82  let key =3D
+    =E2=94=82    let doc =3D Key.Arg.info ~doc:"A Key." ~stage:`Run [ "key"=
+ ] in
+    =E2=94=82    Key.(create "key" Arg.(opt_all ~stage:`Run string doc))
+    =E2=94=82 let main =3D main ~keys:[abstract hello] ..
+    =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+    =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+    =E2=94=82 (* in unikernel.ml *)
+    =E2=94=82 let start _ =3D
+    =E2=94=82   let key =3D Key_gen.hello () in
+    =E2=94=82   ...
+    =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+    becomes:
+    =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+    =E2=94=82 (* in config.ml *)
+    =E2=94=82 let hello =3D runtime_arg ~pos:__POS__ "Unikernel.hello"
+    =E2=94=82 let main =3D main ~runtime_args:[hello] ...
+    =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+    =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+    =E2=94=82 (* in unikernel.ml *)
+    =E2=94=82 open Cmdliner
+    =E2=94=82=20
+    =E2=94=82 let hello =3D
+    =E2=94=82   let doc =3D Arg.info ~doc:"How to say hello." [ "hello" ] in
+    =E2=94=82   Arg.(value & opt string "Hello World!" doc)
+    =E2=94=82=20
+    =E2=94=82 let start _ hello =3D
+    =E2=94=82   ...
+    =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The [mirage-skeleton] repository and a few tutorials on
+  <https://mirage.io> have been updated and now compile with [mdx] to
+  check for future API breakage. Documentation PRs are very welcome if
+  you find some missing updates. We also welcome more general feedback
+  regarding this API change.
+
+  I also would like to use this announcement as a reminder that we have
+  restarted the mirage bi-weekly calls. Check the [MirageOS mailing
+  list] or the [MirageOS Matrix channel] for more info. The next one is
+  planned for the 29th of April. If you are using or planning to use
+  MirageOS (or are just curious about the project), feel free to join,
+  it's open to everyone!
+
+  Happy hacking!
+
+
+[14th MirageOS hack retreat] <https://retreat.mirage.io/>
+
+[mirage-skeleton] <https://github.com/mirage/mirage-skeleton>
+
+[mdx] <https://github.com/realworldocaml/mdx>
+
+[MirageOS mailing list]
+<https://lists.xenproject.org/archives/html/mirageos-devel/>
+
+[MirageOS Matrix channel]
+<https://matrix.to/#/!CokxBnmvmEfvUKOmHg:matrix.org?via=3Dmatrix.org&via=3D=
+recoil.org&via=3Dasra.gr>
+
+
+patricia-tree 0.9.0 - library for patricia tree based maps and sets
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-patricia-tree-0-9-0-library-for-patricia=
+-tree-based-maps-and-sets/14535/1>
+
+
+Dorian Lesbre announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I'm happy to announce the release of a new `patricia-tree' library,
+  version 0.9.0 on opam.
+
+  This library that implements sets and maps as Patricia Trees, as
+  described in Okasaki and Gill's 1998 paper [/Fast mergeable integer
+  maps/]. It is a space-efficient prefix trie over the big-endian
+  representation of the key's integer identifier.
+
+  For full details, visit see [the documentation] or [the source on
+  github].
+
+
+[/Fast mergeable integer maps/]
+<https://www.semanticscholar.org/paper/Fast-Mergeable-Integer-Maps-Okasaki-=
+Gill/23003be706e5f586f23dd7fa5b2a410cc91b659d>
+
+[the documentation] <https://codex.top/patricia-tree/>
+
+[the source on github]
+<https://github.com/codex-semantics-library/patricia-tree>
+
+Features
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 Similar to OCaml's `Map' and `Set', using the same function nam=
+es
+    when possible and the same convention for order of arguments. This
+    should allow switching to and from Patricia Tree with minimal
+    effort.
+  =E2=80=A2 The functor parameters (`KEY' module) requires an injective `to=
+_int
+    : t -> int' function instead of a `compare' function. `to_int'
+    should be fast, injective, and only return positive integers. This
+    works well with [hash-consed] types.
+  =E2=80=A2 The Patricia Tree representation is stable, contrary to maps,
+    inserting nodes in any order will return the same shape. This allows
+    different versions of a map to share more subtrees in memory, and
+    the operations over two maps to benefit from this sharing. The
+    functions in this library attempt to **maximally preserve sharing
+    and benefit from sharing**, allowing very important improvements in
+    complexity and running time when combining maps or sets is a
+    frequent operation.
+  =E2=80=A2 Since our Patricia Tree use big-endian order on keys, the maps =
+and
+    sets are sorted in increasing order of keys. We only support
+    positive integer keys. This also avoids a bug in Okasaki's paper
+    discussed in [/QuickChecking Patricia Trees/] by Jan Mitgaard.
+  =E2=80=A2 Supports generic maps and sets: a `'m map' that maps `'k key' to
+    `('k, 'm) value'. This is especially useful when using [GADTs] for
+    the type of keys. This is also sometimes called a dependent map.
+  =E2=80=A2 Allows easy and fast operations across different types of maps =
+and
+    set (e.g. an intersection between a map and a set), since all sets
+    and maps, no matter their key type, are really positive integer sets
+    or maps.
+  =E2=80=A2 Multiple choices for internal representation (`NODE'), which al=
+lows
+    for efficient storage (no need to store a value for sets), or using
+    weak nodes only (values removed from the tree if no other pointer to
+    it exists). This system can also be extended to store size
+    information in nodes if needed.
+  =E2=80=A2 Exposes a common interface (`view') to allow users to write the=
+ir
+    own pattern matching on the tree structure without depending on the
+    `NODE' being used.
+
+
+[hash-consed] <https://en.wikipedia.org/wiki/Hash_consing>
+
+[/QuickChecking Patricia Trees/]
+<https://www.cs.tufts.edu/comp/150FP/archive/jan-midtgaard/qc-patricia.pdf>
+
+[GADTs] <https://v2.ocaml.org/manual/gadts-tutorial.html>
+
+
+Comparison to other OCaml libraries
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C
+
+=E2=97=8A ptmap and ptset
+
+  There are other implementations of Patricia Tree in OCaml, namely
+  [ptmap] and [ptset]. These are smaller and closer to OCaml's built-in
+  Map and Set, however:
+
+  =E2=80=A2 Our library allows using any type `key' that comes with an inje=
+ctive
+    `to_int' function, instead of requiring `key =3D int'.
+  =E2=80=A2 We support generic (heterogeneous) types for keys/elements.
+  =E2=80=A2 We support operations between sets and maps of different types.
+  =E2=80=A2 We use a big-endian representation, allowing easy access to min=
+/max
+    elements of maps and trees.
+  =E2=80=A2 Our interface and implementation tries to maximize the sharing
+    between different versions of the tree, and to benefit from this
+    memory sharing. Theirs do not.
+  =E2=80=A2 These libraries work with older version of OCaml (`>=3D 4.05' I
+    believe), whereas ours requires OCaml `>=3D 4.14'
+  =E2=80=A2 Our keys are limited to positive integers.
+
+
+  [ptmap] <https://github.com/backtracking/ptmap>
+
+  [ptset] <https://github.com/backtracking/ptset>
+
+
+=E2=97=8A dmap
+
+  Additionally, there is a dependent map library: [dmap]. It allows
+  creating type safe dependent maps similar to our heterogeneous
+  maps. However, its maps aren't Patricia trees. They are binary trees
+  build using a (polymorphic) comparison function, similarly to the maps
+  of the standard library. Another difference is that the type of values
+  in the map is independent of the type of the keys, allowing keys to be
+  associated with different values in different maps. i.e. we map `'a
+  key' to any `('a, 'b) value' type, whereas dmap only maps `'a key' to
+  `'a'.
+
+  `dmap' also works with OCaml `>=3D 4.12', whereas we require OCaml `>=3D
+  4.14'.
+
+
+  [dmap] <https://gitlab.inria.fr/bmontagu/dmap>
+
+
+OCANNL 0.3.1: a from-scratch deep learning (i.e. dense tensor optimization)=
+ framework
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ocannl-0-3-1-a-from-scratch-deep-learnin=
+g-i-e-dense-tensor-optimization-framework/14492/4>
+
+
+Lukasz Stafiniak announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  OCANNL 0.3.2 is out now. Thanks!
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Creating the SyntaxDocumentation Command - Part 1: Merlin]
+  =E2=80=A2 [Speeding up MirageVPN and use it in the wild]
+  =E2=80=A2 [Frama-C Days 2024]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Creating the SyntaxDocumentation Command - Part 1: Merlin]
+<https://tarides.com/blog/2024-04-17-creating-the-syntaxdocumentation-comma=
+nd-part-1-merlin>
+
+[Speeding up MirageVPN and use it in the wild]
+<https://blog.robur.coop/articles/miragevpn-performance.html>
+
+[Frama-C Days 2024]
+<https://frama-c.com/2024/04/15/Frama-C-Days-2024.html>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-04-23 Tue 14:15 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.04.16.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.04.30.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of April 16 to 23, 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">A second beta for OCaml 5.2.0</a></li>
+<li><a href=3D"#2">An implementation of purely functional double-ended queu=
+es</a></li>
+<li><a href=3D"#3">Feedback / Help Wanted: Upcoming OCaml.org Cookbook Feat=
+ure</a></li>
+<li><a href=3D"#4">Picos =E2=80=94 Interoperable effects based concurrency<=
+/a></li>
+<li><a href=3D"#5">Ppxlib dev meetings</a></li>
+<li><a href=3D"#6">Ortac 0.2.0</a></li>
+<li><a href=3D"#7">OUPS meetup april 2024</a></li>
+<li><a href=3D"#8">Mirage 4.5.0 released</a></li>
+<li><a href=3D"#9">patricia-tree 0.9.0 - library for patricia tree based ma=
+ps and sets</a></li>
+<li><a href=3D"#10">OCANNL 0.3.1: a from-scratch deep learning (i.e. dense =
+tensor optimization) framework</a></li>
+<li><a href=3D"#11">Other OCaml News</a></li>
+<li><a href=3D"#org9c416e0">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">A second beta for OCaml 5.2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/a-second-beta-for-ocaml-5-2=
+-0/14498/1">https://discuss.ocaml.org/t/a-second-beta-for-ocaml-5-2-0/14498=
+/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc919597" class=3D"outline-3">
+<h3 id=3D"orgc919597">octachron announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc919597">
+<p>
+Last week, we merged in the 5.2 branch of OCaml an update to the compiler-l=
+ibs "shape" API for querying definition information from
+the compiler.
+</p>
+
+<p>
+Unfortunately, this small change of API breaks compatibility with at least =
+odoc. Generally, we try to avoid this kind of changes
+during the beta releases of the compiler. However, after discussions we con=
+cluded that it will be easier on the long term to fix the
+API right now in order to avoid multiplying the number of supported version=
+s of the shape API in the various OCaml developer tools .
+</p>
+
+<p>
+We have thus released a second beta version of OCaml 5.2.0 to give the time=
+ to developer tools to update their 5.2.0 version ahead of
+the release (see below for the installation instructions).
+</p>
+
+<p>
+Beyond this changes of API, the new beta contains three minor bug fixes and=
+ three documentation updates, which is a good sign in term
+of stability.
+</p>
+
+<p>
+As usual, you can follow the last remaining compatibility slags on the <a h=
+ref=3D"https://github.com/ocaml/opam-repository/issues/25182">opam readines=
+s for 5.2.0
+meta-issue</a>.
+</p>
+
+<p>
+If you find any bugs, please report them on <a href=3D"https://github.com/o=
+caml/ocaml/issues">OCaml's issue tracker</a>.
+</p>
+
+<p>
+Currently, the release is planned for the beginning of May.
+</p>
+
+<p>
+If you are interested in full list of features and bug fixes of the new OCa=
+ml version, the
+updated change log for OCaml 5.2.0 is available <a href=3D"https://github.c=
+om/ocaml/ocaml/blob/5.2/Changes">on GitHub</a>.
+</p>
+</div>
+<div id=3D"outline-container-org7740cfc" class=3D"outline-4">
+<h4 id=3D"org7740cfc">Installation Instructions</h4>
+<div class=3D"outline-text-4" id=3D"text-org7740cfc">
+<p>
+The base compiler can be installed as an opam switch with the following com=
+mands
+on opam 2.1:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-shell">opam update
+opam switch create 5.2.0~beta2
+</pre>
+</div>
+
+<p>
+The source code for the beta is also available at these addresses:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/archive/5.2.0-beta2.tar.gz">G=
+itHub</a></li>
+<li><a href=3D"https://caml.inria.fr/pub/distrib/ocaml-5.2/ocaml-5.2.0~beta=
+2.tar.gz">OCaml archives at Inria</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org54b7e91" class=3D"outline-4">
+<h4 id=3D"org54b7e91">Fine-Tuned Compiler Configuration</h4>
+<div class=3D"outline-text-4" id=3D"text-org54b7e91">
+<p>
+If you want to tweak the configuration of the compiler, you can switch to t=
+he option variant with:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-shell">opam update
+opam switch create &lt;switch_name&gt; ocaml-variants.5.2.0~beta2+options &=
+lt;option_list&gt;
+</pre>
+</div>
+
+<p>
+where <code>option_list</code> is a space-separated list of <code>ocaml-opt=
+ion-*</code> packages. For instance, for a <code>flambda</code> and <code>n=
+o-flat-float-array</code>
+switch:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-shell">opam switch create 5.2.0~beta2+flambda+nffa oc=
+aml-variants.5.2.0~beta2+options ocaml-option-flambda ocaml-option-no-flat-=
+float-array
+</pre>
+</div>
+
+<p>
+All available options can be listed with <code>opam search ocaml-option</co=
+de>.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org98d3f62" class=3D"outline-4">
+<h4 id=3D"org98d3f62">Changes since the first beta</h4>
+<div class=3D"outline-text-4" id=3D"text-org98d3f62">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgff3032a"></a>Compiler-libs API Changes<br />
+<div class=3D"outline-text-5" id=3D"text-orgff3032a">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13001">#13001</a>: do =
+not read_back entire shapes to get aliases' uids when building the
+usages index
+(Ulysse G=C3=A9rard, review by Gabriel Scherer and Nathana=C3=ABlle Courant=
+)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orga0bb8bc"></a>Bug Fixes<br />
+<div class=3D"outline-text-5" id=3D"text-orga0bb8bc">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13058">#13058</a>: Add=
+ TSan instrumentation to caml_call_gc(), since it may raise
+exceptions.
+(Fabrice Buoro, Olivier Nicole, Gabriel Scherer and Miod Vallat)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13079">#13079</a>: Sav=
+e and restore frame pointer across Iextcall on ARM64
+(Tim McGilchrist, review by KC Sivaramakrishnan and Miod Vallat)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13094">#13094</a>: Fix=
+ undefined behavior of left-shifting a negative number.
+(Antonin D=C3=A9cimo, review by Miod Vallat and Nicol=C3=A1s Ojeda B=C3=A4r=
+)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgff1f72e"></a>Documentation Updates<br />
+<div class=3D"outline-text-5" id=3D"text-orgff1f72e">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13078">#13078</a>: upd=
+ate Format tutorial on structural boxes to mention alignment
+questions.
+(Edwin T=C3=B6r=C3=B6k, review by Florian Angeletti)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13092">#13092</a>: doc=
+ument the existence of the <code>[@@poll error]</code> built-in attribute
+(Florian Angeletti, review by Gabriel Scherer)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13066">#13066</a>, upd=
+ate OCAMLRUNPARAM documentation for the stack size parameter l
+(Florian Angeletti, review by Nicol=C3=A1s Ojeda B=C3=A4r, Tim McGilchrist,=
+ and
+ Miod Vallat)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">An implementation of purely functional double-ended queues</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/an-implementation-of-purely=
+-functional-double-ended-queues/14499/1">https://discuss.ocaml.org/t/an-imp=
+lementation-of-purely-functional-double-ended-queues/14499/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgfb82ea6" class=3D"outline-3">
+<h3 id=3D"orgfb82ea6">Humza Shahid announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgfb82ea6">
+<p>
+I have some code that might be useful to others here. I had the idea of a n=
+ew purely functional implementation for double ended
+queues, and I implemented it (<a href=3D"https://github.com/hummy123/bro-de=
+que">https://github.com/hummy123/bro-deque</a>)[here].
+</p>
+
+<p>
+The idea is pretty simple, and it proves to be quite fast in benchmarks.=20
+</p>
+
+<p>
+The idea is to have a record containing:=20
+</p>
+<ul class=3D"org-ul">
+<li>A head array representing the start of the queue, with a limit on the n=
+umber of elements it can have.</li>
+<li>A tail array representing the end of the queue, also with a limit on th=
+e number of elements it can have.</li>
+<li>A balanced binary tree based on the rope data structure. (The internal =
+nodes pointing to other nodes contain integer metadata indicating the numbe=
+r of elements on the left and right subtrees, and leaf nodes contain an arr=
+ay of elements.)</li>
+</ul>
+
+<p>
+When trying to insert into either the head or tail array when the array is =
+at max capacity, the array is either appended or prepended
+to the tree and the array/element we wanted to insert is now either the hea=
+d or tail.
+</p>
+
+<p>
+I was looking for some way to test the performance and adapted (this
+code)[<a href=3D"https://discuss.ocaml.org/t/ocaml-speed-recursive-function=
+-optimization/13502/3">https://discuss.ocaml.org/t/ocaml-speed-recursive-fu=
+nction-optimization/13502/3</a>] to use it, and it's pretty fast - only abo=
+ut
+4x slower than the standard library's mutable queue. (Although this was rea=
+lly implemented in mind aiming for fast access time rather
+than fast insertion/removal time.)
+</p>
+
+<p>
+It has some non-standard functions for double ended queues too, like O(log =
+n) insert/removal/indexing at any arbitrary location (with
+a constant that makes this faster than on a typical binary tree - a typical=
+ binary tree contains on element per node, increasing
+height, but this contains arrays of elements at the leaves so more data is =
+packed and the height is shorter).=20
+</p>
+
+<p>
+Some other people might find it useful, so here it is for others to copy-an=
+d-paste. I don't know if it's worth putting on opam (I
+don't have a use for this myself in any of my projects but curiosity led me=
+ to implement it.)
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Feedback / Help Wanted: Upcoming OCaml.org Cookbook Feature</h=
+2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/feedback-help-wanted-upcomi=
+ng-ocaml-org-cookbook-feature/14127/12">https://discuss.ocaml.org/t/feedbac=
+k-help-wanted-upcoming-ocaml-org-cookbook-feature/14127/12</a>
+</p>
+</div>
+<div id=3D"outline-container-org89022f5" class=3D"outline-3">
+<h3 id=3D"org89022f5">Cuihtlauac Alvarado announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org89022f5">
+<p>
+We've just updated the cookbook: <a href=3D"https://staging.ocaml.org/cookb=
+ook">https://staging.ocaml.org/cookbook</a>. We'd love to have your feedbac=
+k on it. The corresponding PR is
+still the same: <a href=3D"https://github.com/ocaml/ocaml.org/pull/1839">ht=
+tps://github.com/ocaml/ocaml.org/pull/1839</a>
+</p>
+
+<p>
+The visual design is not yet final, but it works. It is organized in recipe=
+s, tasks and categories.
+</p>
+
+<blockquote>
+<p>
+A task is something that needs to be done inside a project. A recipe is a c=
+ode sample and explanation of how to perform a task
+using a combination of packages. Some tasks can be performed using differen=
+t combination of libraries, each is a different recipe.
+Categories are groups of tasks or categories
+</p>
+</blockquote>
+
+<p>
+You'll see most tasks don't have any recipes. We hope to collect the best r=
+ecipes. Categories are also open for discussion.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Picos =E2=80=94 Interoperable effects based concurrency</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-picos-interoperable-eff=
+ects-based-concurrency/14507/1">https://discuss.ocaml.org/t/ann-picos-inter=
+operable-effects-based-concurrency/14507/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org1b35d04" class=3D"outline-3">
+<h3 id=3D"org1b35d04">polytypic announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org1b35d04">
+<p>
+<a href=3D"https://github.com/ocaml-multicore/picos">Picos</a> is a framewo=
+rk for building interoperable elements such as
+</p>
+
+<ul class=3D"org-ul">
+<li>schedulers that multiplex large numbers of user level fibers to run on =
+a small number of system level threads,</li>
+<li>mechanisms for managing fibers and for structuring concurrency,</li>
+<li>communication and synchronization primitives, such as mutexes and condi=
+tion variables, message queues, STMs, and more, and</li>
+<li>integrations with low level asynchronous IO systems,</li>
+</ul>
+
+<p>
+of effects based cooperative concurrent programming models.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org9246524" class=3D"outline-3">
+<h3 id=3D"org9246524">polytypic then announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9246524">
+<p>
+I'm happy to announce that version 0.2.0 of Picos is now available on opam.
+</p>
+
+<p>
+A small core <a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos=
+/Picos/index.html">picos</a> framework allows concurrent abstractions
+<a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/index.html#i=
+mplemented-in-picos">implemented in Picos</a> to communicate with
+<a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/index.html#p=
+icos-compatible">Picos compatible</a> schedulers.
+</p>
+
+<p>
+In addition to the core framework, the <code>picos</code> package comes wit=
+h a couple of sample schedulers and some scheduler agnostic libraries
+as well as bunch of auxiliary libraries.
+</p>
+
+<p>
+Sample schedulers:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_fi=
+fos/index.html">picos.fifos</a> =E2=80=94 Basic single-threaded effects bas=
+ed Picos compatible scheduler for OCaml 5.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_th=
+readed/index.html">picos.threaded</a> =E2=80=94 Basic Thread based Picos co=
+mpatible scheduler for OCaml 4.</li>
+</ul>
+
+<p>
+Scheduler agnostic libraries:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_sy=
+nc/index.html">picos.sync</a> =E2=80=94 Basic communication and synchroniza=
+tion primitives for Picos.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_st=
+dio/index.html">picos.stdio</a> =E2=80=94 Basic IO facilities based on OCam=
+l standard libraries for Picos.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_se=
+lect/index.html">picos.select</a> =E2=80=94 Basic <code>Unix.select</code> =
+based IO event loop for Picos.</li>
+</ul>
+
+<p>
+Auxiliary libraries:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_do=
+main/index.html">picos.domain</a> =E2=80=94 Minimalistic domain API availab=
+le both on OCaml 5 and on OCaml 4.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_ex=
+n_bt/index.html">picos.exn_bt</a> =E2=80=94 Wrapper for exceptions with bac=
+ktraces.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_fd=
+/index.html">picos.fd</a> =E2=80=94 Externally reference counted file descr=
+iptors.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_ht=
+bl/index.html">picos.htbl</a> =E2=80=94 Lock-free hash table.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_mp=
+sc_queue/index.html">picos.mpsc_queue</a> =E2=80=94 Multi-producer, single-=
+consumer queue.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_rc=
+/index.html">picos.rc</a> =E2=80=94 External reference counting tables for =
+disposable resources.</li>
+<li><a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/Picos_th=
+read/index.html">picos.thread</a> =E2=80=94 Minimalistic thread API availab=
+le with or without <code>threads.posix</code>.</li>
+</ul>
+
+<p>
+All of the above are entirely opt-in and you are free to mix-and-match with=
+ any other Picos compatible
+<a href=3D"https://discuss.ocaml.org/t/ann-miou-a-simple-scheduler-for-ocam=
+l-5/12963/14">future</a> schedulers and libraries implemented in Picos
+or develop your own.
+</p>
+
+<p>
+See the <a href=3D"https://ocaml-multicore.github.io/picos/0.2.0/picos/inde=
+x.html">reference manual</a> for further information.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Ppxlib dev meetings</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ppxlib-dev-meetings/12441/2=
+1">https://discuss.ocaml.org/t/ppxlib-dev-meetings/12441/21</a>
+</p>
+</div>
+<div id=3D"outline-container-org7e0a9cf" class=3D"outline-3">
+<h3 id=3D"org7e0a9cf">Nathan Rebours announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org7e0a9cf">
+<p>
+You can find our last meeting's notes <a href=3D"https://github.com/ocaml-p=
+px/ppxlib/wiki/Dev-Meeting-2024-04-16">here</a>.
+</p>
+
+<p>
+We had three guests yesterday: @shonfeder @lubegasimon and @moazzammoriani.
+</p>
+
+<p>
+You are always welcome to join whether you have a specific topic you want t=
+o bring up or you just want to tag along. We'll post the
+link here ahead of the meeting.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Ortac 0.2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ortac-0-2-0/14510/1">ht=
+tps://discuss.ocaml.org/t/ann-ortac-0-2-0/14510/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org5e5d655" class=3D"outline-3">
+<h3 id=3D"org5e5d655">Nicolas Osborne announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org5e5d655">
+<p>
+We are very excited to announce this new Ortac release!
+</p>
+
+<p>
+Ortac is a set of tools that translate Gospel specifications into OCaml cod=
+e and use these translations to generate programs that
+check at runtime that the OCaml implementation respects the Gospel specific=
+ations.
+</p>
+
+<p>
+You can find the project on <a href=3D"https://github.com/ocaml-gospel/orta=
+c">this repo</a> and install it via <code>opam</code>.
+</p>
+
+<p>
+This new release contains four packages:
+</p>
+
+<ul class=3D"org-ul">
+<li><code>ortac-core</code></li>
+<li><code>ortac-runtime</code></li>
+<li><code>ortac-qcheck-stm</code></li>
+<li><code>ortac-runtime-qcheck-stm</code></li>
+</ul>
+
+<p>
+The main improvements that brings this release concern the <code>ortac-qche=
+ck-stm</code> plugin (the other three packages are mainly released
+for compatibility reasons).
+</p>
+
+<p>
+<code>ortac-qcheck-stm</code> provides a plugin for Ortac. It generates QCh=
+eck-STM tests for a module specified with Gospel. QCheck-STM is a
+model-based testing framework and Ortac/QCheck-STM relies on the Gospel mod=
+els you gave in the specifications to build the QCheck-STM
+tests.
+</p>
+
+<p>
+I'd like to highlight two of these improvements.
+</p>
+
+<p>
+The first one is that type invariants for what we call the system under tes=
+t are now checked. Let's say you want to generate
+QCheck-STM tests for a fixed-size container. You can give the following spe=
+cification to your type:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">type</span> <span style=3D"color: #444fcf;">'a t</span>
+<span style=3D"color: #8f6f4a; font-style: italic;">(*</span><span style=3D=
+"color: #8f6f4a; font-style: italic;">@ mutable model contents : 'a list</s=
+pan>
+<span style=3D"color: #8f6f4a; font-style: italic;">    model size : int</s=
+pan>
+<span style=3D"color: #8f6f4a; font-style: italic;">    with t invariant Li=
+st.length t.contents &lt;=3D t.size</span><span style=3D"color: #8f6f4a; fo=
+nt-style: italic;"> *)</span>
+</pre>
+</div>
+
+<p>
+Now, the generated tests will check that the invariant is respected at init=
+ialisation of the system under test (the value of type <code>'a
+t</code>) and that it is preserved by the functions being tested.
+</p>
+
+<p>
+The second improvement concerns the test failure message. In order to make =
+the failure more informative, a message stating which part
+of the Gospel specifications has been violated and a small OCaml program th=
+at demonstrates the unexpected behaviour will be
+displayed.
+</p>
+
+<p>
+For example, with an artificial bug in the <code>Array.length</code> functi=
+on, running the Ortac/QCheck-STM-generated test will print the
+following failure message:
+</p>
+
+<pre class=3D"example" id=3D"org5bcde34">
+random seed: 172339461
+generated error fail pass / total     time test name
+[=E2=9C=97]    1    0    1    0 / 1000     0.0s Array STM tests (generating)
+
+--- Failure ---------------------------------------------------------------=
+-----
+
+Test Array STM tests failed (5 shrink steps):
+
+   length sut
+
++++ Messages ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+++++++
+
+Messages for test Array STM tests:
+
+Gospel specification violation in function length
+
+  File "array.mli", line 7, characters 12-22:
+    i =3D t.size
+
+when executing the following sequence of operations:
+
+  open Array
+  let protect f =3D try Ok (f ()) with e -&gt; Error e
+  let sut =3D make 16 'a'
+  let r =3D length sut
+  assert (r =3D 16)
+  (* returned 42 *)
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+failure (1 tests failed, 0 tests errored, ran 1 tests)
+</pre>
+
+<p>
+Although it has already helped find and fix some bugs, this project is stil=
+l fairly new. So, feel free to try it and report any
+<a href=3D"https://github.com/ocaml-gospel/ortac/issues">issue</a>.
+</p>
+
+<p>
+Happy testing!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">OUPS meetup april 2024</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/oups-meetup-april-2024/1451=
+2/1">https://discuss.ocaml.org/t/oups-meetup-april-2024/14512/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org719ce49" class=3D"outline-3">
+<h3 id=3D"org719ce49">zapashcanon announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org719ce49">
+<p>
+The next OUPS meetup will take place on <b>Thursday, 25th of April</b> 2024=
+. It will start at <b>7pm</b> at the <b>4 place Jussieu</b> in
+Paris.
+</p>
+
+<p>
+:warning: :trumpet: It will be in the in the <b>Esclangon building</b> (amp=
+hi Astier). :trumpet: :warning:
+</p>
+
+<p>
+Please, <b><a href=3D"https://www.meetup.com/fr-FR/ocaml-paris/events/30047=
+4192">register on meetup </a></b> as soon as possible to let us know how
+many pizza we should order.
+</p>
+
+<p>
+For more details, you may check the <a href=3D"https://oups.frama.io">OUPS=
+=E2=80=99 website </a>.
+</p>
+
+<p>
+This month will feature the following talks :
+</p>
+
+<p>
+<b>Symbolic execution for all with <a href=3D"https://github.com/ocamlpro/o=
+wi">Owi</a> and Wasm &#x2013; L=C3=A9o Andr=C3=A8s</b>
+</p>
+
+<p>
+WebAssembly (Wasm) is a new binary compilation target adopted by many high-=
+level programming languages such as C/C++, Rust, Java, and
+Go. Building on this foundation, we present Owi, a toolkit to work with Was=
+m within the OCaml ecosystem. In particular, Owi features
+a reference interpreter for Wasm capable of performing both concrete and sy=
+mbolic execution.
+In this presentation, we describe how we designed reusable components and a=
+ modular interpreter from a concrete one, enabling the
+sharing of code between the concrete and symbolic interpreters. Additionall=
+y, we demonstrate how it is possible to perform symbolic
+execution of other languages by compiling them to Wasm using the symbolic i=
+nterpreter. We provide examples of symbolic execution
+applied to C and Rust code and describe our current work to extend this fun=
+ctionality to support OCaml and other garbage-collected
+languages by integrating WasmGC into Owi.
+</p>
+
+<p>
+<b><a href=3D"https://github.com/formalsec/encoding">Smt.ml</a> - A Multi B=
+ack-end Front-end for SMT Solvers in OCaml &#x2013; Filipe Marques</b>
+</p>
+
+<p>
+SMT solvers are crucial tools in fields such as Software Verification, Prog=
+ram Synthesis, and Test-Case Generation. However, using
+their APIs, especially in typed functional languages like OCaml, can be cha=
+llenging due to their complexity and lack of user-friendly
+interfaces. To address this, we propose Smt.ml, an open-source library that=
+ serves as a single interface for multiple SMT solvers in
+OCaml. Currently supporting solvers such as Z3, Colibri2, and Bitwuzla, Smt=
+.ml enables users to seamlessly work with different
+solvers using one unified syntax. The library incorporates built-in optimiz=
+ations to handle both concrete and symbolic expressions
+efficiently. Smt.ml has been successfully integrated with Owi, an interpret=
+er and toolkit for WebAssembly. This integration allowed
+Owi to perform static symbolic execution and test-case generation for WebAs=
+sembly programs. Notably, Owi was able to identify known
+vulnerabilities in a widely-used C data structure libraries.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">Mirage 4.5.0 released</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/mirage-4-5-0-released/14518=
+/1">https://discuss.ocaml.org/t/mirage-4-5-0-released/14518/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org9917c57" class=3D"outline-3">
+<h3 id=3D"org9917c57">Thomas Gazagnaire announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9917c57">
+<p>
+On behalf of the Mirage team, I'm happy to announce the release of MirageOS=
+ 4.5.0. This was merged in <code>opam-repository</code> last week, so
+it should be available just in time for the upcoming <a href=3D"https://ret=
+reat.mirage.io/">14th MirageOS hack retreat</a>!
+</p>
+
+<p>
+This release introduces a significant change in the Mirage tool by splittin=
+g the definition of command-line arguments used at
+configure-time and runtime. Command-line arguments used in the configure sc=
+ript (also called 'configuration keys' and defined in the
+<code>Key</code> module) are essential during the setup of module dependenc=
+ies for the unikernel, allowing for specialized production of a
+unikernel for a given target runtime environment. On the other hand, comman=
+d-line arguments that the unikernel can use a runtime
+(defined in the <code>Runtime_arg</code> module) are helpful for customizin=
+g deployments without altering the dependencies of the unikernels.
+</p>
+
+<ul class=3D"org-ul">
+<li>API changes:
+<ul class=3D"org-ul">
+<li>There is no more <code>~stage</code> parameter for <code>Key.Arg.info</=
+code>.</li>
+<li><code>Key</code> now define command-line arguments for the configuratio=
+n tool.</li>
+<li>There is a new module <code>Runtime_arg</code> to define command-line a=
+rguments for the unikernel.</li>
+<li>As there are no more keys type <code>'Both</code>, users are now expect=
+ed to create two separated keys in that case (one for configure-time, one f=
+or runtime) or decide if the key is useful at runtime of configure-time.</l=
+i>
+</ul></li>
+<li>Intended use of configuration keys (values of type <code>'a key</code>):
+<ul class=3D"org-ul">
+<li>Used to set up module dependencies of the unikernel, such as the target=
+ (hvt, xen, etc.) and whether to use DHCP or a fixed IP address.</li>
+<li>Enable the production of specialized unikernels suitable for specific t=
+arget runtime environments and dedicated network and storage stacks.</li>
+<li>Similar keys will produce reproducible binaries to be uploaded to artif=
+act repositories like Docker Hub or <a href=3D"https://builds.robur.coop/">=
+https://builds.robur.coop/</a>.</li>
+</ul></li>
+<li>Intended use of command-line runtime arguments (values of type <code>a =
+runtime_arg</code>):
+<ul class=3D"org-ul">
+<li>Allow users to customize deployments by changing device configuration, =
+like IP addresses, secrets, block device names, etc., post downloading of b=
+inaries.</li>
+<li>These keys don=E2=80=99t alter the dependencies of the unikernels.</li>
+<li>A runtime keys is just a reference to a normal Cmdliner term.</li>
+</ul></li>
+<li><code>key_gen.ml</code> is not generated anymore, so users cannot refer=
+ to <code>Key_gen.&lt;key_name&gt;</code> directly.
+<ul class=3D"org-ul">
+<li>Any runtime argument has to be declared (using <code>runtime_arg</code>=
+ and registered on the device (using <code>~runtime_args</code>). The value=
+ of that argument will then be passed as an extra parameter of the <code>co=
+nnect</code> function of that device.</li>
+<li>Configuration keys are not available at runtime anymore. For instance, =
+<code>Key_gen.target</code> has been removed.</li>
+</ul></li>
+<li><p>
+Code migration:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml">  <span style=3D"color: #8f6f4a; font-style: i=
+talic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">in co=
+nfig.ml</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+ <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">key</span> =3D
+   <span style=3D"color: #000000; font-weight: bold;">let</span> <span styl=
+e=3D"color: #007a9f;">doc</span> =3D <span style=3D"color: #444fcf;">Key.Ar=
+g.</span>info <span style=3D"color: #00824f;">~doc</span>:<span style=3D"co=
+lor: #ca3400;">"A Key."</span> <span style=3D"color: #00824f;">~stage</span=
+>:<span style=3D"color: #242521; background-color: #fcf7ef;">`Run</span> [ =
+<span style=3D"color: #ca3400;">"key"</span> ] <span style=3D"color: #00000=
+0; font-weight: bold;">in</span>
+   <span style=3D"color: #444fcf;">Key.</span>(create <span style=3D"color:=
+ #ca3400;">"key"</span> <span style=3D"color: #444fcf;">Arg.</span>(opt_all=
+ <span style=3D"color: #00824f;">~stage</span>:<span style=3D"color: #24252=
+1; background-color: #fcf7ef;">`Run</span> string doc))
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">main</span> =3D main <span style=3D"color: #00824f;">~=
+keys</span>:[abstract hello] ..
+</pre>
+</div>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #8f6f4a; font-style: ita=
+lic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">in unik=
+ernel.ml</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</spa=
+n>
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">start</span> <span style=3D"color: #007a9f;">_</span> =
+=3D
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">key</span> =3D <span style=3D"color: #444fcf;">Key_gen=
+.</span>hello () <span style=3D"color: #000000; font-weight: bold;">in</spa=
+n>
+  ...
+</pre>
+</div>
+<p>
+becomes:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #8f6f4a; font-style: ita=
+lic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">in conf=
+ig.ml</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">hello</span> =3D runtime_arg <span style=3D"color: #00=
+824f;">~pos</span>:<span style=3D"color: #00824f;">__POS__</span> <span sty=
+le=3D"color: #ca3400;">"Unikernel.hello"</span>
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">main</span> =3D main <span style=3D"color: #00824f;">~=
+runtime_args</span>:[hello] ...
+</pre>
+</div>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #8f6f4a; font-style: ita=
+lic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">in unik=
+ernel.ml</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</spa=
+n>
+<span style=3D"color: #000000; font-weight: bold;">open </span><span style=
+=3D"color: #444fcf;">Cmdliner</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">hello</span> =3D
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">doc</span> =3D <span style=3D"color: #444fcf;">Arg.</s=
+pan>info <span style=3D"color: #00824f;">~doc</span>:<span style=3D"color: =
+#ca3400;">"How to say hello."</span> [ <span style=3D"color: #ca3400;">"hel=
+lo"</span> ] <span style=3D"color: #000000; font-weight: bold;">in</span>
+  <span style=3D"color: #444fcf;">Arg.</span>(value <span style=3D"color: #=
+a52a2a;">&amp;</span> opt string <span style=3D"color: #ca3400;">"Hello Wor=
+ld!"</span> doc)
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">start</span> <span style=3D"color: #007a9f;">_</span> =
+<span style=3D"color: #007a9f;">hello</span> =3D
+  ...
+</pre>
+</div></li>
+</ul>
+
+<p>
+The <a href=3D"https://github.com/mirage/mirage-skeleton">mirage-skeleton</=
+a> repository and a few tutorials on <a href=3D"https://mirage.io">https://=
+mirage.io</a> have been
+updated and now compile with <a href=3D"https://github.com/realworldocaml/m=
+dx">mdx</a> to check for future API breakage. Documentation PRs are
+very welcome if you find some missing updates. We also welcome more general=
+ feedback regarding this API change.
+</p>
+
+<p>
+I also would like to use this announcement as a reminder that we have resta=
+rted the mirage bi-weekly calls. Check the <a href=3D"https://lists.xenproj=
+ect.org/archives/html/mirageos-devel/">MirageOS
+mailing list</a> or the <a href=3D"https://matrix.to/#/!CokxBnmvmEfvUKOmHg:=
+matrix.org?via=3Dmatrix.org&amp;via=3Drecoil.org&amp;via=3Dasra.gr">MirageO=
+S Matrix
+channel</a> for more info. The next one is
+planned for the 29th of April. If you are using or planning to use MirageOS=
+ (or are just curious about the project), feel free to
+join, it's open to everyone!
+</p>
+
+<p>
+Happy hacking!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">patricia-tree 0.9.0 - library for patricia tree based maps and=
+ sets</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-patricia-tree-0-9-0-lib=
+rary-for-patricia-tree-based-maps-and-sets/14535/1">https://discuss.ocaml.o=
+rg/t/ann-patricia-tree-0-9-0-library-for-patricia-tree-based-maps-and-sets/=
+14535/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orga459794" class=3D"outline-3">
+<h3 id=3D"orga459794">Dorian Lesbre announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga459794">
+<p>
+I'm happy to announce the release of a new <code>patricia-tree</code> libra=
+ry, version 0.9.0 on opam.
+</p>
+
+<p>
+This library that implements sets and maps as Patricia Trees, as described =
+in Okasaki and Gill's 1998 paper <a href=3D"https://www.semanticscholar.org=
+/paper/Fast-Mergeable-Integer-Maps-Okasaki-Gill/23003be706e5f586f23dd7fa5b2=
+a410cc91b659d"><i>Fast mergeable integer
+maps</i></a>. It
+is a space-efficient prefix trie over the big-endian representation of the =
+key's integer identifier.
+</p>
+
+<p>
+For full details, visit see <a href=3D"https://codex.top/patricia-tree/">th=
+e documentation</a> or <a href=3D"https://github.com/codex-semantics-librar=
+y/patricia-tree">the source on
+github</a>.
+</p>
+</div>
+<div id=3D"outline-container-orgb3f792e" class=3D"outline-4">
+<h4 id=3D"orgb3f792e">Features</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb3f792e">
+<ul class=3D"org-ul">
+<li>Similar to OCaml's <code>Map</code> and <code>Set</code>, using the sam=
+e function names when possible and the same convention for order of argumen=
+ts. This should allow switching to and from Patricia Tree with minimal effo=
+rt.</li>
+<li>The functor parameters (<code>KEY</code> module) requires an injective =
+<code>to_int : t -&gt; int</code> function instead of a <code>compare</code=
+> function. <code>to_int</code> should be fast, injective, and only return =
+positive integers. This works well with <a href=3D"https://en.wikipedia.org=
+/wiki/Hash_consing">hash-consed</a> types.</li>
+<li>The Patricia Tree representation is stable, contrary to maps, inserting=
+ nodes in any order will return the same shape. This allows different versi=
+ons of a map to share more subtrees in memory, and the operations over two =
+maps to benefit from this sharing. The functions in this library attempt to=
+ <b><b>maximally preserve sharing and benefit from sharing</b></b>, allowin=
+g very important improvements in complexity and running time when combining=
+ maps or sets is a frequent operation.</li>
+<li>Since our Patricia Tree use big-endian order on keys, the maps and sets=
+ are sorted in increasing order of keys. We only support positive integer k=
+eys. This also avoids a bug in Okasaki's paper discussed in <a href=3D"http=
+s://www.cs.tufts.edu/comp/150FP/archive/jan-midtgaard/qc-patricia.pdf"><i>Q=
+uickChecking Patricia Trees</i></a> by Jan Mitgaard.</li>
+<li>Supports generic maps and sets: a <code>'m map</code> that maps <code>'=
+k key</code> to <code>('k, 'm) value</code>. This is especially useful when=
+ using <a href=3D"https://v2.ocaml.org/manual/gadts-tutorial.html">GADTs</a=
+> for the type of keys. This is also sometimes called a dependent map.</li>
+<li>Allows easy and fast operations across different types of maps and set =
+(e.g. an intersection between a map and a set), since all sets and maps, no=
+ matter their key type, are really positive integer sets or maps.</li>
+<li>Multiple choices for internal representation (<code>NODE</code>), which=
+ allows for efficient storage (no need to store a value for sets), or using=
+ weak nodes only (values removed from the tree if no other pointer to it ex=
+ists). This system can also be extended to store size information in nodes =
+if needed.</li>
+<li>Exposes a common interface (<code>view</code>) to allow users to write =
+their own pattern
+matching on the tree structure without depending on the <code>NODE</code> b=
+eing used.</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-orgb625235" class=3D"outline-4">
+<h4 id=3D"orgb625235">Comparison to other OCaml libraries</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb625235">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org2069a76"></a>ptmap and ptset<br />
+<div class=3D"outline-text-5" id=3D"text-org2069a76">
+<p>
+There are other implementations of Patricia Tree in OCaml, namely <a href=
+=3D"https://github.com/backtracking/ptmap">ptmap</a> and
+<a href=3D"https://github.com/backtracking/ptset">ptset</a>. These are smal=
+ler and closer to OCaml's built-in Map and Set, however:
+</p>
+
+<ul class=3D"org-ul">
+<li>Our library allows using any type <code>key</code> that comes with an i=
+njective <code>to_int</code> function, instead of requiring <code>key =3D i=
+nt</code>.</li>
+<li>We support generic (heterogeneous) types for keys/elements.</li>
+<li>We support operations between sets and maps of different types.</li>
+<li>We use a big-endian representation, allowing easy access to min/max ele=
+ments of maps and trees.</li>
+<li>Our interface and implementation tries to maximize the sharing between =
+different versions of the tree, and to benefit from this memory sharing. Th=
+eirs do not.</li>
+<li>These libraries work with older version of OCaml (<code>&gt;=3D 4.05</c=
+ode> I believe), whereas ours requires OCaml <code>&gt;=3D 4.14</code></li>
+<li>Our keys are limited to positive integers.</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgc278832"></a>dmap<br />
+<div class=3D"outline-text-5" id=3D"text-orgc278832">
+<p>
+Additionally, there is a dependent map library: <a href=3D"https://gitlab.i=
+nria.fr/bmontagu/dmap">dmap</a>. It allows creating type safe dependent
+maps similar to our heterogeneous maps. However, its maps aren't Patricia t=
+rees. They are binary trees build using a (polymorphic)
+comparison function, similarly to the maps of the standard library. Another=
+ difference is that the type of values in the map is
+independent of the type of the keys, allowing keys to be associated with di=
+fferent values in different maps. i.e. we map <code>'a key</code> to
+any <code>('a, 'b) value</code> type, whereas dmap only maps <code>'a key</=
+code> to <code>'a</code>.
+</p>
+
+<p>
+<code>dmap</code> also works with OCaml <code>&gt;=3D 4.12</code>, whereas =
+we require OCaml <code>&gt;=3D 4.14</code>.
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-10" class=3D"outline-2">
+<h2 id=3D"10">OCANNL 0.3.1: a from-scratch deep learning (i.e. dense tensor=
+ optimization) framework</h2>
+<div class=3D"outline-text-2" id=3D"text-10">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocannl-0-3-1-a-from-scr=
+atch-deep-learning-i-e-dense-tensor-optimization-framework/14492/4">https:/=
+/discuss.ocaml.org/t/ann-ocannl-0-3-1-a-from-scratch-deep-learning-i-e-dens=
+e-tensor-optimization-framework/14492/4</a>
+</p>
+</div>
+<div id=3D"outline-container-orgcdf5ab3" class=3D"outline-3">
+<h3 id=3D"orgcdf5ab3">Lukasz Stafiniak announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgcdf5ab3">
+<p>
+OCANNL 0.3.2 is out now. Thanks!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-11" class=3D"outline-2">
+<h2 id=3D"11">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-11">
+</div>
+<div id=3D"outline-container-orgc003782" class=3D"outline-3">
+<h3 id=3D"orgc003782">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc003782">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2024-04-17-creating-the-syntaxdocum=
+entation-command-part-1-merlin">Creating the SyntaxDocumentation Command - =
+Part 1: Merlin</a></li>
+<li><a href=3D"https://blog.robur.coop/articles/miragevpn-performance.html"=
+>Speeding up MirageVPN and use it in the wild</a></li>
+<li><a href=3D"https://frama-c.com/2024/04/15/Frama-C-Days-2024.html">Frama=
+-C Days 2024</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org9c416e0" class=3D"outline-2">
+<h2 id=3D"org9c416e0">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org9c416e0">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org4eacbff">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
