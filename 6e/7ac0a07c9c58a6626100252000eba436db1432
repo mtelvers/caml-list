@@ -1,0 +1,361 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=quarantine dis=none) header.from=vu.nl
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=PoHFp4Eh;
+	dkim=fail reason="signature verification failed" (2048-bit key; secure) header.d=vu.nl header.i=@vu.nl header.a=rsa-sha256 header.s=smf header.b=t/XGWbHa;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id CDDA9B80123
+	for <caml-list@tunbury.org>; Fri,  3 May 2024 14:37:47 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:from:to:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=pQTUltrfRUvNcgfluRfjSKvBRnQRyy0lHhEgvtGOh6E=;
+  b=PoHFp4EhRohRDa9hw3zEcWak/782oOfwMSucZzxkpTljHSB1b3o4p+UF
+   1Dbm+bDJfyLtzE3/D+40i9vydMGXBtKu/AN1O3LlfHdyuGRO1IqcUUAST
+   cqFpRctP8xst3MTw2rXt5M4efH7NlMFZ9Ih3yX7HjMAXkCCbqr7IN7bDZ
+   c=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@vu.nl
+X-IronPort-AV: E=Sophos;i="6.07,251,1708383600"; 
+   d="scan'208";a="164406081"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 03 May 2024 15:37:46 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 5C171E0141; Fri,  3 May 2024 15:37:46 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 133A0E0035
+	for <caml-list@sympa.inria.fr>; Fri,  3 May 2024 15:37:40 +0200 (CEST)
+IronPort-SDR: 6634e8a3_CCs3SbPhir/Wo0V9EgJ6QnNkkIfzbkkI/VxnCMAnEGfPxD/
+ PLjTY/AhEOBsUiAhtPEkRjsoZuNeob/TPtmNicw==
+X-IPAS-Result: =?us-ascii?q?A0EUAwCA5zRmmLZqV8BagQmBT4IcKHwDVzAHUB2EOYNPj?=
+ =?us-ascii?q?hmEPo0IjWwDGBYoDwEDAQwBOQkCBAEBAwEDgguLJAIfBgEEMwYOAQIEAQEBA?=
+ =?us-ascii?q?QMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABAQEBAQEBAR4ZBRAOJ4V0DYJKU?=
+ =?us-ascii?q?WtjAgYDNgEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBARMCDQccOQFCBg8BBQgBA?=
+ =?us-ascii?q?SYSNAImAl4VAQGCJFgBgmQDEbM1gTKBAYIMAQEGgQhQQU7ZNoFiAwYJAYEQL?=
+ =?us-ascii?q?oguAYFZiGMngWREgRUngVWBbIEFgVwCAhiBIYQAgmmOSoUBgmUvGRJVgkyCI?=
+ =?us-ascii?q?QuECIY8CYFIHANZIRMBVRMXCz4JFgIWAxsUBDAPCQsmAyoGNgISDAYGBlkgF?=
+ =?us-ascii?q?gkEIwMIBANEAyBvEQMEGgQLB3WDMQQTRAOBOIl9gz2CIIQhS4EAASqDTIF4D?=
+ =?us-ascii?q?mKGPB1AAgELbT01CQsbKKEJgwOBbxM9TSUPCWM6kjAuj1SjCAeEFowOlSMGQ?=
+ =?us-ascii?q?oFagiuHDYw6MZEygQWYYo10lUQCE4UQAgQCBAUCF4F7JEmBE00vRIJnTwMXA?=
+ =?us-ascii?q?g9XjWAChBSCMYIMJJQxdjsCBwEKAQEDCYVpgzksAYEbAQE?=
+IronPort-PHdr: A9a23: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
+ 8Iqck6aVkQzwaHXERBbbKIqxilLcoxU8CqKFRs=
+IronPort-Data: A9a23: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
+ A==
+IronPort-HdrOrdr: A9a23:+Mb3JakXcoVNhX5U67dXOq10tGbpDfI/3DAbv31ZSRFFG/Fw8P
+ rCoB1773PJYVkqOU3I9erwXZVoIkmyyXcK2+ks1N6ZNWGM0ldASrsSibcKqAeQeREWmNQttp
+ uIC5IRNOHN
+X-Talos-CUID: 9a23:hqyiem1WPKXnAcaijTUQF7xfHp0+W3rDiyfrfRWmUjZ5eYaPTn+b9/Yx
+X-Talos-MUID: 9a23:PskzmAWZTnqcRa7q/CLq1DFiPYQr2KOvWWAAqZVYvPaFdhUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,251,1708383600"; 
+   d="scan'208";a="164406041"
+X-MGA-submission: =?us-ascii?q?MDGQ1u1ojDcd3FXuUD1DbKbgmAL7kkrzDUBuet?=
+ =?us-ascii?q?LEdDSS2MnB71awnY/xW+Hrf0y72tsMHRcEPvy0PMqyMvJeDEOn/lkn8V?=
+ =?us-ascii?q?YrcnEl3UBwtXOG8T4tRRS9dBaT2RuR28tmT+9O8X7bXerqzKMeGmHDNE?=
+ =?us-ascii?q?vvbkXkEUR8RM7c/yQjB7hq/g=3D=3D?=
+Received: from out182-ams.surfmailfilter.nl ([192.87.106.182])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 15:37:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=vu.nl; s=smf;
+	h=content-transfer-encoding:content-type:to:subject:from:mime-version:date:
+	 message-id:from;
+	bh=pQTUltrfRUvNcgfluRfjSKvBRnQRyy0lHhEgvtGOh6E=;
+	b=t/XGWbHahDWtX01b6LGbXvIQYleVT6ySouOb6jmks5i0juCAX45SGvtti6UzwaNmPSq29dO9HwI+2
+	 +tMuVWieKjRHDaMCtDx6EaWCKFEAKlnZmO2xcOJbcLgeVe0a5sGX0wQFtbiPxPqWDvoDLk79EWE7Wt
+	 HMieBBCwpMN8SUfRHNg/Wc8NR4y2kBJ0TKy9kR3xA2SHdhlMNIxWlEizCpA2YR4qYwun0rRIrXF3xA
+	 qQuIRXXsW8ssOcXMeFTe0hLs9uOs6FHQgLGa3r0foKPq8MfGU3nk8ItJJzyqCJe9+HEsS2jS6ztrV1
+	 rHJZlJUg6AFwbbmd8sZOdk6XT7XR7qw==
+X-Halon-ID: 4ea93a1c-0952-11ef-937b-005056a3ec54
+Received: from mailin.vu.nl (mailin.vu.nl [130.37.164.72])
+	by filter1-ams.surfmailfilter.nl (Halon) with ESMTPS
+	id 4ea93a1c-0952-11ef-937b-005056a3ec54;
+	Fri, 03 May 2024 15:37:38 +0200 (CEST)
+Received: from pexch005a.vu.local (130.37.237.82) by mailin.vu.nl
+ (130.37.164.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Fri, 3 May
+ 2024 15:36:55 +0200
+Received: from [192.168.2.114] (130.37.253.6) by PEXCH005a.vu.local
+ (130.37.237.82) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Fri, 3 May
+ 2024 15:36:55 +0200
+Message-ID: <73bb39f0-6f44-476a-803d-ef9e392a1d08@vu.nl>
+Date: Fri, 3 May 2024 15:36:55 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: Joerg Endrullis <j.endrullis@vu.nl>
+To: <caml-list@inria.fr>
+Content-Language: en-US
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [130.37.253.6]
+X-ClientProxiedBy: pexch005a.vu.local (130.37.237.82) To PEXCH005a.vu.local
+ (130.37.237.82)
+Subject: [Caml-list] CfP: Conference on Computer Science Logic (CSL 2025)
+Reply-To: Joerg Endrullis <j.endrullis@vu.nl>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19120
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-05/73bb39f0-6f44-476a-803d-ef9e392a1d08%40vu.nl>
+
+
+=====================================
+Call for papers (CSL'25)
+https://csl2025.github.io/
+Abstract submission deadline: July 18th, 2024 (AoE)
+=====================================
+
+Computer Science Logic (CSL) is the annual conference of the European 
+Association for Computer Science Logic (EACSL), see https://www.eacsl.org/.
+
+It is an interdisciplinary conference, spanning across both basic and 
+application oriented research in mathematical logic and computer science.
+
+CSL'25 will be held on February 10-24, 2025, in Amsterdam, Netherlands. 
+It is planned as an on-site event, with support for remote presentations.
+
+Submission guidelines:
+----------------------
+
+Submitted papers must be in English and must provide sufficient detail 
+to allow the Programme Committee to assess the merits of the paper. Full 
+proofs may appear in a clearly marked technical appendix which will be 
+read at the reviewers' discretion. Authors are strongly encouraged to 
+include a well written introduction which is directed at all members of 
+the PC.
+
+The paper should be submitted via Easychair:
+
+   https://easychair.org/conferences/?conf=csl2025
+
+(the link will be opened in early June)
+
+The CSL 2025 conference proceedings will be published in Leibniz 
+International Proceedings in Informatics (LIPIcs), see 
+https://submission.dagstuhl.de/documentation/authors.
+
+Authors are invited to submit contributed papers of no more than 15 
+pages in LIPIcs style (not including appendices or references), 
+presenting unpublished work fitting the scope of the conference. Papers 
+may not be submitted concurrently to another conference with refereed 
+proceedings. The PC chairs should be informed of closely related work 
+submitted to a conference or a journal.
+
+Papers authored or co-authored by members of the PC (but not PC chairs) 
+are allowed.
+
+The submissions are double-blind. Authors are not allowed to put their 
+name on the paper, and they should avoid revealing their identities in 
+text (references to previous or related work should be in third-person). 
+Authors are allowed to disseminate the work on public repositories (e.g. 
+on arXiv or their websites).
+
+At least one of the authors of each accepted paper is expected to 
+register for the conference in order to present their papers.
+
+Important dates:
+----------------
+
+Abstract submission: July 18th, 2024 AoE
+Paper submission: July 23rd, 2024 AoE
+Notification: October 27th, 2024 AoE
+Final Version Due: November 24th, 2024 AoE
+Conference: February 10th-14th, 2025
+
+List of topics:
+---------------
+
+The following list is not exhaustive but indicates the scope of interest 
+for CSL'25:
+- automated deduction and interactive theorem proving
+- concurrency and distributed computation
+- constructive mathematics and type theory
+- equational logic and term rewriting
+- automata and games, game semantics
+- formal methods
+- modal and temporal logic
+- description logics
+- logical aspects of AI
+- model checking
+- decision procedures
+- logical aspects of computational complexity
+- knowledge representation and reasoning
+- finite model theory
+- computability
+- computational proof theory
+- logic programming and constraints
+- lambda calculus and combinatory logic
+- domain theory
+- categorical logic and topological semantics
+- database theory
+- specification, extraction and transformation of programs
+- logical aspects of quantum computing
+
+
+Committee Chairs
+------------------
+
+- Jörg Endrullis (Vrije Universiteit Amsterdam, Netherlands)
+- Sylvain Schmitz (Université Paris Cité, France)
+
+Program Committee
+------------------
+
+- Mahsa Shirmohammadi (CNRS, IRIF, France)
+- Dana Fisman (Ben-Gurion U., Israel)
+- Laure Daviaud (City University London, UK)
+- Natasha Fernandes (Macquarie University, Sydney, Australia)
+- Bahareh Afshari (ILLC Amsterdam, Netherlands)
+- Corina Cîrstea (University of Southampton, UK)
+- Sandra Alves (University of Porto, Portugal)
+- Camille Bourgaux (CNRS, ENS Paris, France)
+- Laura Bozzelli (Napoli, Italy)
+- Shankara Narayanan Krishna (IIT Bombay, India)
+- Assia Mahboubi (Inria Nantes, France)
+- Davide Sangiorgi (University of Bologna, Italy)
+- Anuj Dawar (University of Cambridge, UK)
+- Robert Harper (Carnegie Mellon University, USA)
+- Thomas Zeume (Ruhr University Bochum, Germany)
+- Dale Miller (Inria Saclay, France)
+- Alwen Tiu (Australian National University, Australia)
+- Paul Brunet (Université Paris-Est Créteil, France)
+- Rob J. van Glabbeek (UNSW, Sydney, Australia)
+- Benoît Valiron (CentraleSupélec, France)
+- Ugo Dal Lago (University of Bologna, Italy)
+- Antti Kuusisto (Tampere University, Finland)
+- Standa Živný (University of Oxford, UK)
+- Moses Ganardi (MPI-SWS Kaiserslautern, Germany)
+- Julien Grange (Université Paris-Est Créteil, France)
+- Alessio Mansutti (IMDEA Software Institute, Spain)
+- Takeshi Tsukada (University of Tokyo, Japan)
+
+Organisation committee:
+-----------------
+
+Wan Fokkink (Vrije Universiteit Amsterdam, Netherlands)
+Cynthia Bijl de Vroe (Vrije Universiteit Amsterdam, Netherlands)
+Emma Triesman (Vrije Universiteit Amsterdam, Netherlands)
+
