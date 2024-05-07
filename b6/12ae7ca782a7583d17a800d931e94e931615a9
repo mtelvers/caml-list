@@ -1,0 +1,336 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=quarantine dis=none) header.from=vu.nl
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=A7fWErmr;
+	dkim=fail reason="signature verification failed" (2048-bit key; secure) header.d=vu.nl header.i=@vu.nl header.a=rsa-sha256 header.s=smf header.b=rRhzVYW9;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 31CECB80123
+	for <caml-list@tunbury.org>; Tue,  7 May 2024 10:24:39 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:from:to:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=CyPyM8avFuaLnxjtg1OsIlLnZglqFizb9qqrx+BxMzg=;
+  b=A7fWErmrpGv9k3aTjr/l2COJT1zL6CGlwmqjy28Htl2Ft+ipg6h60hfQ
+   ceArCvHmjg0sSOYkERKI6Z3yfZwyw5T6GZQSmi6GsHaPouCH3kNshP43y
+   JAAf4LusNBZ8/DxSG8jb6y1RnaHtMvdNvHJcll7IRv/DikXdCzbuErXRD
+   w=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@vu.nl
+X-IronPort-AV: E=Sophos;i="6.07,260,1708383600"; 
+   d="scan'208";a="164825727"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 07 May 2024 11:24:39 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 030ECE0CD2; Tue,  7 May 2024 11:24:39 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 3C007E0035
+	for <caml-list@sympa.inria.fr>; Tue,  7 May 2024 11:24:33 +0200 (CEST)
+IronPort-SDR: 6639f350_Kbpxw8kwCZemdxCdTL/Rzbyodxx7fpRNT1v6cUW2EFdIZVb
+ DWzXKHxdyopsfRDWtQIegBfcRioTjC7Tv9BHTCw==
+X-IPAS-Result: =?us-ascii?q?A0FWBQBP8jlmmCoNqcNaHQEBPAEFBQECAQkBFYFPAoJCf?=
+ =?us-ascii?q?ANXMAdQHYQ5kWmEPpljgSwWKA8BAwEMARQCERIJAgQBAQMEgguLJgIfBgEEM?=
+ =?us-ascii?q?wYOAQIEAQEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABAQEBAQEBAR4ZB?=
+ =?us-ascii?q?RAOJ4U7BzINgmCBJmMIOwEBAQEBAQEBAQEBAQEBAQEBAQEBAQETAg0HKSwBQ?=
+ =?us-ascii?q?gYPAQUIAQEmEjQCJgJeFQEBEIJsAYJkAwQNs3WBMoEBggwBAQaBRgUQD33ZN?=
+ =?us-ascii?q?oFiAwYJAYEQLgGILQGBWYhjJ4FkRIEVJwuBSoFsgQWBXAQYfRMBAQsHAYN8g?=
+ =?us-ascii?q?mmBbA+GCYZBHINTggFxgiAYBoFMFyUaAwwVGYEQAoFyCAkKBIE5JmYBGGGGd?=
+ =?us-ascii?q?gmBSBwDWTIBVRMXCz4JFgIWAxsUBDAPCQsmAyoGNgISDAYGBlkgFgkEIwMIB?=
+ =?us-ascii?q?ANEAyBxEQMEGgQLB3WDMQQTRAOBOIl6gz2CIIQgS4EAASuDSoF4DmKHXh1AA?=
+ =?us-ascii?q?gELbT01CQsbKKF/gng+MQc8TRM8QQ0XEQgEQgECFgUBRZJeslwHhBYFjAmVI?=
+ =?us-ascii?q?wZChAWMfoZJkmiYYo10lUQCE4EBhA8CBAIEBQIXgXskbHBNL4MrEj0DFwIPV?=
+ =?us-ascii?q?4hfhQICiFEkmQx2OwIHAQoBAQMJhWmDBQImBwUsAYEbAQE?=
+IronPort-PHdr: A9a23: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
+ A==
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:Sz0o26hjqtZtYuUZnQut/44ZU3BQXrUji2hC6mlwRA09TyX4ra
+ CTdZsguCMc5Ax/ZJhCo7G90de7K080nKQdieIs1NyZMjUO1lHFEL1f
+X-Talos-CUID: 9a23:LC2AOm/d4tWCV9Vce+CVvxcSEJ9mVF/H8C+OB26HLGtOR62PYkDFrQ==
+X-Talos-MUID: 9a23:ZSOTIggC7yNJTOGMANbaO8MpEddp3KiOIVoxo5RXpeSeaypiEQWeg2Hi
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.07,260,1708383600"; 
+   d="scan'208";a="164825691"
+X-MGA-submission: =?us-ascii?q?MDHivOx+hyP27XkkqHP9Jd5tIt+3i/j/6tb1+k?=
+ =?us-ascii?q?L60qZtq3QdvzrYDvZH6QNx7XeL2Zc7f5HEdxtA95Ks2p/HjVGI9mMtsl?=
+ =?us-ascii?q?0Mbs6+9byi7Wq8np6bXq4ZZfmpz10ZLgmaho48sPPwqQAfTyDz27CdKg?=
+ =?us-ascii?q?A+69K+SYwD4I3jPQeENZg4iA=3D=3D?=
+Received: from out42-til.surfmailfilter.nl ([195.169.13.42])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2024 11:24:32 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=vu.nl; s=smf;
+	h=content-transfer-encoding:content-type:to:subject:from:mime-version:date:
+	 message-id:from;
+	bh=CyPyM8avFuaLnxjtg1OsIlLnZglqFizb9qqrx+BxMzg=;
+	b=rRhzVYW9+8SptVdQUthz0E+Z+EiDoE1y3S7NzDvp6GyunX8PVavjphrQrfBwR+Cq0CSrlacu53Tsj
+	 7d09ZSGWlnx1ESfJhIDnPWw4o41QQJlPjQcG/NxBRg0ZQTnlOuowZNSFM+jdjRTYZ0sTpJUNMtsWay
+	 IOyT/KhEdOip4UyR+DegEQ+FHThSAKhM4GYd3CU0+NW+IR9z+dcNpgmmvsNYRbVPV9qwBAGChoOebv
+	 LCt42fhlENHgKJJNTsPcEMNL/NJdQl6D5kpnD5p0TlBnGpG+LbmEDYq35iZuw/p2XGxTvU5BBlS/vr
+	 xC238E92Lqn99muprJYv4L8IftxMneQ==
+X-Halon-ID: 9c60f678-0c53-11ef-a809-005056a48e6b
+Received: from mailin.vu.nl (mailin.vu.nl [130.37.164.83])
+	by filter1-til.surfmailfilter.nl (Halon) with ESMTPS
+	id 9c60f678-0c53-11ef-a809-005056a48e6b;
+	Tue, 07 May 2024 11:24:31 +0200 (CEST)
+Received: from pexch005a.vu.local (130.37.237.82) by mailin.vu.nl
+ (130.37.164.83) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Tue, 7 May
+ 2024 11:24:31 +0200
+Received: from [192.168.2.105] (130.37.253.6) by PEXCH005a.vu.local
+ (130.37.237.82) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.37; Tue, 7 May
+ 2024 11:24:27 +0200
+Message-ID: <531eef4d-beb5-445c-9652-56aafc194929@vu.nl>
+Date: Tue, 7 May 2024 11:24:19 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: Joerg Endrullis <j.endrullis@vu.nl>
+To: <caml-list@inria.fr>
+Content-Language: en-US
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [130.37.253.6]
+X-ClientProxiedBy: pexch006b.vu.local (130.37.237.83) To PEXCH005a.vu.local
+ (130.37.237.82)
+Subject: [Caml-list] Deadline extension: Graph Computation Models (GCM 2024)
+Reply-To: Joerg Endrullis <j.endrullis@vu.nl>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19124
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-05/531eef4d-beb5-445c-9652-56aafc194929%40vu.nl>
+
+
+-----------------------------------------------------------------------
+CALL FOR PAPERS
+
+GCM 2024
+
+15th International Workshop on Graph Computation Models
+July 8-12 (precise date to be determined), 2024, Twente, The Netherlands
+https://conf.researchr.org/home/staf-2024/gcm-2024
+
+Part of STAF 2024
+https://conf.researchr.org/home/staf-2024
+-----------------------------------------------------------------------
+Important Dates
+
+Abstract Submission : *** 14 May 2024 (extended) ***
+Paper Submission :    14 May 2024
+Notification :        14 June 2024
+Final version due:    30 June 2024
+Workshop :            9 July 2024
+
+Should you have any problem to meet the deadlines, please send an
+email to the organizers.
+
+-----------------------------------------------------------------------
+Aims
+
+The aim of the International Workshop GCM 2024 is to bring together
+researchers interested in all aspects of computation models based on
+graphs and graph transformation. It promotes the cross-fertilizing
+exchange of ideas and experiences among senior and young researchers
+from different communities interested in the foundations,
+applications, and implementations of graph computation models and
+related areas. Previous editions of GCM series were held in Natal,
+Brazil (GCM 2006), in Leicester, UK (GCM 2008), in Enschede, The
+Netherlands (GCM 2010), in Bremen, Germany (GCM 2012), in York, UK
+(GCM 2014), in L'Aquila, Italy (GCM 2015), in Wien, Austria (GCM
+2016), in Marburg, Germany (GCM 2017), in Toulouse, France (GCM
+2018), in Eindhoven, The Netherlands (GCM 2019), online (GCM 2020
+and GCM 2021), in Nantes, France (GCM 2022) and in Leicester, UK
+(GCM 2023).
+
+-----------------------------------------------------------------------
+Topics of Interest
+
+GCM 2024 solicits papers on all aspects of graph computation
+models. This includes but is not limited to the following topics:
+
+Foundations: Models of graph transformation; Analysis and verification
+of graph transformation systems; Parallel, concurrent, and distributed
+graph transformation; Term graph rewriting; Formal graph languages;
+
+Applications: Graph-based programming models and visual programming;
+Model-driven engineering; Evolutionary computation; Software
+architectures, validation and evolution; Databases; Graph-based
+security models; Workflow and business processes; Social network
+analysis; Bioinformatics and computational chemistry; Quantum
+computing; Case-studies
+
+-----------------------------------------------------------------------
+Submissions and Publication
+
+Authors are invited to submit papers in three possible categories:
+
+(1) Regular papers of at most 16 pages describing innovative
+     contributions.
+(2) Position papers, system descriptions or work in progress of 6 to 12
+     pages.
+(3) Abstracts limited to 2 pages, introducing recently published papers
+     in a peer-reviewed venue different from ICGT conference.
+
+Papers in PDF format should be submitted electronically via the
+EasyChair system site
+
+   https://easychair.org/conferences/?conf=staf2024
+
+For further information, see:
+
+   https://conf.researchr.org/home/staf-2024/gcm-2024#Call-for-Papers
+
+Submissions must use the EPTCS LaTeX style. Simultaneous submission
+to other conferences with proceedings, as well as submission of material
+that has already been published elsewhere is not allowed for regular
+and short papers. The page limits include references. An optional
+appendix may be added if this is useful for the reviewing process.
+If a short announcement extensively draws on already published work,
+a copy of that work is to be attached to the submission.
+
+All submissions will be reviewed by the program committee;
+short announcements will undergo a lightweight review and mainly be
+assessed for their potential to stir discussion on future research of
+the community. Electronic proceedings will be available at the time of
+the workshop. The authors of selected (regular and short) papers will
+be invited to submit revised versions for the post-proceedings. The
+latter will appear in the Electronic Proceedings in Theoretical
+Computer Science (EPTCS).
+
+-----------------------------------------------------------------------
+Program Committee
+
+* Andrea Corradini (University of Pisa, Italy)
+* Jörg Endrullis (co-chair, Vrije Universiteit Amsterdam, The Netherlands)
+* Dominik Grzelak (co-chair, Technische Universität Dresden, Germany)
+* Reiko Heckel (University of Leicester, United Kingdom)
+* Leen Lambers (BTU Cottbus Senftenberg, Germany)
+* Marino Miculan (University of Udine, Italy)
+* Elvira Pino (Dept. of Computer Science UPC, Spain)
+* Michele Sevegnani (University of Glasgow, United Kingdom)
+* Vadim Zaytsev (University of Twente, The Netherlands)
+
+-----------------------------------------------------------------------
+Organizers and contact
+
+* Jörg Endrullis (Vrije Universiteit Amsterdam, The Netherlands)
+* Dominik Grzelak (Technische Universität Dresden, Germany)
