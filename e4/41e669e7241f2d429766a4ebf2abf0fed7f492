@@ -1,0 +1,1323 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=etN0Dmk3;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=UbmNRTOd;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id B4BDEB80123
+	for <caml-list@tunbury.org>; Fri, 10 May 2024 06:44:32 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=NiWfK5uD9z5bvFaZW0z4LJP/v6/UyQ9mgaFJuSqmGPk=;
+  b=etN0Dmk3LvLtm/swoi6gjCc2IKrwmHl1GMOlnASnBxyiS+Rl7D/E+EN+
+   iQwq6TSXbViRCCyP1Tew4RIe2IigD5B6Jzbx0BqhxTrt3ozu6jvn1CG6/
+   7keKYteHUekCV/mJIwM1hAyy7enmosk5uM47yixUr8JPU0WdUx17X7WSU
+   Y=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.08,150,1712613600"; 
+   d="scan'208,217";a="165107475"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 10 May 2024 07:44:31 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 5ADCBE0CCE; Fri, 10 May 2024 07:44:31 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id ED79BE004E
+	for <caml-list@sympa.inria.fr>; Fri, 10 May 2024 07:44:28 +0200 (CEST)
+IronPort-SDR: 663db43b_Wd7KCtbr7pgEiZHSYU4aoqkmXrNqQ55QusowaRaGYS5BKFJ
+ FW5R1IL+ku6WRR3V4FWcP3bJE6zSJf/8wKKfYiw==
+X-IPAS-Result: =?us-ascii?q?A0GsKAAwsz1mhqzQVdE+HA6EC4EDfA9INAQLEzWEVoEjj?=
+ =?us-ascii?q?iSCIot5jhGFQxYFHQEFDwEDAQ0uAQoLBAEBAwEDNwEPg3JGiDsCHgcBBDQTA?=
+ =?us-ascii?q?QIEAQEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABAQEhGQcOECeFdA2CY?=
+ =?us-ascii?q?BgKgQReAwICAwMDBgEBAQEBAQEBKAIBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEFAggDCRgRLAEhBRELBh0BGwwFBgcDEhAtAQIHAiMBE?=
+ =?us-ascii?q?QEFASMKCCKCXgGCLwEDMQMRBkGkV4EFQos7gRUFAhaBAYINBoFHAQPZDwoZK?=
+ =?us-ascii?q?A1sA4FfAgEGFIE0gRWDUSWDIwGBVQICg19Eg0aBIYIogRU1gkICb4FSeBcBA?=
+ =?us-ascii?q?gKBMwFWgy6CaQSIAIVvWhWFRw6DJoJJHoELgV+CdYFKF0OHTQEHBxcDBwcHB?=
+ =?us-ascii?q?AUEHAYFAwICQgkHAQ8SAwQDBAQBAgsJCgkDAwIOAggDAggGDhMBPxIEEwIIC?=
+ =?us-ascii?q?QQLAwQCBQoDCAICBwIOAQUCAQECAgICAgIDBgISBAIBAgMCAggCBwEBAgoHA?=
+ =?us-ascii?q?wEBAgYEAwYCAgUEDQMLAQECAgQBCgIJDwUCAgMDAgMBAQECCgMJAQUCAgEDA?=
+ =?us-ascii?q?gIEBAcBBgMFAwMEBAIDAwIMAQUBBQEFAQUEAgYBEwILBwICCwUGAwYOAwsEB?=
+ =?us-ascii?q?AECAgUEBgwJBAICAgYBAhEDAQIBBwEDAwIKAQQBAgsIAQUICAEEAgMGEAIIB?=
+ =?us-ascii?q?QYFAgQBAQICAggGDwMGBwIDAgYDBQUDAwICAgcEBAIBAgICARMGBAQCAwIDB?=
+ =?us-ascii?q?AEFBAQDAhcIDQIFBwEJCggMAQQGAgQCBAcDBgUFBAIDBAQRBwsDAgMEAgIEA?=
+ =?us-ascii?q?xECAwQCCgIEBAcCAwEEDQYEBAoCCwMHAQECBQMDCQcGAgMDBQQGAgUDAwMCA?=
+ =?us-ascii?q?wIKAgICAQkBAQECEgIDDgIEAgECBQUMBBMCAgMCBggCAgIHAwMEAgMGCwECE?=
+ =?us-ascii?q?QICAgUDBAICFAMHBAIEBgIEAQYDAwIEBgUIBAICBQIBAQIIAgEPCgQCAQQDB?=
+ =?us-ascii?q?QMHCQIFBQMCBAICBQkBAQICAgMDAwMCAwICAwMCBwMDAwcDBQMEAgMGBQcDB?=
+ =?us-ascii?q?QMDAgICFAEGAgUNCAYLBQUHAgYCBAgFAgIDAwMCBgoIAwMDAgUCAgMDAQIGD?=
+ =?us-ascii?q?wYCAgMFBgMDAwMGBgMDAgYDAwIDAgMCAwMBAwIDAgIDAgICCAICAwIFBAUCA?=
+ =?us-ascii?q?gMEAggaAgICAgMDCAMDCgQCAgQBBAIEAgQCBgMEAgIBBwIFAwIDAgcCAgQCA?=
+ =?us-ascii?q?gICAwIGCAICAwMDAgICAQkCBQEBBgIEAwIDBQMJAwQFAgMIAQECAgcHAwMEA?=
+ =?us-ascii?q?wECAQUEAgIGBQIDAgIEBAQFAwIDAgYGAgEDAgoGAwUDAwMDAgMDAgMDAgUCC?=
+ =?us-ascii?q?AICBAQFBAIFBAIEAwMDAQoCBgMCAgUBAQICBQMCBAQHAgICBw8DAgcFAgUFB?=
+ =?us-ascii?q?QIIAQYFAgIDAggBAgIGAQYCBAECAg0BAQICAgMEAwMHAgQDAggCAwMRAQMDC?=
+ =?us-ascii?q?QYFBAUEAwkEDwIEAQgDAQEECAIEAwIMAgIhAgULBAQBEgoIAwEBAwEBAgICA?=
+ =?us-ascii?q?gIOAwIDAgIDCgIDAgoDBgQCAgYBAQEEAQIDAQEDAgECBwQOBAUFCAgBAwIBC?=
+ =?us-ascii?q?gECEAUCDwIJAwMGBAIQBgoFAwIDBQECBRUDCAMCCQIEDAMNAgMDAgYDBgIGA?=
+ =?us-ascii?q?QYDBwsBAQcIBQMDAwIXAQICEAgEBg8HAgMDAwMFBwMSAgYOAwMCAwIBAgICA?=
+ =?us-ascii?q?wUEBQIHAwMKBQIIAwIIBQMHCQQKAggEAQIGAwICAgIFDAEBAQECAwIFAwcHC?=
+ =?us-ascii?q?AgEBQQDAQEGBgwgAgIDBA8DCQMGCwEFBQEDAgICDgMFAwIDBgYBCQQBBQQJA?=
+ =?us-ascii?q?gUHBgUCARQWBwYCCgIHAgICAwECAwULCAIDAgoEAQ4EGgICAgEBAgIDAwcCA?=
+ =?us-ascii?q?wICEwMDBQQGAwICAgIDAgEKCwMCAgMDAwMFBQMDAhoCAwMCAQoFAgwFBAMEA?=
+ =?us-ascii?q?gIBAh0DAQUCAwoBBQkDBgICAwIFAgMGBQIEAQ4BAQEDBgsHBBQCAgILCAMJB?=
+ =?us-ascii?q?QMFDQINAgMFAgILBT0LBQEBAwIDAQEECAEXLQIEAgYMAQEBAgMDBgICAhUFB?=
+ =?us-ascii?q?wMFAwgBAwECFAoIAgIBAwoKAgIEAgYCBAMCAwoDAQgCAgIPAwkCBwIPAgIDA?=
+ =?us-ascii?q?wwRBAMDAwMHBAICAhEJCgICAgIMCAwCCQICAwMGAQIDAwUDAgEBAQQvAgQHA?=
+ =?us-ascii?q?QIDBgoDAgICCQgKCQMDBQMKAgEGBgECAw4BAQITBAkDAgECAQEGCAEBAgQBB?=
+ =?us-ascii?q?AIIBgICAgIKAwUDAgMFFgUCBAICAh0DAgQFAwUDAwQHAQYEDwoBCQUDAgQDA?=
+ =?us-ascii?q?wIEBQEBCQUJBAMLBgEBAwEDBAMBAQgHBwMCAQEDAQECAwoEAgUIDQkCAwgDB?=
+ =?us-ascii?q?gkDAQYBAQUaAwQ7HQIJAyMPAwsJCBM9AQsHLgQEDCgBBg4UBycBBiFfohkVg?=
+ =?us-ascii?q?jKBUT8kEwEMLwErFQEMFxkECQoEKwEYBQaBFwGRfxGRZKBDIQoGYYFmgQhIg?=
+ =?us-ascii?q?WGKLZU4M4QFjH6ZMZhiIIwpgSuVRhOFKREjEoFHIzyBIE0jgQFtgUkSATwDG?=
+ =?us-ascii?q?Q+OOh+DQoJWgj6KILxaCT4yAjkCBwEKAQEDCQGBVYcYERcMgUgBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:/G8e4Kp2rjiv9dFI/IcWDZcaV5oDeYIsimQD101hICG9E/bo8f
+ xG+c5w6faaskdyZJhNo6HiBEDiexPhHPxOkOws1N6ZNWGMhILCFvAH0WKN+UyGJwTOssFazr
+ lpaKVzBZndClJgnd/m7ATQKbodKRq8n5xAR92y856gd29XgmhbjjtENg==
+X-Talos-CUID: 9a23:JPAEwG2XxxPGj1O7b0Vh67xfAMI3YmT7xlbrfHSKCUdoQey3TEbX5/Yx
+X-Talos-MUID: =?us-ascii?q?9a23=3A+DXR5Q/DSKjXq8fOOtCQeYWQf8VKzrygLGsoqIR?=
+ =?us-ascii?q?Fg+evaxBRPAydnB3iFw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.08,150,1712613600"; 
+   d="scan'208,217";a="86712415"
+X-MGA-submission: =?us-ascii?q?MDGBltUsecYhqGFeSARztyQXO4Yf3y8/0zNLhR?=
+ =?us-ascii?q?MAkwDTtEh95/Rf2juNIy8NI+HU5APXRdLh/7Ac5KToYZB0/DDdj94b2U?=
+ =?us-ascii?q?lwoSa11TWmFBMAPRMx8GNGbGrmo4d0GdSx6ugwUndhjKnVAnIQ7jnImv?=
+ =?us-ascii?q?vnTd+VKgw3AOOkPnRD4tH/FA=3D=3D?=
+Received: from mail-lj1-f172.google.com ([209.85.208.172])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 07:44:27 +0200
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2e45c0a8360so16372471fa.3
+        for <caml-list@inria.fr>; Thu, 09 May 2024 22:44:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1715319866; x=1715924666; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=NiWfK5uD9z5bvFaZW0z4LJP/v6/UyQ9mgaFJuSqmGPk=;
+        b=UbmNRTOd/dA+EGx736CfJktmr6I4a+nni0nTlnp1QdfH3dVDSewqXNzsgR+Kp2HPAr
+         dOj7Ipz7XUDE8qhmCU6y0oWPamYbNWEJYwUScYPA0T+qx0OWTczHUaoOGSEJdiJ15/aL
+         hPtg0ZalaS6alpxbdOoSmT9j7hFIWjzrAvN+Ivl82OeINlO+j7eeu6Klc2QFm4lcF1z2
+         h25mo9ZZsk/vVYzs90XPPDnlJTA8qSmztvU/F+Qp37TsgL+8m2EhKbDTetQ/j/Yxe9wi
+         OrNNUPxs5CaMyudnaN4U7xgbCWLiqpZ+Mb3FTlWdezeYEwomSEGXzfCKVbITkoS7Chck
+         3ILQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715319866; x=1715924666;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=NiWfK5uD9z5bvFaZW0z4LJP/v6/UyQ9mgaFJuSqmGPk=;
+        b=eJAktQHTL4o5bdtPtqjxkWUYifj4FMW3co1IKxm3l3TD81qWQNIz0CW3AfGnjYnzLq
+         J0xCajOZeifPHXyBtz1BcNqDT2ospJtXkfoqaR+seRPRSW6m2+ZG7dLWCK01FBrY2+V/
+         JC3gpiq/ws322kZDagE/aURQAI1wyBzya2SHyT71dnxSwyfN5aedIi8Ep5yExiD7p+U4
+         ftO0JgipMuA03ooKvrfoiuVBFUZy6dfWqeJCBS/YTybZIdI9gF8XZWLyYyQyQuqVeiGl
+         wmDmZEzeEkUUE4Oho3wWZwNNJtxjHdf6aUfhK4/cSidPAWHDZjk1kjse3SEJ75KPpsHF
+         5fjg==
+X-Forwarded-Encrypted: i=1; AJvYcCWe1DXZZZDAoulTMCy55H9wtuzFvoT6cF9P6/vUwoFqIN6xhS1crJwbBkPIE0ooTg8VTzol6pyMJn1nZmpw3IZTfG8=
+X-Gm-Message-State: AOJu0Yx7a8fFwYnhIYod7K2KXwQJnCD8bwXDcj+amRaNQDpGk4T57cq+
+	UEuRhh1ryT5LkarckfBYrEWzOySNL2wm3xyQUP0TRekhtflaLIMj5ZvuDyNlcdAxmOZwsawytgm
+	i3EFqSHCmo1XZ9qmV3HVhp4U7410=
+X-Google-Smtp-Source: AGHT+IHJ2OX5lOE/AH1Jg+pfWQwD099biZsJGPRLMiJG2bLk0iiKyE31kGbKVsLwDj9tFDv4cHXr/dblvHYybiAXFgY=
+X-Received: by 2002:a2e:be87:0:b0:2de:d48a:953b with SMTP id
+ 38308e7fff4ca-2e51ff666cfmr10883341fa.23.1715319865657; Thu, 09 May 2024
+ 22:44:25 -0700 (PDT)
+MIME-Version: 1.0
+From: KK Patel <kkpatel7@gmail.com>
+Date: Fri, 10 May 2024 11:14:14 +0530
+Message-ID: <CAJwEiuBKknLvHoXTYTjZkie7t__H=6Emx0nseBB_PucPDfkAqA@mail.gmail.com>
+To: wi@lists.kit.edu, aai@lists.kit.edu, agents@cs.umbc.edu, lwn@lwn.net, 
+	cwn@lists.idyll.org, caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="00000000000044d1dd061813073c"
+Subject: [Caml-list] Announcement and First CFP: Springer icSoftComp2024
+ =?UTF-8?Q?=28=E2=80=8B2024?=
+ 6th International Conference on Soft Computing and its Engineering
+ Applications) Inbox
+Reply-To: KK Patel <kkpatel7@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19125
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-05/CAJwEiuBKknLvHoXTYTjZkie7t__H%3D6Emx0nseBB_PucPDfkAqA%40mail.gmail.com>
+
+--00000000000044d1dd061813073c
+Content-Type: text/plain; charset="UTF-8"
+
+** Sincere apologies if you receive multiple copies of this CFP **
+
+** Please forward to anyone who might be interested **
+
+
+
+
+
+Announcement and First Call for Papers
+
+
+
+*Springer*
+
+*2024 6th International Conference on Soft Computing and its Engineering
+Applications (icSoftComp2024)*
+
+
+
+https://www.charusat.ac.in/icSoftComp2024/index.php
+
+
+
+December 10-12, 2024
+
+
+
+Bangkok, Thailand
+
+
+
+
+
+Conference proceedings by Springer CCIS Series (Scopus indexed)
+
+
+
+Conference series link: https://link.springer.com/conference/icsoftcomp
+
+
+
+Paper submission link:
+https://equinocs.springernature.com/service/icSoftComp2024 (will be
+activated soon)
+
+
+
+==============
+
+Important Notes:
+
+==============
+
+- icSoftComp2024 follows a *double-blind peer review* system.
+
+- Please follow the Springer CCIS format for paper submission.
+
+- Authors of selected papers will be invited to submit extended article
+versions for a post-conference special issue of peer reviewed Scopus
+indexed journals.
+
+
+
+2024 6th International Conference on Soft Computing and its Engineering
+Applications (icSoftComp2024) aims to provide an excellent international
+forum to the researchers, academicians, students, and professionals in the
+areas of computer science and engineering to present their research,
+knowledge, new ideas and innovations. It will exhibit an exciting technical
+program. It will also feature high-quality Tutorials and Workshops,
+Industry Panels and Exhibitions, as well as Keynotes from prominent
+research and industry leaders.
+
+
+
+We are now open for technical paper submission, proposals for
+workshops/special sessions, and proposals for tutorials.
+
+- Submissions for the main conference must be made online through EquinOCS
+following  the submission link:
+https://equinocs.springernature.com/service/icSoftComp2024
+
+- Submission for the Workshops/Special Session proposals are to be directed
+to the TPC Chair (kanupatel.mca@charusat.ac.in).
+
+
+
+================
+
+Paper Submission:
+
+================
+
+icSoftComp2024 solicits papers on all aspects of Soft computing and its
+engineering applications for a smart and better world. The topics of the
+conference include, but are not limited to the following:
+
+
+
+*Track 1: Theory and Methods*
+
+Ant colony theory
+Approximate reasoning
+Artificial Intelligence (AI)
+Big Data analytics
+Bio-inspired computing
+Chaos theory
+Cognitive science
+Data mining and Knowledge discovery
+Deep learning
+Digital information processing
+Evolutionary computing
+Fuzzy set theory
+Immunological computing
+Knowledge virtualization
+Machine learning
+Modeling
+Neural computing
+Probabilistic reasoning
+Rough sets
+Swarm intelligence
+
+
+
+*Track 2: Systems and Applications*
+
+Advanced intelligent systems
+Agent-based systems
+Agricultural informatics
+Assistive systems
+Autonomic and autonomous systems
+Bioinformatics and scientific computing
+Cognitive systems and applications
+Complex systems
+Computer forensics
+Cyber Physical Systems (CPS)
+Human computer integration
+Internet of Things (IoT)
+Intrusion detection and Security intelligence
+Mechatronics
+Multi-agent systems
+Natural language processing
+Network and telecommunications systems
+Optimization
+Pattern recognition
+Process control
+Remote sensing system
+Robotics
+Signal processing
+Time series forecasting
+Web intelligence
+
+
+
+*Track 3: Hybrid Techniques*
+
+Auxiliary hybridization
+Embedded hybridization
+Fuzzy-genetic approach
+Neuro-evolutionary computing
+Neuro-fuzzy computing
+Sequential hybridization
+
+
+
+*Track 4: Soft Computing for Smart Sustainable World*
+
+Smart cities
+Smart governance
+Smart healthcare
+Smart homes and buildings
+Smart social services
+Smart transportation
+Smart utilities
+Smart vehicles
+Smart villages
+
+
+
+==============
+
+Important Dates:
+
+==============
+
+Submission due:
+
+30/06/2024
+
+Acceptance Notification:
+
+31/07/2024
+
+Camera Ready Paper Submission due:
+
+According to notification
+
+Last date of registration:
+
+According to notification
+
+Conference dates:
+
+10-12/12/2024
+
+
+
+================
+
+Paper Publication:
+
+================
+
+The accepted and presented papers will be published as proceedings with
+Springer in their prestigious Communications in Computer and Information
+Science (CCIS) series.
+
+Indexed by Scopus, DBLP, Ei Compendex, Google Scholar, and Springerlink
+
+
+
+================
+
+Journal Publication:
+
+================
+
+Authors of selected papers will be invited to submit extended article
+versions for a post-conference special issue of peer-reviewed journals.
+
+
+
+============================
+
+Previous conference proceedings:
+
+============================
+
+-    icSoftComp2023 https://link.springer.com/book/10.1007/978-3-031-53731-8
+
+-    icSoftComp2022 https://link.springer.com/book/10.1007/978-3-031-27609-5
+
+-    icSoftComp2021 https://link.springer.com/book/10.1007/978-3-031-05767-0
+
+-    icSoftComp2020 https://www.springer.com/gp/book/9789811607073
+
+-    icSoftComp2017
+https://ieeexplore.ieee.org/xpl/conhome/8269416/proceeding
+
+
+
+
+
+Please join icSoftComp WhatsApp group to get updates:
+
+https://chat.whatsapp.com/CnkrBjvMcuu1ksjQGi67Ak
+
+
+
+
+
+*Charotar University of Science and Technology (CHARUSAT)*
+
+*(Center of Excellence by Govt. of Gujarat)*
+
+*(Accredited "**A+**" grade by NAAC, GoI)*
+
+*Changa, India*
+
+--00000000000044d1dd061813073c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div style=3D"font-family:verdana,sans-serif" class=3D"gma=
+il_default">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div align=3D"center">
+
+<table class=3D"gmail-MsoTableGrid" border=3D"0" cellspacing=3D"0" cellpadd=
+ing=3D"0" width=3D"840" style=3D"width:7in;border-collapse:collapse;border:=
+medium">
+ <tbody><tr>
+  <td width=3D"840" valign=3D"top" style=3D"width:7in;padding:0in 5.4pt">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:8pt;font-family:&quot;Franklin Gothic Book&quot;,=
+sans-serif;color:black;letter-spacing:0.5pt">** Sincere
+  apologies if you receive multiple copies of this CFP **<span></span></spa=
+n></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:8pt;font-family:&quot;Franklin Gothic Book&quot;,=
+sans-serif;color:black;letter-spacing:0.5pt">**=C2=A0Please
+  forward to anyone who might be interested=C2=A0**<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"840" valign=3D"top" style=3D"width:7in;background:rgb(255,22=
+9,153);padding:0in 5.4pt">
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt"><sp=
+an>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span class=3D"gmail-gmaildefault"><span lang=3D"EN-US=
+" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;co=
+lor:black;letter-spacing:0.5pt">Announcement and First Call for Papers</spa=
+n></span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Luc=
+ida Sans Typewriter&quot;"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;;color:red;letter-spacing:0.5pt">=
+=C2=A0</span></b><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&=
+quot;Lucida Sans Typewriter&quot;"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;;color:red;letter-spacing:0.5pt">Sp=
+ringer</span></b><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&=
+quot;Lucida Sans Typewriter&quot;"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;;color:red;letter-spacing:0.5pt">20=
+24 6th
+  International Conference on Soft Computing and its Engineering Applicatio=
+ns
+  (icSoftComp2024)</span></b><span lang=3D"EN-US" style=3D"font-size:10pt;f=
+ont-family:&quot;Lucida Sans Typewriter&quot;"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;">=C2=A0<span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;"><a href=3D"https://www.charusat.ac.i=
+n/icSoftComp2024/index.php" style=3D"color:blue;text-decoration:underline">=
+<span style=3D"letter-spacing:0.5pt">https://www.charusat.ac.in/icSoftComp2=
+024/index.php</span></a></span><span lang=3D"EN-US" style=3D"font-size:10pt=
+;font-family:&quot;Lucida Sans Typewriter&quot;"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt">=C2=
+=A0</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lu=
+cida Sans Typewriter&quot;"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt">Dec=
+ember 10-12, 202<span class=3D"gmail-gmaildefault">4<span></span></span></s=
+pan></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt"><sp=
+an>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt">Ban=
+gkok, Thailand <span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"840" valign=3D"top" style=3D"width:7in;padding:0in 5.4pt">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">Conference
+  proceedings by Springer CCIS Series (Scopus indexed)<span></span></span><=
+/p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span class=3D=
+"gmail-u-text-bold"><span lang=3D"EN-US" style=3D"font-size:10pt;font-famil=
+y:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span>=C2=A0</sp=
+an></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span class=3D=
+"gmail-u-text-bold"><span lang=3D"EN-US" style=3D"font-size:10pt;font-famil=
+y:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt">Conference serie=
+s link:</span></span><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"> </span><span l=
+ang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewri=
+ter&quot;"><a href=3D"https://link.springer.com/conference/icsoftcomp" styl=
+e=3D"color:blue;text-decoration:underline"><span style=3D"letter-spacing:0.=
+5pt">https://link.springer.com/conference/icsoftcomp</span></a></span><span=
+ lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typew=
+riter&quot;;color:black;letter-spacing:0.5pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt">Paper submission link: </span><span lang=3D"EN-US"=
+ style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;"><a=
+ href=3D"https://equinocs.springernature.com/service/icSoftComp2024" style=
+=3D"color:blue;text-decoration:underline"><span style=3D"letter-spacing:0.5=
+pt">https://equinocs.springernature.com/service/icSoftComp2024</span></a></=
+span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida =
+Sans Typewriter&quot;;letter-spacing:0.5pt"> (will be activated
+  soon)<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot=
+;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></span></p=
+>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">Important
+  Notes:<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot=
+;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></span></p=
+>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt 0.5in;line-height=
+:normal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span la=
+ng=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewrit=
+er&quot;;color:black;letter-spacing:0.5pt">-=C2=A0icSoftComp2024 follows a=
+=C2=A0<b>double-blind
+  peer review</b>=C2=A0system.</span><span lang=3D"EN-US" style=3D"font-siz=
+e:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"=
+><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt 0.5in;line-height=
+:normal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span la=
+ng=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewrit=
+er&quot;;color:black;letter-spacing:0.5pt">-=C2=A0Please follow the=C2=A0Sp=
+ringer CCIS
+  format=C2=A0for paper submission.<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt 0.5in;line-height=
+:normal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span la=
+ng=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewrit=
+er&quot;;color:black;letter-spacing:0.5pt">-=C2=A0</span><span lang=3D"EN-U=
+S" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;l=
+etter-spacing:0.5pt">Authors of selected papers will be invited to submit
+  extended article versions for a post-conference special issue of<span sty=
+le=3D"color:black"> peer reviewed Scopus indexed journals.<span></span></sp=
+an></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:rgb(28,25,25);letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:rgb(28,25,25);letter-spacing:0.5pt">2024 6th
+  International Conference on Soft Computing and its Engineering Applicatio=
+ns
+  (icSoftComp2024)</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-=
+family:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt"=
+> aims to provide an excellent international forum to the
+  researchers, academicians, students, and professionals in the areas of
+  computer science and engineering to present their research, knowledge, ne=
+w
+  ideas and innovations.=C2=A0It=C2=A0will exhibit an exciting technical
+  program. It will also feature high-quality Tutorials and Workshops, Indus=
+try
+  Panels and Exhibitions, as well as Keynotes from prominent research and
+  industry leaders.</span><span lang=3D"EN-US" style=3D"font-size:10pt;font=
+-family:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></sp=
+an></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=C2=A0</span><span lang=3D"EN-US" styl=
+e=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;letter-s=
+pacing:0.5pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">We are now
+  open for technical paper submission, proposals for workshops/special
+  sessions, and proposals for tutorials. <span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">-=C2=A0Submissions
+  for the main conference must be made online through=C2=A0EquinOCS
+  following<span>=C2=A0 </span>the submission link: </span><span lang=3D"EN=
+-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;=
+"><a href=3D"https://equinocs.springernature.com/service/icSoftComp2024" st=
+yle=3D"color:blue;text-decoration:underline"><span style=3D"letter-spacing:=
+0.5pt">https://equinocs.springernature.com/service/icSoftComp2024</span></a=
+></span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Luci=
+da Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">-=C2=A0Submission
+  for the Workshops/Special Session proposals are to be directed to the TPC
+  Chair (</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&q=
+uot;Lucida Sans Typewriter&quot;"><a href=3D"mailto:kanupatel.mca@charusat.=
+ac.in" target=3D"_blank" style=3D"color:blue;text-decoration:underline"><sp=
+an style=3D"color:black;letter-spacing:0.5pt;text-decoration:none">kanupate=
+l.mca@charusat.ac.in</span></a></span><span lang=3D"EN-US" style=3D"font-si=
+ze:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;color:black;letter-s=
+pacing:0.5pt">). <span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family=
+:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></sp=
+an></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">Paper
+  Submission:</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-famil=
+y:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></s=
+pan></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family=
+:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></sp=
+an></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt">icSoftComp2024 solicits
+  papers on all aspects of Soft computing and its engineering applications =
+for
+  a smart and better world. The topics of the conference include, but are n=
+ot
+  limited to the following: <span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt"><span>=C2=A0</span></span></b></p>
+  <table class=3D"gmail-MsoTableGrid" border=3D"0" cellspacing=3D"0" cellpa=
+dding=3D"0" style=3D"border-collapse:collapse;border:medium">
+   <tbody><tr>
+    <td width=3D"373" valign=3D"top" style=3D"width:223.85pt;padding:0in 5.=
+4pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span lan=
+g=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewrite=
+r&quot;;letter-spacing:0.5pt">Track 1: Theory and Methods<span></span></spa=
+n></b></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt">Ant colony theory <br>
+    Approximate reasoning <br>
+    Artificial Intelligence (AI) <br>
+    Big Data analytics <br>
+    Bio-inspired computing <br>
+    Chaos theory <br>
+    Cognitive science <br>
+    Data mining and Knowledge discovery <br>
+    Deep learning <br>
+    Digital information processing <br>
+    Evolutionary computing <br>
+    Fuzzy set theory <br>
+    Immunological computing <br>
+    Knowledge virtualization <br>
+    Machine learning <br>
+    Modeling <br>
+    Neural computing <br>
+    Probabilistic reasoning <br>
+    Rough sets <br>
+    Swarm intelligence <span></span></span></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+    </td>
+    <td width=3D"420" valign=3D"top" style=3D"width:3.5in;padding:0in 5.4pt=
+">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span lan=
+g=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewrite=
+r&quot;;letter-spacing:0.5pt">Track 2: Systems and Applications<span></span=
+></span></b></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt">Advanced intelligent systems <br>
+    Agent-based systems <br>
+    Agricultural informatics <br>
+    Assistive systems <br>
+    Autonomic and autonomous systems <br>
+    Bioinformatics and scientific computing <br>
+    Cognitive systems and applications <br>
+    Complex systems <br>
+    Computer forensics <br>
+    Cyber Physical Systems (CPS) <br>
+    Human computer integration <br>
+    Internet of Things (IoT) <br>
+    Intrusion detection and Security intelligence <br>
+    Mechatronics <br>
+    Multi-agent systems <br>
+    Natural language processing <br>
+    Network and telecommunications systems <br>
+    Optimization <br>
+    Pattern recognition <br>
+    Process control <br>
+    Remote sensing system <br>
+    Robotics <br>
+    Signal processing <br>
+    Time series forecasting <br>
+    Web intelligence <span></span></span></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+    </td>
+   </tr>
+   <tr>
+    <td width=3D"373" valign=3D"top" style=3D"width:223.85pt;padding:0in 5.=
+4pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span lan=
+g=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewrite=
+r&quot;;letter-spacing:0.5pt">Track 3: Hybrid Techniques<span></span></span=
+></b></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt">Auxiliary hybridization <br>
+    Embedded hybridization <br>
+    Fuzzy-genetic approach <br>
+    Neuro-evolutionary computing <br>
+    Neuro-fuzzy computing <br>
+    Sequential hybridization <span></span></span></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+    </td>
+    <td width=3D"420" valign=3D"top" style=3D"width:3.5in;padding:0in 5.4pt=
+">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span lan=
+g=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewrite=
+r&quot;;letter-spacing:0.5pt">Track 4: Soft Computing for Smart Sustainable=
+ World<span></span></span></b></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt">Smart cities <br>
+    Smart governance <br>
+    Smart healthcare <br>
+    Smart homes and buildings <br>
+    Smart social services <br>
+    Smart transportation <br>
+    Smart utilities <br>
+    Smart vehicles <br>
+    Smart villages <span></span></span></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+    </td>
+   </tr>
+  </tbody></table>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot=
+;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></span></p=
+>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">Important
+  Dates:<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot=
+;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></span></p=
+>
+  <table class=3D"gmail-MsoNormalTable" border=3D"0" cellspacing=3D"3" cell=
+padding=3D"0" width=3D"598" style=3D"width:359.05pt">
+   <tbody><tr style=3D"height:9.3pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">Submission due: <span></span></spa=
+n></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">30/06/2024 <span></span></span></p=
+>
+    </td>
+   </tr>
+   <tr style=3D"height:9.95pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.95pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">Acceptance Notification: <span></s=
+pan></span></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.95pt"=
+>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">31/07/2024 <span></span></span></p=
+>
+    </td>
+   </tr>
+   <tr style=3D"height:9.3pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">Camera Ready Paper Submission due:=
+<span></span></span></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">According to notification<span></s=
+pan></span></p>
+    </td>
+   </tr>
+   <tr style=3D"height:9.95pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.95pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">Last date of registration: <span><=
+/span></span></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.95pt"=
+>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">According to notification<span></s=
+pan></span></p>
+    </td>
+   </tr>
+   <tr style=3D"height:9.3pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">Conference dates: <span></span></s=
+pan></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;color:black;letter-spacing:0.5pt">10-12/12/2024<span></span></span><=
+/p>
+    </td>
+   </tr>
+  </tbody></table>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family=
+:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></sp=
+an></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">Paper
+  Publication:<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family=
+:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></sp=
+an></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt">The accepted and
+  presented papers will be published=C2=A0as proceedings with=C2=A0<span st=
+yle=3D"color:rgb(244,67,54)">Springer</span>=C2=A0in their prestigious=C2=
+=A0<span style=3D"color:rgb(244,67,54)">Communications in Computer and Info=
+rmation Science
+  (CCIS)=C2=A0</span>series.<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt">Indexed by=C2=A0<span style=3D"background:yellow">=
+Scopus</span>, DBLP, Ei
+  Compendex, Google Scholar, and Springerlink<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family=
+:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></sp=
+an></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">Journal
+  Publication:</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></=
+span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D</span><span lang=3D"EN-US" style=3D"font-size:10pt;font-family=
+:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0.5pt"><span></span></sp=
+an></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt">Authors of selected
+  papers will be invited to submit extended article versions for a
+  post-conference special issue of peer-reviewed journals.<span></span></sp=
+an></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><span lang=3D"EN-US"=
+ style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;let=
+ter-spacing:0.5pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">Previous
+  conference proceedings:<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span><span lang=3D"EN-US"=
+ style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;let=
+ter-spacing:0.5pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">-=C2=A0=C2=A0=C2=A0
+  icSoftComp2023 </span><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;"><a href=3D"https://link.springer.=
+com/book/10.1007/978-3-031-53731-8" style=3D"color:blue;text-decoration:und=
+erline"><span style=3D"letter-spacing:0.5pt">https://link.springer.com/book=
+/10.1007/978-3-031-53731-8</span></a></span><span lang=3D"EN-US" style=3D"f=
+ont-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;color:black;le=
+tter-spacing:0.5pt"> <span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">-=C2=A0=C2=A0=C2=A0
+  icSoftComp2022 </span><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;"><a href=3D"https://link.springer.=
+com/book/10.1007/978-3-031-27609-5" style=3D"color:blue;text-decoration:und=
+erline"><span style=3D"letter-spacing:0.5pt">https://link.springer.com/book=
+/10.1007/978-3-031-27609-5</span></a></span><span lang=3D"EN-US" style=3D"f=
+ont-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;color:black;le=
+tter-spacing:0.5pt"> <span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">-=C2=A0=C2=A0=C2=A0
+  icSoftComp2021 </span><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;"><a href=3D"https://link.springer.=
+com/book/10.1007/978-3-031-05767-0" style=3D"color:blue;text-decoration:und=
+erline"><span style=3D"letter-spacing:0.5pt">https://link.springer.com/book=
+/10.1007/978-3-031-05767-0</span></a></span><span lang=3D"EN-US" style=3D"f=
+ont-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;color:black;le=
+tter-spacing:0.5pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">-=C2=A0=C2=A0=C2=A0
+  icSoftComp2020 </span><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;"><a href=3D"https://www.springer.c=
+om/gp/book/9789811607073" target=3D"_blank" style=3D"color:blue;text-decora=
+tion:underline"><span style=3D"letter-spacing:0.5pt">https://www.springer.c=
+om/gp/book/9789811607073</span></a></span><span lang=3D"EN-US" style=3D"fon=
+t-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;letter-spacing:0=
+.5pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt">-=C2=A0=C2=A0=C2=A0
+  icSoftComp2017 </span><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;"><a href=3D"https://ieeexplore.iee=
+e.org/xpl/conhome/8269416/proceeding" target=3D"_blank" style=3D"color:blue=
+;text-decoration:underline"><span style=3D"letter-spacing:0.5pt">https://ie=
+eexplore.ieee.org/xpl/conhome/8269416/proceeding</span></a></span><span lan=
+g=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewrite=
+r&quot;;color:black;letter-spacing:0.5pt"> </span><span lang=3D"EN-US" styl=
+e=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quot;;letter-s=
+pacing:0.5pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;letter-spacing:0.5pt">Please join icSoftComp
+  WhatsApp group to get updates:<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;"><a href=3D"https://chat.whatsapp.com/CnkrBjvMcuu1ksjQGi67Ak" style=3D"c=
+olor:blue;text-decoration:underline"><span style=3D"letter-spacing:0.5pt">h=
+ttps://chat.whatsapp.com/CnkrBjvMcuu1ksjQGi67Ak</span></a></span><span lang=
+=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter=
+&quot;;letter-spacing:0.5pt"><span></span></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"840" valign=3D"top" style=3D"width:7in;background:white;padd=
+ing:0in 5.4pt">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;;color:black;letter-spacing:0.5pt"><span>=C2=A0</span></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"840" valign=3D"top" style=3D"width:7in;background:rgb(255,22=
+9,153);padding:0in 5.4pt">
+  <div align=3D"center">
+  <table class=3D"gmail-MsoTableGrid" border=3D"0" cellspacing=3D"0" cellpa=
+dding=3D"0" width=3D"810" style=3D"width:6.75in;background:rgb(255,229,153)=
+;border-collapse:collapse;border:medium">
+   <tbody><tr>
+    <td width=3D"810" valign=3D"top" style=3D"width:6.75in;padding:0in 5.4p=
+t">
+    <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001p=
+t;text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Cal=
+ibri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font=
+-family:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt=
+"><span>=C2=A0</span></span></b></p>
+    <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001p=
+t;text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Cal=
+ibri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font=
+-family:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt=
+">Charotar University of Science and
+    Technology (CHARUSAT)<span></span></span></b></p>
+    <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001p=
+t;text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Cal=
+ibri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font=
+-family:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt=
+">(Center of Excellence by Govt. of Gujarat)<span></span></span></b></p>
+    <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001p=
+t;text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Cal=
+ibri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font=
+-family:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt=
+">(Accredited &quot;</span></b><b><span lang=3D"EN-US" style=3D"font-size:1=
+0pt;font-family:&quot;Lucida Sans Typewriter&quot;;color:red;letter-spacing=
+:0.5pt">A+</span></b><b><span lang=3D"EN-US" style=3D"font-size:10pt;font-f=
+amily:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt">=
+&quot;
+    grade by NAAC, GoI)<span></span></span></b></p>
+    <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001p=
+t;text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Cal=
+ibri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font=
+-family:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt=
+">Changa, India<span></span></span></b></p>
+    <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001p=
+t;text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Cal=
+ibri&quot;,sans-serif"><b><span lang=3D"EN-US" style=3D"font-size:10pt;font=
+-family:&quot;Lucida Sans Typewriter&quot;;color:black;letter-spacing:0.5pt=
+"><span>=C2=A0</span></span></b></p>
+    </td>
+   </tr>
+  </tbody></table>
+  </div>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Lucida Sans Typewriter&quo=
+t;"><span></span></span></p>
+  </td>
+ </tr>
+</tbody></table>
+
+</div>
+
+
+
+
+
+</div></div>
+
+--00000000000044d1dd061813073c--
