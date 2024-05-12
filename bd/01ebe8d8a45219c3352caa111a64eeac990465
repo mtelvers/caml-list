@@ -1,0 +1,428 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=reject dis=none) header.from=umn.edu
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=FUN1nTlJ;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=umn.edu header.i=@umn.edu header.a=rsa-sha256 header.s=google header.b=c7VbYVvz;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id E958DB80123
+	for <caml-list@tunbury.org>; Sun, 12 May 2024 14:13:18 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:cc:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=O310s54dsNYM4pqck6Heth4HlsVt4tncmHV/9w69rJ4=;
+  b=FUN1nTlJ1elkuJKF3aYmQNS8gexuf1b3k/XSQe/Kjghs6DF2do8DsTHz
+   /fbJ/ROCzEKegcJT4Jkrm7z14FGdCZ09UvcdFKG93B6AWYLX1HaZUZyYM
+   vPeuWGGjbHlRGQD+8B+YLULpnyGqWktpBudC4PpyPEo40i0koi2980qCg
+   c=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@umn.edu
+X-IronPort-AV: E=Sophos;i="6.08,155,1712613600"; 
+   d="scan'208,217";a="165244232"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 12 May 2024 15:13:17 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 824E4E004E; Sun, 12 May 2024 15:13:17 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id DE4A7E0AF1
+	for <caml-list@sympa.inria.fr>; Sun, 12 May 2024 15:13:13 +0200 (CEST)
+IronPort-SDR: 6640c069_Irg3ek4TM3m4HcqG1VLi74qCE2ZPq8JJmKAgSfjt+L4kj6L
+ +1Xi3cWop/JTyPBj44LaLoPlTuISnMDXuOFXE7g==
+X-IPAS-Result: =?us-ascii?q?A0HBAwDuv0Bmh8/EVIZaDoJKgkR8WDMHCEiEVoEjgiyMV?=
+ =?us-ascii?q?AEHgT+XO4R8gnsDGD4GCQEDAQ05CwQBAQMBA4FLAYMziD8CHwYBBDMGDgECB?=
+ =?us-ascii?q?AEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGAQIQAQEBASIXBxAOJ4V0DYJnN?=
+ =?us-ascii?q?GtjAgYDNgEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBARMCDQdVASEWER0BASYRA?=
+ =?us-ascii?q?RgNNwIjEgEFASIBEggagl4BgmQDEZYqjzOBBUKLO4EygQGCDAEBBoEI2n4BC?=
+ =?us-ascii?q?YFwAwYUgTSILgGBVQIChCODRnonG32BEIEVNYMzgQWBXAEBAhh9K0uDLoJpg?=
+ =?us-ascii?q?WwPhgiGPoZJgWFPgiQ+K3yBAAIGF1QICQoEKIEPJmUZXkmIWCYmAwcHECtJE?=
+ =?us-ascii?q?AEhAyYzMgFVExcLPgkWAhYDGxQEMA8JCyYqBjYCEgwGBgZZIBYJBCMDCAQDR?=
+ =?us-ascii?q?AMgcREDBBoECwd1gyMBBwQTRzeBAQaJb4MTAgUhBCUPgWaBI1CCKkuBK14Cg?=
+ =?us-ascii?q?muBdwENAWCEYIJSdIINHUADC2ILPAE1Bg4bKCc4omaDOjEuPiRgEyoXKy4wP?=
+ =?us-ascii?q?ZJBJS+RN6BrhB2DfIgSlTgzhAWDHolghkGScJhiII1UlUQCE4EBhCgRI4EfO?=
+ =?us-ascii?q?SSBXE0lEzsxBoIwTwMZD1eNYQKESwKBeIIwiiC8QyU1OwIHAQoBAQMJiSKBS?=
+ =?us-ascii?q?AEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ aMJqayoja11pYMd0SqtRpKNJCwkgQ==
+IronPort-HdrOrdr: A9a23:6kYx4q305VzXsFVa9/w/2gqjBHgkLtp133Aq2lEZdPWaSL3mqy
+ nOpoVk6feX4Ax+ZJhEo7C90EjsexzhHPFOkPIs1NuZLXHbUQiTXfhfBOnZskfd8kTFn4Y3uM
+ sAT0EUMqyMMbEVt7eH3CCIV/kn28eO662liKPzyH13XRh2Z6wI1XYaNu9ZKDwSeOCFP+tbKH
+ NR3Lshm9NoQwVyH6KG76Y+NdT+mw==
+X-Talos-CUID: 9a23:AGebcmxhiMMWvaD5mc8wBgUtH8l7LlPWnEvMOnCeLkNvEoy+UU2prfY=
+X-Talos-MUID: 9a23:nlkeKwTUidrxx8n4RXTWrThmM9o4xp7wN3kDv8he4smvGApJbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.08,155,1712613600"; 
+   d="scan'208,217";a="165244204"
+X-MGA-submission: =?us-ascii?q?MDG3qt1AdfakotEZKvrcV/69f51uAB1RkxUwEO?=
+ =?us-ascii?q?8IQFk9oO/lV9muOnmMX2Aelg1CUKkVCSXcn+HnJZwBqu8H1pUTLoh5r1?=
+ =?us-ascii?q?BmY118Fb+0plMtRsdkZ/EZSkbMAqM57BTm46CN7RUYrfYdU2PP87lM/w?=
+ =?us-ascii?q?9G2SirrmaGKxQ1rV0qrMIxVA=3D=3D?=
+Received: from mta-p7.oit.umn.edu ([134.84.196.207])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2024 15:13:12 +0200
+Received: from localhost (unknown [127.0.0.1])
+	by mta-p7.oit.umn.edu (Postfix) with ESMTP id 4VcjjK2q6Gz9vLGX
+	for <caml-list@inria.fr>; Sun, 12 May 2024 13:13:09 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p7.oit.umn.edu ([127.0.0.1])
+ by localhost (mta-p7.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 7uQDp_eDPrnc for <caml-list@inria.fr>;
+ Sun, 12 May 2024 08:13:09 -0500 (CDT)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mta-p7.oit.umn.edu (Postfix) with ESMTPS id 4VcjjJ6QzDz9vLGY
+	for <caml-list@inria.fr>; Sun, 12 May 2024 08:13:08 -0500 (CDT)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p7.oit.umn.edu 4VcjjJ6QzDz9vLGY
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p7.oit.umn.edu 4VcjjJ6QzDz9vLGY
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-a59caea8836so231144766b.1
+        for <caml-list@inria.fr>; Sun, 12 May 2024 06:13:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google; t=1715519587; x=1716124387; darn=inria.fr;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=O310s54dsNYM4pqck6Heth4HlsVt4tncmHV/9w69rJ4=;
+        b=c7VbYVvzluMEKGkd6/5kausfPZYozG3RwSjKZKnUzl/zNqx0t4ul2shAPe4myG90wc
+         YNChTSN5D/4u6FfYH7DPApF74soXn0xnqqUfndGolKj2C8OeJ3iiuxrpJFrwqFZ0CpUF
+         CA9OXytuDAIekjGhOb8A+oBFPXTwfKVnkX8M2px1had0pYGwpHGlhFuGw7Ybn7xPn/Up
+         op2W6xB7c9wvEqycisKq7VImM5FQP4SI5MPtM7clwPO5R4C0FKAogw+xa+ECj9D979Te
+         Y+q487b23QWqPPqdL0Q5vH+iaZm6Lka41dZj/Rk1YxuhPu5a2kcnl59p28jPt0XtDMRJ
+         6XGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715519587; x=1716124387;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=O310s54dsNYM4pqck6Heth4HlsVt4tncmHV/9w69rJ4=;
+        b=hqnWRK8GdlCfrCExvTCU+XPCCCghP1ThgJq7NGPLIzHzmsnQDbsIfPO22Iqmqv/nO+
+         WSuyBgmFIA2+ZOJ+32dl0cu8DafgH8jb4Lf6gIniFlG441sbSlMER4X7OF9UrdTTttSh
+         TT6FDIBD5yZ3Na8741SKJfNSe2qAKJFrCQdDVpyny0Qbjl/leU8G/h0aP48bTfun4W6z
+         XIfQoBlrcx/xOa9A6MMRYKYOCjqb+3HfRQ2bRUseRBgqQIIGHlDEcfMYiZsuYELyajRo
+         f4bglrnuoko1lchK48YCsiCup3+otl6sIQmCZtULeRWv4Rrea2sM5pUa1gcsh8WAtR6S
+         +pJg==
+X-Forwarded-Encrypted: i=1; AJvYcCW4beJGqgJylKqyhjrFlDdQWT4mgM3XEz5AHEYx3mK5fRNbKc6YAKxtmaAMkkNyZabdeZ7tDcD9ylo1NnLpLl988hE=
+X-Gm-Message-State: AOJu0YzBql9nBaWPtVy79gFOsABF0OMvNjTLIZOwjBytaFK2FVN62yED
+	qU64CHseazrXiU9GTpKDAGls4vu6Nf4vXyZaEzovTK8yayfQK1g+tnJG3PIrtiD+VdlbjakiaRS
+	oJVgY/4AgbSlZ9jSCL8rT73FWd8qwyCrvYYrEpjTayRhxHV+J5b6AMSl44pAb2ax6StSz9y7Sso
+	tPX0XQPXRClMp2lSPGqJHbAqmygTI=
+X-Received: by 2002:a17:906:70c:b0:a59:c28a:7eb4 with SMTP id a640c23a62f3a-a5a2d5d3d2dmr444884466b.44.1715519587578;
+        Sun, 12 May 2024 06:13:07 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IE+psCmxMO4YiqGeZWQhfc22Y+OT8SmvhocxCJIgk0zftsGOiH8EL1NoKkwe5QOZTV1APWY3nnK81ap9fb1ZV8=
+X-Received: by 2002:a17:906:70c:b0:a59:c28a:7eb4 with SMTP id
+ a640c23a62f3a-a5a2d5d3d2dmr444882766b.44.1715519587176; Sun, 12 May 2024
+ 06:13:07 -0700 (PDT)
+MIME-Version: 1.0
+From: Favonia <kbh@umn.edu>
+Date: Sun, 12 May 2024 08:12:31 -0500
+Message-ID: <CAH_+rvcEUE62xP86OcXZkYdiK7GidwpsYqHby78wk3_oDmRsdA@mail.gmail.com>
+To: ProofTheory@lists.bath.ac.uk, univalent-mathematics@googlegroups.com, 
+	Homotopy Type Theory <homotopytypetheory@googlegroups.com>, types-announce@lists.seas.upenn.edu, 
+	haskell@haskell.org, caml-list@inria.fr, agda@lists.chalmers.se, 
+	coq-club@inria.fr, categories@mq.edu.au
+Cc: Jeremy Gibbons <jeremy.gibbons@cs.ox.ac.uk>
+Content-Type: multipart/alternative; boundary="000000000000996d9906184187ab"
+Subject: [Caml-list] MSFP 2024 deadline extension: Tuesday 28th May
+Reply-To: Favonia <kbh@umn.edu>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19126
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-05/CAH_%2BrvcEUE62xP86OcXZkYdiK7GidwpsYqHby78wk3_oDmRsdA%40mail.gmail.com>
+
+--000000000000996d9906184187ab
+Content-Type: text/plain; charset="UTF-8"
+
+We extended the submission deadline to Tuesday 28th May in case you missed
+it. :-)
+
+Jeremy and Favonia
+
+   *
+
+Tenth Workshop on
+MATHEMATICALLY STRUCTURED FUNCTIONAL PROGRAMMING
+Monday 8th July 2024, Tallinn, Estonia
+A satellite workshop of FSCD 2024
+
+https://msfp-workshop.github.io/msfp2024/
+
+ ** Extended Deadline: Tuesday 28th May **
+
+The tenth workshop on Mathematically Structured Functional Programming is
+devoted to the derivation of functionality from structure. It is a
+celebration of the direct impact of Theoretical Computer Science on
+programs as we write them today. Modern programming languages, and in
+particular functional languages, support the direct expression of
+mathematical structures, equipping programmers with tools of remarkable
+power and abstraction. Where would Haskell be without monads? Functional
+reactive programming without arrows? Call-by-push-value without
+adjunctions? The list goes on. This workshop is a forum for researchers who
+seek to reflect mathematical phenomena in data and control.
+
+MSFP 2024 will be held on Monday 8th July 2024 in Tallinn, Estonia in
+affiliation with FSCD (https://compose.ioc.ee/icalp2024/). Previous
+instances have been held in Munich (with ETAPS 2022), virtually (2020), in
+Oxford (with FLOC 2018), Eindhoven (with ETAPS 2016), Grenoble (ETAPS
+2014), Tallinn (with ETAPS 2012), Baltimore (with ICFP 2010), Reykjavik
+(with ICALP 2008), and Kuressaare (with MPC and AMAST 2006).
+
+Important Dates:
+================
+
+   Paper deadline:     Tuesday 28th May (AoE)
+   Notification:       Friday 21st June (16:00 UTC)
+   Workshop:           Monday 8th July
+   Final version:      (after workshop, TBD)
+
+Invited Speakers:
+=================
+
+   TBA
+
+Programme Committee:
+====================
+
+   Kazuyuki Asada            - Tohoku University, JP
+   Robert Atkey              - University of Strathclyde, UK
+   Ana Bove                  - Chalmers University of Technology, SE
+   Liang-Ting Chen           - Academia Sinica, TW
+   Peng Fu                   - University of South Carolina, US
+   Jeremy Gibbons            - University of Oxford, UK (co-chair)
+   Kuen-Bang Hou (Favonia)   - University of Minnesota, US (co-chair)
+   Robin Kaarsgaard          - University of Southern Denmark, DK
+   Paul Blain Levy           - University of Birmingham, UK
+   Dan Marsden               - University of Nottingham, UK
+   Dylan McDermott           - Reykjavik University, IS
+
+(more to follow)
+
+Submission:
+===========
+
+Submissions are welcomed on, but by no means restricted to, topics
+such as:
+
+   structured effectful computation
+   structured recursion
+   structured corecursion
+   structured tree and graph operations
+   structured syntax with variable binding
+   structured datatype-genericity
+   structured search
+   structured representations of functions
+   structured quantum computation
+   structure directed optimizations
+   structured types
+   structure derived from programs and data
+
+Please contact the programme chairs Favonia (kbh@umn.edu) and Jeremy
+Gibbons (jeremy.gibbons@cs.ox.ac.uk) if you have any questions about the
+scope of the workshop.
+
+We accept two categories of submission: full papers of at most 15 pages
+that will appear in the proceedings (published with EPTCS) and extended
+abstracts of at most two pages, which we will post on the website but do
+not constitute formal publications and will not appear in the proceedings.
+A short abstract should be submitted by four days in advance of the paper
+deadline (for both full paper and extended abstract submissions). For full
+details, see the webpage.
+
+We are using EasyChair to manage submissions:
+
+   https://easychair.org/conferences/?conf=msfp2024
+
+--000000000000996d9906184187ab
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">We extended the submission deadline to Tuesday 28th May in=
+ case you missed it. :-)<br><br>Jeremy and Favonia<br><br>=C2=A0 =C2=A0*<br=
+><br>Tenth Workshop on<br>MATHEMATICALLY STRUCTURED FUNCTIONAL PROGRAMMING<=
+br>Monday 8th July 2024, Tallinn, Estonia<br>A satellite workshop of FSCD 2=
+024<br><br><a href=3D"https://msfp-workshop.github.io/msfp2024/" target=3D"=
+_blank">https://msfp-workshop.github.io/msfp2024/</a><br><br>=C2=A0** Exten=
+ded Deadline: Tuesday 28th May **<br><br>The tenth workshop on Mathematical=
+ly Structured Functional Programming is devoted to the derivation of functi=
+onality from structure. It is a celebration of the direct impact of Theoret=
+ical Computer Science on programs as we write them today. Modern programmin=
+g languages, and in particular functional languages, support the direct exp=
+ression of mathematical structures, equipping programmers with tools of rem=
+arkable power and abstraction. Where would Haskell be without monads? Funct=
+ional reactive programming without arrows? Call-by-push-value without adjun=
+ctions? The list goes on. This workshop is a forum for researchers who seek=
+ to reflect mathematical phenomena in data and control.<br><br>MSFP 2024 wi=
+ll be held on Monday 8th July 2024 in Tallinn, Estonia in affiliation with =
+FSCD (<a href=3D"https://compose.ioc.ee/icalp2024/" target=3D"_blank">https=
+://compose.ioc.ee/icalp2024/</a>). Previous instances have been held in Mun=
+ich (with ETAPS 2022), virtually (2020), in Oxford (with FLOC 2018), Eindho=
+ven (with ETAPS 2016), Grenoble (ETAPS 2014), Tallinn (with ETAPS 2012), Ba=
+ltimore (with ICFP 2010), Reykjavik (with ICALP 2008), and Kuressaare (with=
+ MPC and AMAST 2006).<br><br>Important Dates:<br>=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D<br><br>=C2=A0 =C2=A0Paper deadline: =C2=A0 =C2=A0 =
+Tuesday 28th May (AoE)<br>=C2=A0 =C2=A0Notification: =C2=A0 =C2=A0 =C2=A0 F=
+riday 21st June (16:00 UTC)<br>=C2=A0 =C2=A0Workshop: =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 Monday 8th July<br>=C2=A0 =C2=A0Final version: =C2=A0 =C2=A0 =
+=C2=A0(after workshop, TBD)<br><br>Invited Speakers:<br>=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<br><br>=C2=A0 =C2=A0TBA<br><br>Programme =
+Committee:<br>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<=
+br><br>=C2=A0 =C2=A0Kazuyuki Asada =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0- Tohoku University, JP<br>=C2=A0 =C2=A0Robert Atkey =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0- University of Strathclyde, UK<br>=C2=A0 =
+=C2=A0Ana Bove =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0- Chalmers University of Technology, SE<br>=C2=A0 =C2=A0Liang-Ting Chen =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - Academia Sinica, TW<br>=C2=A0 =C2=A0Pe=
+ng Fu =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - Univ=
+ersity of South Carolina, US<br>=C2=A0 =C2=A0Jeremy Gibbons =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0- University of Oxford, UK (co-chair)<br>=C2=A0 =
+=C2=A0Kuen-Bang Hou (Favonia) =C2=A0 - University of Minnesota, US (co-chai=
+r)<br>=C2=A0 =C2=A0Robin Kaarsgaard =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0- Uni=
+versity of Southern Denmark, DK<br>=C2=A0 =C2=A0Paul Blain Levy =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 - University of Birmingham, UK<br>=C2=A0 =C2=A0Dan=
+ Marsden =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 - University of N=
+ottingham, UK<br>=C2=A0 =C2=A0Dylan McDermott =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 - Reykjavik University, IS<br><br>(more to follow)<br><br>Submission=
+:<br>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<br><br>Submissions are welcomed on, =
+but by no means restricted to, topics<br>such as:<br><br>=C2=A0 =C2=A0struc=
+tured effectful computation<br>=C2=A0 =C2=A0structured recursion<br>=C2=A0 =
+=C2=A0structured corecursion<br>=C2=A0 =C2=A0structured tree and graph oper=
+ations<br>=C2=A0 =C2=A0structured syntax with variable binding<br>=C2=A0 =
+=C2=A0structured datatype-genericity<br>=C2=A0 =C2=A0structured search<br>=
+=C2=A0 =C2=A0structured representations of functions<br>=C2=A0 =C2=A0struct=
+ured quantum computation<br>=C2=A0 =C2=A0structure directed optimizations<b=
+r>=C2=A0 =C2=A0structured types<br>=C2=A0 =C2=A0structure derived from prog=
+rams and data<br><br>Please contact the programme chairs Favonia (<a href=
+=3D"mailto:kbh@umn.edu" target=3D"_blank">kbh@umn.edu</a>) and Jeremy Gibbo=
+ns (<a href=3D"mailto:jeremy.gibbons@cs.ox.ac.uk" target=3D"_blank">jeremy.=
+gibbons@cs.ox.ac.uk</a>) if you have any questions about the scope of the w=
+orkshop.<br><br>We accept two categories of submission: full papers of at m=
+ost 15 pages that will appear in the proceedings (published with EPTCS) and=
+ extended abstracts of at most two pages, which we will post on the website=
+ but do not constitute formal publications and will not appear in the proce=
+edings. A short abstract should be submitted by four days in advance of the=
+ paper deadline (for both full paper and extended abstract submissions). Fo=
+r full details, see the webpage.<br><br>We are using EasyChair to manage su=
+bmissions:<br><br>=C2=A0 =C2=A0<a href=3D"https://easychair.org/conferences=
+/?conf=3Dmsfp2024" target=3D"_blank">https://easychair.org/conferences/?con=
+f=3Dmsfp2024</a><br></div>
+
+--000000000000996d9906184187ab--
