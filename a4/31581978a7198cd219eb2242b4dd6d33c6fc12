@@ -1,0 +1,864 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=ZRx9iscy;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=aZaPdPf6;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 96B62B80123
+	for <caml-list@tunbury.org>; Mon, 20 May 2024 17:04:27 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=EK6mRLu9efkkDDQ534tm15GPPIQIK6f7h+JFiMim7ws=;
+  b=ZRx9iscyQq09t3fW/xkx2GjF2bXhE4fIMmU4g+S+3eRuqQ8mxEA8dAqw
+   29nVReIh8l5Wr3Pb0T686zis89ZnpfPttpYE+DkvQNDhhjaeo5djaz0lX
+   vSRSlBZFx6S6VcZpvKD/9ptYvXJo4sgm+QcxAXFm1qeq6lEzq/EsqwZyE
+   U=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.08,175,1712613600"; 
+   d="scan'208,217";a="166491390"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 20 May 2024 18:04:25 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id B6C50E0CD3; Mon, 20 May 2024 18:04:25 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id C2A7EE00B6;
+	Mon, 20 May 2024 18:04:21 +0200 (CEST)
+IronPort-SDR: 664b7484_oIaLoZS1efgS/PtvJCnMIrG2ntFJOTGOhP3Y8ESI3FlEYwW
+ ArrEP1HFlX7UMTCSbkczqvGx0glxlquPNOpgCpw==
+X-IPAS-Result: =?us-ascii?q?A0FDBQBPc0tmf6rWVdFRCQ6FDnxZGhoEC0iEVoEjkEeBF?=
+ =?us-ascii?q?pAwgjmDdoE4gXuCeYEsFigPAQMBDTsJBAEBAwSDSHFGiEUCHgcBBDQTAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABASIZBw4OKYU7AQcxDYJgG?=
+ =?us-ascii?q?IEOXgMCAgMDAzgBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEFAg0HGAQNLDgIAQIGHQEbDAMDBgYDEgMNLQoCIwERAQUBIwkdDoJeAYIvA?=
+ =?us-ascii?q?QMxAxGRMI8zgQVCizuBFQUCFoEBgg0GgUcFEA/YbwoZKA1vgWACAQYUgTSEZ?=
+ =?us-ascii?q?iWDIwGBPBkCAoQjg0aBIRuCDYEVNYI9doEFgVwCAgGBIAMOWYMugmkEgWeDI?=
+ =?us-ascii?q?RaIKkkTBxWDEUEmgS2BDBKBCkUCEj0WggsbBgkDEYEmdgYBAgIDAxZUAwUJC?=
+ =?us-ascii?q?gICJg+BASZlARhcRhRQgUyCF4V+CAcXAwcHBwQFBBwGBQUCQgkHAQ8SAwQDB?=
+ =?us-ascii?q?AQBAgsJCgkDAwIOAggDAggGDgIRAT8SBBMKDQsDBAIFCgMIAgIHAg4BBQICA?=
+ =?us-ascii?q?gICAgIDBgISBAIBAgMCAggCBwEBAgoHAwEBAgYEAwYCAgUEDQMLAQECAgQBC?=
+ =?us-ascii?q?gIJDwUCAgMCAwEBAQIKAwkBBQICAQMCAgQEBwEGAwUDAwQEAwIDAwIMAQUBB?=
+ =?us-ascii?q?QEFAQUEAgYBEwISAgILBQYDBg4DCwQEAQICBwYMCQQCAgIGAQIRAwECAQcBA?=
+ =?us-ascii?q?wMCCgEEAQsIAQUICAEEAgMGEAIIBQYFAgQBAQICAggGDwMGBwIDAgYDBQUDA?=
+ =?us-ascii?q?wICAgcEBAIBAgICARMGBAQCAwIDBAEFBAQDAhcIDQIFBwEJCggMAQIGAgQCB?=
+ =?us-ascii?q?AcDBgQFBAIDAgQRBwsDAgMEAgIEAxECAwQCCgIEBAcCAwEBDAYEBAoCCwMFA?=
+ =?us-ascii?q?QECBQMDCQcGAgMDBQQGAgUDAwMCAwIJAgICAQkBAQECEgIDDgIEAgECBQUMB?=
+ =?us-ascii?q?BMCAgMCBggCAgIHAwMEAgMGCwECEQICAgUDBAICFAMHBAIEBQIEAQYDAwIEB?=
+ =?us-ascii?q?gUIBAICBQIBAQIIAgEPCgQCAQQDBQMHCQIFBQMCBAICBQkBAQICAgMDAwMCA?=
+ =?us-ascii?q?wICAwMCBwMDAwcDBQMEAgMGBQcDBQMDAgICFAEGAgUNCAYLBQUHAgYCBAgFA?=
+ =?us-ascii?q?gIDAwMCBgoIAwMDAgUCAgMDAQIGDwYCAgMFBgMDAwMGBgMDAgYDAwIDAgMCA?=
+ =?us-ascii?q?wMBAwIDAQIDAgICCAICAwIFBAUCAgIEAggaAgICAgMDCAMDCgQCAgQBBAIEA?=
+ =?us-ascii?q?gQCBgMEAgIBBwIDAwIDAgcCAgQCAgICAwIEBwICAwMDAgICAQkCBQEBBgIDA?=
+ =?us-ascii?q?wIDBQMJAwQFAgMIAQECAgcHAwMEAwECAQUEAgIGBQIDAgIEAgQFAwIDAgYGA?=
+ =?us-ascii?q?gEDAgoGAwUDAwMDAgMDAgMDAgUCCAICBAQFBAIFBAIEAwMDAQoCBgMCAgUBA?=
+ =?us-ascii?q?QICBQMCBAQHAgICBw8DAgcFAgUHAggBBgUCAgMCCAECAgYBBgIEAQICDQEBA?=
+ =?us-ascii?q?gICAwQDAwcCBAMCCAIDAw8BAwMJBgUEBQQDCQQPAgQBCAMBAQQIAgQDAgwCA?=
+ =?us-ascii?q?iECBQsEBAESCggDAQEDAQECAgICAg4DAgMCAgMKAgMCCgMGBAICBgEBAQQBA?=
+ =?us-ascii?q?gMBAQMCAQIHBA4EBQUICAEDAgEKAQIQBQIPAgkDAwYEAhAGCgUDAgMFAQIFF?=
+ =?us-ascii?q?QMIAwIJAgQMAw0CAwMCBgMGAgYBBgMHCwEBBwgFAwMDAhYBAgIQCAQGDwcCA?=
+ =?us-ascii?q?wMDBAUHAxICBg4DAwIDAgECAgIDBQQFAgcDAwoFAggDAggFAwcJBAoCCAQBA?=
+ =?us-ascii?q?gYDAgICAgUMAQEBAQIDAgUDBwcICAQFBAMBAQYGDCACAgMEDwMJAwYLAQUFA?=
+ =?us-ascii?q?QMCAgIOAwUDAgMGBgEJBAEFBAkCBQcGBQIBFBYHBgIKAgcCAgIDAQIDBQsIA?=
+ =?us-ascii?q?gMCCgQBDgQaAgICAQECAgMDBwIDAgITAwMFBAYDAgICAgMCAQoLAwICAwMDA?=
+ =?us-ascii?q?wUFAwMCGQIDAwIBCgUCDAUEAwQCAgECHQMBBQIDCgEFCQMGAgIDAgUCAwYFA?=
+ =?us-ascii?q?gQBDgEBAQMGCwcEFAICAgsIAwkFAwUNAg0CAwUCAgsFPQsFAQEEAwEBBAgBF?=
+ =?us-ascii?q?y0CBAIGDAEBAQIDAwYCAgIVBQcDBQMIAQMBAhQKBgICAQMKCgICBAIGAgQDA?=
+ =?us-ascii?q?goDAQgCAgIPAwkCBwIOAgIDAwwPBAMDAwMJAgICEQkKAgICAgwIDAIJAgIDA?=
+ =?us-ascii?q?wYBAgMDBQMBAgEBAQQvAgQHAQIDBgoDAgICCQgKCQMDBQMKAgEGBgECAw4BA?=
+ =?us-ascii?q?QITBAkDAgECAQEGCAEBAgQBBAIIBgICAgIKAwUDAgMFFQUCBAICAh0DAgQFA?=
+ =?us-ascii?q?wUDAwQHAQYEDQkDBQMCBAMDAgQEAQEJBQkEAwsGAQIBAwQDAQEIBwcDAgEBA?=
+ =?us-ascii?q?wEBAgoFBQgNCAMIAwYJAwEGAQEFGwMDDgICAgMCAQoGCAUCAwYOAgQCGgEMA?=
+ =?us-ascii?q?wEDAwUSBRUDBAUCAg0DDAECAgMDBAUDBQICAgMCAgIFBAECBAIEAQgECQECA?=
+ =?us-ascii?q?gIDAgEBAgIEAgI3HQIJAyMPAwsJCBM9AQsHMgQ0AQYOFAcnAQYhX6NPAoJOA?=
+ =?us-ascii?q?QVNGQYcBAgDAyoMBCIFAwUDCRIGEw0CDUIKBwoFBwUSAQQZBAkFBgMcAQQKA?=
+ =?us-ascii?q?QEoOgOSNhsBAROPSY4Fk0eBPGeDNoRshyKCVIkDiWEzhAWMfoZ6kRY9ZJhiI?=
+ =?us-ascii?q?I1UhRiPfjADGoUfESMSgUcjgVwzGiNQMYICATMSPQMZD1eEGIJXhnKDY4UUi?=
+ =?us-ascii?q?iC8fh0qMjsCBwEKAQEDCYkigUgBAQ?=
+IronPort-PHdr: A9a23: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
+ S/MW0WRXkErirCWEkZQXfc=
+IronPort-Data: A9a23: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
+ NWzyyBWOXlp43y9FFFbJcvlNn6xvr8x4+n1sTPC
+IronPort-HdrOrdr: A9a23:lCkC0K5ErdCR2xa67APXwODXdLJyesId70hD6qkRc20yTiX8ra
+ qTdZsgpH3JYVoqKRIdcLO7WJVoI0mskKKdiLN5VdyftWLdyQ+Vxe9ZnOzf6gylNCvk6OZH2K
+ tsN4R4AsbhFEV3gK/BjDVQ0OxO/DBEys2VbCvloUuFhDsKV51d
+X-Talos-CUID: 9a23:yQyhDm/WQJuNI+f3EmOVv241R8wiKGCB9mXNHkOZLmV5RL6yRGbFrQ==
+X-Talos-MUID: 9a23:WB9mswQgVAviH1wXRXTuqipPOd05057tI1oItdZYqeK4BxFvbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.08,175,1712613600"; 
+   d="scan'208,217";a="166491373"
+X-MGA-submission: =?us-ascii?q?MDGuT9TpPX/BxFJ6+2qqaQ49wO5ueaxH5LPjPc?=
+ =?us-ascii?q?I00unQzd4s7XuWVKo4axp2CHMKuuAUkECUV5LifYAylbYhW1VQcsVv4W?=
+ =?us-ascii?q?g+owelremjAVp8qYPaIfx6/dTg63LAGshfKfcFjeU+7+nUbLUy+Nv8ds?=
+ =?us-ascii?q?E6yqkD1WhSGVRkgSGYYnc67Q=3D=3D?=
+Received: from mail-pl1-f170.google.com ([209.85.214.170])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2024 18:04:20 +0200
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1ecddf96313so64088545ad.2;
+        Mon, 20 May 2024 09:04:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716221058; x=1716825858; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=EK6mRLu9efkkDDQ534tm15GPPIQIK6f7h+JFiMim7ws=;
+        b=aZaPdPf6Dhpj71ZWtVtwLmpRGyu59qbHK7trLvZY0+E9qSt5Bo8/eQpiSGsHLM9Q5/
+         csxO/BeU8FFnku1C2x88VnUeZ6Mq2GpCMS/wl1KH6DAxu9l/9Y+LlsF573ntPpkzMn4B
+         GN5AYEEmJlJRKwaFW58MoFcNlNxnwft0Bzp/uHf0H9EQj9Blo49a4GgY+Uuvp6E4e4UJ
+         hlBT8Ix3f7M25yaWRpg/OJJjJwLPihGJjoe0xwtN8jKO9o2h/1/6tNICRaR3wxFbH4WU
+         DoK0f9DAExJpWQSNnFXM7v2ytkxx6Zo5NhUfPC5ib4msxR/EoPDlYMXlEeKMXIj2g9o4
+         TcIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716221058; x=1716825858;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EK6mRLu9efkkDDQ534tm15GPPIQIK6f7h+JFiMim7ws=;
+        b=d97QZwbsrC57UeX0xG+UqFpv9yrz+X0zjWo7J1jXBGMSrTK+9s5Fl5Pxfu1ZK9X1TX
+         prTVn4UYDpPyvJ+yjfWc+9KT2pG++3ebNd4Gu/3X+fdruuRoZNPRzCqRKyhcgXR4ctaH
+         NVLpMpvfK0dpv3Wz85y+Cba9tLLM/B5qoutu9n860pv3B2v4+eMb1qIxFY8WDcEtz/yE
+         lI6vUp+oCtI5buiHmWflVS620/IjHL+VQr74PRj06k9TP6LOuDwxDUXDFSeCAihUdJx2
+         93ke1h8HgOq4SJkQD4NZIgWMSawDT/AKH9hF6MZHMygv48cCAn9ODZ7fYlawRU849IV5
+         LvxA==
+X-Forwarded-Encrypted: i=1; AJvYcCWm+Iap6ijgUQmqVtZhCtTvuKUFnMSXCervu9D3AfBA1avQf51JXvJI0kqmlNTRFxo2Zz226OLcDWtAf9dG5A5YzNGMW0/urW6fpagKWxHD7KfQsDua
+X-Gm-Message-State: AOJu0YzjH+475grK2gccgySHssVKC6hXQP2iLkUxDMXnnWUVZZhHk3Aj
+	LJMpXdWGlKg/0FviDU7ZmlF6YeH3nhdnQar2d2vRl7JfcYZ0VKVa4XobRRNNQbpURqCjxkgpkLV
+	LJjq7H82lM54I2kxNf468iVXpMVw=
+X-Google-Smtp-Source: AGHT+IG0JQqZQjDrjYpbiPLQWGm5jSFDdJaax39GxkyaXrdvN2hjdsGWnU1yfTW7ghM6TY8Ib2XNmZY472RVYQb52u8=
+X-Received: by 2002:a17:903:41cf:b0:1f2:fe86:875a with SMTP id
+ d9443c01a7336-1f2fe868b58mr58515425ad.17.1716221058238; Mon, 20 May 2024
+ 09:04:18 -0700 (PDT)
+MIME-Version: 1.0
+From: Ningning Xie <xnningxie@gmail.com>
+Date: Mon, 20 May 2024 12:04:07 -0400
+Message-ID: <CABjRk3mD0HnSNzW5dHi3zRuWj10D46Ay-y_1xWvRjb-iONnn_w@mail.gmail.com>
+To: haskell-cafe@haskell.org, caml-list@inria.fr, coq-club@inria.fr, 
+	agda@lists.chalmers.se, cl-isabelle-users@lists.cam.ac.uk, 
+	concurrency@listserver.tue.nl, srepls@jiscmail.ac.uk
+Content-Type: multipart/alternative; boundary="0000000000008862d90618e4da18"
+Subject: [Caml-list] POPL 2025: First Call for Papers (deadline: July 11
+ AOE)
+Reply-To: Ningning Xie <xnningxie@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19132
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-05/CABjRk3mD0HnSNzW5dHi3zRuWj10D46Ay-y_1xWvRjb-iONnn_w%40mail.gmail.com>
+
+--0000000000008862d90618e4da18
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Dear all,
+
+Please find below the Call for Papers for the POPL 2025 conference. We
+would be grateful if you could help distribute this call among your
+networks.
+
+Many thanks!
+
+Ningning Xie
+POPL 2025 Publicity Chair
+
+PACMPL Issue POPL 2025 seeks contributions on all aspects of programming
+languages and programming systems, both theoretical and practical. Authors
+of papers published in PACMPL Issue POPL 2025 will be invited to present
+their work in the POPL conference in January 2025, which is sponsored by
+ACM SIGPLAN, in cooperation with ACM SIGACT and ACM SIGLOG.
+
+POPL 2025 Website: https://conf.researchr.org/home/POPL-2025
+
+Call for Papers:
+https://conf.researchr.org/track/POPL-2025/POPL-2025-popl-research-papers#P=
+OPL-2025-Call-for-Papers
+
+Double-Blind Review FAQ:
+https://conf.researchr.org/track/POPL-2025/POPL-2025-popl-research-papers#F=
+AQ-on-Double-Blind-Reviewing
+
+
+### Organization
+
+Conference Location: Denver, Colorado, United States
+
+Conference Dates: January 19-25, 2025
+
+General Chair: Steve Zdancewic, University of Pennsylvania
+
+Program Chair: Armando Solar-Lezama, MIT
+
+Program Committee:
+https://conf.researchr.org/committee/POPL-2025/POPL-2025-popl-research-pape=
+rs-program-committee
+
+
+### Important Dates
+
+All the times/deadlines below are Anywhere on Earth (AoE) in 2024.
+
+Submission deadline: July 11
+
+
+### Scope
+
+Principles of Programming Languages (POPL) is a forum for the discussion of
+all aspects of programming languages and programming systems. Both
+theoretical and experimental papers are welcome, on topics ranging from
+formal frameworks to experience reports. We seek submissions that make
+principled, enduring contributions to the theory, design, understanding,
+implementation, or application of programming languages.
+
+
+### Evaluation Criteria
+
+The Review Committee will evaluate the technical contribution of each
+submission as well as its accessibility to both experts and the general
+POPL audience. All papers will be judged on significance, originality,
+relevance, correctness, and clarity. Each paper must explain its scientific
+contribution in both general and technical terms, identifying what has been
+accomplished, explaining why it is significant, and comparing it with
+previous work. Advice on writing technical papers can be found on the
+SIGPLAN author information page: https://www.sigplan.org/Resources/Author/.
+
+Deadlines and formatting requirements, detailed below, will be strictly
+enforced.
+
+
+### Double-Blind Reviewing Process
+
+POPL 2025 will use a full double-blind reviewing process (similar to the
+one used for POPL 2023 and 2024 but different from the lightweight
+double-blind process used in previous years). This means that identities of
+authors will not be made visible to reviewers until after
+conditional-acceptance decisions have been made, and then only for the
+conditionally-accepted papers. The use of full double-blind reviewing has
+several consequences for authors.
+
+* **Submissions**: Authors must omit their names and institutions from
+their paper submissions. In addition, references to authors=E2=80=99 own pr=
+ior work
+should be in the third person (e.g., not =E2=80=9CWe build on our previous =
+work =E2=80=A6=E2=80=9D
+but rather =E2=80=9CWe build on the work of =E2=80=A6=E2=80=9D).
+
+* **Supplementary material**: Authors are permitted to provide
+supplementary material (e.g., detailed proofs, proof scripts, system
+implementations, or experimental data) along with their submission, which
+reviewers may (but are not required to) examine. This material may take the
+form of a single file, such as a PDF or a tarball. Authors must fully
+anonymize any supplementary material.
+
+* **Author response**: In responding to reviews, authors should not say
+anything that reveals their identity, since author identities will not be
+revealed to reviewers at that stage of the reviewing process.
+
+* **Dissemination of work under submission**: Authors are welcome to
+disseminate their ideas and post draft versions of their paper(s) on their
+personal website, institutional repository, or arXiv (reviewers will be
+asked to turn off arXiv notifications during the review period). But
+authors should not take steps that would almost certainly reveal their
+identities to members of the Program Committee, e.g., directly contacting
+PC members or publicizing the work on widely-visible social media or major
+mailing lists used by the community.
+
+The purpose of the above restrictions is to help the Program Committee and
+external reviewers come to a judgment about the paper without bias, not to
+make it impossible for them to discover the authors=E2=80=99 identities if =
+they
+were to try. In particular, nothing should be done in the name of anonymity
+that weakens the quality of the submission.
+
+However, there are occasionally cases where adhering to the above
+restrictions is truly difficult or impossible for one reason or another. In
+such cases, the authors should contact the Program Chair to discuss the
+situation and how to handle it.
+
+The FAQ on Double-Blind Reviewing addresses many common scenarios and
+answers many common questions about this topic. But there remain many grey
+areas and trade-offs. If you have any doubts about how to interpret the
+double-blind rules or you encounter a complex case that is not clearly
+covered by the FAQ, please contact the Program Chair for guidance.
+
+### Evaluation Process
+
+Like last year, POPL 2025 will use a double-blind reviewing process
+(instead of the lightweight double-blind process used in recent years).
+This means that identities of authors will not be visible to reviewers
+until after conditional-acceptance decisions have been made. For authors,
+the main change is that there is no option to upload non-anonymized
+supplementary material; only anonymized supplementary material may be
+submitted.
+
+POPL 2025 will have five Associate Chairs who will help the PC Chair
+monitor reviews, solicit external expert reviews for submissions when there
+is not enough expertise on the committee, and facilitate reviewer
+discussions.
+
+As in previous years, authors will have a multi-day period to respond to
+reviews, as indicated in the Important Dates table. Responses are optional.
+A response must be concise, addressing specific points raised in the
+reviews; in particular, it must not introduce new technical results.
+Reviewers will write a short reaction to these author responses.
+
+The Review Committee (RC) will discuss papers electronically, and will use
+synchronous virtual meetings to discuss any papers for which there is
+disagreement among reviewers, in some cases soliciting additional input
+from other experts in the committee. There is no formal External Review
+Committee, though experts outside the committee may be consulted for some
+papers. Reviews will be accompanied by a short summary of the reasons
+behind the committee=E2=80=99s decision with the goal of clarifying the rea=
+sons
+behind the decision.
+
+To conform with ACM requirements for journal publication, all POPL papers
+will be conditionally accepted; authors will be required to submit a short
+description of the changes made to the final version of the paper,
+including how the changes address any requirements imposed by the Review
+Committee. That the changes are sufficient will be confirmed by the
+original reviewers prior to acceptance to POPL. Authors of conditionally
+accepted papers must submit a satisfactory revision to the Review Committee
+by the requested deadline or risk rejection.
+
+For additional information about the reviewing process, see: [Principles of
+POPL](https://www.sigplan.org/Conferences/POPL/Principles/), a presentation
+of the underlying organizational and reviewing policies for POPL. For POPL
+2025, policies specified in this Call for Papers supersede those in the
+Principles of POPL document.
+
+
+### Submission Site Information
+
+The submission site is https://popl25.hotcrp.com.
+
+Authors can submit multiple times prior to the deadline. Only the last
+submission will be reviewed. There is no abstract deadline. The submission
+site requires entering author names and affiliations, relevant topics, and
+potential conflicts. Addition or removal of authors after the submission
+deadline will need to be approved by the Program Chair (as this kind of
+change potentially undermines the goal of eliminating conflicts during
+paper assignment).
+
+The submission deadline is 11:59PM July 11, 2024 anywhere on earth:
+https://en.wikipedia.org/wiki/Anywhere_on_Earth
+
+
+### Conflicts of Interest
+
+For each submission, the authors must make sure that they properly declare
+all potential conflicts of interest for all of the authors of that
+submission. This includes marking PC conflicts as well as =E2=80=9COther Co=
+nflicts
+(external)=E2=80=9D. A conflict caught late in the reviewing process leads =
+to a
+voided review which may be infeasible to replace.
+
+Conflicts should be declared between an adviser and an advisee (e.g.,
+Ph.D., post-doc; forever), between an author and a co-author (papers and
+proposals; for two years), between people at the same institution (branches
+of large companies or different locations of research institutes are
+considered to be the same institution; for two years after leaving an
+institution), between people with financial conflicts of interest, and
+between friends or relatives.
+
+Please do not declare spurious conflicts: such incorrect conflicts are
+especially harmful if the aim is to exclude potential reviewers, so
+spurious conflicts can be grounds for rejection. If you are unsure about a
+conflict, please consult the Program Chair.
+
+### Submission Guidelines
+
+Prior to the paper submission deadline, authors should upload their full
+anonymized paper. Here are some key requirements concerning paper
+submissions:
+
+* Each paper should have no more than **25 pages of text, excluding
+bibliography**, using the PACMPL format (specifically, the `acmart` LaTeX
+class with `acmsmall` option). It is a single-column page layout with a 10
+pt font, 12 pt line spacing, and wider margins than recent POPL page
+layouts. In this format, the main text block is 5.478 in (13.91 cm) wide
+and 7.884 in (20.03 cm) tall. Use of a different format (e.g., smaller
+fonts or a larger text block) is grounds for summary rejection. The PACMPL
+template for LaTeX can be found at the [SIGPLAN author information page](
+https://www.sigplan.org/Resources/Author/), and further information about
+PACMPL submissions can be found on the [PACMPL author guidelines page](
+https://dl.acm.org/journal/pacmpl/author-guidelines). PACMPL does not
+support submissions in Microsoft Word.
+
+* We strongly encourage use of the `review` and `screen` options in order
+to make submissions easier to review.
+
+* (**NEW this year**) Authors may choose which citation format they wish to
+use, which can be either author-year (the mandate for final versions in
+previous years) or numeric.
+
+* Submissions should be in PDF and printable on both US Letter and A4
+paper. Papers may be resubmitted to the submission site multiple times up
+until the deadline, but the last version submitted before the deadline will
+be the version reviewed.
+
+* Submitted papers must adhere to the [SIGPLAN Republication Policy](
+https://www.sigplan.org/Resources/Policies/Republication/) and the [ACM
+Policy on Plagiarism](
+https://www.acm.org/publications/policies/plagiarism-overview). Concurrent
+paper submissions to other conferences, workshops, journals, or similar
+forums of publication are not allowed.
+
+* Authors are free to submit supplementary material along with their
+submissions, but it must be fully anonymized.
+
+* Authors must list all their conflicts of interest (both PC conflicts and
+external conflicts) in the HotCRP submission form.
+
+* Authors may include additional information in a field of the HotCRP
+submission form labeled "Confidential Comments for the Program Chair". This
+information need not be anonymized. It can be used to inform the Program
+Chair, for example, about sensitive issues concerning a conflict with a PC
+member or about supplementary material that cannot be anonymized. It is
+left to the discretion of the Program Chair what to do with this
+information.
+
+* If for some reason an author feels uncomfortable discussing a sensitive
+issue with the Program Chair (or communicating via the "Confidential
+Comments" field in HotCRP), they should feel free to get in touch instead
+with any of the Associate Chairs, with whom they can discuss the issue in
+confidence.
+
+* Submissions from PC members (except the Program Chair) are permitted and
+will not be handled any differently than other submissions. This is in
+accordance with a recent change in policy approved by the SIGPLAN Executive
+Committee: SIGPLAN conferences that use full double-blind review and whose
+PCs have at least 50 members need not hold PC submissions to a higher
+standard.
+
+### Artifact Evaluation for Accepted Papers
+
+Authors of conditionally accepted papers will be invited to formally submit
+supporting materials to the Artifact Evaluation process. Artifact
+Evaluation is run by a separate committee whose task is to assess how the
+artifacts support the work described in the papers. Artifact submission is
+strongly encouraged but voluntary and will not influence the final decision
+regarding the papers. Papers that go through the Artifact Evaluation
+process successfully will receive a seal of approval printed on the papers
+themselves. Authors of accepted papers are encouraged to make these
+materials publicly available upon publication of the proceedings, by
+including them as =E2=80=9Csource materials=E2=80=9D in the ACM Digital Lib=
+rary.
+
+### Copyright, Publication, and Presentation
+
+As a Gold Open Access journal, PACMPL is committed to making peer-reviewed
+scientific research free of restrictions on both access and (re-)use.
+Authors are strongly encouraged to support libre open access by licensing
+their work with the [Creative Commons Attribution 4.0 International (CC BY)
+license](https://creativecommons.org/licenses/by/4.0/), which grants
+readers liberal (re-)use rights.
+
+Authors of accepted papers will be required to choose one of the following
+publication rights:
+
+* Author licenses the work with a [Creative Commons license](
+https://creativecommons.org/), retains copyright, and (implicitly) grants
+ACM non-exclusive permission to publish (suggested choice).
+* Author retains copyright of the work and grants ACM a non-exclusive
+permission to publish license.
+* Author retains copyright of the work and grants ACM an exclusive
+permission to publish license.
+* Author transfers copyright of the work to ACM.
+
+These choices follow from ACM Copyright Policy and ACM Author Rights,
+corresponding to ACM's "author pays" option. While PACMPL may ask authors
+who have funding for open-access fees to voluntarily cover the article
+processing charge (currently, US$400), payment is not required for
+publication. PACMPL and SIGPLAN continue to explore the best models for
+funding open access, focusing on approaches that are sustainable in the
+long-term while reducing short-term risk.
+
+All papers will be archived by the ACM Digital Library. Authors will have
+the option of including supplementary material with their paper. The
+official publication date is the date the proceedings are made available in
+the ACM Digital Library. This date may be up to two weeks prior to the
+first day of the conference. The official publication date affects the
+deadline for any patent filings related to published work.
+
+Authors of accepted papers are required to give a short talk (roughly 25
+minutes long) at the conference, according to the conference schedule.
+However, authors who cannot attend in person will be provided with some
+option for remote presentation, as well as some mechanism for remote
+interaction with conference participants.
+
+
+### Distinguished Paper Awards
+
+At most 10% of the accepted papers of POPL 2025 will be designated as
+Distinguished Papers. This award highlights papers that the Review
+Committee thinks should be read by a broad audience due to their relevance,
+originality, significance, and clarity. The selection of the distinguished
+papers will be made based on the final version of the paper and through an
+additional review process.
+
+--0000000000008862d90618e4da18
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Dear all,<br><br>Please find below the Call for Papers for=
+ the POPL 2025 conference. We would be grateful if you could help distribut=
+e this call among your networks.<br><br>Many thanks!<br><br>Ningning Xie<br=
+>POPL 2025 Publicity Chair<br><br>PACMPL Issue POPL 2025 seeks contribution=
+s on all aspects of programming languages and programming systems, both the=
+oretical and practical. Authors of papers published in PACMPL Issue POPL 20=
+25 will be invited to present their work in the POPL conference in January =
+2025, which is sponsored by ACM SIGPLAN, in cooperation with ACM SIGACT and=
+ ACM SIGLOG.<br><br>POPL 2025 Website:=C2=A0<a href=3D"https://conf.researc=
+hr.org/home/POPL-2025" target=3D"_blank">https://conf.researchr.org/home/PO=
+PL-2025</a><br><br>Call for Papers:=C2=A0<a href=3D"https://conf.researchr.=
+org/track/POPL-2025/POPL-2025-popl-research-papers#POPL-2025-Call-for-Paper=
+s" target=3D"_blank">https://conf.researchr.org/track/POPL-2025/POPL-2025-p=
+opl-research-papers#POPL-2025-Call-for-Papers</a><br><br>Double-Blind Revie=
+w FAQ:=C2=A0<a href=3D"https://conf.researchr.org/track/POPL-2025/POPL-2025=
+-popl-research-papers#FAQ-on-Double-Blind-Reviewing" target=3D"_blank">http=
+s://conf.researchr.org/track/POPL-2025/POPL-2025-popl-research-papers#FAQ-o=
+n-Double-Blind-Reviewing</a><br><br><br>### Organization<br><br>Conference =
+Location: Denver, Colorado, United States<br><br>Conference Dates: January =
+19-25, 2025<br><br>General Chair: Steve Zdancewic, University of Pennsylvan=
+ia<br><br>Program Chair: Armando Solar-Lezama, MIT<br><br>Program Committee=
+:=C2=A0<a href=3D"https://conf.researchr.org/committee/POPL-2025/POPL-2025-=
+popl-research-papers-program-committee" target=3D"_blank">https://conf.rese=
+archr.org/committee/POPL-2025/POPL-2025-popl-research-papers-program-commit=
+tee</a><br><br><br>### Important Dates<br><br>All the times/deadlines below=
+ are Anywhere on Earth (AoE) in 2024.<br><br>Submission deadline: July 11<b=
+r><br><br>### Scope<br><br>Principles of Programming Languages (POPL) is a =
+forum for the discussion of all aspects of programming languages and progra=
+mming systems. Both theoretical and experimental papers are welcome, on top=
+ics ranging from formal frameworks to experience reports. We seek submissio=
+ns that make principled, enduring contributions to the theory, design, unde=
+rstanding, implementation, or application of programming languages.<br><br>=
+<br>### Evaluation Criteria<br><br>The Review Committee will evaluate the t=
+echnical contribution of each submission as well as its accessibility to bo=
+th experts and the general POPL audience. All papers will be judged on sign=
+ificance, originality, relevance, correctness, and clarity. Each paper must=
+ explain its scientific contribution in both general and technical terms, i=
+dentifying what has been accomplished, explaining why it is significant, an=
+d comparing it with previous work. Advice on writing technical papers can b=
+e found on the SIGPLAN author information page:=C2=A0<a href=3D"https://www=
+.sigplan.org/Resources/Author/" target=3D"_blank">https://www.sigplan.org/R=
+esources/Author/</a>.<br><br>Deadlines and formatting requirements, detaile=
+d below, will be strictly enforced.<br><br><br>### Double-Blind Reviewing P=
+rocess<br><br>POPL 2025 will use a full double-blind reviewing process (sim=
+ilar to the one used for POPL 2023 and 2024 but different from the lightwei=
+ght double-blind process used in previous years). This means that identitie=
+s of authors will not be made visible to reviewers until after conditional-=
+acceptance decisions have been made, and then only for the conditionally-ac=
+cepted papers. The use of full double-blind reviewing has several consequen=
+ces for authors.<br><br>* **Submissions**: Authors must omit their names an=
+d institutions from their paper submissions. In addition, references to aut=
+hors=E2=80=99 own prior work should be in the third person (e.g., not =E2=
+=80=9CWe build on our previous work =E2=80=A6=E2=80=9D but rather =E2=80=9C=
+We build on the work of =E2=80=A6=E2=80=9D).<br><br>* **Supplementary mater=
+ial**: Authors are permitted to provide supplementary material (e.g., detai=
+led proofs, proof scripts, system implementations, or experimental data) al=
+ong with their submission, which reviewers may (but are not required to) ex=
+amine. This material may take the form of a single file, such as a PDF or a=
+ tarball. Authors must fully anonymize any supplementary material.<br><br>*=
+ **Author response**: In responding to reviews, authors should not say anyt=
+hing that reveals their identity, since author identities will not be revea=
+led to reviewers at that stage of the reviewing process.<br><br>* **Dissemi=
+nation of work under submission**: Authors are welcome to disseminate their=
+ ideas and post draft versions of their paper(s) on their personal website,=
+ institutional repository, or arXiv (reviewers will be asked to turn off ar=
+Xiv notifications during the review period). But authors should not take st=
+eps that would almost certainly reveal their identities to members of the P=
+rogram Committee, e.g., directly contacting PC members or publicizing the w=
+ork on widely-visible social media or major mailing lists used by the commu=
+nity.<br><br>The purpose of the above restrictions is to help the Program C=
+ommittee and external reviewers come to a judgment about the paper without =
+bias, not to make it impossible for them to discover the authors=E2=80=99 i=
+dentities if they were to try. In particular, nothing should be done in the=
+ name of anonymity that weakens the quality of the submission.<br><br>Howev=
+er, there are occasionally cases where adhering to the above restrictions i=
+s truly difficult or impossible for one reason or another. In such cases, t=
+he authors should contact the Program Chair to discuss the situation and ho=
+w to handle it.<br><br>The FAQ on Double-Blind Reviewing addresses many com=
+mon scenarios and answers many common questions about this topic. But there=
+ remain many grey areas and trade-offs. If you have any doubts about how to=
+ interpret the double-blind rules or you encounter a complex case that is n=
+ot clearly covered by the FAQ, please contact the Program Chair for guidanc=
+e.<br><br>### Evaluation Process<br><br>Like last year, POPL 2025 will use =
+a double-blind reviewing process (instead of the lightweight double-blind p=
+rocess used in recent years). This means that identities of authors will no=
+t be visible to reviewers until after conditional-acceptance decisions have=
+ been made. For authors, the main change is that there is no option to uplo=
+ad non-anonymized supplementary material; only anonymized supplementary mat=
+erial may be submitted.<br><br>POPL 2025 will have five Associate Chairs wh=
+o will help the PC Chair monitor reviews, solicit external expert reviews f=
+or submissions when there is not enough expertise on the committee, and fac=
+ilitate reviewer discussions.<br><br>As in previous years, authors will hav=
+e a multi-day period to respond to reviews, as indicated in the Important D=
+ates table. Responses are optional. A response must be concise, addressing =
+specific points raised in the reviews; in particular, it must not introduce=
+ new technical results. Reviewers will write a short reaction to these auth=
+or responses.<br><br>The Review Committee (RC) will discuss papers electron=
+ically, and will use synchronous virtual meetings to discuss any papers for=
+ which there is disagreement among reviewers, in some cases soliciting addi=
+tional input from other experts in the committee. There is no formal Extern=
+al Review Committee, though experts outside the committee may be consulted =
+for some papers. Reviews will be accompanied by a short summary of the reas=
+ons behind the committee=E2=80=99s decision with the goal of clarifying the=
+ reasons behind the decision.<br><br>To conform with ACM requirements for j=
+ournal publication, all POPL papers will be conditionally accepted; authors=
+ will be required to submit a short description of the changes made to the =
+final version of the paper, including how the changes address any requireme=
+nts imposed by the Review Committee. That the changes are sufficient will b=
+e confirmed by the original reviewers prior to acceptance to POPL. Authors =
+of conditionally accepted papers must submit a satisfactory revision to the=
+ Review Committee by the requested deadline or risk rejection.<br><br>For a=
+dditional information about the reviewing process, see: [Principles of POPL=
+](<a href=3D"https://www.sigplan.org/Conferences/POPL/Principles/" target=
+=3D"_blank">https://www.sigplan.org/Conferences/POPL/Principles/</a>), a pr=
+esentation of the underlying organizational and reviewing policies for POPL=
+. For POPL 2025, policies specified in this Call for Papers supersede those=
+ in the Principles of POPL document.<br><br><br>### Submission Site Informa=
+tion<br><br>The submission site is=C2=A0<a href=3D"https://popl25.hotcrp.co=
+m/" target=3D"_blank">https://popl25.hotcrp.com</a>.<br><br>Authors can sub=
+mit multiple times prior to the deadline. Only the last submission will be =
+reviewed. There is no abstract deadline. The submission site requires enter=
+ing author names and affiliations, relevant topics, and potential conflicts=
+. Addition or removal of authors after the submission deadline will need to=
+ be approved by the Program Chair (as this kind of change potentially under=
+mines the goal of eliminating conflicts during paper assignment).<br><br>Th=
+e submission deadline is 11:59PM July 11, 2024 anywhere on earth:=C2=A0<a h=
+ref=3D"https://en.wikipedia.org/wiki/Anywhere_on_Earth" target=3D"_blank">h=
+ttps://en.wikipedia.org/wiki/Anywhere_on_Earth</a><br><br><br>### Conflicts=
+ of Interest<br><br>For each submission, the authors must make sure that th=
+ey properly declare all potential conflicts of interest for all of the auth=
+ors of that submission. This includes marking PC conflicts as well as =E2=
+=80=9COther Conflicts (external)=E2=80=9D. A conflict caught late in the re=
+viewing process leads to a voided review which may be infeasible to replace=
+.<br><br>Conflicts should be declared between an adviser and an advisee (e.=
+g., Ph.D., post-doc; forever), between an author and a co-author (papers an=
+d proposals; for two years), between people at the same institution (branch=
+es of large companies or different locations of research institutes are con=
+sidered to be the same institution; for two years after leaving an institut=
+ion), between people with financial conflicts of interest, and between frie=
+nds or relatives.<br><br>Please do not declare spurious conflicts: such inc=
+orrect conflicts are especially harmful if the aim is to exclude potential =
+reviewers, so spurious conflicts can be grounds for rejection. If you are u=
+nsure about a conflict, please consult the Program Chair.<br><br>### Submis=
+sion Guidelines<br><br>Prior to the paper submission deadline, authors shou=
+ld upload their full anonymized paper. Here are some key requirements conce=
+rning paper submissions:<br><br>* Each paper should have no more than **25 =
+pages of text, excluding bibliography**, using the PACMPL format (specifica=
+lly, the `acmart` LaTeX class with `acmsmall` option). It is a single-colum=
+n page layout with a 10 pt font, 12 pt line spacing, and wider margins than=
+ recent POPL page layouts. In this format, the main text block is 5.478 in =
+(13.91 cm) wide and 7.884 in (20.03 cm) tall. Use of a different format (e.=
+g., smaller fonts or a larger text block) is grounds for summary rejection.=
+ The PACMPL template for LaTeX can be found at the [SIGPLAN author informat=
+ion page](<a href=3D"https://www.sigplan.org/Resources/Author/" target=3D"_=
+blank">https://www.sigplan.org/Resources/Author/</a>), and further informat=
+ion about PACMPL submissions can be found on the [PACMPL author guidelines =
+page](<a href=3D"https://dl.acm.org/journal/pacmpl/author-guidelines" targe=
+t=3D"_blank">https://dl.acm.org/journal/pacmpl/author-guidelines</a>). PACM=
+PL does not support submissions in Microsoft Word.<br><br>* We strongly enc=
+ourage use of the `review` and `screen` options in order to make submission=
+s easier to review.<br><br>* (**NEW this year**) Authors may choose which c=
+itation format they wish to use, which can be either author-year (the manda=
+te for final versions in previous years) or numeric.<br><br>* Submissions s=
+hould be in PDF and printable on both US Letter and A4 paper. Papers may be=
+ resubmitted to the submission site multiple times up until the deadline, b=
+ut the last version submitted before the deadline will be the version revie=
+wed.<br><br>* Submitted papers must adhere to the [SIGPLAN Republication Po=
+licy](<a href=3D"https://www.sigplan.org/Resources/Policies/Republication/"=
+ target=3D"_blank">https://www.sigplan.org/Resources/Policies/Republication=
+/</a>) and the [ACM Policy on Plagiarism](<a href=3D"https://www.acm.org/pu=
+blications/policies/plagiarism-overview" target=3D"_blank">https://www.acm.=
+org/publications/policies/plagiarism-overview</a>). Concurrent paper submis=
+sions to other conferences, workshops, journals, or similar forums of publi=
+cation are not allowed.<br><br>* Authors are free to submit supplementary m=
+aterial along with their submissions, but it must be fully anonymized.<br><=
+br>* Authors must list all their conflicts of interest (both PC conflicts a=
+nd external conflicts) in the HotCRP submission form.<br><br>* Authors may =
+include additional information in a field of the HotCRP submission form lab=
+eled &quot;Confidential Comments for the Program Chair&quot;. This informat=
+ion need not be anonymized. It can be used to inform the Program Chair, for=
+ example, about sensitive issues concerning a conflict with a PC member or =
+about supplementary material that cannot be anonymized. It is left to the d=
+iscretion of the Program Chair what to do with this information.<br><br>* I=
+f for some reason an author feels uncomfortable discussing a sensitive issu=
+e with the Program Chair (or communicating via the &quot;Confidential Comme=
+nts&quot; field in HotCRP), they should feel free to get in touch instead w=
+ith any of the Associate Chairs, with whom they can discuss the issue in co=
+nfidence.<br><br>* Submissions from PC members (except the Program Chair) a=
+re permitted and will not be handled any differently than other submissions=
+. This is in accordance with a recent change in policy approved by the SIGP=
+LAN Executive Committee: SIGPLAN conferences that use full double-blind rev=
+iew and whose PCs have at least 50 members need not hold PC submissions to =
+a higher standard.<br><br>### Artifact Evaluation for Accepted Papers<br><b=
+r>Authors of conditionally accepted papers will be invited to formally subm=
+it supporting materials to the Artifact Evaluation process. Artifact Evalua=
+tion is run by a separate committee whose task is to assess how the artifac=
+ts support the work described in the papers. Artifact submission is strongl=
+y encouraged but voluntary and will not influence the final decision regard=
+ing the papers. Papers that go through the Artifact Evaluation process succ=
+essfully will receive a seal of approval printed on the papers themselves. =
+Authors of accepted papers are encouraged to make these materials publicly =
+available upon publication of the proceedings, by including them as =E2=80=
+=9Csource materials=E2=80=9D in the ACM Digital Library.<br><br>### Copyrig=
+ht, Publication, and Presentation<br><br>As a Gold Open Access journal, PAC=
+MPL is committed to making peer-reviewed scientific research free of restri=
+ctions on both access and (re-)use. Authors are strongly encouraged to supp=
+ort libre open access by licensing their work with the [Creative Commons At=
+tribution 4.0 International (CC BY) license](<a href=3D"https://creativecom=
+mons.org/licenses/by/4.0/" target=3D"_blank">https://creativecommons.org/li=
+censes/by/4.0/</a>), which grants readers liberal (re-)use rights.<br><br>A=
+uthors of accepted papers will be required to choose one of the following p=
+ublication rights:<br><br>* Author licenses the work with a [Creative Commo=
+ns license](<a href=3D"https://creativecommons.org/" target=3D"_blank">http=
+s://creativecommons.org/</a>), retains copyright, and (implicitly) grants A=
+CM non-exclusive permission to publish (suggested choice).<br>* Author reta=
+ins copyright of the work and grants ACM a non-exclusive permission to publ=
+ish license.<br>* Author retains copyright of the work and grants ACM an ex=
+clusive permission to publish license.<br>* Author transfers copyright of t=
+he work to ACM.<br><br>These choices follow from ACM Copyright Policy and A=
+CM Author Rights, corresponding to ACM&#39;s &quot;author pays&quot; option=
+. While PACMPL may ask authors who have funding for open-access fees to vol=
+untarily cover the article processing charge (currently, US$400), payment i=
+s not required for publication. PACMPL and SIGPLAN continue to explore the =
+best models for funding open access, focusing on approaches that are sustai=
+nable in the long-term while reducing short-term risk.<br><br>All papers wi=
+ll be archived by the ACM Digital Library. Authors will have the option of =
+including supplementary material with their paper. The official publication=
+ date is the date the proceedings are made available in the ACM Digital Lib=
+rary. This date may be up to two weeks prior to the first day of the confer=
+ence. The official publication date affects the deadline for any patent fil=
+ings related to published work.<br><br>Authors of accepted papers are requi=
+red to give a short talk (roughly 25 minutes long) at the conference, accor=
+ding to the conference schedule. However, authors who cannot attend in pers=
+on will be provided with some option for remote presentation, as well as so=
+me mechanism for remote interaction with conference participants.<br><br><b=
+r>### Distinguished Paper Awards<br><br>At most 10% of the accepted papers =
+of POPL 2025 will be designated as Distinguished Papers. This award highlig=
+hts papers that the Review Committee thinks should be read by a broad audie=
+nce due to their relevance, originality, significance, and clarity. The sel=
+ection of the distinguished papers will be made based on the final version =
+of the paper and through an additional review process.<br></div>
+
+--0000000000008862d90618e4da18--
