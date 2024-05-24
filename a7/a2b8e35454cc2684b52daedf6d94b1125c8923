@@ -1,0 +1,365 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=gpffdtIk;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=a3mHj+Xb;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 70E83B80123
+	for <caml-list@tunbury.org>; Fri, 24 May 2024 20:52:40 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=3a7BdorHUjiy6orIFQvv0J7zuL9n6ihHjLMKX92dJpY=;
+  b=gpffdtIk5Y8TvWyJ6lFvhd9OGZM9Hkd82v3IggMex8fLS947UuEnLj54
+   mu/xeJOAq46s3bbzntJ853Pwk9+6AuxOQsEbhs7C9zrunstRaqdTrL390
+   hNPKauyfjD2pWQK1gbJq4KYSqbpU5irCK8RGYIcEoheM/b0eXXwgiDGz+
+   s=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.08,186,1712613600"; 
+   d="scan'208,217";a="167372507"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 24 May 2024 21:52:39 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id CDB09E0CCC; Fri, 24 May 2024 21:52:38 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 9387DE00B7;
+	Fri, 24 May 2024 21:52:33 +0200 (CEST)
+IronPort-SDR: 6650f000_AT84WjwcfaZmUV+HJXAcXkhsJvPEZSuhRtC8LXL+X+FAZil
+ TLMBHbBqx+SgK79pg2i18fQ/HgyxuubKgtCrPMw==
+X-IPAS-Result: =?us-ascii?q?A0HoCQBp7lBmhrLSVdFaDoJKgkR8WTQEC0iEVoEjkEeKS?=
+ =?us-ascii?q?pFtgVaBIx0+DwEDAQ05CwQBAQMENYRKiE0CHgcBBDAJDgECBAEBAQEDAgMBA?=
+ =?us-ascii?q?QEBAQEIAQEFAQEBAgEBAgQGAQIQAQEBIRkHDhAnhXQNgkqBPGECAgMDAzgBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEFAg0fdQsGHQEbB?=
+ =?us-ascii?q?QcSAxIJBzcCIwERAQUBIyYOgl4Bgi8BAzEDEaUwgQVCizuBFQUCFoEBgg0Gg?=
+ =?us-ascii?q?UcF2Q4KGSgNb4FgAgEGFIE0hGYlgyMBgVUCAoQjg0aBIRuCDYEVNYJCcYEFP?=
+ =?us-ascii?q?YMugy6CaQSNUoVXgzSCCmsPFIMUhDGDZYgFCAcXAwcHBwQFBBwGBQUCQgkHA?=
+ =?us-ascii?q?Q8SAwQDBAQBAgsJCgkDAwIOAggDAggGDhABAQo1EgQTCg0LAwQCBQoDCAICB?=
+ =?us-ascii?q?wIOAQUCAgICAgICAwYCEgQCAQIDAgIIAgcBAQIKBwMBAQIGBAMGAgIFBA0DC?=
+ =?us-ascii?q?wEBAgIEAQoCCQ8FAgIDAgMBAQECCgMJAQUCAgEDAgIEBAcBBgMFAwMEBAMCA?=
+ =?us-ascii?q?wMCDAEFAQUBBQEFBAIGARMCEgICCwUGAwYOAwsEBAECAgcGDAkEAgICBgECE?=
+ =?us-ascii?q?QMBAgEHAQMDAgoBBAELCAEFCAgBBAIDBhACCAUGBQIEAQECAgIIBg8DBgcCA?=
+ =?us-ascii?q?wIGAwUFAwMCAgIHBAQCAQICAgETBgQEAgMCAwQBBQQEAwIXCA0CBQcBCQoID?=
+ =?us-ascii?q?AECBgIEAgQHAwYEBQQCAwIEEQcLAwIDBAICBAMRAgMEAgoCBAQHAgMBAQwGB?=
+ =?us-ascii?q?AQKAgsDBQEBAgUDAwkHBgIDAwUEBgIFAwMDAgMCCQICAgEJAQEBAhICAw4CB?=
+ =?us-ascii?q?AIBAgUFDAQTAgIDAgYIAgICBwMDBAIDBgsBAhECAgIFAwQCAhQDBwQCBAUCB?=
+ =?us-ascii?q?AEGAwMCBAYFCAQCAgUCAQECCAIBDwoEAgEEAwUDBwkCBQUDAgQCAgUJAQECA?=
+ =?us-ascii?q?gIDAwMDAgMCAgMDAgcDAwMHAwUDBAIDBgUHAwUDAwICAhQBBgIFDQgGCwUFB?=
+ =?us-ascii?q?wIGAgQIBQICAwMDAgYKCAMDAwIFAgIDAwECBg8GAgIDBQYDAwMDBgYDAwIGA?=
+ =?us-ascii?q?wMCAwIDAgMDAQMCAwECAwICAggCAgMCBQQFAgICBAIIGgICAgIDAwgDAwoEA?=
+ =?us-ascii?q?gIEAQQCBAIEAgYDBAICAQcCAwMCAwIHAgIEAgICAgMCBAcCAgMDAwICAgEJA?=
+ =?us-ascii?q?gUBAQYCAwMCAwUDCQMEBQIDCAEBAgIHBwMDBAMBAgEFBAICBgUCAwICBAIEB?=
+ =?us-ascii?q?QMCAwIGBgIBAwIKBgMFAwMDAwIDAwIDAwIFAggCAgQEBQQCBQQCBAMDAwEKA?=
+ =?us-ascii?q?gYDAgIFAQECAgUDAgQEBwICAgcPAwIHBQIFBQUCCAEGBQICAwIIAQICBgEGA?=
+ =?us-ascii?q?gQBAgINAQECAgIDBAMDBwIEAwIIAgMDDwEDAwkGBQQFBAMJBA8CBAEIAwEBB?=
+ =?us-ascii?q?AgCBAMCDAICIQIFCwQEARIKCAMBAQMBAQICAgICDgMCAwICAwoCAwIKAwYEA?=
+ =?us-ascii?q?gIGAQEBBAECAwEBAwIBAgcEDgQFBQgIAQMCAQoBAhAFDwIJAwMGBAIQBgoFA?=
+ =?us-ascii?q?wIDBQECBRUDCAMCCQIEDAMNAgMDAgYDBgIGAQYDBwsBAQcIBQMDAwIXAQICE?=
+ =?us-ascii?q?AgEBg8HAgMDAwMFBwMSAgYOAwMCAwIBAgICAwUEBQIHAwMKBQIIAwIIBQMHC?=
+ =?us-ascii?q?QQKAggEAQIGAwICAgIFDAEBAQECAwIFAwcHCAgEBQQDAQEGBgwgAgIDBA8DC?=
+ =?us-ascii?q?QMGCwEFBQEDAgICDgMFAwIDBgYBCQQBBQQJAgUHBgUCARQWBwUCCgIHAgICA?=
+ =?us-ascii?q?wECCAsIAgMCCgQBDgQaAgICAQECAgMDBwIDAhMDAwUEBgMCAgICAwIBCgsDA?=
+ =?us-ascii?q?gIDAwMDBQUDAwIZAwIDAgEKBQIMBQQDBAICAQIdAwEFAgMKAQUJAwYCAgMCB?=
+ =?us-ascii?q?QIDBgUCBAEOAQEBAwYLBwQUAgICCwgDCQUDBQ0CDQIDBQICCwU9CwUBAQQDA?=
+ =?us-ascii?q?QEECAEXLQIEAgYMAQEBAgMDBgICAhUFBwMFAwgBAwECFAoGAgIBAwoKAgIEA?=
+ =?us-ascii?q?gYCBAMCCgMBCAICAg8DCQIHAg4CAgMDDA8EAwMDAwkCAgIRCQoCAgICDAgMA?=
+ =?us-ascii?q?gkCAgMDBgECAwMFAwIBAQEELwIEBwECAwYKAwICAgkICgkDAwUDCgIBBgYBA?=
+ =?us-ascii?q?gMOAQECEwQJAwIBAgEBBggBAQIEAQQCCAYCAgICCgMFAwIDBRUFAgQCAgIdA?=
+ =?us-ascii?q?wIEBQMFAwMEBwEGBA0JAwUDAgQDAwIEBAEBCQUJBAMLBgECAQMEAwEBCAcHA?=
+ =?us-ascii?q?wIBAQMBAQIKBgUIDQkDCAMGCQMBBgEBBRsDAw4CAgIDAgEKBggFAgMGDgIEA?=
+ =?us-ascii?q?hoBDAMBAwMFEgUVAwQFAgINAwwBAgIDAwQFAwUCAgIDAgICBQQBAgQCBAEIB?=
+ =?us-ascii?q?AkBAgICAwIBAQICBAICBgUCAgIDAgcMBwMDAwMHAgYCAwIJCw4CAwYFBgMFA?=
+ =?us-ascii?q?goVAgMCAgQDAxwBBQEEAQIDAgIDLx0CCQMjDwMLCQgTPQELBzIENAEGDhQHK?=
+ =?us-ascii?q?yFfpGqCRIIIIhgTPTMCDIZAjgULslFngzaEbIcijFuIYTOEBYx/mTGHZpB9I?=
+ =?us-ascii?q?Ip3gl+KA5EAESMSgTA6gVwzGiOBAYI2TwMZD444AoNhgWuDKYogum8qMjsCB?=
+ =?us-ascii?q?wEKAQEDCYkigUgBAQ?=
+IronPort-PHdr: A9a23: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
+ AjEkDxGKjBkag==
+IronPort-Data: A9a23:VhrfM65fRBukHcslbYd0NAxRtIHDchMFZxGqfqrLsTDasY5as4F+v
+ jQfDDuDMq6KZmbyLtx+O9608kIPusTQzIIyHgVsqHthZn8b8sCt6faxfh6hZXvKRiHgZBs6t
+ JtGMoGowOQcFCK0SsKFa+C5xZVE/fjUAOC6UoYoAwgpLSd8UiAtlBl/rOAwh49skLCRDhiE0
+ T/Ii5S31GSNhXgsYgr414rZ8Ekz5Kmo5GtD1rADTakjUGH2xyF94K03fvnZw0vQGuF8AuO8T
+ uDf+7C1lkuxE8AFV7tJOp6iGqE7aua60Tqm0hK6aID+6vR2nRHe545gXBYqhei7vB3S9zx54
+ I0lWZVd0m7FNIWU8AgWe0Ew/y2TocSqUVIISJSymZX78qHIT5fj69lwUF0GN9Qbw8J6W3Bq5
+ dUkKzIQbinW0opawJrjIgVtrsEqLc2uJI1G/385kmGfAvEhTpTOBa7N4Le03h9q3pEITauYP
+ ZNBL2MwPHwsYDUXUrsTIII4muauiWn+fhVXrVuUoew85G27IAlZgOe8a4OJIoXiqcN9hkq2l
+ mzppEbCXhwXbe2T1z+IrkySmbqa9c/8cNlPTeXnp6ACbEeo7mcaDRlTUVqgvdGim0umUpReL
+ VYV82wgt8Aa/0uyC9L5QheQu2+BphdaWtxKEuR85hvl90bPywOQB2xBVjAYLdJ/659wSjst2
+ VuE2djuAFSDrYF5V1qx6OuInTnrOhExIDUTQT8tcQgH/tna9dRbYg30cv5vF6u8j9vQED72w
+ iyXoCVWu1n1pZ5Uv0lc1QCY6w9AtqT0ohgJChI7t19JAyt8bY+hIpSmsB3VtKkQaomeSVaFs
+ T4PnM32AAEy4XOlxXXlrAYlRe7BCxO53Nv03wYH834JqWzFxpJbVdoMiAyS3W8wWir+RRfnY
+ VXIpSRa74JJMX2hYMdfOt3oVZh6nPGxT421Bpg4i+aihLAhK2drGwk+NSatM5zFyRhEfVwXY
+ MvFLpz1VyZy5VpPl2brH7Z1PUAXKtAWnj6KHc+qkXxLIJKRY3maTbpNMV2FKIgEAFCs8W3oH
+ yJkH5LSkX13CbWgCgGOqNJ7BQ5QcRATW8utw+QJLbHrH+aTMDp9YxMn6eh8I9ANcmU8vrugw
+ 0xRrWcImQKh2yGaeV/ih7IKQOqHYKuTZEkTZUQEVWtEEVB6CWp2xP5HLMNlTqpt7+F50/9/Q
+ t8MfsjKULwFSS3K935ZJdPxpZBrPkbjzw+fHTuXUB5mdb5ZRivN5oDFeCnr/3IwFSaZj5Y1j
+ ICh8QL5eqA9YTpeIvzYU9+R6m+gnGM8nbtyVnTYI9MId0TL9pNrGhPLjfQ2Ap8tLEzDzwSFy
+ w25MAc8mtjdhZ067euT1L629ZetN+5YAEBhPnL66IyuPnLw5VuTwo5nUceJcwvCVWjyxr6QW
+ OVNw9z4M9wFhFxvoaMmN5pKlIUQv8DOoZ1exSRaRET7VUyhUO5cEyPXzPtxub1o7Z4HnwmPA
+ 2ak2MRQYJeNM+PbSG8hHhIvNLm/5KtFiwvpzKoHJWvh73VK55uBa0JZOieMhAF7LLdYNIAEw
+ /8riPUJ6j6Q2wYbDdKbsh96r2i8DGQMc6EChKEoBIXGjgkKyFYbRbf+DiTwwo+EavQSE00MD
+ wKXupH/hOVn9hKfS0YwKHnD5voCpJIsvBsR8kQOCW7UkfX4h9g2/iZrzxIJcipvwC96jt1DY
+ lpQCxUtJIGl3StZu8xYbmX9RyBDHEK4/2Ly+XsolUrYbU+iaULVJkZgO+zXpEE92EBfdwh94
+ 7u35jvEUzHrXcepxQo0exdvhMLCROxL1D/puZ6YDeXcOLIlcx/Jv7SIWVMYjzfGXeYgm1zhp
+ 8Rx2eR7NJ3AKi8bppMkB7mg1bg/TA6OIEpAS6pD+JwlMH79ejag/yqnMGG0J91wIsLV/X+CC
+ 8BBItxFUzK83n2sqhEZHas9HK9mrsU25dYteqLZGkBeiuGx9gFWiZP38jTyoEQJQN80yMY0F
+ d73RgK4S2eVgSNZpn/JoMx6IVGHWNgjZjDn/eWL4e4MRoMisuZtTBkI6YGKnU6paSlpwxHFm
+ zn4Rf7y7/djwoFSjYfTAv19JwGrG+jSCsWM0i6O6uprU/2eEP3glQ0vrnvfAz93JpoUAtR+q
+ qSMuoX43WTDp7cHbFrakJigSYhM6dmDY+5MFsfRMnNhvDCjXfX06EAp4FGIKp1ukfJc6PK4R
+ gC+VtCCSN4NV/pZx1xXcyJ7EStBL4jScYHbunqbg9mXLxoSwyjrDYmCzmD4S3NfegsjGYzMO
+ iWtt9mAvtln/ZlxXjkaDPRYMrpECV7EW459UvbutDOdX1KasnnbtpTMzRMfuCz2UF+aG8PH4
+ LXAdBj0VDK2nIrqlNh5kYhDjic7PUZHo9sbXxwiooZtqjWAEmQ5A/wXMswGBrFqgyXC7szES
+ w+XXlQyKxfWfGpiSgr90uTBTw3EJ+0pO/XFHBIL0X6QSR+LANKnPOM82AZmunt4Q262hqXvY
+ 9QT4Wb5MRWN04lkD7RbrOCyheB8gOjW3DQU8ET6iNb/GAsaHa5M7nF6AQ5RTmbSJqkhTqkQy
+ bQdHgiogX1XSHId1e5lcn9RXQkX5Xbhlmp4KyiIx9nbtsOQy+goJDgT/Q3s+uVrUSjIDOdmq
+ bDLq6+l7GWf23hVsqws0z7sqbEhEuqFR6BWM4e6LTD/XMiMBqAPMMYLnC5JR8YnkOKa/5Uxi
+ RH0i0UD6I+5xIy9FVFYJcjlO368b57UMwz0sQ==
+IronPort-HdrOrdr: A9a23:Qaj+xq0Ux8OS7u9FrFESqQqjBJokLtp133Aq2lEZdPU1SL3/qy
+ nKpp4mPHDP+VQssR0b6LO90cq7IU80l6QFhLX5VI3KNGLbUQCTXeVfBOXZslrdMhy72ehHy6
+ 96fqRyTPH2B0NrlNv37WCDf+rIA+PpzElrv4rjJrtWIz2CopsA0ztE
+X-Talos-CUID: 9a23:oOZFMmGLsY7KzK5kqmJL6hIIKsp8cUT5wS3BB1+RNWVrVb2sHAo=
+X-Talos-MUID: 9a23:LlrDFghks/zDdBbJIKypWcMpLMtG06qBU2I2zZgL4viIKyl9Zwmjk2Hi
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.08,186,1712613600"; 
+   d="scan'208,217";a="87931401"
+X-MGA-submission: =?us-ascii?q?MDEyfC2BWz9uiE8r8Q14lWxmYPdrRsVv+oexWb?=
+ =?us-ascii?q?XzoC1rW0yGvAFR3dQBAMypKbdR7Naen2190GeoTTPEuWUkkUwHjl4cK6?=
+ =?us-ascii?q?9uTOyVobYokFDuDnb97njZpw0CTx0saGr3QZADYCGsDSBxqQ1Re/i1Tt?=
+ =?us-ascii?q?pGrbfeX0iG7NjypALxcpirUQ=3D=3D?=
+Received: from mail-pf1-f178.google.com ([209.85.210.178])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2024 21:52:31 +0200
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-6fbbd937719so497474b3a.0;
+        Fri, 24 May 2024 12:52:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716580349; x=1717185149; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=3a7BdorHUjiy6orIFQvv0J7zuL9n6ihHjLMKX92dJpY=;
+        b=a3mHj+XbU8ao1WPh8ELz0qQ+SzrI/H+PMKF9pFAnUKX80vACpXBM7DMVUNEgv37fij
+         r8VRUpgcGW2K0ZsKCBjkGOx6o1fLSFxed4Cp0nwSTp/wNR4hQZyqX0icqzMQKknZeXnW
+         tlZlWqP3+x/0YfFTmd5RtV2rIeiA/UWKs2Iu1ZZqMSdymOy8bzgTBc2Vw3rXIzehl7lu
+         iHbEhv4+r6Gq3Rxrs7CQLFaE2+VwKyl6ThWhwf8fp4rEj3Y+qT2NDyGhqT2JfC1OVjQO
+         kw2HH7/cJABZgT34REqAZ6XnzQcpFTBeZ5d/lTCFA5D6IPRH89J00jSnXYNJFJd3aO3c
+         AvLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716580349; x=1717185149;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3a7BdorHUjiy6orIFQvv0J7zuL9n6ihHjLMKX92dJpY=;
+        b=L/t3l6pS8oj5ei0J0E5/pFN8JjHZtZDVFjSR+dLfG/nqi0X4v4a9tr1xa5Dk5PBdPq
+         mYj5Lspif5RVqsoA/l7OmgWYnrJP1R8V87b//+f8gtojicC+w92EIwA6q3e7sGdOGmKK
+         FoIlXum6Y4lw6ZdhCG94K9myZcVwP43x44cI0tgBQaiVr/kia4eN7BnlkzOwBE5VEnEE
+         NrEhPv/BhOrI7P8+45YpdwhPmvmAburJbEsezTiwmZzoFg6UtmqLLIoZWNEgmddlGZne
+         Xh3FXWSTjo/XFDaCZVarGh70T5mqo3VoVUkh8Hc6zevE9lGmW/gLUXguvXdPvyNz9IF8
+         fMDw==
+X-Forwarded-Encrypted: i=1; AJvYcCVqPHn+R9rLpTmOltITs1vUzNtB8u17auS4JHlNlvsXHkibyfmilPIHAoumMybEfoAAjDxzwu14j1ajiHaA/jfZ2w==
+X-Gm-Message-State: AOJu0YyXuY2Yne/0w6xtd6KuOA9VQ/CWsQAH9iLNsrqgiIuzDS6f49P4
+	Mfcw7Tajm0X0Xr6LSTZYtEcWoLfQaiLwaYaZ3g4s5t8FjuhCfSKPnWMibkQc8zVPlSNWnPd5nAb
+	n85FKKAt2xNp3Xy+2xt3M9nSAyztqSeEk
+X-Google-Smtp-Source: AGHT+IFQoF6/Zh4LuwC6TK+vz5pLknGUGh4P+bNn4PJHYS6sli1teXtvrM2bsrv02uf1XkjQHKciYzPn+IeSJ69snZs=
+X-Received: by 2002:a05:6a20:f392:b0:1b0:14a0:c875 with SMTP id
+ adf61e73a8af0-1b212cc77ecmr3590451637.1.1716580349244; Fri, 24 May 2024
+ 12:52:29 -0700 (PDT)
+MIME-Version: 1.0
+From: Ningning Xie <xnningxie@gmail.com>
+Date: Fri, 24 May 2024 15:52:18 -0400
+Message-ID: <CABjRk3nfrUCs++rRwyAWKCZcJi2=e23eghOEZJGDGrmNrguVxA@mail.gmail.com>
+To: caml-list@inria.fr, coq-club@inria.fr, agda@lists.chalmers.se, 
+	cl-isabelle-users@lists.cam.ac.uk, concurrency@listserver.tue.nl, 
+	haskell-cafe@haskell.org, types-announce@lists.seas.upenn.edu
+Content-Type: multipart/alternative; boundary="000000000000f1fd0706193881d1"
+Subject: [Caml-list] PLMW@ICFP'24: Call for Participation (travel funding
+ application by June 21)
+Reply-To: Ningning Xie <xnningxie@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19137
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-05/CABjRk3nfrUCs%2B%2BrRwyAWKCZcJi2%3De23eghOEZJGDGrmNrguVxA%40mail.gmail.com>
+
+--000000000000f1fd0706193881d1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+ACM SIGPLAN Programming Languages Mentoring Workshop (PLMW) at ICFP 24,
+Milan, Italy
+
+Workshop: Monday, September 2, 2024
+Website: https://icfp24.sigplan.org/home/PLMW-ICFP-2024
+
+PLMW is a workshop co-located with ICFP 2024 (the International Conference
+on Functional Programming) in Milan, Italy, from September 2-7.
+
+The purpose of this mentoring workshop is to encourage graduate students
+and senior undergraduate students to pursue careers in programming language
+research. This workshop will bring together world leaders in programming
+languages research and teaching from academia and industry to help students
+imagine how they might contribute to our research community. Topics will
+range from the abstract (e.g., what is PL research and how does one become
+involved in it) to the concrete (e.g., how to navigate an academic
+conference, how to pick a research area) as well as technical talks on
+cutting-edge topics.
+
+We especially encourage women and underrepresented minority students, and
+people with disabilities to attend PLMW.
+
+This workshop is part of the activities surrounding ICFP, and takes place
+the day before the main conference. One goal of the workshop is to make the
+ICFP conference more accessible to newcomers. We hope that participants
+will stay through the entire conference.
+
+Note that ICFP and PLMW are planned to be largely in-person events. While
+we recognize that travel to conferences is not easy for everyone, we do
+hope you will be able to join us in person to get the most out of the
+conference and its community-building aspects.
+
+A number of sponsors have generously donated scholarship funds for
+qualified students to attend PLMW. These scholarships can cover expenses
+(airfare, hotel, and registration fees) for attendance at both the workshop
+and the ICFP conference.
+
+Students attending this year will get one year free student membership of
+SIGPLAN, unless they prefer to opt out during their application.
+
+The workshop registration is open to all. Students with alternative sources
+of funding are welcome as well.
+
+=E2=80=94--------------------------------------------------------------
+
+APPLICATION FOR PLMW TRAVEL FUNDING
+
+For full consideration for scholarship funding, please apply at the link
+below by June 21, AoE. We will notify accepted attendees in a rolling
+fashion until all funding is committed.
+
+The application can be accessed at the following URL  (Apply by June 21,
+2024 AOE for full consideration!):
+https://forms.gle/vC6udnMWRvvAczPR6
+
+--000000000000f1fd0706193881d1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">ACM SIGPLAN Programming Languages Mentoring Workshop (PLMW=
+) at ICFP 24, Milan, Italy<br><br>Workshop: Monday, September 2, 2024<br>We=
+bsite: <a href=3D"https://icfp24.sigplan.org/home/PLMW-ICFP-2024">https://i=
+cfp24.sigplan.org/home/PLMW-ICFP-2024</a><br><div><br>PLMW is a workshop co=
+-located with ICFP 2024 (the International Conference on Functional Program=
+ming) in Milan, Italy, from September 2-7.<br><br>The purpose of this mento=
+ring workshop is to encourage graduate students and senior undergraduate st=
+udents to pursue careers in programming language research. This workshop wi=
+ll bring together world leaders in programming languages research and teach=
+ing from academia and industry to help students imagine how they might cont=
+ribute to our research community. Topics will range from the abstract (e.g.=
+, what is PL research and how does one become involved in it) to the concre=
+te (e.g., how to navigate an academic conference, how to pick a research ar=
+ea) as well as technical talks on cutting-edge topics.<br><br>We especially=
+ encourage women and underrepresented minority students, and people with di=
+sabilities to attend PLMW.<br><br>This workshop is part of the activities s=
+urrounding ICFP, and takes place the day before the main conference. One go=
+al of the workshop is to make the ICFP conference more accessible to newcom=
+ers. We hope that participants will stay through the entire conference.<br>=
+<br>Note that ICFP and PLMW are planned to be largely in-person events. Whi=
+le we recognize that travel to conferences is not easy for everyone, we do =
+hope you will be able to join us in person to get the most out of the confe=
+rence and its community-building aspects.<br><br>A number of sponsors have =
+generously donated scholarship funds for qualified students to attend PLMW.=
+ These scholarships can cover expenses (airfare, hotel, and registration fe=
+es) for attendance at both the workshop and the ICFP conference.<br><br>Stu=
+dents attending this year will get one year free student membership of SIGP=
+LAN, unless they prefer to opt out during their application.<br><br>The wor=
+kshop registration is open to all. Students with alternative sources of fun=
+ding are welcome as well.</div><div><br></div><div>=E2=80=94---------------=
+-----------------------------------------------<br><br></div><div>APPLICATI=
+ON FOR PLMW TRAVEL FUNDING<br><br>For full consideration for scholarship fu=
+nding, please apply at the link below by June 21, AoE. We will notify accep=
+ted attendees in a rolling fashion until all funding is committed.<br><br>T=
+he application can be accessed at the following URL=C2=A0=C2=A0(Apply by Ju=
+ne 21, 2024 AOE for full consideration!):<br><a href=3D"https://forms.gle/v=
+C6udnMWRvvAczPR6">https://forms.gle/vC6udnMWRvvAczPR6</a><br></div></div>
+
+--000000000000f1fd0706193881d1--
