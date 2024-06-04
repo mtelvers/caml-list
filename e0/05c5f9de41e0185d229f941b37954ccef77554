@@ -1,0 +1,572 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=pass (p=none dis=none) header.from=inria.fr
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=VQnBiMQh;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=H0rYt6O5;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 8049DB80123
+	for <caml-list@tunbury.org>; Tue,  4 Jun 2024 16:08:55 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:to:references:from:
+   in-reply-to:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=t/oaKVZ/hBcX0hvBp6Sl+zxmbobd4Yvp1Wm0OQ5DU7s=;
+  b=VQnBiMQhzI/PYI9uIs4ABvg3wQr3Od4dqvafckkjmntwBOaVZ44qi2aa
+   KwyV8iq021eEv7cf9QlYfz4pZeVDtpsV/DIfvZlsoaXbIIqI/QqciKqQX
+   0eNq1wc+cAejVST4nf2wHRkWNiGkBP7jcGxgA/s4ZI6jwnljmDsVOMmma
+   E=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@inria.fr
+X-IronPort-AV: E=Sophos;i="6.08,214,1712613600"; 
+   d="scan'208,217";a="168992344"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Jun 2024 17:08:54 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 520BCE0138; Tue,  4 Jun 2024 17:08:54 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id E668BE0035
+	for <caml-list@sympa.inria.fr>; Tue,  4 Jun 2024 17:08:52 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to;
+  bh=t/oaKVZ/hBcX0hvBp6Sl+zxmbobd4Yvp1Wm0OQ5DU7s=;
+  b=H0rYt6O5oDe2/W3EyrYeILgjAtu7UBTyvvb0sh8956M1Euu2aXDiU0OM
+   5g8kx1tKFUnbdZDwdzupF9dQkguGOjSOXJYrADKw3+0XgqWoC6wvhpCBB
+   Bb0g9o9Iq2tiFMSKQUKkyAGXmik08VsWSS+2mBF9/sSKA5BZOjwwkelXR
+   o=;
+X-IronPort-AV: E=Sophos;i="6.08,214,1712613600"; 
+   d="scan'208,217";a="88819310"
+Received: from unknown (HELO [172.28.46.203]) ([193.52.84.10])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2024 17:08:52 +0200
+Content-Type: multipart/alternative;
+ boundary="------------PHS1m3JUbWv0G5MnTCaX0Nh3"
+Message-ID: <5bcc0f37-24f5-487b-a91d-a2e36e51143a@inria.fr>
+Date: Tue, 4 Jun 2024 17:08:49 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Content-Language: fr
+To: types-announce@LISTS.SEAS.UPENN.EDU, caml-list@inria.fr
+References: <3f0db366-3e1a-45e4-b1c9-1aced109fb2c@inria.fr>
+From: Guillaume Munch-Maccagnoni <Guillaume.Munch-Maccagnoni@inria.fr>
+In-Reply-To: <3f0db366-3e1a-45e4-b1c9-1aced109fb2c@inria.fr>
+Subject: [Caml-list] [Deadline extention] ML 2024 =?UTF-8?Q?=E2=80=93?= Call
+ for presentations: ACM SIGPLAN ML Family Workshop
+Reply-To: Guillaume Munch-Maccagnoni <Guillaume.Munch-Maccagnoni@inria.fr>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19140
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-06/5bcc0f37-24f5-487b-a91d-a2e36e51143a%40inria.fr>
+
+This is a multi-part message in MIME format.
+--------------PHS1m3JUbWv0G5MnTCaX0Nh3
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+Dear all,
+
+We extended the deadline for presentation proposals at the ML workshop 
+(@ ICFP 2024) to *June 14th*.
+
+If you cannot join us in Milan, remote presentations are also possible.
+
+Please find the complete CFP below.
+
+Best regards,
+
+Guillaume Munch-Maccagnoni
+
+
+
+> We are happy to invite submissions to ML 2024 (apologies for 
+> cross-postings).
+>
+>   * Submission deadline: June 14th
+>   * September 6th in Milan, Italy. Co-located with ICFP 2024.
+>   * Submission website: https://ml2024.hotcrp.com   * Workshop 
+> website: https://icfp24.sigplan.org/home/mlworkshop-2024
+>
+> # Higher-order, Typed, Inferred, Strict: ACM SIGPLAN ML Family Workshop
+>
+> ML (originally, “Meta Language”) is a family of programming languages
+> that includes dialects known as Standard ML, OCaml, and F#, among
+> others. The development of these languages has inspired a large amount
+> of computer science research, both practical and theoretical.
+>
+> The ML Family Workshop is an established informal workshop aiming to
+> recognize the entire extended ML family and to provide the forum to
+> present and discuss common issues: all aspects of the design,
+> semantics, theory, application, implementation, and teaching of the
+> members of the ML family. We also encourage presentations from related
+> languages (such as Haskell, Scala, Rust, Nemerle, Links, Koka, F*,
+> Eff, ATS, etc), to promote the exchange of ideas and experience. The
+> ML family workshop will be held in close coordination with the OCaml
+> Users and Developers Workshop.
+>
+> ## Format
+>
+> The ML 2024 workshop will continue the informal approach followed
+> since 2010. Presentations are selected by the program committee from
+> submitted proposals. There are no published proceedings, so
+> contributions may be submitted for publication elsewhere. The main
+> criterion is the promoting and informing the development of the entire
+> extended ML family and delivering a lively workshop atmosphere. We
+> particularly encourage talks about works in progress, presentations of
+> negative results (things that were expected to but did not quite work
+> out) and informed positions.
+>
+> Each presentation should take 20-25 minutes. The exact time will be
+> decided based on scheduling constraints.
+>
+> We plan the workshop to an be in-person event with remote
+> participation (streamed live). Speakers are generally expected to
+> present in person (we will work to make remote presentations
+> possible).
+>
+> The 2024 ML family workshop is co-located with ICFP 2024 and will take
+> place on September the 6th in Milan, Italy.
+>
+> ## Scope
+>
+> We seek presentations on topics including (but not limited to):
+>
+> * Language design: abstraction, higher forms of polymorphism,
+>  concurrency, distribution and mobility, staging, extensions for
+>  semi-structured data, generic programming, object systems, etc.
+>
+> * Implementation: compilers, interpreters, type checkers, partial
+>  evaluators, runtime systems, garbage collectors, foreign function
+>  interfaces, etc.
+>
+> * Type systems: inference, effects, modules, contracts, specifications
+>  and assertions, dynamic typing, error reporting, etc.
+>
+> * Applications: case studies, experience reports, pearls, etc.
+>
+> * Environments: libraries, tools, editors, debuggers, cross-language
+>  interoperability, functional data structures, etc.
+>
+> * Semantics of ML-family languages: operational and denotational
+>  semantics, program equivalence, parametricity, mechanization, etc.
+>
+> We specifically encourage reporting what did not meet expectations or
+> what, despite all efforts, did not work to satisfaction.
+>
+> Four kinds of submissions are solicited: Research Presentations,
+> Experience Reports, Demos, and Informed Positions.
+>
+> * Research Presentations: Research presentations should describe new
+>  ideas, experimental results, or significant advances in ML-related
+>  projects. We especially encourage presentations that describe work
+>  in progress, that outline a future research agenda, or that
+>  encourage lively discussion. These presentations should be
+>  structured in a way which can be, at least in part, of interest to
+>  (advanced) users.
+>
+> * Experience Reports: Users are invited to submit Experience Reports
+>  about their use of ML and related languages. These presentations do
+>  not need to contain original research but they should tell an
+>  interesting story to researchers or other advanced users, such as an
+>  innovative or unexpected use of advanced features or a description
+>  of the challenges they are facing or attempting to solve.
+>
+> * Demos: Live demonstrations or short tutorials should show new
+>  developments, interesting prototypes, or work in progress, in the
+>  form of tools, libraries, or applications built on or related to ML
+>  and related languages. (You will need to provide all the hardware
+>  and software required for your demo; the workshop organizers are
+>  only able to provide a projector.)
+>
+> * Informed Positions: A justified argument for or against a language
+>  feature. The argument must be substantiated, either theoretically
+>  (e.g., by a demonstration of (un)soundness, an inference algorithm,
+>  a complexity analysis), empirically or by substantial experience.
+>  Personal experience is accepted as justification so long as it is
+>  extensive and illustrated with concrete examples.
+>
+> ## Submission details
+>
+> Submissions must be in the PDF format and have a short summary
+> (abstract) at the beginning. Submissions in the categories of
+> Experience Reports, Demos, or Informed Positions should indicate so in
+> the title or subtitle. The point of the submission should be clear
+> from its two first pages (PC members are not obligated to read any
+> further.)
+>
+> Submissions must be uploaded to the workshop submission website before
+> the submission deadline.
+>
+> Only the short summary/abstract of accepted submissions will be
+> published on the conference website. After acceptance, authors will
+> have the opportunity to attach or link to that summary any relevant
+> material (such as the updated submission, slides, etc.)
+>
+> *Submission website*: https://ml2024.hotcrp.com/
+> *Workshop website*: https://icfp24.sigplan.org/home/mlworkshop-2024
+> ## Coordination with the OCaml Users and Developers Workshop
+>
+> The OCaml workshop is seen as more practical and is dedicated in
+> significant part to OCaml community building and the development of
+> the OCaml system. In contrast, the ML family workshop is not focused
+> on any language in particular, is more research-oriented, and deals
+> with general issues of ML-style programming and type systems. Yet
+> there is an overlap, which we are keen to explore in various ways. The
+> authors who feel their submission fits both workshops are encouraged
+> to mention it at submission time or contact the program chairs.
+>
+>
+-- 
+Guillaume Munch-Maccagnoni
+Researcher at INRIA
+Gallinette team, Nantes
+https://guillaume.munch.name/
+
+--------------PHS1m3JUbWv0G5MnTCaX0Nh3
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p>Dear all,</p>
+    <p>We extended the deadline for presentation proposals at the ML
+      workshop (@ ICFP 2024) to <b>June 14th</b>.</p>
+    <p>If you cannot join us in Milan, remote presentations are also
+      possible.<br>
+    </p>
+    <p>Please find the complete CFP below.</p>
+    <p>Best regards,</p>
+    <p>Guillaume Munch-Maccagnoni</p>
+    <p><br>
+    </p>
+    <div class="moz-cite-prefix"><br>
+    </div>
+    <blockquote type="cite"
+      cite="mid:3f0db366-3e1a-45e4-b1c9-1aced109fb2c@inria.fr">We are
+      happy to invite submissions to ML 2024 (apologies for
+      cross-postings).
+      <br>
+      <br>
+        * Submission deadline: June 14th
+      <br>
+        * September 6th in Milan, Italy. Co-located with ICFP 2024.
+      <br>
+        * Submission website: <a class="moz-txt-link-freetext" href="https://ml2024.hotcrp.com">https://ml2024.hotcrp.com</a>
+        * Workshop website:
+      <a class="moz-txt-link-freetext" href="https://icfp24.sigplan.org/home/mlworkshop-2024">https://icfp24.sigplan.org/home/mlworkshop-2024</a><br>
+      <br>
+      # Higher-order, Typed, Inferred, Strict: ACM SIGPLAN ML Family
+      Workshop
+      <br>
+      <br>
+      ML (originally, “Meta Language”) is a family of programming
+      languages
+      <br>
+      that includes dialects known as Standard ML, OCaml, and F#, among
+      <br>
+      others. The development of these languages has inspired a large
+      amount
+      <br>
+      of computer science research, both practical and theoretical.
+      <br>
+      <br>
+      The ML Family Workshop is an established informal workshop aiming
+      to
+      <br>
+      recognize the entire extended ML family and to provide the forum
+      to
+      <br>
+      present and discuss common issues: all aspects of the design,
+      <br>
+      semantics, theory, application, implementation, and teaching of
+      the
+      <br>
+      members of the ML family. We also encourage presentations from
+      related
+      <br>
+      languages (such as Haskell, Scala, Rust, Nemerle, Links, Koka, F*,
+      <br>
+      Eff, ATS, etc), to promote the exchange of ideas and experience.
+      The
+      <br>
+      ML family workshop will be held in close coordination with the
+      OCaml
+      <br>
+      Users and Developers Workshop.
+      <br>
+      <br>
+      ## Format
+      <br>
+      <br>
+      The ML 2024 workshop will continue the informal approach followed
+      <br>
+      since 2010. Presentations are selected by the program committee
+      from
+      <br>
+      submitted proposals. There are no published proceedings, so
+      <br>
+      contributions may be submitted for publication elsewhere. The main
+      <br>
+      criterion is the promoting and informing the development of the
+      entire
+      <br>
+      extended ML family and delivering a lively workshop atmosphere. We
+      <br>
+      particularly encourage talks about works in progress,
+      presentations of
+      <br>
+      negative results (things that were expected to but did not quite
+      work
+      <br>
+      out) and informed positions.
+      <br>
+      <br>
+      Each presentation should take 20-25 minutes. The exact time will
+      be
+      <br>
+      decided based on scheduling constraints.
+      <br>
+      <br>
+      We plan the workshop to an be in-person event with remote
+      <br>
+      participation (streamed live). Speakers are generally expected to
+      <br>
+      present in person (we will work to make remote presentations
+      <br>
+      possible).
+      <br>
+      <br>
+      The 2024 ML family workshop is co-located with ICFP 2024 and will
+      take
+      <br>
+      place on September the 6th in Milan, Italy.
+      <br>
+      <br>
+      ## Scope
+      <br>
+      <br>
+      We seek presentations on topics including (but not limited to):
+      <br>
+      <br>
+      * Language design: abstraction, higher forms of polymorphism,
+      <br>
+       concurrency, distribution and mobility, staging, extensions for
+      <br>
+       semi-structured data, generic programming, object systems, etc.
+      <br>
+      <br>
+      * Implementation: compilers, interpreters, type checkers, partial
+      <br>
+       evaluators, runtime systems, garbage collectors, foreign function
+      <br>
+       interfaces, etc.
+      <br>
+      <br>
+      * Type systems: inference, effects, modules, contracts,
+      specifications
+      <br>
+       and assertions, dynamic typing, error reporting, etc.
+      <br>
+      <br>
+      * Applications: case studies, experience reports, pearls, etc.
+      <br>
+      <br>
+      * Environments: libraries, tools, editors, debuggers,
+      cross-language
+      <br>
+       interoperability, functional data structures, etc.
+      <br>
+      <br>
+      * Semantics of ML-family languages: operational and denotational
+      <br>
+       semantics, program equivalence, parametricity, mechanization,
+      etc.
+      <br>
+      <br>
+      We specifically encourage reporting what did not meet expectations
+      or
+      <br>
+      what, despite all efforts, did not work to satisfaction.
+      <br>
+      <br>
+      Four kinds of submissions are solicited: Research Presentations,
+      <br>
+      Experience Reports, Demos, and Informed Positions.
+      <br>
+      <br>
+      * Research Presentations: Research presentations should describe
+      new
+      <br>
+       ideas, experimental results, or significant advances in
+      ML-related
+      <br>
+       projects. We especially encourage presentations that describe
+      work
+      <br>
+       in progress, that outline a future research agenda, or that
+      <br>
+       encourage lively discussion. These presentations should be
+      <br>
+       structured in a way which can be, at least in part, of interest
+      to
+      <br>
+       (advanced) users.
+      <br>
+      <br>
+      * Experience Reports: Users are invited to submit Experience
+      Reports
+      <br>
+       about their use of ML and related languages. These presentations
+      do
+      <br>
+       not need to contain original research but they should tell an
+      <br>
+       interesting story to researchers or other advanced users, such as
+      an
+      <br>
+       innovative or unexpected use of advanced features or a
+      description
+      <br>
+       of the challenges they are facing or attempting to solve.
+      <br>
+      <br>
+      * Demos: Live demonstrations or short tutorials should show new
+      <br>
+       developments, interesting prototypes, or work in progress, in the
+      <br>
+       form of tools, libraries, or applications built on or related to
+      ML
+      <br>
+       and related languages. (You will need to provide all the hardware
+      <br>
+       and software required for your demo; the workshop organizers are
+      <br>
+       only able to provide a projector.)
+      <br>
+      <br>
+      * Informed Positions: A justified argument for or against a
+      language
+      <br>
+       feature. The argument must be substantiated, either theoretically
+      <br>
+       (e.g., by a demonstration of (un)soundness, an inference
+      algorithm,
+      <br>
+       a complexity analysis), empirically or by substantial experience.
+      <br>
+       Personal experience is accepted as justification so long as it is
+      <br>
+       extensive and illustrated with concrete examples.
+      <br>
+      <br>
+      ## Submission details
+      <br>
+      <br>
+      Submissions must be in the PDF format and have a short summary
+      <br>
+      (abstract) at the beginning. Submissions in the categories of
+      <br>
+      Experience Reports, Demos, or Informed Positions should indicate
+      so in
+      <br>
+      the title or subtitle. The point of the submission should be clear
+      <br>
+      from its two first pages (PC members are not obligated to read any
+      <br>
+      further.)
+      <br>
+      <br>
+      Submissions must be uploaded to the workshop submission website
+      before
+      <br>
+      the submission deadline.
+      <br>
+      <br>
+      Only the short summary/abstract of accepted submissions will be
+      <br>
+      published on the conference website. After acceptance, authors
+      will
+      <br>
+      have the opportunity to attach or link to that summary any
+      relevant
+      <br>
+      material (such as the updated submission, slides, etc.)
+      <br>
+      <br>
+      *Submission website*: <a class="moz-txt-link-freetext" href="https://ml2024.hotcrp.com/">https://ml2024.hotcrp.com/</a><br>
+      *Workshop website*:
+      <a class="moz-txt-link-freetext" href="https://icfp24.sigplan.org/home/mlworkshop-2024">https://icfp24.sigplan.org/home/mlworkshop-2024</a><br>
+      ## Coordination with the OCaml Users and Developers Workshop
+      <br>
+      <br>
+      The OCaml workshop is seen as more practical and is dedicated in
+      <br>
+      significant part to OCaml community building and the development
+      of
+      <br>
+      the OCaml system. In contrast, the ML family workshop is not
+      focused
+      <br>
+      on any language in particular, is more research-oriented, and
+      deals
+      <br>
+      with general issues of ML-style programming and type systems. Yet
+      <br>
+      there is an overlap, which we are keen to explore in various ways.
+      The
+      <br>
+      authors who feel their submission fits both workshops are
+      encouraged
+      <br>
+      to mention it at submission time or contact the program chairs.
+      <br>
+      <br>
+      <br>
+    </blockquote>
+    <pre class="moz-signature" cols="72">-- 
+Guillaume Munch-Maccagnoni
+Researcher at INRIA
+Gallinette team, Nantes
+<a class="moz-txt-link-freetext" href="https://guillaume.munch.name/">https://guillaume.munch.name/</a></pre>
+  </body>
+</html>
+
+--------------PHS1m3JUbWv0G5MnTCaX0Nh3--
