@@ -1,0 +1,626 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=PTV60Zi2;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=lI5pM65A;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id F2C1EB80123
+	for <caml-list@tunbury.org>; Thu,  6 Jun 2024 17:41:06 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=507aybV+9FVgUV1uHRIhNd7JmQlmoarbdwvUQIp71ks=;
+  b=PTV60Zi2wAufIT7mklqbs8MoGzgRqxPjrhPaOzoXKKpmQw/RQXkIKKK3
+   NHBtevavtj6VyauOiuwiqYFvox+szlEWDD9TlUxLFjdVRnO9BmMaAOWxz
+   W4xAAhfGsbJwrMiW3cPTVcdIFs69n4SV/dgiznbKdphTQyBKEpjKSGFsp
+   c=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.08,219,1712613600"; 
+   d="scan'208,217";a="169405601"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 06 Jun 2024 18:41:05 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id CB5BCE0145; Thu,  6 Jun 2024 18:41:04 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id D9478E0035
+	for <caml-list@sympa.inria.fr>; Thu,  6 Jun 2024 18:40:58 +0200 (CEST)
+IronPort-SDR: 6661e69a_7Iv98AeCwO/uIMgDw8M7EN2rJVhk/5YpkwrvS9Mj7XT6rGW
+ NTSSV4OMUKIlW/Ps24JOFgmnEJR9VqtWm6UhvHg==
+X-IPAS-Result: =?us-ascii?q?A0GqHQBE5WFmf7LQVdE+GQMOhAuBA3wRSDQEC0iEVoEjj?=
+ =?us-ascii?q?iWCIoJAAYk4kD+BaoEsPg8BAwENOQsEAQEDAQM3AQ+EOIhlAh4HAQRHAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABASIZBw4OKYV0DYJKAQQBA?=
+ =?us-ascii?q?QEBAwMDAQEMAQ0KgQRhAgIDAwMGAQEBAQEBAQEoAgEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQUCFBh1CwYdARMIDAsHAxIDDTAHAiMBE?=
+ =?us-ascii?q?QEFASMKCCKCX4IvAQMxAxEGQZRijzOBBUKLO4EVBQIWgQGCDQbaWgoZKA1sA?=
+ =?us-ascii?q?4FgAgEGFIE1gRSDUSWDJgGBVQIChCODRoEhgiiBFTWDM4EFgUUXAQICgSgBE?=
+ =?us-ascii?q?gFCDBqDFIJpBIUFjiCGLA6HP4IggUBpFiYLigQmAQcHFwMHBwcEBQQcBgUDA?=
+ =?us-ascii?q?gJCCQcBDxIDBAMEBAECCwkKCQMDAg4CCAMCCAYOEwE/EgQTAggJBAsDBAIFC?=
+ =?us-ascii?q?gMIAgIHAg4BBQIBAQICAgICAgMGAhIEAgECAwICCAIHAQECCgcDAQECBgQDB?=
+ =?us-ascii?q?gICBQQNAwsBAQICBAEKAgkPBQICAwIDAQEBAgoDCQEFAgIBAwICBAQHAQYDB?=
+ =?us-ascii?q?QMDBAQDAgMDAgwBBQEFAQUBBQQCBgETAgsHAgILBQYDBg4DCwQEAQICBwYMC?=
+ =?us-ascii?q?QQCAgIGAQIRAwECAQcBAwMCCgEEAQsIAQUICAEEAgMGEAIIBQYFAgQBAQICA?=
+ =?us-ascii?q?ggGDwMGBwIDAgYDBQUDAwICAgcEBAIBAgICARMGBAQCAwIDBAEFBAQDAhcID?=
+ =?us-ascii?q?QIFBwEJCggMAQIGAgQCBAcDBgQFBAIDAgQRBwsDAgMEAgIEAxECAwQCCgIEB?=
+ =?us-ascii?q?AcCAwEBDAYEBAoCCwMFAQECBQMDCQcGAgMDBQQGAgUDAwMCAwIJAgICAQkBA?=
+ =?us-ascii?q?QECEgIDDgIEAgECBQUMBBMCAgMCBggCAgIHAwMEAgMGCwECEQICAgUDBAICF?=
+ =?us-ascii?q?AMHBAIEBQIEAQYDAwIEBgUIBAICBQIBAQIBBwIBDwoEAgEEAwUDBwkCBQUDA?=
+ =?us-ascii?q?gQCAgUJAQECAgIDAwMDAwICAwMCBwMDAwcDBQMEAgMGBQcDBQMDAgICFAEGA?=
+ =?us-ascii?q?gUNCAYLBQUHAgYCBAgFAgIDAwMCBgoIAwMDAgUCAgMDAQIGDwYCAgMFBgMDA?=
+ =?us-ascii?q?wMGBgMDAgYDAwIDAgMCAwMBAwIDAQIDAgICCAICAwIFBAUCAgIEAggaAgICA?=
+ =?us-ascii?q?gMDCAMDCgQCAgQBBAIEAgQCBgMEAgIBBwIDAwIDAgcCAgQCAgICAwIEBwICA?=
+ =?us-ascii?q?wMDAgICAQkCBQEBBgIDAwIDBQMJAwQFAgMIAQECAgcHAwMEAwECAQUEAgIGB?=
+ =?us-ascii?q?QIDAgIEAgQFAwIDAgYGAgEDAgoGAwUDAwMDAgMDAgMDAgUCCAICBAQFBAIFB?=
+ =?us-ascii?q?AIEAwMDAQoCBgMCAgUBAQICBQMCBAQHAgICBw8DAgcFAgUFBQIIAQYFAgIDA?=
+ =?us-ascii?q?ggBAgIGAQYCBAECAg0BAQICAgMEAwMHAgQDAggCAwMPAQMDCQYFBAUEAwkED?=
+ =?us-ascii?q?wIEAQgDAQEECAIEAwIMAgIhAgULBAQBEgoIAwEBAwEBAgICAgIOAwIDAgIDC?=
+ =?us-ascii?q?gIDAgoDBgQCAgYBAQEEBgEEAgECBwQOCQUICAEDAgEKAQIQBRAJAwMGBAIQB?=
+ =?us-ascii?q?goFAwIDBQECBRUDCAMCCQIEDAMNAgMDAgYDBgIGAQYDBwsBAQcIBQMDAwIXA?=
+ =?us-ascii?q?QICDwgEBg8HAgMDAwQFBwMSAgYOAwMCAwIBAgICAwUEBQIHAwMKBQIIAwIIB?=
+ =?us-ascii?q?QMHCQQKAgoCBgMCAgICBQwBAQEBAgMCBQMHBwgIBAUEAwEBBgYMIAICAwQPA?=
+ =?us-ascii?q?wkDBgsBBQUBAwICAgMLAwUDAgMGBgEJBAEFBAkCBQcGBQIBFBYHBgIKAgcCA?=
+ =?us-ascii?q?gIDAQIDBQsIAgMCCgQBDgQaAgICAQECAgMDBwIDAhMDAwUEBgMCAgICAwIBC?=
+ =?us-ascii?q?gsDAgIDAwMDBQUDAwIZAwMCAQoFAgwFBAMEAgIBAh0DAQUCAwoBBQkDBgICA?=
+ =?us-ascii?q?wIFAgMGBQIEAQ4BAQEDBgsJFAICAgkIAwgDBQ0CDQIDBQICC0ELBQEBBAMBA?=
+ =?us-ascii?q?QoBFy0CBAIGDAEBAQIDAwYCAgIVBQcDBQMIAQMBAhQKBgIBAwoKAgIEAgYCB?=
+ =?us-ascii?q?AMCCgMBCAICAg8DCQIHAg4CAgMDDA8EAwMDAwkCAgIRCQoCAgIMCAwCCQICA?=
+ =?us-ascii?q?wMGAQIDAwUDAgEBAQQvAgQHAQIDBgoDAgICCQgKCQMDBQMKAgEGBgECAw4BA?=
+ =?us-ascii?q?QITBAkDAgECAQEGCAEBAgQBBAIIBgICAgIKAwUDAgMFFQUEAgIZAwIEBQMFA?=
+ =?us-ascii?q?wMEBwECBgQNCQMFAwIEAwMCBAQBAQkFCQQDCwYBAgEDBAMBAQgHBwMCAQEDA?=
+ =?us-ascii?q?QECCgYFCA0IAwgDBgQFAwEGAQEFGwMDDgICAgMCAQoGCAUCAwYOAgQCGgEMA?=
+ =?us-ascii?q?wEDAwUQBBUDBAUCAg8MAQIDAwQFAwUCAgIDAgICBQQBAgQCBAEIBAkBAgICA?=
+ =?us-ascii?q?wIBAQICBAYFAgICAwIHDAcDBAMHAgYCAwIHCwwCAwYFBQMFAh4CAwICBAMDH?=
+ =?us-ascii?q?QEEAQQBAgMCAgMCAwMEAQEDAwIBAQEBAQEDBwICAgQBAQEEAwMFAgICAwwCA?=
+ =?us-ascii?q?QUDAQEGAQMBAg8FBQYEAQUIAwIUAwMFFQYHAg8FCAErAQQCAgECQAICAwQNC?=
+ =?us-ascii?q?AUCAgcCBA0CBRUHAwMOBwEWAgEIAQQIBAUEBAIFCAUFAwgkHQIJAyMPAwsJC?=
+ =?us-ascii?q?BM9AQsHLgQEDCgBBg4UByshX6c8FIQzJywTPSsiNAkLA1KBFAGSAI9fghqgR?=
+ =?us-ascii?q?SEKBmGBZoEISAWBXYotlTwzhAWNAJhQZJhlII1WlUaFPREjEoFIIi89cE0jL?=
+ =?us-ascii?q?1JtgUlPAxkPjjghg0KCVoxeujsJPjI7AgcBCgEBAwmKagEB?=
+IronPort-PHdr: A9a23:GAU3uhHDoT2dxdWCCFqwqJ1Gf3hFhN3EVzX9CrIZgr5DOp6u447ld
+ BSGo6k33RmTDNWQsqocw8Pt8IneGkU4oqy9+EgYd5JNUxJXwe43pCcHRPC/NEvgMfTxZDY7F
+ skRHHVs/nW8LFQHUJ2mPw6arXK99yMdFQviPgRpOOv1BpTSj8Oq3Oyu5pHfeQpFiCS5bL9oM
+ hm7qQbcusYLjYd+Nqo61wfErGZPd+lKymxkIk6ekQz76sms4pBo7j5eu+gm985OUKX6e7o3Q
+ LlFBzk4MG47+dPmuwDbQQSA+nUTXGMWkgFVAwfe9xH1Qo3xsirhueVj3iSRIND7Qqo1WTSm6
+ KdrVQPohSIaPDM37G3blsp9h79drBy8uRN/xo/UYIePO/pkY6jRed0XSXZdUspUUSFKH4GyY
+ JYVD+cZMulWr4fzqVgToxWgGQahH/ngxiNSi3LswaE2z+YsHAfb1wIgBdIOt3HUoc3wOqkXT
+ Ou71rPHzSndYPNSxDzw74vIchM5of6WQbJ/b87RxEs0GgPKi1Wfs43lPzeP2usRtGib6vNtW
+ OSygGEotw9/uCKgxtswiobXnIIVzEjJ+Dt5zYsxKtO0VVB3bN2lHZZStSyXNZZ7Tt0iTmxmu
+ Ss3yb4LtIK0ciUWypkq2R/SZv2GfoWU/x7uWuafLzhkiX9jZbmxiRGy8U26xe39UMm5yEpFr
+ ipfndnWq3ANzAbc6tSdRvRn4kitwzeP1wbL5uFfOUA0j6vbK5guwrEujJofq1jMHijzmEjwk
+ aSYdV0k9/C25+j7ZrjqvJyROo9uhg3gLqgjmdazDfk6PwUNWWWQ5Pqx1Ln+/U3iXLVFkOc2n
+ LTYsJHbO8sWvrK1DglI2Yg58Rm/FS2p0NEAkHkHMl1FfBWHgpDsO17UIfD4Ce6zg1CukDt23
+ vzGMKDtD5fOI3TZn7fherF960FYyAUt19xQ+5VUCrQZLPLyXE/+qsDYAwcnPwCox+vrEtZw2
+ 4MEVW6RHqOUM7nevUKK6+8sO+WMYZUauDf5K/gr/f7uino5lEcefamqxZsYcmy4EepiI0ibe
+ nfsjdIBHn0Lvgo6VuDllFqCUTtLa3a0RK0z/is7B56+DYffWoCth6SM0DqjEp1Mem9GEkyME
+ Wvvd4icR/gDcieSIst4njwAVLihUJMh2Aq1tA76zrpnNvDb9jcZtZLlzth15vfcmQs89TxuX
+ Iyh1DSAU2Byn0sDQDot26s5plZyjh+o9YleotdxMZlvythpdCAeErHtisFcJPHUdy/7X/GmY
+ FSnWd6jCDA1CNs6hcINJw5wB9WjhRnHmiusDbgPkrWXBZcv2qPa0X/rIs9hyn3dkaQ8lV4+T
+ 41IL2LizotY2yXpIcvpvnijtp2WVI8n9CzM72yGxGuK+khTFhNzFe3OVHUbI0/XtsjR50XYT
+ rboB650HBFGzJuhCeNyY8HkiR0SR/T7McjTZz2ZlGK5BBLOzbSJOtm5M14B1TnQXRFX2zsY+
+ myLYFNmXk9JwkrbBT1qTxf0Zl/0tPN5ozW9R1M1yAeDawtg0aC081gbn6/UUOsdi5QDvipps
+ DBoBBClxduDCNmYrhZsePp0btY04VMB3mXc5ERmJpL1F6l5nRYFdhhv+Ubn1hF5EIJFxMspt
+ Ho2wQ4tAa2d2VJFMTif2MO4IaXZf0/1+h3ncKvKwhfe3dKRr78I8+g9ok7/sRuBE0Mj9zBj0
+ YAQ3SLDttPFCw0dVZ+3WUEyn/Rjj5fdZCR1p4bd1Hk2dLKxrieHwdUiQu0s1hened5bdqKCD
+ g77VcMAVYCoL6Qxll6lYwhhXqga/bMoP86ga/qN2bK6dOdmkjW8iG1b4Yd7mkuS/it4Q+TM0
+ t4L2fadlgeAUj79ih+mvKWV0chHZikbAme7lgDrAYdQYut5eoNKQWaiLsurx8lv0ob3Ui0Q/
+ 1qiClUanc6xLEDKPhqtgEsKjRRR+CP3yk7ah3Runjokr7SSxnnLyuXmLl8cP3JTAXNlhhHqK
+ JS1iNYTWA6paRIonV2r/xWfpeATqaJhIm3UWUoNcTLxKjQoUaiov6aPZ5Fn55YhsCERW+O5K
+ wP/KPa1s14B3iXvEnELjjM4bzi2t5GmtxN/gWOZan10qTCKMdE1zhDZ6tvGQPdX1TdTXyh0h
+ w7cAV2kNsWo99GZ/3vamti3THnpFphacC2xiJiFqDP+/2phRxu2g/G0nNTjVwk8yy7ykddwB
+ 23EqxP1Y4+j0KrfU6ovfUpwDUPx75VSFYR3k492j5YVkXQXnZSa+3MbnHy7a40Kn/KjKiBVF
+ XhSnI6d6ROtwEB5K3OV24/1MxfVitBsYdW3eCJe2y4w6dxLFLbB6bVFmSVvpV/r5QnVYPV7g
+ nIc0a50sC9c07xP4lJ9iHzCUuN3fwEQJyHnmhWW4srrqaxWYDzqar2szA9kmtvnCrieowZaU
+ XK/e5E4HCY24N8sVTCEmHD19Izgf8HdKNwJsRjB2RTDl+FJJZZuvvUPjCtjf2n6uDd2roxzx
+ Qwrxpy8sIWdfi9u/7qwHhNcaRX6YsoS/nfmiqMUzY6GmouoGJtmADACWpDlGOmpHDwlvvPiL
+ w+SETc4pyT+e/KXDUqF5UxhtX6KD4GzOiTdOiwC1ds7DkrVNAlFjQsTRjl/gpMpClXg2pn6a
+ Ekgg1JZrl/g9kkXl6QxZkG5CDuA4l/vMGt8SYDDfkQKqFsZvAGMb5TYtqUqTmlZ5sHz8lLLc
+ zTBIVwOVSZTAinmTxjiJuX8u4eGqbTJQLrmaaOJO+3GqPQCBajSg8vzlNI3pXDUcZzfdnh6U
+ 69khgwaBy0/Q4KB3GxRLk5f3yPVM5zC/Ef6o3Io6JD5qLOxAUru/dfdUuQJd4w+p1bux//Eb
+ rDYhT4le2wAh9VcmDmRkuhZhBlL1EQMP3GsCehS73eTCv+A3PYGVVhDLHoifMpQs/Bmh1cLY
+ 5WKzIivkOY/1699HV5BURaJdtiBQ8sMLin9MVrGABzOL7GaPXjRxMqxZ6qgSLpWheESthuqu
+ D/dHVWxdjKE3yLkURyiK4QuxGmSIQBetYehcx1sFXmrTdTobQe+OcN2ijt+yKM9h3fDP2oRe
+ TZmdEYForqV5CJeyvJxfg4JpmJiNvWBkj2F4vPwL58Xtb5vAH0xmbsFsDI1zLxa6CwCT/tw2
+ WPTotNov1C6g7yPxz5gA38s4n5AgIOGu1knOL2MrMERHyaZukhVvSPJVERZwrktQsfisK1R1
+ NXVwaf6KTMYtsnR4dNZHc/fbsSOLHsmNxPtXj/SFgoMCzCxZgS9zwRQlu+f8nqNo900sJ/pz
+ dANSadSSFExSdsVD01kGJoJJ5I9DVZG2faLydUF43aztkybXMJBopXOTe6fG93qITedyL1GP
+ l4GmOyoa4sUMYL/1gppbVwwz+GoUwLAGNtKpCNmdAo9pk5ApWN/QmME0EXgcgqx4XUXGJZcc
+ TY5jwJ/ZaIm8zK+uj/fx3LPrSo01U0zwJDr2G/BNjH2K6i0UMddDC+m7yDZ17v0Rg90aUu5m
+ kk2bF/5
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:vTk5SaxBCjBOc+RjOFcSKrPwBL1zdoMgy1knxilNoH1uA6qlfq
+ WV9sjzuiWE6gr5NEtQ+uxoW5PhfZq/z+8R3WB5B97LNzUO01HYSL2Kg7GSpAHIKmnQ8PVC3b
+ xsf6U7JNr7FkhikMr2iTPVLz/i+ra6GWKT6Ns2A00CceiiUcBd0zs=
+X-Talos-CUID: =?us-ascii?q?9a23=3A5BtbRmuOjnIX9RYxAnKoAPgB6IsmVS3a1VvCCXO?=
+ =?us-ascii?q?iCFw3bIyYR2ap9oRdxp8=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3AeXNazwwzXDmcpOt/JMioZwaLCUeaqKWzWR4ciMs?=
+ =?us-ascii?q?JgdKBEyJNNDSTtiq3WpByfw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.08,219,1712613600"; 
+   d="scan'208,217";a="169405568"
+X-MGA-submission: =?us-ascii?q?MDHqk72mO3Cx2sgCziVSVxvscc3293woYZT/jl?=
+ =?us-ascii?q?Mjdvio4L/NNngTtqnMiOmRxejVtKbQlVSteGKCPo79Gf4xYv9N2EeTVr?=
+ =?us-ascii?q?vAXw9RkmNnxnEWl5v5nyHKKoLOHDTXiYFY3T5hhxx90mSJhZhisOGN6b?=
+ =?us-ascii?q?x02lvM4atVlSSNUvk9T2FXIQ=3D=3D?=
+Received: from mail-lj1-f178.google.com ([209.85.208.178])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2024 18:40:58 +0200
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2ead2c6b50bso10256291fa.0
+        for <caml-list@inria.fr>; Thu, 06 Jun 2024 09:40:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1717692057; x=1718296857; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=507aybV+9FVgUV1uHRIhNd7JmQlmoarbdwvUQIp71ks=;
+        b=lI5pM65AP1U2CC6mPr8VViHsTxfp8o8BLpv9Cl8KEdm/vDCKDDWqAQhZ/QuUgg5Gwy
+         vsfXsxDNte0BQPBf82HdhXc7euCwjwYHly/tZ+s7TlVK9O2U151VNUM3FtTSV2lslddD
+         IDc/u3Ly2Qz2Qb1n3iacODAlMshwiwOkk+QO8XOg9Usvjv/ar6SW+q2WQL0B1TqSnQFr
+         vdemxx6tulouuVpTapOEGohYeWHwP00t6lW2YpWFAgiFhbDOtrv/JC2ArYuZnZdQQn+I
+         FfeTWEqFyufPSWe5nBUzc2x7u0RzAWyfcnfOyszO6jZhpj4+0tm3Ds/MRsmyBcBJ6E0h
+         rlJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717692057; x=1718296857;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=507aybV+9FVgUV1uHRIhNd7JmQlmoarbdwvUQIp71ks=;
+        b=Czk82I/48eFUJzWBx6orKQaUOzy1+5rH01OAdedxK8VHzb8IBVpHybLEO0oBExEDqZ
+         QdJ6Sd+v9I44ekvIURfLJqKZL8FQ1/u9DIMAHIzNw90csRS6QP2NN02A8EQuEV1+KCo0
+         18H5ekjcanQDWY6Tzhr+2FoAm21iHyRADS+/0h9e3rDxjvD8pHpq4p8FHViobZ8NqbHm
+         HQXwULP+jqMkHopIOAfbCsRjYXBo66mAcEvGJZBdCKQUY2UprrzxSqaR2sdq6FaMhjwz
+         OHP+WJvLKTXyRKCTUI5cFIL5Fy6Lup6vchLEsGkXsIdCe+U9P2kT+ra8nV4CFGZpSa2b
+         Pajg==
+X-Forwarded-Encrypted: i=1; AJvYcCXXeNpLu6J40szZx5FbB0nG2kThO1UTC2vnnum2kbp8+VkVsxTcp4JAFMmLNN0/Ef6hK/079XP2miqhxH56O00+LNI=
+X-Gm-Message-State: AOJu0YyoYCaQpuq6yTMHbKyfsJWMmUD7sg1JvQUGjL0aE6U/0CV+e0o5
+	CEyqyBKWuT/yGNk4oF1+GYbl8CDvC9n8CVVBGb+5V3+aAc4cJJLQDuIjt8343yhDZYI4hjwUWi0
+	w4hb2axJHYoR/xHPQ54n+XFNHPMU=
+X-Google-Smtp-Source: AGHT+IEe8DMfBPFsnBB92kxBmu8a5WhMdXISOAy+3x6v92erGO+u5lsTSV5IuaJJi4s0/QVRI3/rHoGBfsGKVaw1GTU=
+X-Received: by 2002:a05:651c:4cd:b0:2e6:bb81:ba0b with SMTP id
+ 38308e7fff4ca-2eadce37371mr2002171fa.25.1717692056645; Thu, 06 Jun 2024
+ 09:40:56 -0700 (PDT)
+MIME-Version: 1.0
+From: KK Patel <kkpatel7@gmail.com>
+Date: Thu, 6 Jun 2024 22:10:45 +0530
+Message-ID: <CAJwEiuC2m488XFm3JP7YJYYp6gOWqN5nemguTD+AcGU9670XYA@mail.gmail.com>
+To: etini@comsoc.org, CLINICAL-TECHNOLOGY-ENGINEERING@jiscmail.ac.uk, 
+	ethical-informatics@informatics-europe.org, MODERN-HEURISTICS@jiscmail.ac.uk, 
+	caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="000000000000deb8ae061a3b582d"
+Subject: [Caml-list] Call for Workshops / Special Sessions proposals:
+ Springer icSoftComp2024 || December 10-12, 2024 || Bangkok, Thailand ||
+ Scopus indexed Springer CCIS || Hybrid || 2024 6th International
+ Conference on Soft Computing and its Engineering Applications
+Reply-To: KK Patel <kkpatel7@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19142
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-06/CAJwEiuC2m488XFm3JP7YJYYp6gOWqN5nemguTD%2BAcGU9670XYA%40mail.gmail.com>
+
+--000000000000deb8ae061a3b582d
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+** Sincere apologies if you receive multiple copies of this email **
+
+* Call for Workshops / Special Sessions proposals:*
+
+
+
+The 2024 6th International Conference on Soft Computing and its Engineering
+Applications (icSoftComp2024) invites proposals for
+
+-        full-day workshops (
+https://www.charusat.ac.in/icSoftComp2024/cfw.php)
+
+or
+
+-        half-day special sessions (
+https://www.charusat.ac.in/icSoftComp2024/cfss.php).
+
+
+
+icSoftComp2024 will take place in Bangkok, Thailand during December 10=E2=
+=80=9312,
+2024.  It is the premier forum for technical exchange on soft computing and
+its engineering applications.
+
+
+
+*Aim and Scope*
+
+The aim of the workshops / special sessions is to complement the conference
+program with in-depth forums that are dedicated to a specific topic related
+to scope of icSoftComp2024. Proposals from industry and academia are
+welcome. Workshops / Special sessions will have their papers published in
+the conference proceedings.
+
+
+
+Conference series link: https://link.springer.com/conference/icsoftcomp
+
+
+
+*Submission guidelines *
+
+Each icSoftComp2024 workshop / special session proposal has to be submitted
+in a single PDF file, and must include:
+- Name and abbreviation of the workshop.
+- Names, addresses, and a short (200 words) bio of the Organizing Committee
+members.
+- A brief description of the technical focus addressed by the
+workshop/Special session, reasons why the workshop/Special session is of
+interest at this time, and reasons why this area is important in the
+context of icSoftComp2024.
+- The planned format of the workshop/Special session, including a strategy
+to facilitate lively and interactive discussions.
+- If applicable, a description of past events of the workshop/Special
+session, including statistics of submitted/accepted papers and attendee
+numbers. If the workshop/Special session does not have past editions,
+please provide estimates and explain a strategy on how to reach the targets
+of paper submissions and attendees.
+- Publicity and advertising plan to attract paper submissions and
+attendees.
+- A draft of 1-page "Call for Papers" including title, description, topics
+and important dates.
+
+
+
+*Submission for Workshop/Special session proposal is due on June 15, 2024*
+
+
+Submission of workshop/Special session proposals should be sent through
+email to the Technical Program chair: K. K. Patel,
+kanupatel.mca@charusat.ac.in
+
+
+
+Charotar University of Science and Technology (CHARUSAT)
+
+(Center of Excellence by Govt. of Gujarat)
+
+(Accredited "A+" grade by NAAC, GoI)
+
+Changa, India
+
+
+
+
+warm regards,
+
+K. K. Patel, Ph.D.
+Cell#: +91-820 010 3724
+https://www.charusat.ac.in/icSoftComp2024
+
+--000000000000deb8ae061a3b582d
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:verdana,=
+sans-serif">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table class=3D"gmail-MsoNormalTable" border=3D"0" cellspacing=3D"0" cellpa=
+dding=3D"0" width=3D"675" style=3D"width:405pt;border-collapse:collapse">
+ <tbody><tr>
+  <td width=3D"675" valign=3D"top" style=3D"width:405pt;padding:0in 5.4pt">
+  <p class=3D"MsoNormal" style=3D"line-height:105%;margin:0in 0in 8pt;font-=
+size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"EN-US" =
+style=3D"font-size:8pt;line-height:105%;font-family:&quot;Calisto MT&quot;,=
+serif;color:black;letter-spacing:0.5pt">** Sincere apologies if you receive=
+ multiple copies of this email **</span><span style=3D"font-size:8pt;line-h=
+eight:105%"><span></span></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"675" valign=3D"top" style=3D"width:405pt;padding:0in 5.4pt">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:105%;=
+font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span style=
+=3D"font-size:12pt;line-height:105%;font-family:&quot;Calisto MT&quot;,seri=
+f">=C2=A0Call for Workshops / Special Sessions
+  proposals:<span></span></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D=
+"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif"><span>=C2=A0</spa=
+n></span><span style=3D"font-size:12pt"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D=
+"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">The 2024 6th Inte=
+rnational Conference on Soft
+  Computing and its Engineering Applications (icSoftComp2024) invites propo=
+sals
+  for <span></span></span></p>
+  <p class=3D"gmail-MsoListParagraphCxSpFirst" style=3D"margin:0in 0in 0.00=
+01pt 0.5in;line-height:normal;font-size:11pt;font-family:&quot;Calibri&quot=
+;,sans-serif"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&qu=
+ot;,serif"><span>-<span style=3D"font:7pt &quot;Times New Roman&quot;">=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
+  </span></span></span><span style=3D"font-size:12pt;font-family:&quot;Cali=
+sto MT&quot;,serif">full-day workshops (</span><a href=3D"https://www.charu=
+sat.ac.in/icSoftComp2024/cfw.php" style=3D"color:blue;text-decoration:under=
+line"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,seri=
+f">https://www.charusat.ac.in/icSoftComp2024/cfw.php</span></a><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">) </span><span=
+ style=3D"font-size:12pt;font-family:&quot;Times New Roman&quot;,serif"><sp=
+an></span></span></p>
+  <p class=3D"gmail-MsoListParagraphCxSpMiddle" style=3D"margin:0in 0in 0.0=
+001pt 0.5in;line-height:normal;font-size:11pt;font-family:&quot;Calibri&quo=
+t;,sans-serif"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&q=
+uot;,serif">or </span><span style=3D"font-size:12pt;font-family:&quot;Times=
+ New Roman&quot;,serif"><span></span></span></p>
+  <p class=3D"gmail-MsoListParagraphCxSpLast" style=3D"margin:0in 0in 0.000=
+1pt 0.5in;line-height:normal;font-size:11pt;font-family:&quot;Calibri&quot;=
+,sans-serif"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quo=
+t;,serif"><span>-<span style=3D"font:7pt &quot;Times New Roman&quot;">=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
+  </span></span></span><span style=3D"font-size:12pt;font-family:&quot;Cali=
+sto MT&quot;,serif">half-day special sessions (</span><a href=3D"https://ww=
+w.charusat.ac.in/icSoftComp2024/cfss.php" style=3D"color:blue;text-decorati=
+on:underline"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&qu=
+ot;,serif">https://www.charusat.ac.in/icSoftComp2024/cfss.php</span></a><sp=
+an class=3D"gmail-MsoHyperlink" style=3D"color:blue;text-decoration:underli=
+ne"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif"=
+>).</span></span><span style=3D"font-size:12pt;font-family:&quot;Calisto MT=
+&quot;,serif"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D=
+"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif"><span>=C2=A0</spa=
+n></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D=
+"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">icSoftComp2024 wi=
+ll take place </span><span lang=3D"EN-US" style=3D"font-size:12pt;font-fami=
+ly:&quot;Calisto MT&quot;,serif;color:rgb(34,34,34);background:white">in
+  Bangkok, Thailand during December 10=E2=80=9312, 2024.=C2=A0 </span><span=
+ style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">It is th=
+e premier forum for technical exchange on soft computing and
+  its engineering applications. </span><span style=3D"font-size:12pt;font-f=
+amily:&quot;Times New Roman&quot;,serif"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif"><span>=C2=A0</=
+span></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">Aim and Scope<=
+/span></b><span style=3D"font-size:12pt;font-family:&quot;Times New Roman&q=
+uot;,serif"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D=
+"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">The aim of the wo=
+rkshops / special sessions is to
+  complement the conference program with in-depth forums that are dedicated=
+ to
+  a specific topic related to scope of icSoftComp2024. Proposals from indus=
+try
+  and academia are welcome. Workshops / Special sessions will have their pa=
+pers
+  published in the conference proceedings. </span><span style=3D"font-size:=
+12pt;font-family:&quot;Times New Roman&quot;,serif"><span></span></span></p=
+>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D=
+"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif"><span>=C2=A0</spa=
+n></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D=
+"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">Conference series=
+ link: </span><a href=3D"https://link.springer.com/conference/icsoftcomp" t=
+arget=3D"_blank" style=3D"color:blue;text-decoration:underline"><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">https://link.s=
+pringer.com/conference/icsoftcomp</span></a><span style=3D"font-size:12pt">=
+<span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif"><span>=C2=A0</=
+span></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">Submission gui=
+delines </span></b><span style=3D"font-size:12pt;font-family:&quot;Calisto =
+MT&quot;,serif"><br>
+  <br>
+  Each icSoftComp2024 workshop / special session proposal has to be submitt=
+ed
+  in a single PDF file, and must include: <br>
+  - Name and abbreviation of the workshop. <br>
+  - Names, addresses, and a short (200 words) bio of the Organizing Committ=
+ee
+  members. <br>
+  - A brief description of the technical focus addressed by the
+  workshop/Special session, reasons why the workshop/Special session is of
+  interest at this time, and reasons why this area is important in the cont=
+ext
+  of icSoftComp2024. <br>
+  - The planned format of the workshop/Special session, including a strateg=
+y to
+  facilitate lively and interactive discussions. <br>
+  - If applicable, a description of past events of the workshop/Special
+  session, including statistics of submitted/accepted papers and attendee
+  numbers. If the workshop/Special session does not have past editions, ple=
+ase
+  provide estimates and explain a strategy on how to reach the targets of p=
+aper
+  submissions and attendees. <br>
+  - Publicity and advertising plan to attract paper submissions and attende=
+es. <br>
+  - A draft of 1-page &quot;Call for Papers&quot; including title, descript=
+ion,
+  topics and important dates. </span><span style=3D"font-size:12pt;font-fam=
+ily:&quot;Times New Roman&quot;,serif"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif"><span>=C2=A0</=
+span></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><b><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">Submission for=
+ Workshop/Special session proposal
+  is due on June 15, 2024</span></b><span style=3D"font-size:12pt;font-fami=
+ly:&quot;Times New Roman&quot;,serif"><span></span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D=
+"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif"><br>
+  Submission of workshop/Special session proposals should be sent through e=
+mail
+  to the Technical Program chair: K. K. Patel, </span><a href=3D"mailto:kan=
+upatel.mca@charusat.ac.in" target=3D"_blank" style=3D"color:blue;text-decor=
+ation:underline"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT=
+&quot;,serif">kanupatel.mca@charusat.ac.in</span></a><span style=3D"font-si=
+ze:12pt;font-family:&quot;Calisto MT&quot;,serif"><span></span></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"675" valign=3D"top" style=3D"width:405pt;background:rgb(255,=
+242,204);padding:0in 5.4pt">
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span style=3D"font-size:10pt;font-family:&quot;Arial&=
+quot;,sans-serif"><span>=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Arial Narrow&quot;,sans-serif">Charotar University of Science and =
+Technology (CHARUSAT)</span><span style=3D"font-size:10pt;font-family:&quot=
+;Arial Narrow&quot;,sans-serif"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Arial Narrow&quot;,sans-serif">(Center of Excellence by Govt. of G=
+ujarat)</span><span style=3D"font-size:10pt;font-family:&quot;Arial Narrow&=
+quot;,sans-serif"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Arial Narrow&quot;,sans-serif">(Accredited &quot;A+&quot; grade by=
+ NAAC, GoI)</span><span style=3D"font-size:10pt;font-family:&quot;Arial Nar=
+row&quot;,sans-serif"><span></span></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:&quot;Calib=
+ri&quot;,sans-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-fami=
+ly:&quot;Arial Narrow&quot;,sans-serif">Changa, India</span><span style=3D"=
+font-size:10pt;font-family:&quot;Arial Narrow&quot;,sans-serif"><span></spa=
+n></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span lang=3D"=
+EN-US" style=3D"font-size:10pt;font-family:&quot;Arial&quot;,sans-serif">=
+=C2=A0</span><span style=3D"font-size:10pt;font-family:&quot;Arial&quot;,sa=
+ns-serif"><span></span></span></p>
+  </td>
+ </tr>
+</tbody></table>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 8pt;line-height:107%;font-si=
+ze:11pt;font-family:&quot;Calibri&quot;,sans-serif"><span style=3D"font-siz=
+e:12pt;line-height:107%"><span>=C2=A0</span></span></p>
+
+
+
+
+
+</div><div><div dir=3D"ltr" class=3D"gmail_signature" data-smartmail=3D"gma=
+il_signature"><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"ltr">=
+<div><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div=
+ dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"l=
+tr"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><fo=
+nt size=3D"1" face=3D"trebuchet ms, sans-serif"><span style=3D"color:black"=
+></span></font><div><div><span style=3D"font-family:garamond,times new roma=
+n,serif"><font size=3D"1">warm regards,<br><br>K. K. Patel, Ph.D.</font><fo=
+nt size=3D"1"><br></font></span></div><div><span style=3D"font-family:garam=
+ond,times new roman,serif"><font size=3D"1">Cell#: +91-820 010 3724</font><=
+/span></div><div><div><font size=3D"1" face=3D"garamond, times new roman, s=
+erif"><a href=3D"https://www.charusat.ac.in/icSoftComp2024" target=3D"_blan=
+k">https://www.charusat.ac.in/icSoftComp2024</a></font></div></div><div></d=
+iv><div><div style=3D"text-align:left"><div style=3D"text-align:left"><br><=
+/div></div><div><b><span style=3D"font-size:10pt;color:black"></span></b></=
+div><span style=3D"font-family:Verdana;font-size:medium"><span></span></spa=
+n></div></div></div></div></div></div></div></div></div></div></div></div><=
+/div></div></div></div></div></div></div></div></div></div></div></div></di=
+v></div></div></div>
+
+--000000000000deb8ae061a3b582d--
