@@ -1,0 +1,1244 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=B9C0HVU7;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=WRm2+A1y;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 77739B80123
+	for <caml-list@tunbury.org>; Tue, 18 Jun 2024 14:05:58 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=o9lxHWDRmTXXq1ZmTu/++hjuGyL1lBokQJJoW+LuROY=;
+  b=B9C0HVU79132DOSFREourMoozqUrSyUSQM+dJ1C1QmUFRnSlaSdwP5MV
+   DlfcVtzFhkTMZ0ctuRp2P8BUfu65YBob5MR1KgmLMTSKFlXHLCx+ENXjK
+   uvkVPQhIy66NKPBauNuGejWPZcCzTCYOXWb49zB3NFqRxWi/lR9w30UDQ
+   A=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.08,247,1712613600"; 
+   d="scan'208,217";a="171259479"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 18 Jun 2024 15:05:57 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id E91AEE0BE9; Tue, 18 Jun 2024 15:05:56 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 78AB5E0131
+	for <caml-list@sympa.inria.fr>; Tue, 18 Jun 2024 15:05:55 +0200 (CEST)
+IronPort-SDR: 66718632_l2dl/3FhzqUidwKSPivHquEjCUbCjcFFpC/3llUynPEUVC2
+ m4riDRb0KxOYUx01sycLQ+Xyidioy1DQP14jkbg==
+X-IPAS-Result: =?us-ascii?q?A0E3BACWhXFmkCIeaIFaEwEBhASBAxkBYlozBwhIhFaDT?=
+ =?us-ascii?q?44bkUeKcoJ7AxgWIxQBAwENLgEMBgECBAEBAwECAYR/iHkCHwYBBDQTAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABAQEBAQEgHhAOJ4V0DYJKG?=
+ =?us-ascii?q?RUjURpjAgYDBgEBAQEBAQEBAQIBAQEiAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQIMAQctcQQGEwEBOBgjAxQBBgMCEQE1A?=
+ =?us-ascii?q?wETARIagmYBgmQDBQwGki+bPHp/M4EBggwBAQaBCD4DAgkCBRgm2gSBYwmBS?=
+ =?us-ascii?q?IgXGgEkSGkChCWEQCcPgVVEgUqCRG+CPwsXAQEBAQGBOwEBCEWDLoJphgkmg?=
+ =?us-ascii?q?V0BhUlXhWBtgQpGgnMME4EtbQkCBhaBGVdXD1lyWEIOgwl/JAILQVsQi1uBS?=
+ =?us-ascii?q?0szIRMBVRMXCz4JFgIWAxsUBDAPCQsmKgY5AhIMBgYGWTQJBCMDCAQDQgMgc?=
+ =?us-ascii?q?REDBBoECwd3gTyBaQQTRAOBN4cbglSDO4IbhBpLhG+BawxhiAqBcoE+gWZMg?=
+ =?us-ascii?q?wVNhD0dQAMLbT01FBuqHQQ3AoJ/Lw5wQxUZFgEBIAI2BQkrCjYOBQRKC5MlA?=
+ =?us-ascii?q?yydIpNJgQk0B4QWgVwGDIh9gSSOJYdKhAVMgQqLKpk0IphDIII0hx6BJQmBb?=
+ =?us-ascii?q?WmIaowcPBYjaHEvgxGBfCM8gSAzGjBDgmcJRhwPkhsQWlSDGzvGSUE1AgEBN?=
+ =?us-ascii?q?wIHAQoBAQMJhWIBAYM+a10BAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ wRAO0QDOXk=
+IronPort-HdrOrdr: A9a23:5to0X6HMZRsfL7nVpLqE1ceALOsnbusQ8zAXPiFKOH9om6mj/f
+ xG88506faZslsssRIb+exoWpPgfZq0z/ccirX5Vo3MYOCJggeVBbAnxbSn6TztES/z+4dmpM
+ VdWpk7Lsb/SXxzjcOS2njdLz/M+qjjzJyV
+X-Talos-CUID: 9a23:OysqfG/ImX3PBcJXVhmVv38UQuchaiTW8FDBfEiEMExUdqW5ZVDFrQ==
+X-Talos-MUID: =?us-ascii?q?9a23=3AHpD1fA4wg439A+TVN9p3FtwexoxQuv2XWXkLrqw?=
+ =?us-ascii?q?JqtWFEjV/NhKegAa4F9o=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.08,247,1712613600"; 
+   d="scan'208,217";a="171259463"
+X-URL-ContentFilter: 
+X-MGA-submission: =?us-ascii?q?MDEjB6SZ8cBa6U2bDRzr1b1BMP6M33hmNlPC9r?=
+ =?us-ascii?q?3T9137H/4uEoAC2NxTPdZWM8QcvT/McjjQAJ3Qu0WzC3HMlfR1L1WceH?=
+ =?us-ascii?q?jTTo+mqwCRWqQU6mTVRGarCn8C2u3fMKvGa4XPnV0cSKu+iodNwgroWz?=
+ =?us-ascii?q?+nNaXlHJHET2jE7tuxwrhJGA=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2024 15:05:54 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 5F0C9564AA8;
+	Tue, 18 Jun 2024 15:05:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1718715953;
+	bh=5pyOExo4WvcNTJINXVg+5JuF9e6aFWKQa0l21l1ACdk=;
+	h=From:To:Subject:Date:Message-ID;
+	b=WRm2+A1yajqF20JJ/NUbU1JS83N++ZUTZlCjerA0lXJZU5FYoYKAjhLtsdlypxCzK
+	 Nexxr9EK9ZUnlEsCxqeHGZlmv5WsqtCJaj1aYWIs2o8A9fDsIY0Icj1AZC/qr2AlUR
+	 wHc4bo/hSNsleLQDS77VC2Haukw75JtQAar3zh1c=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 18 Jun 2024 15:05:53 +0200
+Message-ID: <m2a5jiflji.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Jun 18 15:05:53 2024 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.226825, queueID=BA08A564AA9
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19147
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-06/m2a5jiflji.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of June 11 to 18,
+2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Your opam-repository PRs are now tested on Windows
+Forester 4.1
+fun-sql 0.2.3
+dream-html and pure-html 3.5.2
+Control Structures, English translation of lectures by Xavier Leroy
+Ppxlib dev meetings
+Other OCaml News
+Old CWN
+
+
+Your opam-repository PRs are now tested on Windows
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-your-opam-repository-prs-are-now-tested-=
+on-windows/14781/1>
+
+
+Kate announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Following the merge of [Windows support for the compiler in
+  opam-repository] and the [release of opam 2.2.0~beta3], I'm happy to
+  announce that a basic Windows CI using Github Actions is now in use in
+  opam-repository, so all your new PRs are now being tested on Windows
+  too.
+
+  This is a big milestone, however the upstream opam-repository hasn't
+  been tested with Windows before and thus many packages lacking the
+  proper availability metadata will fail to build in the next month or
+  so. If you see a package that is definitely not going to be available
+  on Windows, please do report it in the [opam-repository bug-tracker]
+  or even better open a PR if you have the time. When opening such
+  PRs/issues, it would help the maintainers to copy/paste the failing
+  log in the PR description.
+
+  Most such PRs should simply add the following line to the failing
+  package(s):
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 available: os !=3D "win32"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  If you notice any issues in the Github Action itself or want to
+  improve it, please feel free to open a PRs/issue for that too, the
+  code is available in [opam-repository/.github/workflows/windows.yml].
+
+
+[Windows support for the compiler in opam-repository]
+<https://github.com/ocaml/opam-repository/pull/25861>
+
+[release of opam 2.2.0~beta3]
+<https://discuss.ocaml.org/t/ann-opam-2-2-0-beta3/14772>
+
+[opam-repository bug-tracker]
+<https://github.com/ocaml/opam-repository/issues>
+
+[opam-repository/.github/workflows/windows.yml]
+<https://github.com/ocaml/opam-repository/blob/master/.github/workflows/win=
+dows.yml>
+
+
+Forester 4.1
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-forester-4-1/14800/1>
+
+
+Jon Sterling announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I am pleased to announce the release of [Forester 4.1] on opam, which
+  is an OCaml utility to develop =E2=80=9CForests=E2=80=9D, which are dense=
+ly
+  interlinked mathematical websites / Zettelk=C3=A4sten similar to the
+  [Stacks project] or [Kerodon ]. You can see the [release notes] on my
+  own [Forest].
+
+  There are a few new features, including a simplified command `forester
+  init` to setup a fresh forest.
+
+  Thanks to Kento Okura, Nick Hu, and Trebor Huang for their
+  contributions to this release.
+
+
+[Forester 4.1] <http://www.jonmsterling.com/jms-00S9.xml>
+
+[Stacks project] <https://stacks.math.columbia.edu>
+
+[Kerodon ] <https://kerodon.net>
+
+[release notes] <http://www.jonmsterling.com/jms-00S9.xml>
+
+[Forest] <https://www.jonmsterling.com>
+
+
+fun-sql 0.2.3
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-fun-sql-0-2-3/14806/1>
+
+
+Yawar Amin announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80
+
+  I am happy to announce the initial release of fun-sql, a simple
+  functional-style query library for SQLite and PostgreSQL.
+
+  To use it with SQLite: <https://ocaml.org/p/fun-sqlite>
+
+  To use it with PostgreSQL: <https://ocaml.org/p/fun-postgresql>
+
+  Fun-sql is not an ORM, it's a query execution and data mapping library
+  (sometimes called a micro-ORM). It does three things:
+
+  1. Create the prepared statement and encode the parameters
+  2. Execute the query
+  3. Decode the resultset into OCaml types using a set of combinators.
+
+  Here's an example:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 open Fun_postgresql
+  =E2=94=82=20
+  =E2=94=82 module Note(Db : sig val db : Postgresql.connection end) =3D st=
+ruct
+  =E2=94=82   open Db
+  =E2=94=82=20
+  =E2=94=82   type t =3D { id : int; txt : string }
+  =E2=94=82   let ret =3D ret (fun row -> { id =3D int 0 row; txt =3D text =
+1 row })
+  =E2=94=82=20
+  =E2=94=82   (* Prepared statement: *)
+  =E2=94=82   let edit =3D query db "update note set txt =3D $1 where id =
+=3D $2"
+  =E2=94=82=20
+  =E2=94=82   (* Use by simply calling it: *)
+  =E2=94=82   let edit id txt =3D edit ~args:Arg.[int id; text txt] unit
+  =E2=94=82   (* val edit : int -> string -> unit *)
+  =E2=94=82=20
+  =E2=94=82   (* Prepared statement: *)
+  =E2=94=82   let by_id =3D query db "select id, txt from note where id =3D=
+ $1"
+  =E2=94=82=20
+  =E2=94=82   let by_id id =3D only (by_id ~args:Arg.[int id] ret)
+  =E2=94=82   (* val by_id : int -> t *)
+  =E2=94=82 end
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The design enforces the use of prepared statements=E2=80=93indeed, with
+  PostgreSQL, a prepared statement corresponding to a query can be
+  created only _once,_ so you have to ensure that you use a pattern like
+  the above.
+
+  MySQL support is also desired and I will get to it at some point
+  unless someone beats me to it!
+
+
+dream-html and pure-html 3.5.2
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-dream-html-pure-html-3-5-2/14808/1>
+
+
+Yawar Amin announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80
+
+  Pleased to announce the release of dream-html 3.5.2, which actually
+  spawns a new package pure-html: <https://ocaml.org/p/pure-html>
+
+  This package offers the same functionality as dream-html, _except_
+  without a Dream dependency, so you can use whatever web server you
+  like, or even use it for other applications than web servers. It works
+  exactly the same way as dream-html, except the top-level module is
+  `Pure_html':
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 open Pure_html
+  =E2=94=82 open HTML
+  =E2=94=82=20
+  =E2=94=82 let content =3D article [] [
+  =E2=94=82   p [] [txt "Header"];
+  =E2=94=82   p [] [txt "Body"];
+  =E2=94=82 ]
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  pure-html has a runtime dependency only on the `uri' package.
+
+
+Control Structures, English translation of lectures by Xavier Leroy
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/control-structures-english-translation-of-le=
+ctures-by-xavier-leroy/14810/1>
+
+
+unfode announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  [Website].
+
+  Really learned a lot from the slides. For example, the most
+  understandable definition of continuation I've ever seen:
+        Given a control point in a program, its continuation is
+        the sequence of computations that remain to be done once
+        the execution reaches the given control point in order to
+        finish the execution of the whole program.
+
+
+[Website] <https://xavierleroy.org/CdF/2023-2024/index.html>
+
+
+Ppxlib dev meetings
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ppxlib-dev-meetings/12441/24>
+
+
+Nathan Rebours announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  This month's meeting is scheduled today, Tuesday June 18th, at 6:00PM
+  CET.
+
+  Sorry for posting the announcement so late!
+
+  Here is the meeting agenda:
+  =E2=80=A2 5.2 AST bump
+  =E2=80=A2 Driver Transform refactoring
+  =E2=80=A2 5.3 support
+    =E2=80=A3 Added a trunk CI build, we should be able to consider merging
+    =E2=80=A3 Still need documentation for releases
+  =E2=80=A2 Driver anti-warning 34 code gen
+    =E2=80=A3 Still haven't heard from Janestreet, we need their feedback b=
+efore
+      moving forward with this
+  =E2=80=A2 Ocamlfind support
+    =E2=80=A3 There seem to be a bug when a ppxlib based ppx is invoked dir=
+ectly
+      using ocamlfind -package
+    =E2=80=A3 Is this something we want to actively maintain
+  =E2=80=A2 Dune w/ ppx
+    =E2=80=A3 Nathan got back to it, hopefully it should be ready soon
+  =E2=80=A2 Repo hygiene: issue triage
+    =E2=80=A3 We have a lot of issues, most of which are extremely old
+    =E2=80=A3 A lot of issues are actually questions on how to use ppxlib f=
+or
+      ppx authors
+    =E2=80=A3 It's worth having a go at closing the irrelevant issues and h=
+ave
+      some classification system for the rest
+
+  The meeting will be hosted on google meet here:
+  <https://meet.google.com/yxw-ejnu-cju>
+
+  You are welcome to join!
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Creating the SyntaxDocumentation Command - Part 2: OCaml LSP]
+  =E2=80=A2 [MirageVPN server]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Creating the SyntaxDocumentation Command - Part 2: OCaml LSP]
+<https://tarides.com/blog/2024-07-12-creating-the-syntaxdocumentation-comma=
+nd-part-2-ocaml-lsp>
+
+[MirageVPN server]
+<https://blog.robur.coop/articles/miragevpn-server.html>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-06-18 Tue 15:05 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.06.11.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.06.25.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of June 11 to 18, 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Your opam-repository PRs are now tested on Windows</a></=
+li>
+<li><a href=3D"#2">Forester 4.1</a></li>
+<li><a href=3D"#3">fun-sql 0.2.3</a></li>
+<li><a href=3D"#4">dream-html and pure-html 3.5.2</a></li>
+<li><a href=3D"#5">Control Structures, English translation of lectures by X=
+avier Leroy</a></li>
+<li><a href=3D"#6">Ppxlib dev meetings</a></li>
+<li><a href=3D"#7">Other OCaml News</a></li>
+<li><a href=3D"#org870b75f">Old CWN</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Your opam-repository PRs are now tested on Windows</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-your-opam-repository-pr=
+s-are-now-tested-on-windows/14781/1">https://discuss.ocaml.org/t/ann-your-o=
+pam-repository-prs-are-now-tested-on-windows/14781/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orga5d6f00" class=3D"outline-3">
+<h3 id=3D"orga5d6f00">Kate announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga5d6f00">
+<p>
+Following the merge of <a href=3D"https://github.com/ocaml/opam-repository/=
+pull/25861">Windows support for the compiler in opam-repository</a> and the=
+ <a href=3D"https://discuss.ocaml.org/t/ann-opam-2-2-0-beta3/14772">release=
+ of opam 2.2.0~beta3</a>, I'm happy to announce that a basic Windows CI usi=
+ng Github Actions is now in use in opam-repository, so all your new PRs are=
+ now being tested on Windows too.
+</p>
+
+<p>
+This is a big milestone, however the upstream opam-repository hasn't been t=
+ested with Windows before and thus many packages lacking the proper availab=
+ility metadata will fail to build in the next month or so. If you see a pac=
+kage that is definitely not going to be available on Windows, please do rep=
+ort it in the <a href=3D"https://github.com/ocaml/opam-repository/issues">o=
+pam-repository bug-tracker</a> or even better open a PR if you have the tim=
+e. When opening such PRs/issues, it would help the maintainers to copy/past=
+e the failing log in the PR description.
+</p>
+
+<p>
+Most such PRs should simply add the following line to the failing package(s=
+):
+</p>
+<pre class=3D"example" id=3D"orgfd31527">
+available: os !=3D "win32"
+</pre>
+
+<p>
+If you notice any issues in the Github Action itself or want to improve it,=
+ please feel free to open a PRs/issue for that too, the code is available i=
+n <a href=3D"https://github.com/ocaml/opam-repository/blob/master/.github/w=
+orkflows/windows.yml">opam-repository/.github/workflows/windows.yml</a>.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Forester 4.1</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-forester-4-1/14800/1">h=
+ttps://discuss.ocaml.org/t/ann-forester-4-1/14800/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org15521b2" class=3D"outline-3">
+<h3 id=3D"org15521b2">Jon Sterling announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org15521b2">
+<p>
+I am pleased to announce the release of <a href=3D"http://www.jonmsterling.=
+com/jms-00S9.xml">Forester 4.1</a> on opam, which is an OCaml utility to de=
+velop =E2=80=9CForests=E2=80=9D, which are densely interlinked mathematical=
+ websites / Zettelk=C3=A4sten similar to the <a href=3D"https://stacks.math=
+.columbia.edu">Stacks project</a> or <a href=3D"https://kerodon.net">Kerodo=
+n </a>. You can see the <a href=3D"http://www.jonmsterling.com/jms-00S9.xml=
+">release notes</a> on my own <a href=3D"https://www.jonmsterling.com">Fore=
+st</a>.
+</p>
+
+<p>
+There are a few new features, including a simplified command `forester init=
+` to setup a fresh forest.
+</p>
+
+<p>
+Thanks to Kento Okura, Nick Hu, and Trebor Huang for their contributions to=
+ this release.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">fun-sql 0.2.3</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-fun-sql-0-2-3/14806/1">=
+https://discuss.ocaml.org/t/ann-fun-sql-0-2-3/14806/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org12db437" class=3D"outline-3">
+<h3 id=3D"org12db437">Yawar Amin announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org12db437">
+<p>
+I am happy to announce the initial release of fun-sql, a simple functional-=
+style query library for SQLite and PostgreSQL.
+</p>
+
+<p>
+To use it with SQLite: <a href=3D"https://ocaml.org/p/fun-sqlite">https://o=
+caml.org/p/fun-sqlite</a>
+</p>
+
+<p>
+To use it with PostgreSQL: <a href=3D"https://ocaml.org/p/fun-postgresql">h=
+ttps://ocaml.org/p/fun-postgresql</a>
+</p>
+
+<p>
+Fun-sql is not an ORM, it's a query execution and data mapping library (som=
+etimes called a micro-ORM). It does three things:
+</p>
+
+<ol class=3D"org-ol">
+<li>Create the prepared statement and encode the parameters</li>
+<li>Execute the query</li>
+<li>Decode the resultset into OCaml types using a set of combinators.</li>
+</ol>
+
+<p>
+Here's an example:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">open </span><span style=3D"color: #444fcf;">Fun_postgresql</span>
+
+<span style=3D"color: #000000; font-weight: bold;">module</span> <span styl=
+e=3D"color: #444fcf;">Note</span>(<span style=3D"color: #242521; background=
+-color: #fcf7ef;">Db</span> : <span style=3D"color: #000000; font-weight: b=
+old;">sig</span> <span style=3D"color: #000000; font-weight: bold;">val</sp=
+an> <span style=3D"color: #a7601f;">db</span> : <span style=3D"color: #444f=
+cf;">Postgresql.</span>connection <span style=3D"color: #000000; font-weigh=
+t: bold;">end</span>) =3D <span style=3D"color: #000000; font-weight: bold;=
+">struct</span>
+  <span style=3D"color: #000000; font-weight: bold;">open </span><span styl=
+e=3D"color: #444fcf;">Db</span>
+
+  <span style=3D"color: #000000; font-weight: bold;">type</span> <span styl=
+e=3D"color: #444fcf;">t</span> =3D { id : int; txt : string }
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">ret</span> =3D ret (<span style=3D"color: #006f00; fon=
+t-weight: bold;">fun</span> <span style=3D"color: #007a9f;">row</span> -&gt=
+; { id =3D int 0 row; txt =3D text 1 row })
+
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Prepared statement:</span><span st=
+yle=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">edit</span> =3D query db <span style=3D"color: #ca3400=
+;">"update note set txt =3D $1 where id =3D $2"</span>
+
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Use by simply calling it:</span><s=
+pan style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">edit</span> <span style=3D"color: #007a9f;">id</span> =
+<span style=3D"color: #007a9f;">txt</span> =3D edit <span style=3D"color: #=
+00824f;">~args</span>:<span style=3D"color: #444fcf;">Arg.</span>[int id; t=
+ext txt] unit
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">val edit : int -&gt; string -&gt; =
+unit</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Prepared statement:</span><span st=
+yle=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">by_id</span> =3D query db <span style=3D"color: #ca340=
+0;">"select id, txt from note where id =3D $1"</span>
+
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">by_id</span> <span style=3D"color: #007a9f;">id</span>=
+ =3D only (by_id <span style=3D"color: #00824f;">~args</span>:<span style=
+=3D"color: #444fcf;">Arg.</span>[int id] ret)
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">val by_id : int -&gt; t</span><spa=
+n style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+<span style=3D"color: #000000; font-weight: bold;">end</span>
+</pre>
+</div>
+
+<p>
+The design enforces the use of prepared statements=E2=80=93indeed, with Pos=
+tgreSQL, a prepared statement corresponding to a query can be created only =
+<span class=3D"underline">once,</span> so you have to ensure that you use a=
+ pattern like the above.
+</p>
+
+<p>
+MySQL support is also desired and I will get to it at some point unless som=
+eone beats me to it!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">dream-html and pure-html 3.5.2</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dream-html-pure-html-3-=
+5-2/14808/1">https://discuss.ocaml.org/t/ann-dream-html-pure-html-3-5-2/148=
+08/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org8364db0" class=3D"outline-3">
+<h3 id=3D"org8364db0">Yawar Amin announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8364db0">
+<p>
+Pleased to announce the release of dream-html 3.5.2, which actually spawns =
+a new package pure-html: <a href=3D"https://ocaml.org/p/pure-html">https://=
+ocaml.org/p/pure-html</a>
+</p>
+
+<p>
+This package offers the same functionality as dream-html, <span class=3D"un=
+derline">except</span> without a Dream dependency, so you can use whatever =
+web server you like, or even use it for other applications than web servers=
+. It works exactly the same way as dream-html, except the top-level module =
+is <code>Pure_html</code>:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">open </span><span style=3D"color: #444fcf;">Pure_html</span>
+<span style=3D"color: #000000; font-weight: bold;">open </span><span style=
+=3D"color: #444fcf;">HTML</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">content</span> =3D article <span style=3D"color: #2425=
+21; background-color: #fcf7ef;">[]</span> [
+  p <span style=3D"color: #242521; background-color: #fcf7ef;">[]</span> [t=
+xt <span style=3D"color: #ca3400;">"Header"</span>];
+  p <span style=3D"color: #242521; background-color: #fcf7ef;">[]</span> [t=
+xt <span style=3D"color: #ca3400;">"Body"</span>];
+]
+</pre>
+</div>
+
+<p>
+pure-html has a runtime dependency only on the <code>uri</code> package.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Control Structures, English translation of lectures by Xavier =
+Leroy</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/control-structures-english-=
+translation-of-lectures-by-xavier-leroy/14810/1">https://discuss.ocaml.org/=
+t/control-structures-english-translation-of-lectures-by-xavier-leroy/14810/=
+1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgb0ccd0a" class=3D"outline-3">
+<h3 id=3D"orgb0ccd0a">unfode announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgb0ccd0a">
+<p>
+<a href=3D"https://xavierleroy.org/CdF/2023-2024/index.html">Website</a>.
+</p>
+
+<p>
+Really learned a lot from the slides. For example, the most understandable =
+definition of continuation I've ever seen:
+</p>
+<blockquote>
+<p>
+Given a control point in a program, its continuation is the sequence of com=
+putations that remain to be done once the execution reaches the given contr=
+ol point in order to finish the execution of the whole program.
+</p>
+</blockquote>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Ppxlib dev meetings</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ppxlib-dev-meetings/12441/2=
+4">https://discuss.ocaml.org/t/ppxlib-dev-meetings/12441/24</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org3f250f1" class=3D"outline-3">
+<h3 id=3D"org3f250f1">Nathan Rebours announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3f250f1">
+<p>
+This month's meeting is scheduled today, Tuesday June 18th, at 6:00PM CET.
+</p>
+
+<p>
+Sorry for posting the announcement so late!
+</p>
+
+<p>
+Here is the meeting agenda:
+</p>
+<ul class=3D"org-ul">
+<li>5.2 AST bump</li>
+<li>Driver Transform refactoring</li>
+<li>5.3 support
+<ul class=3D"org-ul">
+<li>Added a trunk CI build, we should be able to consider merging</li>
+<li>Still need documentation for releases</li>
+</ul></li>
+<li>Driver anti-warning 34 code gen
+<ul class=3D"org-ul">
+<li>Still haven't heard from Janestreet, we need their feedback before movi=
+ng forward with this</li>
+</ul></li>
+<li>Ocamlfind support
+<ul class=3D"org-ul">
+<li>There seem to be a bug when a ppxlib based ppx is invoked directly usin=
+g ocamlfind -package</li>
+<li>Is this something we want to actively maintain</li>
+</ul></li>
+<li>Dune w/ ppx
+<ul class=3D"org-ul">
+<li>Nathan got back to it, hopefully it should be ready soon</li>
+</ul></li>
+<li>Repo hygiene: issue triage
+<ul class=3D"org-ul">
+<li>We have a lot of issues, most of which are extremely old</li>
+<li>A lot of issues are actually questions on how to use ppxlib for ppx aut=
+hors</li>
+<li>It's worth having a go at closing the irrelevant issues and have some c=
+lassification system for the rest</li>
+</ul></li>
+</ul>
+
+<p>
+The meeting will be hosted on google meet here: <a href=3D"https://meet.goo=
+gle.com/yxw-ejnu-cju">https://meet.google.com/yxw-ejnu-cju</a>
+</p>
+
+<p>
+You are welcome to join!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+</div>
+<div id=3D"outline-container-org6de5d37" class=3D"outline-3">
+<h3 id=3D"org6de5d37">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org6de5d37">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2024-07-12-creating-the-syntaxdocum=
+entation-command-part-2-ocaml-lsp">Creating the SyntaxDocumentation Command=
+ - Part 2: OCaml LSP</a></li>
+<li><a href=3D"https://blog.robur.coop/articles/miragevpn-server.html">Mira=
+geVPN server</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-org870b75f" class=3D"outline-2">
+<h2 id=3D"org870b75f">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org870b75f">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org3f6cd01">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
