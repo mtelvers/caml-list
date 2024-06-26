@@ -1,0 +1,330 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=quarantine dis=none) header.from=googlemail.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=FKwn6spL;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20230601 header.b=ZeVhChPJ;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id EE111B80123
+	for <caml-list@tunbury.org>; Wed, 26 Jun 2024 10:24:11 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=HSuEou8RD3KNl7VQoy/bvvn9NysuMc/4sQmjnWKQPcY=;
+  b=FKwn6spL6tpm0ERUrh7ZyeUdjy8SJc38vgH3S0ArHbYJGrixk2imjijE
+   Q9ncGnIYQItmadEJ2HHlrsRiNSqXJY0IeY6kWYgmlNhO7SPf6TIxC58r4
+   7UUfqr3LUuzWUpEA3V1A5zzr88kNoWRcxmkRtWH+2vtu22hJuOy8WMR71
+   I=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@googlemail.com
+X-IronPort-AV: E=Sophos;i="6.08,266,1712613600"; 
+   d="scan'208,217";a="172558345"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 26 Jun 2024 11:24:09 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 59745E0D09; Wed, 26 Jun 2024 11:24:08 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id C1F98E0157
+	for <caml-list@sympa.inria.fr>; Wed, 26 Jun 2024 11:24:02 +0200 (CEST)
+IronPort-SDR: 667bde31_TbIwUfuxNgRIQLGIu6ZdGfy5yfrfi+wdlM4WUApwk3VmVtT
+ OmqrGXWlzNl41MrOntc9KBF0ZN2D6eMouoiaFzA==
+X-IPAS-Result: =?us-ascii?q?A0EDFQCX3XtmfymmVdFaHAEBATwBAQQEAQECAQEHAQGBZ?=
+ =?us-ascii?q?AKCGihaIlk0BAtIhFaBI4IsU4smgiKSdIRJAYZSFIERAxg+DwEDAQ0UAQEJG?=
+ =?us-ascii?q?gsEAQEDBIR/iQMCHgcBBDIHDgECBAEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBA?=
+ =?us-ascii?q?gQGAQIQAQEiGQcODimFdAsCgkoMAwMBgSllCTgBAQEBAQEBAQEBAQEBARsCD?=
+ =?us-ascii?q?R89FyELBh0BJxIDEgkHNwIjEgEFASgBIA44gU5Zgi8BAzEDEZ5cgiGBBUKLO?=
+ =?us-ascii?q?4EygQGCDQaBRwXZDgpBDWyBYwIBBhSBNAGEZYNLAYFVAgKHaYEhD4FVRIEVN?=
+ =?us-ascii?q?YJCcYEFAYJ/a4MuFoJTBI1NhU2BVo9xfyYLjS8DJgMHBwgIK0kQASEDJjM0A?=
+ =?us-ascii?q?VUTFwsaAwcCAgcCDQkCAgICAgMHAhQCAQIBAwICAhECAhAEGQIDAw8PAgICA?=
+ =?us-ascii?q?wMIDRMCAgIIDwsHAwMiAwIJCQISAgoGBgYDNgUGFSQGCgkEIQIDAwUEAw8zA?=
+ =?us-ascii?q?xcDBhEdDwMFFQMEBgoMBQMEAhgECAMHAxIXSwICCQMCBQcycyUDDQQCCgcIA?=
+ =?us-ascii?q?xEDBQMFAzcDLQQTAwMLDgcDAwYCEAMSAgIDBQMDAgMIPgMICEIDBQMHCwUhB?=
+ =?us-ascii?q?wMDAwMEAwINAwMDBwgCHAMFAyYSAgYGBwQFIgQCAyYDCQImAgMDBQYDAwMDA?=
+ =?us-ascii?q?wIHAwUGAwUCAwUDBAUbQgICAwMLAwMKNwIECgYEDQUPAwMCBBsDAwIDAwUCB?=
+ =?us-ascii?q?wMDBAQDAxwDAwMUAgUCBQcGBAUFJgMCBgMDAwIGCAUjAgYDAwQDA1gCAwUHB?=
+ =?us-ascii?q?wUORh0DBAUHAwMhBxIDDDMgAxwHJzoMBQoDBwIGIhEYCRMVGQMsBg0DGgM7B?=
+ =?us-ascii?q?QYDCAQDLAQ1KwMCKAMGCgcEGQ4DAxkFCA8DCgcFNAUFJQUEBQUHLQMUDgkwB?=
+ =?us-ascii?q?AQDAx8QDD8UCgoHBBEFCgULAykGJAMFNgQDCwUCMgcGOggFJAUCAwIDAxAPB?=
+ =?us-ascii?q?gUMLAgDJwlWFwEDCAFgBQMDIQUKBSVZAgIRAws7BQMDAwNYCAUDAgoDUQM0A?=
+ =?us-ascii?q?wIHAwUDHCgEUAMFBUUDCQgDBAJNCgU+CAsLCggVCwMGCQQDZQc7AgIEAwUmB?=
+ =?us-ascii?q?wYDD1MECgICAwMiAgUWOQMDBgU6BRwSAwIGBQMCKQUCAgMDLwcFESEKHwOBJ?=
+ =?us-ascii?q?ggGDBVLAgUHChMLOUECAwtFAxMFBSoHAwWBDUwHGgMHEgUqHUADC2ILPTUvT?=
+ =?us-ascii?q?KorgwuBcxkJEAQEYSQLAQwlDwmBHbA9lFI0ByuDa4FiDIohlTwzgVCCNY0Am?=
+ =?us-ascii?q?TSjfYJfigOLE4VuESOBSgMwgVw0GSOBAW0JgUBPAxkPVwGIJIU8g2OBa4Mpw?=
+ =?us-ascii?q?iQDRDI7AgcBCgEBAwmJGweBSAEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23:O5Y/Ia6uGibevUGrHK1FjwxRtHnMchMFZxGqfqrLsTDasY5as4F+v
+ mEYCj2FaP6LYWL3Ldp1bdiz9hhQusOAy9A1TFM9+y02Zn8b8sCt6faxfh6hZXvKRiHgZBs6t
+ JtGMoGowOQcFCK0SsKFa+C5xZVE/fjUAOC6UoYoAwgpLSd8UiAtlBl/rOAwh49skLCRDhiE0
+ T/Ii5S31GSNhXgsYgr414rZ8Ekz5Kqo5mtB1rADTakjUGH2xyF94K03fvnZw0vQGuF8AuO8T
+ uDf+7C1lkuxE8AFV7tJOp6iGqE7aua60Tqm0hK6aID+6vR2nRHe545gXBYqhei7vB3S9zx54
+ I0lWZVd0m7FNIWU8AgWe0Ew/y2TocSqUVIISJSymZX78qHIT5fj69loNhtqYpdHw8ApHW1Tz
+ /AREWwWSznW0opawJrjIgVtrsEqLc2uPYRG/388lHfWCvEpRZ2FSKLPjTNa9G1o14YeQLCHO
+ ZRfNWMHgBfoO3WjPn8WA5wm2v+1jH3+eDxEuXqaoq0452XWxQ11lrPqNbI5f/TTGp8IwxbB+
+ TKuE2LRKBIWc/e7lTW/zHOvo7LJnC+iAJkIPejtnhJtqAbOnzRMWUN+uUGAifKwj0r7X9NEN
+ 2QP6y82pO4z8laqR5/zRXWFTGWsuxcdX59RFLR/5l3UjKXT5AmdCy4PSTsphMEaWNEeaToQj
+ APWhYzQI2JzvKCvRXukqqyxhGbnUcQKFlMqaSgBRAoDxtDspoAvkx7CJuqP9obl3rUZ/hmgk
+ 1i3QDgCulkFsSIcO0yGEb3vhjutot3ISVdw6FmOGG2i6Qx9aciuYInABbnnARRofd/xorqp5
+ Sdsdy2iAAYmUM7leMulHbplIV1Rz6zZWAAweHY2d3Xbyxyj+mS4Yadb6yxkKUFiP64sIGCwM
+ RSP5FsOv8ELZxNGiJObharhW6zGKoCwRbzYugz8N4QmjmVZLVPZrHEzPBT4M57FzxdxzPBX1
+ WinnTaEVitDUfs2klJats8S1rgkwi12xGXYA/jGI+ePgNKjiIquYe5dajOmN7hnhIvd+Vm92
+ 4gFa6OilU4EOMWgOXm/zGLmBQpVRZTNLcum9ZI/my/qClYOJVzN/NeInuJ/KtE8xPgP/goKl
+ 1nkMnJlJJPErSWvAW23hrpLM9sDhL4m9S5lbx8/d02lwWYiaouJ5aISPcl/N7o++eApibY+Q
+ /AZco/SSr5CWxbWyQQ7NJPdlY1FcAj0pASsOyH+XiMzUaQ9TCP0+/jlXDDVyg8wMgSNu/ATm
+ YaQjjHgfcJbRiBJLtrnV/a0/lbg4VkfgL1TWmXLEPlyeWLt0o5gcX33hNAJP/AzLQ7nwx2E3
+ T23GjYdn/HG+KUuwenKhIeFjoanKPR/FUxkBFvm7a66GC3Z32i7y6pCbbqsUQ2FcVjr6YKOQ
+ P5zzfrsFNEmxnNxrJtaAbJn6Ykc9unfjeZW4So8FUqacmnxLK1rJ0e3+PVmt4pP4+R8khS3U
+ EfewetqE+yFF+29GWFAOTd/SPqI0MwVvTzg7f4VBkHezw0v9ZqlVXRiBTW9uBZ/HpBUbrx8m
+ fwAvfQI4TORkhApa9aKrh5F/lS2c0Avbf8ViYE4MqTK1CwQ1VBwUb7NAHTX4baOSel2HGsEH
+ zu2vJfG1pNgnhfsUnxrDnXc//tvtbJXsjBw8VIyDVComN3Eu/wJ4CNs4QkHFjpy8BEW/N9wa
+ 05KNlJ0L5qg5z1HptZOdEHyFhBjBC+2wF3QyVwIpjeIUXvyRmjHE0MlM83Q/kpDq2N4VRpY9
+ YG+12zKf2vLfsbw/y1qQm9jiaXpYuJQ/z34uvKMPpq6DbhjRhH624mCSHEtqRT1Je8A32j8u
+ vhM/strTK/waB4rvKwwDreF2YQqSByrIHJIRddj9vgrGV7wVS6T2z+cDVKYYeJIeuL39HGnB
+ /xUJs5gUwq00ACMpGs5AY8OO7pFo+471uEde7/EJX80jJXHl2BH6KnvzynZgHMnZ/5Mksxnc
+ 4PYSG+kI1yq3HBRnzfAkdlANm+GeuI7XQzb3t2u0eA3BpkG4fBNc0Yz7+OOhE+rEjBbpjCag
+ ACSQJXt7b1G6Z9tlI7SAKl8F12KCdfsZt+priG3kfpzNO3qD+mfljkoumHGPhtXN4Q/Q95Yt
+ 6qAm/+p0VLnvIQZaXH4mZ6AHZZn/c+ZBfJdIO/rHntjjQ+HVNHmuRcYyVvlK5YTyNJ5zeukT
+ jued8GfW4M0WdBc5XsNcAlYMU8XJJrWZ5fahxGWjqqzGD0C9w3YdvW12GTMb1wHRhQXOpb7N
+ BD4i8yu6v9cso5IIh0OXNNiPLNVP37hXvEAW+DqlDzFEFStvEyOioHimTUk9zvPLHuOS+T+w
+ JDdQynBZAaAg77JwP5Zor5NkEUuVlglutYJf2UZ59JSoBK5BjRfLe0ibLM3OqsNmSn2jJzFd
+ DXBaVU5MhrEXBNGTA7d5eryVQLOF80MPdbEfgYSxX22UBvvJo28A+pGzBxCskdGIm6piKntL
+ NwF4XT/MySg2pwjF65Z+vW/hvwh3f/AgG4B/UfmicHpHhICGvMw2Wd8GBZWHznyey0XeJ4n+
+ UBuLYyFfK26daI1OcNpenoQGRZA+T2zlnMnaiCAxNuZsIKepAGFJDsTJMmruoDvruxTTFLNe
+ Z8zb2SK5G+S13kauK9vsNUs6UOxIezeBdC0dccPWiVL95xdKQ0b0wcqki0IQ8Uv/QdeFxXWk
+ TzED73SwqiaABg55YB6AjnlN368vrzgwt0JYMPCSef6rCEE
+IronPort-HdrOrdr: A9a23:2pkYNaNuM2F8nMBcTuCjsMiBIKoaSvp033AB3UoZc20tTiX4rb
+ HJoB1/73XJYVkqKRMdcLy7Scq9qBDnlaKdg7NhWItKNTOO0ACVxepZnO/fKlPbakrD398Y+q
+ F6baBkBdH8SXR8h93r+RS1Hr8brOVvM5rGuQ4d9RpQpM1RBZ2IJj0ZNjqm
+X-Talos-CUID: 9a23:jVmYVWPneSpL4O5DdC9drhJLAJ8cVCPBwGrqL0aBVX1MYejA
+X-Talos-MUID: =?us-ascii?q?9a23=3ApjoRng+UcPN3BUUWDMkwvVKQf+1r7+OFLBwCq6s?=
+ =?us-ascii?q?HuOzZMy18Ym+Glh3iFw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.08,266,1712613600"; 
+   d="scan'208,217";a="172558178"
+X-MGA-submission: =?us-ascii?q?MDG3KsmdSH+7pEe+9CKPljZ6TYcphbgffOfZ1a?=
+ =?us-ascii?q?etwSXnM5TIryMMGWtBffBJXFRJ3ioAnT4wjdkSjumnSPYa6H47U2Smhn?=
+ =?us-ascii?q?Lbf5MCQWRP3NTjtwEyqk0mDKpgGFSwKm+uTazFCeSBYqb71OnUZkqeyQ?=
+ =?us-ascii?q?bQTT2lq7K/qxgdVTOJkVkXUg=3D=3D?=
+Received: from mail-io1-f41.google.com ([209.85.166.41])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2024 11:24:01 +0200
+Received: by mail-io1-f41.google.com with SMTP id ca18e2360f4ac-7f3cd802729so24621839f.1
+        for <caml-list@inria.fr>; Wed, 26 Jun 2024 02:24:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20230601; t=1719393840; x=1719998640; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=HSuEou8RD3KNl7VQoy/bvvn9NysuMc/4sQmjnWKQPcY=;
+        b=ZeVhChPJP0EO3V+6NeMJrgBlWI5drXMsCQqvb/FwwJeeYQFLC/k/VbIXlSFB2C/AHw
+         dkD2WlRQGl5AlxA8w4nJ8x8oACCjfzSgafppawZvOppdLWN9qonCUM3i4WSjVbvBddv3
+         6eZULYAzoRX+QGLqrLKAMhKnCUinypIH7hKh8AxgnkPpQr3X9xBvi1gQsicK/cz0NeN+
+         W/tzEupwd6kFGNFQge9/BqVQwXrfbofbVPeyrGyhfGP6diLZRzu7ROsnbPlRIgg72EwS
+         tqJ9aJLpXqfM1riu3P6bRzNqoHXzbK0IDI4L2tbH2EL/fezKDb28S6+Jf+hiLw0O1QXb
+         1B8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719393840; x=1719998640;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=HSuEou8RD3KNl7VQoy/bvvn9NysuMc/4sQmjnWKQPcY=;
+        b=mcmKGrghdXuyB4MUhHuRgE35OUHWL/iI5G3Sqa+EOQi47S1sgenG/QESGDKL6kedzp
+         WEHv2E5yazEFaHH4Zp7kMW6yccJsojPhNJB5sIDFDtPr3cPC1nnunycaZtJbk80VnF0y
+         GemUZ2jPDbu2yJW4owzyiqa+5AlKMXXOgiG3sXyR/Rv90uRnAVBniOoIUyA3AbtVyOMK
+         JzozILWVvBJeJ0zfyLg/0vBIsMQttSmcU/AtiuH584DyBj1ZJGbi/IA36crd5WIj75IC
+         2Tb4gYD+X8iDDHRFRrVBXTsF2qc3EtZZp7KgfjhZuvEQmB5+wTqd7exKGGqlQVQQuEGu
+         P+Xw==
+X-Forwarded-Encrypted: i=1; AJvYcCWcKFIBODuxA+JnJMm4a5vtPTz5KQ+od13IoygVjHem5SuA67OBvWoI/22VjZnyKlSWc9WiimTT+zPap0dBd7GTlmM=
+X-Gm-Message-State: AOJu0Yw91r7my3DYts3s2aNmRlyhddGM2Y4NOuWmEKpudEy1lvuIVvUJ
+	WoqsdGqgJFHCT0/nEzGI2n1qHQFwL5OS/n5H2CuOrXMXuLwcSj28CZn/ekUR/QWghZ7/+bBd7Jj
+	LA/PF2KY254nnq7FsNHA4qUb4LyQ=
+X-Google-Smtp-Source: AGHT+IEVEmfHXAFMCw1rQrL41/EjcOlDTodVHSj9ecKXQWMs66DhzmWmQ2/8BL7Z310JT65bPlwZbf+9aiXGOSsl0W0=
+X-Received: by 2002:a05:6602:2c87:b0:7eb:db06:e086 with SMTP id
+ ca18e2360f4ac-7f3a74c50ecmr1214005239f.12.1719393839879; Wed, 26 Jun 2024
+ 02:23:59 -0700 (PDT)
+MIME-Version: 1.0
+From: ICFP Publicity <icfp.publicity@googlemail.com>
+Date: Wed, 26 Jun 2024 11:23:49 +0200
+Message-ID: <CAAmpXiiM0j=kKF35VPfXeZ_XDO2SB8j0CVtv86UzN955N9Q+Uw@mail.gmail.com>
+To: undisclosed-recipients:;
+Content-Type: multipart/alternative; boundary="0000000000000e230c061bc793fd"
+Subject: [Caml-list] ICFP 2024: Call fo Volunteers
+Reply-To: ICFP Publicity <icfp.publicity@googlemail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19150
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-06/CAAmpXiiM0j%3DkKF35VPfXeZ_XDO2SB8j0CVtv86UzN955N9Q%2BUw%40mail.gmail.com>
+
+--0000000000000e230c061bc793fd
+Content-Type: text/plain; charset="UTF-8"
+
+ICFP 2024: CALL FOR VOLUNTEERS
+
+Sign up to be a Volunteer and help us make ICFP 2024 a unique experience
+for all attendants!
+
+ICFP 2024 is pleased to offer a number of opportunities for volunteers, who
+are vital to the efficient operation and continued success of the
+conference each year. The volunteer program is a chance for people from
+around the world to participate in the conferences whilst assisting us in
+preparing and running the event.
+
+The Volunteer Program helps more people attend the ICFP conference by
+covering conference fees, including access to the banquet (but not travel
+or lodging expenses) in exchange for a fixed number of work hours (usually
+from 12 to 15) helping with the conference organization.
+
+How to apply: Please apply using this form:
+https://forms.gle/688UyUSRTfSGSCGF9
+
+The deadline is *July 15th*.
+
+Eligibility: Everyone is welcome to apply. Priority is given to junior
+members of our community, e.g. full- or part-time students of computer
+science and related fields.
+
+Expectations: Applicants must be available for at least four (4) full days
+between September 2th and September 7th, 2024, and will be expected to
+provide a total of 12-15 hours of volunteering work in that time.
+
+The skills, talents, and dedication of our Volunteers contribute to the
+overall quality of the conference. The Volunteer role this year will mainly
+involve working with the organizers to prepare for the conference by
+providing technical assistance to attendees, managing online Q&A and poster
+sessions, and supporting active communication in our online environment.
+
+Compensation:
+* A Complimentary Conference Registration, offering access to all open
+sessions (i.e., parallel paper presentations, demonstrations, and
+workshops) and conference proceedings.
+* Free lunches and refreshments during breaks.
+* Volunteer garments.
+* Free admission to all social events.
+
+Please note that volunteers are responsible for their own travel and
+accommodation arrangements. If you need additional travel funding, please
+consider SIGPLAN PAC Funding and PLMW:
+
+* https://www.sigplan.org/PAC/
+* https://icfp24.sigplan.org/home/PLMW-ICFP-2024
+
+--0000000000000e230c061bc793fd
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">ICFP 2024: CALL FOR VOLUNTEERS<br><br>Sign up to be a Volu=
+nteer and help us make ICFP 2024 a unique experience for all attendants!<br=
+><br>ICFP 2024 is pleased to offer a number of opportunities for volunteers=
+, who are vital to the efficient operation and continued success of the con=
+ference each year. The volunteer program is a chance for people from around=
+ the world to participate in the conferences whilst assisting us in prepari=
+ng and running the event.<br><br>The Volunteer Program helps more people at=
+tend the ICFP conference by covering conference fees, including access to t=
+he banquet (but not travel or lodging expenses) in exchange for a fixed num=
+ber of work hours (usually from 12 to 15) helping with the conference organ=
+ization.<br><br>How to apply: Please apply using this form:<div><a href=3D"=
+https://forms.gle/688UyUSRTfSGSCGF9">https://forms.gle/688UyUSRTfSGSCGF9</a=
+>=C2=A0 =C2=A0<br><br>The deadline is <b>July 15th</b>.<br><br>Eligibility:=
+ Everyone is welcome to apply. Priority is given to junior members of our c=
+ommunity, e.g. full- or part-time students of computer science and related =
+fields.<br><br>Expectations: Applicants must be available for at least four=
+ (4) full days between September 2th and September 7th, 2024, and will be e=
+xpected to provide a total of 12-15 hours of volunteering work in that time=
+.<br><br>The skills, talents, and dedication of our Volunteers contribute t=
+o the overall quality of the conference. The Volunteer role this year will =
+mainly involve working with the organizers to prepare for the conference by=
+ providing technical assistance to attendees, managing online Q&amp;A and p=
+oster sessions, and supporting active communication in our online environme=
+nt.<br><br>Compensation: =C2=A0<br>* A Complimentary Conference Registratio=
+n, offering access to all open sessions (i.e., parallel paper presentations=
+, demonstrations, and workshops) and conference proceedings.<br>* Free lunc=
+hes and refreshments during breaks.<br>* Volunteer garments.<br>* Free admi=
+ssion to all social events.<br><br>Please note that volunteers are responsi=
+ble for their own travel and accommodation arrangements. If you need additi=
+onal travel funding, please consider SIGPLAN PAC Funding and PLMW:<br><br>*=
+ <a href=3D"https://www.sigplan.org/PAC/">https://www.sigplan.org/PAC/</a>=
+=C2=A0<br>* <a href=3D"https://icfp24.sigplan.org/home/PLMW-ICFP-2024">http=
+s://icfp24.sigplan.org/home/PLMW-ICFP-2024</a><br></div></div>
+
+--0000000000000e230c061bc793fd--
