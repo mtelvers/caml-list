@@ -1,0 +1,455 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=none (p=none dis=none) header.from=guatto.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=YKK6UM8F;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=guatto-org.20230601.gappssmtp.com header.i=@guatto-org.20230601.gappssmtp.com header.a=rsa-sha256 header.s=20230601 header.b=TmmOGsLH;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id B5C0AB80123
+	for <caml-list@tunbury.org>; Tue,  2 Jul 2024 13:30:42 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=ruF5PdqpHUa1CSzmqgjXIFWb7UGKILisryG+nZPwprQ=;
+  b=YKK6UM8F5nuzVscu0L5GYSfQ6rLRguU9weutxWxMpZWvWmGZON6uSeTM
+   WWvTsRNgqBWAz3LayGQApTzFEl2U9fdZlOGrZJRRiyK/mmvK6H9HrqNiF
+   BP0EV9z97oSP4ZLRNfOn0dcw7xe1d8raljrWWyhFuzlydhMRd9DEjQ/Bu
+   w=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@guatto-org.20230601.gappssmtp.com
+X-IronPort-AV: E=Sophos;i="6.09,178,1716242400"; 
+   d="scan'208,217";a="173528496"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 02 Jul 2024 14:27:06 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 3FE11E0D24; Tue,  2 Jul 2024 14:27:06 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 5B93BE0D24
+	for <caml-list@sympa.inria.fr>; Tue,  2 Jul 2024 14:15:03 +0200 (CEST)
+IronPort-SDR: 6683ef45_gX7HI91WS91Qjevb2h/HUX6stJNDSJ4i0S/Z1zIwTaFBXz5
+ r58p52hqVpCoy47CeqVls2cktjOigJnrPYbj/lQ==
+X-IPAS-Result: =?us-ascii?q?A0HRAwCS7oNmf6rQVdFaHgE8DAILgWSCRHxZNAQLSIQaP?=
+ =?us-ascii?q?IEjjiWCIoEWFpxkgSUDVg8BAwENNQ8EAQEDAwGEf4kQAh4GBjAJDgECBAEBA?=
+ =?us-ascii?q?QEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGAQIQAQEiGQcODimFdA2CYIEqgSYBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQIUEncGC?=
+ =?us-ascii?q?wYdAQE4GA03AiMSAQUBV4JfgmQDEZAqjzSBBUKLO4EygQGCDAEBBtwdgWMJF?=
+ =?us-ascii?q?IE0iDEBgVUCAoNfhAqBIRuCDYEVNYI9gXuBXAOCDIMugmmOKodVg1iBF4MZV?=
+ =?us-ascii?q?w+CZQ6BSIE+fyYLjHUmJgMHBxArSQ4BIQMmMyECEQFVExcLPh0CFgMbFAQwD?=
+ =?us-ascii?q?wkLJikGOQISDAYGBlk0CQQjAwgEA0IDIHERAwQaBAsHd4E8gWkEE0QDgTeJb?=
+ =?us-ascii?q?IM5ghuEGkuBK4NDgWsBCwFgiXWBPoFig0xKg2iBEh1AAwtiCz01FBtMqguFL?=
+ =?us-ascii?q?QEBGghQUMZ6hB2BYootlTwzgU2EDqRdAYd3kHCNdpVEFYUrESMSgRwWOoFcM?=
+ =?us-ascii?q?xoIKAhsBoIwCUYDGQ+OOINjgT7JIgNEMgI5AgcBCgEBAwkBgjmGaGlhAQE?=
+IronPort-PHdr: A9a23:ty+uuhOlNDkVsPbN7dMl6nbvBhdPi9zP1u491JMrhvp0f7i5+Ny6Z
+ QqDvq0r1QKCAduTq6odzbaM4ua4AS1IyK3CmU5BWaQPbSNNsd8RkQ0kDZzNImzAB9muURYHG
+ t9fXkRu5XCxPBsdMs//Y1rPvi/6tmZKSV3wOgVvO+v6BJPZgdip2OCu4Z3TZBhDiCagbb9oI
+ xi7oxndutMLjYZiJao8xRrEqWZMd+hK2G9kP12ekwj468uq4JJv7yFcsO89+sBdVqn3Y6s3Q
+ btEATo8NGw7+NPlvgTZQwuV4XscXGQWkh5WDAXA8Rr3QJT/vDbku+RkwCWVMtH4Qr4yWTS58
+ qdkUwTohzsdNz44627YlMp9h79GrR27phx/x4nUYJyJNPd7Y6jQc88WSXZHU81MUSFKH4GyY
+ JYVD+cZMulWr4fzqVgToxWgGQahH/ngxiNSi3LswaE2z+YsHAfb1wIgBdIOt3HUoc3pOagPS
+ +C1zbfHzTPeZP1XxDfy8pTIcgwmofqRWr9/a9feyVMuFwzbiFWdsoPlPy6P2eQRr2ib6PBsV
+ eW1i24osgx8pCWkycgwhIfTnI0V1kzE+jtjwIYzPdC1VUB2bNCqHpZeqy2UOYV7T8c8T2xmp
+ is3yKELtICncCUIyJoqxRHSZuCJfoWH4h/uW+WcLDRmiXxqe7+ymQu//E69wePyUcm01UxFr
+ itDktTUt3AN0QbT6smdRfdn8Eehwy6D1wDU6uFYPU80j7LbJ4Q9zb43k5oet1nIECzumEjuk
+ qOaakEp9vKr5unneLnquIOQOoxuhg3jMKkihsqyCvkmPwgKQmib4vi826P5/UPkQbVLj+M5n
+ 7HFvJ3cOM8VvLS2AxVP3YYm8xu/Dymp0NAfnXQfKVJKYhOHj4zwN1HKIvD0EO6zg1qxnDpp2
+ /zKJLLhApLKLnjMlLfuY6xx5FJbyAo21dxf5pRUBa8dIP/rREP9qNjVAgU6PgG02errFslx2
+ 4AEVW6SAKKVLLvesVqS6eIuJ+mMapUVuDH4K/U9/fHhkGU5mV4DcqmvxpYXZ224Ee56I0WFZ
+ nrgmNABEX0FvgYmSuzlk0WNUSRPaHaqQ6I8+jY7BZq7AYvbXICinKSB3DunHp1Rfm1JFkqDE
+ XLsd4mdX/cMaTmSItN6nzwfVbmhTpch2gu0uA/7zbpnNOvU9TcCuZLtztgmr9HUwBo78DgxC
+ 8WGz0mMSXt1lyUGXWwYxqd69GVx0FaO1+BXnvVECdsbs/pFSAY3M7bT0uVmF9e0XRjOKITaA
+ G26S8mrVGliBuk6xMUDNh4V87SKixnC23HvGLoJj/mQA4Ry9KvA3n/3LsI7ynDc1aBngUN1C
+ tBXOziAgahyvxPWG5aPi1+Qwq+mb6UR2gbC6W6f0W3Iu1tXA0ZrSauQe3cZawPNqMjhoEbLT
+ rugE7MiZwJN08+PLINFd9T1kVIAQ+3sa5zFe2zkvWC2CF6Tw6+UKornf2JIxCLGFE0NiBwe5
+ 16DPAk6QyOj+ifQVWM2U13oZEzo/K91r3bTolYc6QaMYgUh0rO0/kVQnvmAU7YI2apCvi49q
+ jJyFVL73tTMCtPGqRAzNKNbKcgw5ltKzwe7/0R0I4CgIqZ+h1UfbxU/vkXg0A9yA5lBls5ip
+ W0jzQ57I6aVmF1bcDbQ0Zf1M7zRYm78mXLnI6fawFDT1v6Z564T9PN+rE/s/UmoGkck73R7w
+ oxNyXLPrp7ODQcUTdfwShNtr0k89+ycOHFtodqLjS4JU+H8qDLJ1tM3CfFwzx+he4waK6aYD
+ ErpFNVcAcGyKessklzvbxQePekU+rRnWqHuP/aAxqOvO/5t2Ty8imESqolxyEOB8QJzV+fUw
+ 5FDxOuXlFjiNX+0nBK6v8b7lJoRLzgeBGuyzwDrGYdNeqo0epwEQzTmM4i8wdNwgIToUnhT+
+ Qu4Bl8I78SufAKbc1332QA4OV0/h3uhlGP4yjV1l2psta+DxGnVxPykchMbO2lNTW0kjFH2I
+ IHygcpIFE6vJxMkkheo/yOYj+BSubh/Im/PQExJYzm+LmdsVbG1v6aDZMgH4Y0hsCFeWuCxK
+ V6ATbu1rxwf2iLlV2xQoVJzPzimoJT0mTR1lWuBMHE1q2DWOIlxyRrZ+N3AVKtU1zsCSjN/j
+ GqyZBD0NN2o8NOI0pbb57rmBiTxC9sJKXmtlNzY507ZrSVwDBaynu6+gIjiGAk+imrg0sVyE
+ D7PtFD6a5Xq0KKzNaRmeFNpDRny8ZkfeMk2n40uiZUXwXVfiI+S+C9NmGvpMNhd8a3jZWYRQ
+ ngM2dGfs22HkAVza2mEwY70TCDXy8d7ZtS8SmwL0z4h6IZNEqjev/RU2CBypFS/twfYZ/Nwy
+ ywcxfUZ43kfm+gVuQApw01xG5g0Gk9VdWzpnhWMtJWlqblPIX2oaf623VZ/mtaoCPeDpBtdU
+ TD3YMVqGyg49ch5PF/WtR+7ooj5ZNnda84SvRyIgl/BieZSMpc4ivsNg2JuJ2v8uXQvz+Nzg
+ wZp2Nm2u42OKmMl+6zcYFYQLjrue8Ya4S3gl45bl8eSmoStR9BvQ2pTGpTvSv2sHXQZsvGmf
+ weCHTsgq2uKTLrSGQjMjSUu53nLEp2tKzSWPCxDlYQkFETbfhQPxllLBGZf/NZxDA2hyc3/f
+ V0s4zkQ4gW9sR5Q0qdzMAG5VG7DpQCuYzNySZ6FLRMQ4BsRgiWdecGY8O93GDlVu5O7qwnYY
+ GWXfQVFC0kGR0WYG1elOaOhr4qlkaDQFq+lIv3CbK/b4/RZTOuNzImz35FO+j+NMoCLPCAnA
+ aRkggxMWnd2H8mfkDIKAX9y9WqFf4uQoxGy/Tdyp8a0/aHwWQ7h0oCIDqNbLdRl/x3eaUarM
+ ueRgGN9K28d2MpTnTnHz78Q2FNUgCZrJWHF+VEoujPEUL7X3KhNAExDA8ucHMRV5r4g2U9KI
+ 8GJ0rvI
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:3xh5r6oSJW/K0Kxk42YojZcaV5omeYIsimQD101hICG9E/bo8P
+ xG+c5w6faaskdzZJhNo7C90cq7IE80l6QFg7X5VI3KNGLbUQCTXeRfBOXZslnd8u7FmtK1F5
+ 0MT0GzMrLN5JFB4/rH3A==
+X-Talos-CUID: =?us-ascii?q?9a23=3AG4LcpWpH8c2rdxZ68nPxysfmUeMHdGTP/lbPGV2?=
+ =?us-ascii?q?lNmVAVJmIZ2Ss1Kwxxg=3D=3D?=
+X-Talos-MUID: 9a23:3EM2wQt4SLHolwCvEc2nmmE+Etgxx6WUBE0hzZYosumbFwV5JGLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.09,178,1716242400"; 
+   d="scan'208,217";a="91155081"
+X-MGA-submission: =?us-ascii?q?MDGsLOXVnvtqhjiiGc/Pp9jlGMgUmbyMayCz1U?=
+ =?us-ascii?q?nf/0PEbw8uUkXIrEjceZmynI183G5dHoucWlurZ1yn9teut8G+4eFWBL?=
+ =?us-ascii?q?aY285EgggeZ/S42mfvNO8z9ZTyv2gL4V1FYqPkz+1KPg/eW7/85FObDA?=
+ =?us-ascii?q?NsnqrtHqccrePkRYOijpzXeQ=3D=3D?=
+Received: from mail-lj1-f170.google.com ([209.85.208.170])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 14:15:01 +0200
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2ec3f875e68so45628121fa.0
+        for <caml-list@inria.fr>; Tue, 02 Jul 2024 05:15:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=guatto-org.20230601.gappssmtp.com; s=20230601; t=1719922500; x=1720527300; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ruF5PdqpHUa1CSzmqgjXIFWb7UGKILisryG+nZPwprQ=;
+        b=TmmOGsLHsT6oDpzEaJWlUUxlfWN87nBBK5g/hS3cDHmEOHi/DhE/iIOnclLoxMrrAe
+         XDttBtx8jqwr667oqqFZH+WsnxQV40sN7yk8lT3tDD8VNMUp3QXpKkzcgEXXgGC8K8ze
+         CsAkbil31xtnxfwqh80lirDMneySa5mZEKfCdHWW9SVJwfDUpKA+vy391NVLf+NmLx6X
+         DFnA5Rnbdc3HllqNUdohnHVxXjB931PmAEIwOkwYqxoRPO+2lz1DL17h+24ruUXkAMUC
+         JYRxUtl3PqU3b4M8oA7/extkq/1EGkPLKxScBW33fZrpXiW/xVDeDmfMmXOxOGBMLjvi
+         kPpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719922500; x=1720527300;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ruF5PdqpHUa1CSzmqgjXIFWb7UGKILisryG+nZPwprQ=;
+        b=PLmG+9/h9w4vIwTGFWMGo+cjUcrmdma02/TiDFx9S3qUAZm7mox2FpwHyfyRB6x6Np
+         laG/HIO0u0Skj4+yfHHPeJgHAi7Abl3MkLoBy5nH0auol2PyAQk7x2LtuEQ5iTB2kWyd
+         z1odfZEDW+g2roUKcsyyuh++GjHBaPWgIZOOHgHFKZiLVyWEOrrPUUXBTFxWa4vTtm1D
+         u0VlJYsqhjYWJR1qTdWqIbpHAQAmNcJe76PV5za2gDX+ttW8PVVgHu0Bo6RvOBXgNDk1
+         ocw7AAQVlpI6/Ik5bgCk6ZPQyqqXIyBovC2TDbA/2tWtT3QDS1Bb536tkSdicK9SUPgG
+         5V3w==
+X-Gm-Message-State: AOJu0YwdRSh3hYBSY8AiuBhzxeCVAL21gundUpDt0F56atWA7XRZrPaz
+	JVmDEXrfgy6Nekaric5kS5DEPt8Oxd9NPM8orc2EF4IQIPkOPHtqU7avEYtxzUNFFxign72Er6k
+	4iuEcjVkJkkNuWhL8klio456YmeboJvm7L8Jg/qd5bKq44TiOzYs=
+X-Google-Smtp-Source: AGHT+IHRg3zhaQ+7+XdCPc2hcmtOhpI9k9LSRb24BFV4cSiLFipxv6VbmuyYK+esLXmXhZsN5rjV8RLGLU3qtaigyAg=
+X-Received: by 2002:a05:651c:150c:b0:2ee:6254:f9f5 with SMTP id
+ 38308e7fff4ca-2ee6254fb42mr54559501fa.14.1719922499639; Tue, 02 Jul 2024
+ 05:14:59 -0700 (PDT)
+MIME-Version: 1.0
+From: Adrien Guatto <adrien@guatto.org>
+Date: Tue, 2 Jul 2024 14:14:48 +0200
+Message-ID: <CAJ1RMdMNVNvwh4MgaM3+j8T=UNGaPdkVG-RDUXTOMaUwPRJZJw@mail.gmail.com>
+To: caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="000000000000a1f62c061c42a928"
+Subject: [Caml-list] CFP - JFLA 2025 - =?UTF-8?Q?Journ=C3=A9es?=
+ Francophones des Langages Applicatifs
+Reply-To: Adrien Guatto <adrien@guatto.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19153
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-07/CAJ1RMdMNVNvwh4MgaM3%2Bj8T%3DUNGaPdkVG-RDUXTOMaUwPRJZJw%40mail.gmail.com>
+
+--000000000000a1f62c061c42a928
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+This message is intentionally written in French. It is a call for
+papers for the =E2=80=9CFrancophone Days on Functional Languages=E2=80=9D t=
+o be held
+at the end of January 2025 in the Loire Valley. Papers can be written in
+English, but the presentations themselves are expected to be given in
+French.
+
+Merci de faire circuler : premier appel =C3=A0 communications
+
+JFLA 2025 : Journ=C3=A9es Francophones des Langages Applicatifs
+http://jfla.inria.fr/jfla2025.html
+
+28 janvier au 31 janvier 2025
+
+Domaine de Roiff=C3=A9
+
+Les 36es Journ=C3=A9es Francophones des Langages Applicatifs (JFLA) se
+tiendront dans la vall=C3=A9e de la Loire, =C3=A0 Roiff=C3=A9 (Vienne), du =
+mardi 28
+janvier 2025 au vendredi 31 janvier 2025.
+
+Les JFLA r=C3=A9unissent concepteurs, utilisateurs et th=C3=A9oriciens ; el=
+les
+ont pour ambition de couvrir les domaines des langages applicatifs, de
+la preuve formelle, de la v=C3=A9rification de programmes, et des objets
+math=C3=A9matiques qui sous-tendent ces outils. Ces domaines doivent =C3=AA=
+tre
+pris au sens large : nous souhaitons promouvoir les ponts entre les
+diff=C3=A9rentes th=C3=A9matiques.
+
+- Langages fonctionnels et applicatifs : s=C3=A9mantique, compilation,
+  optimisation, typage, extensions =C3=A0 d'autres paradigmes.
+
+- Assistants de preuve : impl=C3=A9mentation, nouvelles tactiques,
+  d=C3=A9veloppements pr=C3=A9sentant un int=C3=A9r=C3=AAt th=C3=A9orique, =
+technique ou
+  m=C3=A9thodologique.
+
+- Logique, correspondance preuve-programme, r=C3=A9alisabilit=C3=A9, extrac=
+tion
+  de programmes, mod=C3=A8les.
+
+- Sp=C3=A9cification, prototypage, d=C3=A9veloppements formels d'algorithme=
+s.
+
+- V=C3=A9rification de programmes ou de mod=C3=A8les, v=C3=A9rification d=
+=C3=A9ductive,
+  interpr=C3=A9tation abstraite, raffinement.
+
+- Utilisation industrielle des langages fonctionnels et applicatifs,
+  ou des m=C3=A9thodes issues de la communaut=C3=A9 scientifique. Outils et
+  plateformes pour le web.
+
+- Enseignement ou diffusion des langages fonctionnels et
+  applicatifs. Environnements et m=C3=A9thodes de d=C3=A9veloppement, retou=
+rs
+  d'exp=C3=A9rience.
+
+Les articles soumis aux JFLA sont relus par au moins deux personnes
+s'ils sont accept=C3=A9s, et au moins trois personnes s'ils sont rejet=C3=
+=A9s.
+Les critiques des relecteurs sont toujours bienveillantes et la
+plupart du temps encourageantes et constructives, m=C3=AAme en cas de
+rejet.
+
+Il n'y a donc pas de raison de ne pas soumettre aux JFLA !
+
+DATES IMPORTANTES
+
+/!\ Attention : les dates limites sont fermes et d=C3=A9finitives.
+    Il n'y aura pas d'extension. /!\
+
+- Soumission des r=C3=A9sum=C3=A9s et articles : 16 octobre 2024, GMT+2
+- Notification aux auteurs : 3 d=C3=A9cembre 2024, GMT+2
+- Version finale des articles : 17 d=C3=A9cembre 2024, GMT+2
+
+SOUMISSIONS
+
+Nous acceptons deux types de soumissions :
+
+- Article de recherche (18 pages max.) portant sur des travaux
+  originaux. Nous acceptons des travaux en cours, pour lesquels
+  l'aspect recherche n'est pas enti=C3=A8rement finalis=C3=A9. Nous encoura=
+geons
+  aussi la soumission d'articles pr=C3=A9sentant avec =C3=A9l=C3=A9gance un=
+ r=C3=A9sultat
+  connu sous un angle nouveau.
+
+- Article court (9 pages max.) d=C3=A9crivant un probl=C3=A8me particulier,=
+ les
+  pistes en cours d'investigation, et visant =C3=A0 rechercher de l'aide de
+  la part de la communaut=C3=A9. Les articles courts peuvent =C3=A9galement
+  pr=C3=A9senter de mani=C3=A8re synth=C3=A9tique et coh=C3=A9rente des r=
+=C3=A9sultats d=C3=A9j=C3=A0
+  publi=C3=A9s. Enfin, ils peuvent pr=C3=A9senter un outil logiciel dont
+  l'expos=C3=A9 constituera une d=C3=A9monstration.
+
+CONSIGNES AUX AUTEURS
+
+Les articles peuvent =C3=AAtre r=C3=A9dig=C3=A9s en fran=C3=A7ais ou en ang=
+lais.
+
+La forme de l'article doit =C3=AAtre soign=C3=A9e, et le contenu r=C3=A9dig=
+=C3=A9 de
+mani=C3=A8re structur=C3=A9e et claire.
+
+Le style LaTeX jflart doit imp=C3=A9rativement =C3=AAtre utilis=C3=A9 sans
+modification de la mise en page. Le style LaTeX et sa documentation
+sont disponibles depuis le site web de la conf=C3=A9rence.
+
+Les limites de pages sont strictes. Les r=C3=A9f=C3=A9rences bibliographiqu=
+es ne
+sont pas comptabilis=C3=A9es dans la limite de pages. Les annexes aux
+articles ne sont pas autoris=C3=A9es.
+
+Les auteurs peuvent soumettre du mat=C3=A9riel suppl=C3=A9mentaire, s=C3=A9=
+par=C3=A9 de
+l'article soumis, sous forme de texte (version longue, sans limite de
+pages) et/ou de d=C3=A9veloppement logiciel. L'=C3=A9valuation de ce mat=C3=
+=A9riel
+suppl=C3=A9mentaire est =C3=A0 la discr=C3=A9tion des relecteurs. Les artic=
+les soumis
+doivent donc =C3=AAtre auto-contenus et =C3=A9valuables sans ce mat=C3=A9ri=
+el
+suppl=C3=A9mentaire.
+
+Les soumissions parall=C3=A8les dans d'autres conf=C3=A9rences, journaux ou
+workshops avec actes ne sont pas autoris=C3=A9es.
+
+Les membres du comit=C3=A9 de programme sont autoris=C3=A9s =C3=A0 soumettr=
+e un
+article. Les pr=C3=A9sidents du comit=C3=A9 ne le sont pas.
+
+Les articles doivent =C3=AAtre soumis via le site :
+https://jfla2025.hotcrp.com
+
+L'=C3=A9valuation des articles suit un processus en simple-aveugle : les
+relecteurs des articles sont anonymes, mais pas les auteurs.
+
+Les articles accept=C3=A9s seront publi=C3=A9s dans les actes de la conf=C3=
+=A9rence,
+sur HAL (portail institutionnel Inria), et les auteurs en donneront
+une pr=C3=A9sentation lors des journ=C3=A9es. Les pr=C3=A9sentations seront=
+, de
+pr=C3=A9f=C3=A9rence, donn=C3=A9es en fran=C3=A7ais.
+
+Adrien GUATTO et Marie KERJEAN
+JFLA 2025
+
+--000000000000a1f62c061c42a928
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">This message is intentionally written in French. It is a c=
+all for<br>papers for the =E2=80=9CFrancophone Days on Functional Languages=
+=E2=80=9D to be held<br>at the end of January 2025 in the Loire Valley. Pap=
+ers can be written in<br>English, but the presentations themselves are expe=
+cted to be given in<br>French.<br><br>Merci de faire circuler : premier app=
+el =C3=A0 communications<br><br>JFLA 2025 : Journ=C3=A9es Francophones des =
+Langages Applicatifs<br><a href=3D"http://jfla.inria.fr/jfla2025.html">http=
+://jfla.inria.fr/jfla2025.html</a><br><br>28 janvier au 31 janvier 2025<br>=
+<br>Domaine de Roiff=C3=A9<br><br>Les 36es Journ=C3=A9es Francophones des L=
+angages Applicatifs (JFLA) se<br>tiendront dans la vall=C3=A9e de la Loire,=
+ =C3=A0 Roiff=C3=A9 (Vienne), du mardi 28<br>janvier 2025 au vendredi 31 ja=
+nvier 2025.<br><br>Les JFLA r=C3=A9unissent concepteurs, utilisateurs et th=
+=C3=A9oriciens ; elles<br>ont pour ambition de couvrir les domaines des lan=
+gages applicatifs, de<br>la preuve formelle, de la v=C3=A9rification de pro=
+grammes, et des objets<br>math=C3=A9matiques qui sous-tendent ces outils. C=
+es domaines doivent =C3=AAtre<br>pris au sens large : nous souhaitons promo=
+uvoir les ponts entre les<br>diff=C3=A9rentes th=C3=A9matiques.<br><br>- La=
+ngages fonctionnels et applicatifs : s=C3=A9mantique, compilation,<br>=C2=
+=A0 optimisation, typage, extensions =C3=A0 d&#39;autres paradigmes.<br><br=
+>- Assistants de preuve : impl=C3=A9mentation, nouvelles tactiques,<br>=C2=
+=A0 d=C3=A9veloppements pr=C3=A9sentant un int=C3=A9r=C3=AAt th=C3=A9orique=
+, technique ou<br>=C2=A0 m=C3=A9thodologique.<br><br>- Logique, corresponda=
+nce preuve-programme, r=C3=A9alisabilit=C3=A9, extraction<br>=C2=A0 de prog=
+rammes, mod=C3=A8les.<br><br>- Sp=C3=A9cification, prototypage, d=C3=A9velo=
+ppements formels d&#39;algorithmes.<br><br>- V=C3=A9rification de programme=
+s ou de mod=C3=A8les, v=C3=A9rification d=C3=A9ductive,<br>=C2=A0 interpr=
+=C3=A9tation abstraite, raffinement.<br><br>- Utilisation industrielle des =
+langages fonctionnels et applicatifs,<br>=C2=A0 ou des m=C3=A9thodes issues=
+ de la communaut=C3=A9 scientifique. Outils et<br>=C2=A0 plateformes pour l=
+e web.<br><br>- Enseignement ou diffusion des langages fonctionnels et<br>=
+=C2=A0 applicatifs. Environnements et m=C3=A9thodes de d=C3=A9veloppement, =
+retours<br>=C2=A0 d&#39;exp=C3=A9rience.<br><br>Les articles soumis aux JFL=
+A sont relus par au moins deux personnes<br>s&#39;ils sont accept=C3=A9s, e=
+t au moins trois personnes s&#39;ils sont rejet=C3=A9s.<br>Les critiques de=
+s relecteurs sont toujours bienveillantes et la<br>plupart du temps encoura=
+geantes et constructives, m=C3=AAme en cas de<br>rejet.<br><br>Il n&#39;y a=
+ donc pas de raison de ne pas soumettre aux JFLA !<br><br>DATES IMPORTANTES=
+<br><br>/!\ Attention : les dates limites sont fermes et d=C3=A9finitives.<=
+br>=C2=A0 =C2=A0 Il n&#39;y aura pas d&#39;extension. /!\<br><br>- Soumissi=
+on des r=C3=A9sum=C3=A9s et articles : 16 octobre 2024, GMT+2<br>- Notifica=
+tion aux auteurs : 3 d=C3=A9cembre 2024, GMT+2<br>- Version finale des arti=
+cles : 17 d=C3=A9cembre 2024, GMT+2<br><br>SOUMISSIONS<br><br>Nous accepton=
+s deux types de soumissions :<br><br>- Article de recherche (18 pages max.)=
+ portant sur des travaux<br>=C2=A0 originaux. Nous acceptons des travaux en=
+ cours, pour lesquels<br>=C2=A0 l&#39;aspect recherche n&#39;est pas enti=
+=C3=A8rement finalis=C3=A9. Nous encourageons<br>=C2=A0 aussi la soumission=
+ d&#39;articles pr=C3=A9sentant avec =C3=A9l=C3=A9gance un r=C3=A9sultat<br=
+>=C2=A0 connu sous un angle nouveau.<br><br>- Article court (9 pages max.) =
+d=C3=A9crivant un probl=C3=A8me particulier, les<br>=C2=A0 pistes en cours =
+d&#39;investigation, et visant =C3=A0 rechercher de l&#39;aide de<br>=C2=A0=
+ la part de la communaut=C3=A9. Les articles courts peuvent =C3=A9galement<=
+br>=C2=A0 pr=C3=A9senter de mani=C3=A8re synth=C3=A9tique et coh=C3=A9rente=
+ des r=C3=A9sultats d=C3=A9j=C3=A0<br>=C2=A0 publi=C3=A9s. Enfin, ils peuve=
+nt pr=C3=A9senter un outil logiciel dont<br>=C2=A0 l&#39;expos=C3=A9 consti=
+tuera une d=C3=A9monstration.<br><br>CONSIGNES AUX AUTEURS<br><br>Les artic=
+les peuvent =C3=AAtre r=C3=A9dig=C3=A9s en fran=C3=A7ais ou en anglais.<br>=
+<br>La forme de l&#39;article doit =C3=AAtre soign=C3=A9e, et le contenu r=
+=C3=A9dig=C3=A9 de<br>mani=C3=A8re structur=C3=A9e et claire.<br><br>Le sty=
+le LaTeX jflart doit imp=C3=A9rativement =C3=AAtre utilis=C3=A9 sans<br>mod=
+ification de la mise en page. Le style LaTeX et sa documentation<br>sont di=
+sponibles depuis le site web de la conf=C3=A9rence.<br><br>Les limites de p=
+ages sont strictes. Les r=C3=A9f=C3=A9rences bibliographiques ne<br>sont pa=
+s comptabilis=C3=A9es dans la limite de pages. Les annexes aux<br>articles =
+ne sont pas autoris=C3=A9es.<br><br>Les auteurs peuvent soumettre du mat=C3=
+=A9riel suppl=C3=A9mentaire, s=C3=A9par=C3=A9 de<br>l&#39;article soumis, s=
+ous forme de texte (version longue, sans limite de<br>pages) et/ou de d=C3=
+=A9veloppement logiciel. L&#39;=C3=A9valuation de ce mat=C3=A9riel<br>suppl=
+=C3=A9mentaire est =C3=A0 la discr=C3=A9tion des relecteurs. Les articles s=
+oumis<br>doivent donc =C3=AAtre auto-contenus et =C3=A9valuables sans ce ma=
+t=C3=A9riel<br>suppl=C3=A9mentaire.<br><br>Les soumissions parall=C3=A8les =
+dans d&#39;autres conf=C3=A9rences, journaux ou<br>workshops avec actes ne =
+sont pas autoris=C3=A9es.<br><br>Les membres du comit=C3=A9 de programme so=
+nt autoris=C3=A9s =C3=A0 soumettre un<br>article. Les pr=C3=A9sidents du co=
+mit=C3=A9 ne le sont pas.<br><br>Les articles doivent =C3=AAtre soumis via =
+le site :<br><a href=3D"https://jfla2025.hotcrp.com">https://jfla2025.hotcr=
+p.com</a><br><br>L&#39;=C3=A9valuation des articles suit un processus en si=
+mple-aveugle : les<br>relecteurs des articles sont anonymes, mais pas les a=
+uteurs.<br><br>Les articles accept=C3=A9s seront publi=C3=A9s dans les acte=
+s de la conf=C3=A9rence,<br>sur HAL (portail institutionnel Inria), et les =
+auteurs en donneront<br>une pr=C3=A9sentation lors des journ=C3=A9es. Les p=
+r=C3=A9sentations seront, de<br>pr=C3=A9f=C3=A9rence, donn=C3=A9es en fran=
+=C3=A7ais.<br><br>Adrien GUATTO et Marie KERJEAN<br>JFLA 2025</div>
+
+--000000000000a1f62c061c42a928--
