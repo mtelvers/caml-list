@@ -1,0 +1,1803 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=Sv4fU5yw;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=jI8MpuDF;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id DF9CCB80123
+	for <caml-list@tunbury.org>; Thu, 25 Jul 2024 11:00:58 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=DQqswga6/d7sZwuT8Qw7ZtYLmxUQrxf0i+8NWURjtTk=;
+  b=Sv4fU5ywZAxLZJ2iVj++Tzz94+YKmqN9gJAOuT3d0kAGLJMDlwefXPe/
+   NU+X2Y0O+rgwnfXmBfRQAST2+CTWSlPGh0fVXF3F7oXkV/OBKGXPukCcu
+   ZNytXRoEh1meiPa5cdr5mlqBPKkxYh5gOgbPj1xXc3vhAsaRLh4hqrosL
+   c=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.09,235,1716242400"; 
+   d="scan'208,217";a="176943851"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Jul 2024 12:00:56 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 74764E0D21; Thu, 25 Jul 2024 12:00:56 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 41D8CE0131
+	for <caml-list@sympa.inria.fr>; Thu, 25 Jul 2024 12:00:50 +0200 (CEST)
+IronPort-SDR: 66a22251_aiVU4DYfZIXeT/jegTIkpFWyO+oB8zta4CTDILnRRUQ/hJk
+ ChxzflhewjZ2/1pFbq3pHS085b9fzipox49/wUQ==
+X-IPAS-Result: =?us-ascii?q?A0GnCQCVIaJmf7TQVdFXAw4QAQELEgyDUIEDfBFINAQLS?=
+ =?us-ascii?q?IRWgSOOKIIigRaKZJIugREDGBYYCwUPAQMBDS4BCgsEAQEDAQM3AYRHiTwCH?=
+ =?us-ascii?q?gcBBDQTAQIEAQEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBAhABASIZBw4SK?=
+ =?us-ascii?q?YV1DYJKLgqBCGECAgMDAwYBAQEBAQEBASgCAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBBQINBxgRUAURCwYdARMICgIFBgcDEgMNLQECB?=
+ =?us-ascii?q?wIjAREBBQEjCggigl+CLwEDMQMRkFiPNIEFQos7gRUFAhaBAYINBtpaChkoD?=
+ =?us-ascii?q?WwDgWACAQYUgTSBFYNSKYMtAYFZAgKEL4NLgSGCKIEVNYI9BXGBBQFMgQ8BB?=
+ =?us-ascii?q?IEjBQELBwFCDBqDFIJpBIdnhWJaFIVGgkpQgjSBKIQ/AXE/EINYfSaBJYIzi?=
+ =?us-ascii?q?SFjJgEHBxcDBwcHBAUEHAYFAwICQgkFAQ8SAwQDBAQBAgsJCgkDAwIOAggDA?=
+ =?us-ascii?q?ggGDhMBPxIEEwIICQQLAwQCBQoDCAICBwIOAQUCAgICAgICAwYCEgQCAQIDA?=
+ =?us-ascii?q?gIIAgcBAQIKBwMBAQIGBAMGAgIFBA0DCwEBAgIEAQoCCQ8FAgIDAgMBAQIKA?=
+ =?us-ascii?q?wkBBQICAQMCAgQEBwEGAwUDAwQEAwIDAwIMAQUBBQEFAQUEAgYBEwILBwICC?=
+ =?us-ascii?q?wUGAwYOAwsGAQICBwYMCQQCAgIGAQIRAwECAQcBAwMCCgEEAQsIAQUICAEEA?=
+ =?us-ascii?q?gMGEAIIBQYFAgQBAQICAggGDwMGBwIDAgYDBQUDAwICAgYEBAIBAgICARMGB?=
+ =?us-ascii?q?AQCAwIDBAEFBAQDAhcIDgIFBwEJCgkMAQIGAgQCBAcDBgQFBAIDAgQRBwsDA?=
+ =?us-ascii?q?gMEAgIEAxECAwQCCgIEBAcCAwEBDAYEBAoCCwMFAQECBQMDCQcGAgMDBQQGA?=
+ =?us-ascii?q?gUDAwMCAwIJAgICAQkBAQECEgIDDgIEAgECBQUMBBMCAgMCBggCAgIHAwMEA?=
+ =?us-ascii?q?gMGCwECEQICAgUDBAICFAMHBAIEBQIEAQYDAwIEBgUIBAICBQIBAQIIAgEPC?=
+ =?us-ascii?q?gQCAQQDBQMHCQIFBQMEAgIFCQEBAgICAwMDAwMCAgMDAgcDAwMHAwUDBAIDB?=
+ =?us-ascii?q?gUHAwUDAwICAhQBBgIFDQgGCwUFBwIGAgQIBQICAwMDAgYQAwMDAgUCAgMDA?=
+ =?us-ascii?q?QIGDwYCAgMFBgMDAwMGBgMDAgYDAwIDAgMCAwEDAgMBAgMCAgIIAgIDBQQFA?=
+ =?us-ascii?q?gICBAgaAgICAgMDCAMDCgQCAgQBBAIEAgQCBgMEAgIBBwIDAwIDAgcCAgQCA?=
+ =?us-ascii?q?gICAwIEBwIDAwMCAgIBCQIFAQEGAgMDAgMFAwkDBAUCAwgBAQICBwcDAwQDA?=
+ =?us-ascii?q?QIBBQQCAgYFAgMCAgQCBAUDAgMGBgIBAwIKBgMFAwMDAwIDAgMDAgUCCAICB?=
+ =?us-ascii?q?AQFBAIFBAIEAwMDAQoCBgMCAgUBAQICBQMCBAQHAgICBw8DAgcFAgUFBQIIA?=
+ =?us-ascii?q?QYFAgIDAgYBAgIGAQYCBAECAg0BAQICAwQDAwcCBAMCCAIDAw8BAwMJBgUEB?=
+ =?us-ascii?q?QQDCQQPAgQBCAMBAQQIAgQDAgwCAiACBQsEBAEaCAMBAQMBAQICAgIOAwIDA?=
+ =?us-ascii?q?gIDCgIDAgoGBAICBgEBAQQBAgMBAQMCAQIHBA4EBQUICAEDAgEKAQIQBQIQC?=
+ =?us-ascii?q?QMHBAIQBgoFAwIDBQECBRUDCAMCCQIEDAMNAgMCBgMGAgYBBgMHCwEBBwgFA?=
+ =?us-ascii?q?wMDAhYBAgIPCAQGDwcCAwMDBAUHAxICBg4DAwIDAgECAgIDBQQFAgcDAwoFA?=
+ =?us-ascii?q?ggDAggFAwcJBAoCCgIGAwICAgIFDAEBAQECAwIFAwcHCAgEBQQDAQEGBgwgA?=
+ =?us-ascii?q?gIDBA8DCQMGCwEFBQEDAgICAwsDBgIDBgYBCQQBBQQJAgUHBgUCARQWBwUCC?=
+ =?us-ascii?q?gIHAgICAwECAwULCAIDAgoEAQ4EGQICAgEBAgIDBwIDAhMDAwUEBgMCAgICA?=
+ =?us-ascii?q?wIBCgsDAgIDAwMDBQUDAhkDAgMCAQoFAgwFBAMEAgIBAh0DAQUCAwoBBQkBB?=
+ =?us-ascii?q?gICAwIFAgMGBAIEAQ4BAQEDBgsJFAICAgkIAwgDBQ0CDQIDBQICC0ELBQEBB?=
+ =?us-ascii?q?AMBAQoBFy0CBAIGDAEBAQIDAwYCAgIVBQcDBQMIAQMBAhMIBgIBAwoKAgIEA?=
+ =?us-ascii?q?gYDAwIKAwEIAgICDwMJAgcCDQICAwMMDwQDAwMDCAICAhEJCgICAgwICgIJA?=
+ =?us-ascii?q?gIDBgECAwMFAwIBAQEELwIEBwEDBgoDAgICCQgKCQMDBQMKAgEGBAECAwwBA?=
+ =?us-ascii?q?QITBAkDAgECAQEGCAEBAgQBBAIIBgICAgIKAwUDAgMFFQUEAgIZAwIEBQMFA?=
+ =?us-ascii?q?wMEBwECBQQLCQIFAwIEAwMCBAQBAQgFCQQDCwYBAQEDBAMBAQgHBwMCAQEDA?=
+ =?us-ascii?q?QEKBgUIDQgDCAMGCQMBBgEBBRoDAw4CAgIDAgEKBggFAgMGDQIEAhoBDAMBA?=
+ =?us-ascii?q?wMFDgQUAwQFAgIPDAECAwMEBQMFAgICAwICAgUEAQIEAgQBCAQJAQICAgMCA?=
+ =?us-ascii?q?QECAgQGBQICAgMCBwwHAwQDBgIGAgMCBwsMAgMGBQUDBQIeAgMCAgQDAxgBB?=
+ =?us-ascii?q?AECAQIDAgIDAgMEAQMDAgEBAQEBAQMHAgICBAEBAQQDAwUCAgIDDAIDAwEBB?=
+ =?us-ascii?q?gEDAQIPBQUGBAEKAwIUAwMVBgcCDwUIASgBBAICAQI9AgIDBA0IBQICBwIED?=
+ =?us-ascii?q?QIEDwUDAw4HARUGAQQIBAUEBAYGBQUDBg4HAhYRAQEEBAIHAQQCAg0HAgIMA?=
+ =?us-ascii?q?gIGBAIBAwcjBgMFCQMCBQUXAgIPAgQDBQwIBAQbAwECCgICGAIBBwECFAIBA?=
+ =?us-ascii?q?QcEARQCBAYEAgcEAgMBAwIKBgQJAgIBAwcEBQEKHwMIAgcCAQUGBQEBBBIBA?=
+ =?us-ascii?q?gECAQECAwMRAQICIh0CCQMjDwMLCQgTPQELBy4EBAwoAQYOFAcrIV+pTIRVQ?=
+ =?us-ascii?q?iETAQwvASsVAQcFFxkECQoEKwEYBQaBFwGRcBISAZFzoFAhCgZhgWaBCUmBY?=
+ =?us-ascii?q?4oxlT4zhAWNAJk5mG0giniCYIoFi0ECE4UrESMSgUkjPDBwTSOBAW2BSU8DG?=
+ =?us-ascii?q?Q9XjUoXIYNCgWtrjF4JvQkJPjI7AgcBCgEBAwmIbjSBSgEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23:mnYZ7q0vLVIbMi8Ux/bD5XJ1kn2cJEfYwER7XKvMYLTBsI5bpzJVm
+ GMfUDjVOPmMMGb3Kth1b9vjpxwDv8PXn4RlSQM43Hw8FHgiRejtVY3IdB+oV8+xBpSeFxw/t
+ 512hv3odp1coqr0/0/1WlTZhSAgk/vOHNIQMcacUghpXwhoVSw9vhxqnu89k+ZAjMOwa++3k
+ YqaT/b3Zhn9ilaYDkpOs/jf8Ew14ayr0N8llgVWic5j7Ae2e0Y9V8p3yZGZdxPQXoRSF+imc
+ OfPpJnRErTxon/Bovv8+lrKWhViroz6ZWBiuVIKM0SWuSWukwRpukoN2FXwXm8M49mBt4gZJ
+ NygLvVcQy9xVkHHsLx1vxW1j0iSlECJkVPKCSHXjCCd86HJWyLW8eU+LEcKBqAn5tRnW1NQr
+ MRfdi9YO3hvh8ruqF66Yuxlh8BmKMuyeY1G6ikmwjbeAvIrB5vERs0m5/cChGZ21p0IR66OI
+ ZNJMVKDbzyYC/FLElQUEJsikeP3rnb6ejxc7lmSoMLb5kCKk1IgjOO9aIS9ltqibsxrtFaXm
+ nD942nbXBwoDO3F1ge77Sf57gPItXimAdpNRePQGuRRqFaaw2hWDBwNSXOgsPyhgwi/XcheI
+ goa4EITQbMa8UWqSpz5XUT9rifU5lgTXN1fF+B84waIokbJ3+qHLjE+fC4RSNoaj+IJWQ46j
+ G2XxuuuWyM65dV5Vkmh3ruTqDqzPw0cImkDeTIIQGM5Dz/L8NFbYvXnHoYLLUKlsuAZDw0c1
+ NxjkcTTr7AajMpO06fiuF6e02rqqZ/OQQo4oA7QWwpJDz+Vhqb0PuRECnCCsp6sybp1qHHf4
+ BDofODAt4gz4WmlznDlfQn0NOjBCwy5GDPdm0VzOJIq6i6g/XWuFagJv2sndBo2aJlaJm+0C
+ KM2he+3zM8CVJdNRf8nC79d9+xznMAM6Py8Cq6EPocXOPCdiifeono0OhT4M5/RfLgEyvxmY
+ cjKL65A/F4VDqNoyDf+RuEWl9cWKtMWlAvuqWTA503/i9K2PSbLIZ9caQfmRr5jsMus/l6Om
+ /4BbJvi9vmqeLehCsUh2dVDcw5iwLlSLcyelvG7gcbZelc9Rjl4U6e5LHFIU9UNopm5X9zgp
+ hmVMnK0AnKm7ZEeAVzSMSgxW6ClRptls3MwMAolOFviiTBpYp+i4O1bP9E7dKUuvr4rh/Nlb
+ eg3S+PZCNR2SxPD52s8a7v5p9dcbxiFv1+FEBekRzkdRKReYTL11OXqRSbR0RUfLzGWsJI+q
+ oKw1wmATpskQR9jPfnsa/mu7g2QuCEdkd1tQ0HnJcl3R3T816RDNh6r3+EFedEIDRDl2DGh9
+ h23BC0ArrLnuL4F89juhIGFoby2EuB4IFFoImnD4ZuyNgjY5mCG06YadMqpJBfzDHjV/oemb
+ sVrl8DMCuUNxgt2gtAtAoRVwrIbzPqxgb1jlyBPPmjBNnavAZNeeki259FF7PBx9+UIqDmNe
+ xy9//dBMu+0I+LjKlkaITQlYsml1f05njrz7+w/EH7l5R1Yraa2bkFPAyai0CBtDqN5EIcA8
+ 9cTvMQ77w+eiB1zFv2kiitS1XqHL11ecqEBm6wZPrTWiVsQ+gkfWaDfNy7424HQStNuNkJxH
+ CSYqpCfjJthx23DUUEJK17z4cRni68jgit6lG05GwzRm/7upOMG4xlKwDFmEiVX1kpm1sxwC
+ EhKNmp0B6OEwBlwjuMeXWr2QwBlLz+a83zX1FEmujD4TU6pd2qVN0w7G7+H0344+lJmXApw3
+ e+n2ke8dh31buTd4zAUZXd1j9DCEflg6Rzkmu28OsaOQqkBfjvuh5GxaVoyqxfIBd07gGvFr
+ 7JI+NlcRLLaNykChb8SEKifiKotTS6bKFx4Qf1O+L0DGUfecmqQ3RmMM0WARdNfFcfV8EOXC
+ 91cGewXbk6QjB2xlzE8AbIAB5RWn/RzvdoLRe7NFF486rCaqmJkjYLU+i3An1QUetRJk/smC
+ 4bvZjmHQ32xh3xVpjf3l/N6GFGEOPsKWA6t+9qO0rQtN4kCu+RSY00NwuOKn3GKAjBGoTOQn
+ i3+PpHz8cIz57horYXWFod7Oz6VMvL2DeSBzxCyuY9BbPTJKsb/iDkWoVjGYSVTMacgZNBss
+ bGrrtTM/VjkuYwuWDvzgKixFKhu5OSzUtFIM8nxEmJooCuaVOLo4DoB42qdK6EVtP94+e+cW
+ FKeROarUNwaSfNx5SdwUDdPNQQZB4DcTLbSlQnko9uiUhEigBH6dvW5/nrXXERnXy4vObilL
+ yTruvyrt+tqnK4VCDAqX/hZUoJFenn9Uq4bdvr0hzmSLk+spnig4rLCtx4R2QvnO0m+MvTRw
+ Mz6H0DlVRGIpqv34slTsNVysj0pHX9Nu7QMUXxHyeFmqQKRLTAgFvscA6UkG5sPsy3V1bPEX
+ h/vQlYmKx3AWWVjTU2hzvXlBwuRP7lbcJOxbDkk5FidZCqKFZuNSukpvDtp53BtPCDv1qe7I
+ NUZ4Wf9JQW13oovf+sI+/inmq1y85s2HJ7TFZzVyKQewiryAInmEFRkFQtJECjFSoTDzRWTY
+ 2cyQm9ATQewTkuZ/QOMvZJKMElxgd8t52xAgeSzLBL3tICSzekGw/r6Uw02+qNWd9wEfdbiW
+ luuL1ZgIAmqNrg7tq4gutZviqhxYR5O8g5WM4e7LTAvc2qMBqjL8i/McefjjC3vxeKHL27gq
+ w==
+IronPort-HdrOrdr: A9a23:0E8LFKpK0DUDvvyOL9gMVkwaV5oDeYIsimQD101hICG9E/bo8f
+ xG+c5w6faaskdyZJhNo6HiBEDiexPhHPxOkOws1N6ZNWGMhILCFvAH0WKN+UyGJwTOssFazr
+ lpaKVzBZndClJgnd/m7ATQKbodKRq8n5xAR92y856gd29XgmhbjjtENg==
+X-Talos-CUID: 9a23:Mh4LHmDP1YVFGVH6E3Bdxl5EOsYZSVDi0EXAeX2mUF4uFqLAHA==
+X-Talos-MUID: 9a23:I1XMwAR4l/tb7LSRRXTHjQ9IJMhU8Z+yBWJTnKc+ipObCBJvbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.09,235,1716242400"; 
+   d="scan'208,217";a="176943806"
+X-MGA-submission: =?us-ascii?q?MDHbtMSVYX8AKSFvgtTHFpMwXqgBMM3kdt9zZw?=
+ =?us-ascii?q?7PlODo+ynb0/U3sQdMMQYkLBquJ4o7bBV+4oEs0/9RSz7fsjL4Izxfnm?=
+ =?us-ascii?q?+J8RQW9Q0QL67dJGEUNcLbKCxKsj0UQHXgqu8pv3j0Ij01af0ULwMh35?=
+ =?us-ascii?q?7zxA62sVZNFTLY8IXKTxLCTQ=3D=3D?=
+Received: from mail-lj1-f180.google.com ([209.85.208.180])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2024 12:00:48 +0200
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2f032cb782dso7576241fa.3
+        for <caml-list@inria.fr>; Thu, 25 Jul 2024 03:00:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1721901648; x=1722506448; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=DQqswga6/d7sZwuT8Qw7ZtYLmxUQrxf0i+8NWURjtTk=;
+        b=jI8MpuDFf2txBtq0nt2AKpIf64WIt1OPnO2VY4Si+KL1x/V9Ji8fNFFY8JHjU5QOFb
+         KwIhBnP2RlBCU4APi7vRP9FNty3PETxaY6wRpqVVhLgWag31yEjrfxWcKEykgB7G7sKl
+         JrMrKWdVjhfsJWKCyqq1vOthDALrxSiXL6s8nAWvofgZRC3BeF+PygOFkoJkfjdCl0qE
+         w/za/OM8coZuXovXBGa1N+2s1K7OwOJEqWV8gYoCt2k2kKpOYAqtzx4ta3GOKLVNugBH
+         bM6VI5+rdRbICHjuzB6hFBijPMtd1+2rQL1oJt+/H11jueEcq9c9Boki1uGplpyO0Rwl
+         vHsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1721901648; x=1722506448;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DQqswga6/d7sZwuT8Qw7ZtYLmxUQrxf0i+8NWURjtTk=;
+        b=RjdLE9zvyY9Gyy+M9DNXZx3aXsaLqeWVBT/XPfIiecAomApbN9rbrQWRS5R1LfUwo8
+         oPEE1GE4yjx8DEYL7wiGo/WafLt6mIVEYmVFOdK/07m2+pLDVyg/4Npj95B+uTnxHUkl
+         fUk8oVyrqKSGPHtbyNSdb9haL5Sy2L50Es1/y4Z49vHZCLeXnQur0YlvXTtb98onkymW
+         ULPwHSry0I/M4O9b1Uiyi3zO1LlN3buNfw8ZA5uj8PT4itlwC5Is4jxvSe0koLO94CMj
+         f6mH/kSxVU0KzUdzi2lELSPHj0919lFW+C4X9tvcfXS6bj4FLSCzgN9AekoA+fIgwR4O
+         ruFA==
+X-Forwarded-Encrypted: i=1; AJvYcCUZjkiMzbRZNY1bRk3FlkxmYQT04HMhDLCN/TsrmisSihuHbq+4s9NpfaxNshX9QrpvSTWpEHFG085+3V7oS5VLG88=
+X-Gm-Message-State: AOJu0YwEbefHiJ4MAhTbyayyw87Cj0Rph4XKyWretcQPQbxboXDxUDEw
+	eJs3DMSc72IRyc9kUSTDOfZrPmB8x/EH4xJFWZVYSr2uWXzqywvz9j75X6wEUqbR7S7I48uQURD
+	buIqbpzl9cIYk6gdN5/nUGcbnEdhNiViJFWU=
+X-Google-Smtp-Source: AGHT+IFEvvX7j5ucH796t1B8g+IdrUUMD3G1SGuTw42UDMl7ets8B+XLL1gzYdid23UaYRSXUiHL57KixSnpK0UBsGM=
+X-Received: by 2002:a05:651c:c3:b0:2ef:2fd3:93cf with SMTP id
+ 38308e7fff4ca-2f03dbdfa2bmr10250711fa.35.1721901646682; Thu, 25 Jul 2024
+ 03:00:46 -0700 (PDT)
+MIME-Version: 1.0
+From: KK Patel <kkpatel7@gmail.com>
+Date: Thu, 25 Jul 2024 15:30:33 +0530
+Message-ID: <CAJwEiuAORrPMjET=SeLEOwFc0=44gyhtOf8Nq4+utZAz5p3Dmw@mail.gmail.com>
+To: connectionists-request@mailman.srv.cs.cmu.edu, ml-news@googlegroups.com, 
+	announce@lists.cs.illinois.edu, IUSDRP@jiscmail.ac.uk, BARN@jiscmail.ac.uk, 
+	AHC-UK@jiscmail.ac.uk, wi@lists.kit.edu, aai@lists.kit.edu, 
+	agents@cs.umbc.edu, sc-workshop-attendee-cfp@group.supercomputing.org, 
+	sc-papers@group.supercomputing.org, highlights_community@diff.u-bordeaux.fr, 
+	lwn@lwn.net, cwn@lists.idyll.org, caml-list@inria.fr, 
+	META-HEURISTICS@jiscmail.ac.uk, announcements@ubicomp.org
+Content-Type: multipart/alternative; boundary="000000000000fd2201061e0f7712"
+Subject: [Caml-list] [2nd Cfp] icSoftComp2024 (Scopus indexed) [Submission
+ due on: 31/July] (Springer CCIS) (December 10-12, 2024) (Bangkok,
+ Thailand) (Hybrid Conference)
+Reply-To: KK Patel <kkpatel7@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19163
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-07/CAJwEiuAORrPMjET%3DSeLEOwFc0%3D44gyhtOf8Nq4%2ButZAz5p3Dmw%40mail.gmail.com>
+
+--000000000000fd2201061e0f7712
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Dear Dr. / Prof.,
+
+
+
+Please consider contributing to and/or forwarding to the appropriate groups
+the following opportunity to submit and publish original scientific results
+to the *Sixth International Conference on Soft Computing and its
+Engineering Applications (icSoftComp2024)**. *
+
+
+
+Conference details are as below:
+
+
+
+Conference Dates:
+
+December 10-12, 2024
+
+
+
+Venue:
+
+Bangkok, Thailand.
+
+
+
+Conference website:
+
+https://www.charusat.ac.in/icSoftComp2024/
+
+
+
+Paper submission link:
+
+
+
+https://equinocs.springernature.com/service/icSoftComp2024
+
+
+
+Conference proceedings publication:
+
+By *Springer* in their prestigious
+
+*Communications in Computer and Information Science (CCIS)* series
+
+
+
+Indexing:
+
+*Scopus*, DBLP, Ei Compendex, Google Scholar, and Springerlink
+
+
+
+Conference series link:
+
+
+
+https://link.springer.com/conference/icsoftcomp
+
+
+
+paper submission is due on
+
+
+
+July 31, 2024.
+
+
+
+Conference mode:
+
+hybrid mode (In-person and online)
+
+
+
+--
+
+Warm regards,
+
+
+
+K. K. Patel, Ph.D.,
+
+Email: kanupatel.mca@charusat.ac.in
+
+Cell#: +91-8200 10 3724
+
+
+
+** Sincere apologies if you receive multiple copies of this CFP **
+
+** Please forward to anyone who might be interested **
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+*CALL FOR PAPERS*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+
+
+*Sixth International Conference on Soft Computing and its Engineering
+Applications (icSoftComp2024)*
+
+
+
+*Bangkok, Thailand **|| December 10-12, 2024*
+
+
+
+*Paper submission link:*
+https://equinocs.springernature.com/service/icSoftComp2024
+
+
+
+*Conference website:* https://www.charusat.ac.in/icSoftComp2024/
+
+
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+*Important Notes:*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+- icSoftComp2024 follows a *double-blind peer review* system.
+
+- Conference proceedings by *Springer CCIS Series* (*Scopus* indexed)
+
+- The conference will be held in a *hybrid mode*: in-person and online
+
+- Authors of selected papers will be invited to submit extended article
+versions for a post-conference special issue of peer reviewed Scopus
+indexed journals.
+
+- Firm deadline: 31/07/2024
+
+
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+*About the conference:*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+2024 6th International Conference on Soft Computing and its Engineering
+Applications (icSoftComp2024) aims to provide an excellent international
+forum to the researchers, academicians, students, and professionals in the
+areas of computer science and engineering to present their research,
+knowledge, new ideas and innovations. It will exhibit an exciting technical
+program. It will also feature high-quality Tutorials and Workshops,
+Industry Panels and Exhibitions, as well as Keynotes from prominent
+research and industry leaders.
+
+
+
+We are now open for technical paper submission, proposals for
+workshops/special sessions, and proposals for tutorials.
+
+
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+*Keynotes and invited talks:*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+-      Prof. Bharat Bhargava, Purdue University, Indiana, USA
+
+-      Massimiliano Cannata, SUPSI, Canobbio, Switzerland
+
+-      Flora Ferreira, University of Minho, Portugal
+
+-      Katarzyna Turo=C5=84, Silesian University of Technology, Poland
+
+-      Chinthaka Premachandra, Shibaura Institute of Technology, Japan
+
+-      Megha Bhushan, University of Seville, Spain
+
+
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D *
+
+*Organizing Committee:*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  *
+
+Honorary Chairs
+
+-      Kalyanmoy Deb, Michigan State University, MI, USA
+
+-      Witold Pedrycz, University of Alberta, Alberta, Canada
+
+-      Leszek Rutkowski, Czestochowa University of Technology, Poland
+
+-      Janusz Kacprzyk, Polish Academy of Sciences, Warsaw, Poland
+
+General Chairs
+
+-      Atul Patel, Charotar University of Science and Technology, India
+
+-      Dilip Kumar Pratihar, Indian Institute of Technology Kharagpur, Indi=
+a
+
+-      Pawan Lingras, Saint Mary's University, Canada
+
+Technical Program Chairs
+
+-      K. K. Patel, Charotar University of Science and Technology, India
+
+-      Ashish Ghosh, Indian Statistical Institute (ISI), Kolkata, India
+
+-      KC Santosh, The University of South Dakota, SD, USA
+
+-      Gayatri Doctor, CEPT University, Ahmedabad, India
+
+-      Gabriel Gomes de Oliveira, University of Campinas (Unicamp), Brazil
+
+-      Ashis Jalote-Parmar, Norwegian University of Science and Technology,
+Norway
+
+
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+*Paper Submission:*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+icSoftComp2024 solicits papers on all aspects of Soft computing and its
+engineering applications for a smart and better world.
+
+The topics of the conference include, but are not limited to the following:
+
+*Track 1: Theory and Methods*
+
+Ant colony theory
+Approximate reasoning
+Artificial Intelligence (AI)
+Big Data analytics
+Bio-inspired computing
+Chaos theory
+Cognitive science
+Data mining and Knowledge discovery
+Deep learning
+Digital information processing
+Evolutionary computing
+Fuzzy set theory
+Immunological computing
+Knowledge virtualization
+Machine learning
+Modelling
+Neural computing
+Probabilistic reasoning
+Rough sets
+Swarm intelligence
+
+
+
+*Track 2: Systems and Applications*
+
+Advanced intelligent systems
+Agent-based systems
+Agricultural informatics
+Assistive systems
+Autonomic and autonomous systems
+Bioinformatics and scientific computing
+Cognitive systems and applications
+Complex systems
+Computer forensics
+Cyber Physical Systems (CPS)
+Human computer integration
+Internet of Things (IoT)
+Intrusion detection and Security intelligence
+Mechatronics
+Multi-agent systems
+Natural language processing
+Network and telecommunications systems
+Optimization
+Pattern recognition
+Process control
+Remote sensing system
+Robotics
+Signal processing
+Time series forecasting
+Web intelligence
+
+
+
+*Track 3: Hybrid Techniques*
+
+Auxiliary hybridization
+Embedded hybridization
+Fuzzy-genetic approach
+Neuro-evolutionary computing
+Neuro-fuzzy computing
+Sequential hybridization
+
+*Track 4: Soft Computing for Smart Sustainable World*
+
+Smart cities
+Smart governance
+Smart healthcare
+Smart homes and buildings
+Smart social services
+Smart transportation
+Smart utilities
+Smart vehicles
+Smart villages
+
+
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+*Important Dates:*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+Submission due:
+
+31/07/2024 (Firm deadline)
+
+Acceptance Notification:
+
+31/08/2024
+
+Camera Ready Paper Submission due:
+
+According to notification
+
+Last date of registration:
+
+According to notification
+
+Conference dates:
+
+10-12/12/2024
+
+
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+*Paper Publication:*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+The accepted and presented papers will be published as proceedings with
+Springer in their prestigious Communications in Computer and Information
+Science (CCIS) series.
+
+Indexed by Scopus, DBLP, Ei Compendex, Google Scholar, and Springerlink
+
+
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+*Journal Publication:*
+
+*=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D*
+
+Authors of selected papers will be invited to submit extended article
+versions for a post-conference special issue of peer-reviewed journals.
+
+
+
+If you have PhD degree and if you want to join as Technical Program
+Committee (TPC) member then please fill this Google form:
+https://forms.gle/2T6EwDeUUTWxuX9Q6
+
+
+
+
+
+Charotar University of Science and Technology (CHARUSAT)
+
+(Center of Excellence by Govt. of Gujarat)
+
+(Accredited "A+" grade by NAAC, GoI)
+
+Changa, India
+
+
+
+
+warm regards,
+
+K. K. Patel, Ph.D.
+Cell#: +91-820 010 3724
+https://www.charusat.ac.in/icSoftComp2024
+
+--000000000000fd2201061e0f7712
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:verdana,=
+sans-serif"><p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-he=
+ight:normal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"f=
+ont-size:12pt;font-family:&quot;Calisto MT&quot;,serif;background-image:ini=
+tial;background-position:initial;background-size:initial;background-repeat:=
+initial;background-origin:initial;background-clip:initial">Dear Dr. / Prof.=
+,</span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif">=C2=A0</span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif;color:black">Please consider con=
+tributing to and/or
+forwarding to the appropriate groups the following opportunity to submit an=
+d
+publish original scientific results to the </span><b><i><span style=3D"font=
+-size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;background-=
+image:initial;background-position:initial;background-size:initial;backgroun=
+d-repeat:initial;background-origin:initial;background-clip:initial">Sixth I=
+nternational Conference on Soft
+Computing and its Engineering Applications (icSoftComp2024)</span></i></b><=
+b><i><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif=
+;color:black">. </span></i></b></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-si=
+ze:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black">=C2=A0</span>=
+</i></b></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif;color:black">Conference details
+are as below:</span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-si=
+ze:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black">=C2=A0</span>=
+</i></b></p>
+
+<table class=3D"gmail-MsoTableGrid" border=3D"0" cellspacing=3D"0" cellpadd=
+ing=3D"0" style=3D"border-collapse:collapse;border:none">
+ <tbody><tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">Conference Dates:<span style=
+=3D"color:black"></span></span></p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">December 10-12, 2024 </span><=
+/p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black">=C2=A0</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">Venue:<span style=3D"color:bl=
+ack"></span></span></p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">Bangkok, Thailand.</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black">=C2=A0</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">Conference
+  website:</span><span style=3D"font-size:12pt;font-family:&quot;Calisto MT=
+&quot;,serif;color:black"></span></p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"><a href=
+=3D"https://www.charusat.ac.in/icSoftComp2024/" style=3D"color:rgb(5,99,193=
+)">https://www.charusat.ac.in/icSoftComp2024/</a><b></b></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black">=C2=A0</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Paper su=
+bmission link:</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black">=C2=A0</span></p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif"><a href=3D"https://equinocs.s=
+pringernature.com/service/icSoftComp2024" style=3D"color:rgb(5,99,193)">htt=
+ps://equinocs.springernature.com/service/icSoftComp2024</a><span style=3D"c=
+olor:black">=C2=A0</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black">=C2=A0</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">Conference proceedings public=
+ation:<span style=3D"color:black"></span></span></p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black">By <b>Springer</b=
+></span><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,se=
+rif"> in their prestigious </span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black">Communications=
+ in Computer and Information Science
+  (CCIS)</span></b><span style=3D"font-size:12pt;font-family:&quot;Calisto =
+MT&quot;,serif;color:black"> </span><span style=3D"font-size:12pt;font-fami=
+ly:&quot;Calisto MT&quot;,serif">series<span class=3D"gmail-gmaildefault"> =
+</span></span><span class=3D"gmail-gmaildefault"></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif">=C2=A0</p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">Indexing:<span style=3D"color=
+:black"></span></span></p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif">Scopus</span></b><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">, DBLP, Ei C=
+ompendex, Google Scholar, and Springerlink</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black">=C2=A0</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span class=3D"gmail-u-tex=
+t-bold"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,se=
+rif;letter-spacing:0.5pt">Conference series link:</span></span><span class=
+=3D"gmail-u-text-bold"><span style=3D"letter-spacing:0.5pt"></span></span><=
+/p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif">=C2=A0</p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif"><a href=3D"https://link.sprin=
+ger.com/conference/icsoftcomp" style=3D"color:rgb(5,99,193)"><span style=3D=
+"letter-spacing:0.5pt">https://link.springer.com/conference/icsoftcomp</spa=
+n></a></span><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quo=
+t;,serif;color:black"></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif">=C2=A0</span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">paper submission is due on</s=
+pan></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span class=3D"gmail-u-tex=
+t-bold"><span style=3D"letter-spacing:0.5pt">=C2=A0</span></span></p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;background-image:initial;background-position:initial;background-size:init=
+ial;background-repeat:initial;background-origin:initial;background-clip:ini=
+tial;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif">July 31, 2024</span><span =
+style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif">. </span>=
+</p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">=C2=A0</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"218" valign=3D"top" style=3D"width:130.5pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span class=3D"gmail-u-tex=
+t-bold"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,se=
+rif;letter-spacing:0.5pt">Conference mode:</span></span><span class=3D"gmai=
+l-u-text-bold"><span style=3D"letter-spacing:0.5pt"></span></span></p>
+  </td>
+  <td width=3D"535" valign=3D"top" style=3D"width:320.8pt;padding:0in 5.4pt=
+">
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif">hybrid mode (In-person and on=
+line)</span></p>
+  </td>
+ </tr>
+</tbody></table>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+background-image:initial;background-position:initial;background-size:initia=
+l;background-repeat:initial;background-origin:initial;background-clip:initi=
+al;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:=
+12pt;font-family:&quot;Calisto MT&quot;,serif">=C2=A0</span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0.5pt=
+">--</span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0.5pt=
+">Warm regards, </span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0.5pt=
+">=C2=A0</span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0.5pt=
+">K. K. Patel, Ph.D.,</span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0.5pt=
+">Email: <a href=3D"mailto:kanupatel.mca@charusat.ac.in">kanupatel.mca@char=
+usat.ac.in</a></span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:12p=
+t;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0.5pt=
+">Cell#: +91-8200 10 3724</span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 8pt;line-height:105%;font-si=
+ze:11pt;font-family:Calibri,sans-serif">=C2=A0</p>
+
+<div align=3D"center">
+
+<table class=3D"gmail-MsoNormalTable" border=3D"0" cellspacing=3D"0" cellpa=
+dding=3D"0" width=3D"618" style=3D"width:5.15in;background-image:initial;ba=
+ckground-position:initial;background-size:initial;background-repeat:initial=
+;background-origin:initial;background-clip:initial;border-collapse:collapse=
+">
+ <tbody><tr>
+  <td width=3D"618" valign=3D"top" style=3D"width:5.15in;padding:0in 5.4pt"=
+>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;background-image:initial;background-position:initial;background-size:init=
+ial;background-repeat:initial;background-origin:initial;background-clip:ini=
+tial;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-siz=
+e:8pt;font-family:&quot;Arial Narrow&quot;,sans-serif;color:black;letter-sp=
+acing:0.5pt">** Sincere apologies if you receive multiple
+  copies of this CFP **</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:8=
+pt;font-family:&quot;Arial Narrow&quot;,sans-serif;color:black;letter-spaci=
+ng:0.5pt">**=C2=A0Please forward to anyone who might
+  be interested=C2=A0**</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"618" valign=3D"top" style=3D"width:5.15in;padding:0in 5.4pt"=
+></td>
+ </tr>
+ <tr>
+  <td width=3D"618" valign=3D"top" style=3D"width:5.15in;padding:0in 5.4pt"=
+>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><b><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot=
+;,serif;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D</span></b><b><span style=3D"font-size:12pt;font-family:&quot;Cali=
+sto MT&quot;,serif;letter-spacing:0.5pt"></span></b></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><b><i><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&q=
+uot;,serif;color:black;letter-spacing:0.5pt">CALL FOR PAPERS</span></i></b>=
+</p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><b><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot=
+;,serif;color:black;letter-spacing:0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D</span></b><b><span style=3D"font-size:10pt;letter-spacing:0.5pt">=
+</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:2pt;font-family:Arial,sans-serif;color:black;letter-spacing:0.5pt">=C2=A0=
+</span></b></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><b><span style=3D"font-size:14pt;font-family:&quot;Calisto MT&quot=
+;,serif;color:black;letter-spacing:0.5pt">Sixth International Conference on=
+ Soft
+  Computing and its Engineering Applications (icSoftComp2024)</span></b><sp=
+an style=3D"font-size:14pt;font-family:&quot;Calisto MT&quot;,serif;color:b=
+lack"></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><b><span style=3D"font-size:14pt;font-family:&quot;Calisto MT&quot=
+;,serif;color:black;letter-spacing:0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><b><span style=3D"font-size:14pt;font-family:&quot;Calisto MT&quot=
+;,serif;color:black;letter-spacing:0.5pt">Bangkok, Thailand </span></b><b><=
+span style=3D"font-size:14pt;font-family:&quot;Calisto MT&quot;,serif">|| <=
+span style=3D"color:black;letter-spacing:0.5pt">December 10-12, 202<span cl=
+ass=3D"gmail-gmaildefault">4</span></span></span></b><span class=3D"gmail-g=
+maildefault"></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><span style=3D"color:black;letter-spacing:0.5pt">=C2=A0</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">Paper submission
+  link:</span></b><span style=3D"font-size:12pt;font-family:&quot;Calisto M=
+T&quot;,serif;color:black;letter-spacing:0.5pt"> <a href=3D"https://equinoc=
+s.springernature.com/service/icSoftComp2024" style=3D"color:rgb(5,99,193)">=
+<span style=3D"text-decoration-line:none">https://equinocs.springernature.c=
+om/service/icSoftComp2024</span></a></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">Conference
+  website:</span></b><span style=3D"font-size:12pt;font-family:&quot;Calist=
+o MT&quot;,serif;color:black;letter-spacing:0.5pt"> </span><span class=3D"g=
+mail-MsoHyperlink" style=3D"color:rgb(5,99,193);text-decoration-line:underl=
+ine"><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif=
+;text-decoration-line:none"><a href=3D"https://www.charusat.ac.in/icSoftCom=
+p2024/" style=3D"color:rgb(5,99,193)"><span style=3D"text-decoration-line:n=
+one">https://www.charusat.ac.in/icSoftComp2024/</span></a></span></span><sp=
+an class=3D"gmail-MsoHyperlink" style=3D"color:rgb(5,99,193);text-decoratio=
+n-line:underline"><span style=3D"text-decoration-line:none"></span></span><=
+/p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><u><span style=3D"font-siz=
+e:2pt"><span style=3D"text-decoration-line:none">=C2=A0</span></span></u></=
+p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"618" valign=3D"top" style=3D"width:5.15in;padding:0in 5.4pt"=
+>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=3D"font-s=
+ize:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"></s=
+pan></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">Important Notes:</span></i></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"></span=
+></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt 0.5in;line-height=
+:normal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">-=C2=A0icSoftComp2024 follows a=C2=A0<b>double-blind peer review<=
+/b>=C2=A0system.</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt 0.5in;line-height=
+:normal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">- Conference proceedings by <b>Springer
+  CCIS Series</b> (<b>Scopus</b> indexed)</span><span style=3D"font-size:12=
+pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"></span></=
+p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt 0.5in;line-height=
+:normal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">- </span><span style=3D"font-size:12pt;font-family:&quot;Calisto =
+MT&quot;,serif">The conference will be held in a <b>hybrid mode</b>: in-per=
+son and online</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt 0.5in;line-height=
+:normal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">-=C2=A0</span><span style=3D"font-size:12pt;font-family:&quot;Cal=
+isto MT&quot;,serif;letter-spacing:0.5pt">Authors of selected papers will b=
+e invited to submit
+  extended article versions for a post-conference special issue of<span sty=
+le=3D"color:black"> peer reviewed Scopus indexed journals.</span></span></p=
+>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt 0.5in;line-height=
+:normal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">- <span style=3D"background:yellow">Firm deadline:
+  31/07/2024</span></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:=
+0.5pt"></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">About the conference:</span></i></b><b><i><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"></spa=
+n></i></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:=
+0.5pt"></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:rgb(28,25,25);letter-spa=
+cing:0.5pt">2024 6th International Conference on Soft
+  Computing and its Engineering Applications (icSoftComp2024)</span><span s=
+tyle=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black=
+;letter-spacing:0.5pt"> aims to provide an excellent international forum to=
+ the researchers,
+  academicians, students, and professionals in the areas of computer scienc=
+e
+  and engineering to present their research, knowledge, new ideas and
+  innovations.=C2=A0It=C2=A0will exhibit an exciting technical program. It =
+will
+  also feature high-quality Tutorials and Workshops, Industry Panels and
+  Exhibitions, as well as Keynotes from prominent research and industry
+  leaders.</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0.5=
+pt">=C2=A0</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0.5=
+pt">We are now open for technical paper
+  submission, proposals for workshops/special sessions, and proposals for
+  tutorials. </span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><sp=
+an style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-=
+spacing:0.5pt"></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">Keynotes and invited talks:</span></i></b><b><i><span style=3D"fo=
+nt-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"=
+></span></i></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><sp=
+an style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-=
+spacing:0.5pt"></span></b></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;color:black;letter-spac=
+ing:0.5pt">-<span style=3D"font-variant-numeric:normal;font-variant-east-as=
+ian:normal;font-variant-alternates:normal;font-kerning:auto;font-feature-se=
+ttings:normal;font-stretch:normal;font-size:7pt;line-height:normal;font-fam=
+ily:&quot;Times New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></sp=
+an><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;c=
+olor:black;letter-spacing:0.5pt">Prof. Bharat Bhargava, Purdue University, =
+Indiana, USA</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;color:black;letter-spac=
+ing:0.5pt">-<span style=3D"font-variant-numeric:normal;font-variant-east-as=
+ian:normal;font-variant-alternates:normal;font-kerning:auto;font-feature-se=
+ttings:normal;font-stretch:normal;font-size:7pt;line-height:normal;font-fam=
+ily:&quot;Times New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></sp=
+an><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;c=
+olor:black;letter-spacing:0.5pt">Massimiliano Cannata, SUPSI, Canobbio, Swi=
+tzerland</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;color:black;letter-spac=
+ing:0.5pt">-<span style=3D"font-variant-numeric:normal;font-variant-east-as=
+ian:normal;font-variant-alternates:normal;font-kerning:auto;font-feature-se=
+ttings:normal;font-stretch:normal;font-size:7pt;line-height:normal;font-fam=
+ily:&quot;Times New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></sp=
+an><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;c=
+olor:black;letter-spacing:0.5pt">Flora Ferreira, University of Minho, Portu=
+gal</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;color:black;letter-spac=
+ing:0.5pt">-<span style=3D"font-variant-numeric:normal;font-variant-east-as=
+ian:normal;font-variant-alternates:normal;font-kerning:auto;font-feature-se=
+ttings:normal;font-stretch:normal;font-size:7pt;line-height:normal;font-fam=
+ily:&quot;Times New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></sp=
+an><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;c=
+olor:black;letter-spacing:0.5pt">Katarzyna Turo</span><span style=3D"font-s=
+ize:12pt;font-family:Cambria,serif;color:black;letter-spacing:0.5pt">=C5=84=
+</span><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,ser=
+if;color:black;letter-spacing:0.5pt">, Silesian
+  University of Technology, Poland</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;color:black;letter-spac=
+ing:0.5pt">-<span style=3D"font-variant-numeric:normal;font-variant-east-as=
+ian:normal;font-variant-alternates:normal;font-kerning:auto;font-feature-se=
+ttings:normal;font-stretch:normal;font-size:7pt;line-height:normal;font-fam=
+ily:&quot;Times New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></sp=
+an><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;c=
+olor:black;letter-spacing:0.5pt">Chinthaka Premachandra, Shibaura Institute=
+ of Technology, Japan</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;color:black;letter-spac=
+ing:0.5pt">-<span style=3D"font-variant-numeric:normal;font-variant-east-as=
+ian:normal;font-variant-alternates:normal;font-kerning:auto;font-feature-se=
+ttings:normal;font-stretch:normal;font-size:7pt;line-height:normal;font-fam=
+ily:&quot;Times New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></sp=
+an><span style=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;c=
+olor:black;letter-spacing:0.5pt">Megha Bhushan, University of Seville, Spai=
+n</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">Organizing Committee:</span></i></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=C2=A0=C2=A0</span></b>=
+</p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:rgb(28,25,25);letter-spa=
+cing:0.5pt">Honorary Chairs</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Kalyanmoy
+  Deb, Michigan State University, MI, USA</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Witold
+  Pedrycz, University of Alberta, Alberta, Canada</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Leszek
+  Rutkowski, Czestochowa University of Technology, Poland</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Janusz
+  Kacprzyk, Polish Academy of Sciences, Warsaw, Poland</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:rgb(28,25,25);letter-spa=
+cing:0.5pt">General Chairs</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Atul
+  Patel, Charotar University of Science and Technology, India</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Dilip
+  Kumar Pratihar, Indian Institute of Technology Kharagpur, India</span></p=
+>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Pawan
+  Lingras, Saint Mary&#39;s University, Canada</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;color:rgb(28,25,25);letter-spa=
+cing:0.5pt">Technical Program Chairs</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">K. K.
+  Patel, Charotar University of Science and Technology, India</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Ashish
+  Ghosh, Indian Statistical Institute (ISI), Kolkata, India</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">KC
+  Santosh, The University of South Dakota, SD, USA</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Gayatri
+  Doctor, CEPT University, Ahmedabad, India</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Gabriel
+  Gomes de Oliveira, University of Campinas (Unicamp), Brazil</span></p>
+  <p class=3D"gmail-MsoListParagraph" style=3D"margin:0in 0in 0.0001pt 0.5i=
+n;line-height:normal;font-size:11pt;font-family:Calibri,sans-serif"><span s=
+tyle=3D"font-size:12pt;font-family:Arial,sans-serif;letter-spacing:0.5pt">-=
+<span style=3D"font-variant-numeric:normal;font-variant-east-asian:normal;f=
+ont-variant-alternates:normal;font-kerning:auto;font-feature-settings:norma=
+l;font-stretch:normal;font-size:7pt;line-height:normal;font-family:&quot;Ti=
+mes New Roman&quot;">=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 </span></span><span sty=
+le=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacin=
+g:0.5pt">Ashis
+  Jalote-Parmar, Norwegian University of Science and Technology, Norway</sp=
+an></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=3D"fon=
+t-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">=
+</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">Paper Submission:</span></i></b><b><i><span style=3D"font-size:12=
+pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"></span></=
+i></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">icSoftCo=
+mp2024 solicits papers on all aspects of Soft
+  computing and its engineering applications for a smart and better world. =
+</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">The topi=
+cs of the conference include, but are not
+  limited to the following: </span></p>
+  <table class=3D"gmail-MsoTableGrid" border=3D"0" cellspacing=3D"0" cellpa=
+dding=3D"0" style=3D"border-collapse:collapse;border:none">
+   <tbody><tr>
+    <td width=3D"373" valign=3D"top" style=3D"width:223.85pt;padding:0in 5.=
+4pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-s=
+ize:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Tra=
+ck 1: Theory and Methods</span></b></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Ant co=
+lony theory <br>
+    Approximate reasoning <br>
+    Artificial Intelligence (AI) <br>
+    Big Data analytics <br>
+    Bio-inspired computing <br>
+    Chaos theory <br>
+    Cognitive science <br>
+    Data mining and Knowledge discovery <br>
+    Deep learning <br>
+    Digital information processing <br>
+    Evolutionary computing <br>
+    Fuzzy set theory <br>
+    Immunological computing <br>
+    Knowledge virtualization <br>
+    Machine learning <br>
+    Modelling <br>
+    Neural computing <br>
+    Probabilistic reasoning <br>
+    Rough sets <br>
+    Swarm intelligence </span></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">=C2=A0=
+</span></p>
+    </td>
+    <td width=3D"420" valign=3D"top" style=3D"width:3.5in;padding:0in 5.4pt=
+">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-s=
+ize:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Tra=
+ck 2: Systems and Applications</span></b></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Advanc=
+ed intelligent systems <br>
+    Agent-based systems <br>
+    Agricultural informatics <br>
+    Assistive systems <br>
+    Autonomic and autonomous systems <br>
+    Bioinformatics and scientific computing <br>
+    Cognitive systems and applications <br>
+    Complex systems <br>
+    Computer forensics <br>
+    Cyber Physical Systems (CPS) <br>
+    Human computer integration <br>
+    Internet of Things (IoT) <br>
+    Intrusion detection and Security intelligence <br>
+    Mechatronics <br>
+    Multi-agent systems <br>
+    Natural language processing <br>
+    Network and telecommunications systems <br>
+    Optimization <br>
+    Pattern recognition <br>
+    Process control <br>
+    Remote sensing system <br>
+    Robotics <br>
+    Signal processing <br>
+    Time series forecasting <br>
+    Web intelligence </span></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">=C2=A0=
+</span></p>
+    </td>
+   </tr>
+   <tr>
+    <td width=3D"373" valign=3D"top" style=3D"width:223.85pt;padding:0in 5.=
+4pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-s=
+ize:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Tra=
+ck 3: Hybrid Techniques</span></b></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Auxili=
+ary hybridization <br>
+    Embedded hybridization <br>
+    Fuzzy-genetic approach <br>
+    Neuro-evolutionary computing <br>
+    Neuro-fuzzy computing <br>
+    Sequential hybridization </span></p>
+    </td>
+    <td width=3D"420" valign=3D"top" style=3D"width:3.5in;padding:0in 5.4pt=
+">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-s=
+ize:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Tra=
+ck 4: Soft Computing for Smart Sustainable World</span></b></p>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Smart =
+cities <br>
+    Smart governance <br>
+    Smart healthcare <br>
+    Smart homes and buildings <br>
+    Smart social services <br>
+    Smart transportation <br>
+    Smart utilities <br>
+    Smart vehicles <br>
+    Smart villages </span></p>
+    </td>
+   </tr>
+  </tbody></table>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=3D"font-s=
+ize:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"></s=
+pan></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">Important Dates:</span></i></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=3D"font-s=
+ize:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"></s=
+pan></b></p>
+  <table class=3D"gmail-MsoNormalTable" border=3D"0" cellspacing=3D"3" cell=
+padding=3D"0" width=3D"598" style=3D"width:359.05pt">
+   <tbody><tr style=3D"height:9.3pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">Submission due: </span></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt;background:yellow">31/07/2024
+    (Firm deadline)</span><span style=3D"font-size:12pt;font-family:&quot;C=
+alisto MT&quot;,serif;color:black;letter-spacing:0.5pt"></span></p>
+    </td>
+   </tr>
+   <tr style=3D"height:9.95pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.95pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">Acceptance Notification: </span></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.95pt"=
+>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">31/08/2024 </span></p>
+    </td>
+   </tr>
+   <tr style=3D"height:9.3pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">Camera Ready Paper Submission due:</span></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">According to notification</span></p>
+    </td>
+   </tr>
+   <tr style=3D"height:9.95pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.95pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">Last date of registration: </span></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.95pt"=
+>
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">According to notification</span></p>
+    </td>
+   </tr>
+   <tr style=3D"height:9.3pt">
+    <td width=3D"302" style=3D"width:181.3pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">Conference dates: </span></p>
+    </td>
+    <td width=3D"289" style=3D"width:173.25pt;padding:0.75pt;height:9.3pt">
+    <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:nor=
+mal;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:0=
+.5pt">10-12/12/2024</span></p>
+    </td>
+   </tr>
+  </tbody></table>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=3D"fon=
+t-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">=
+</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">Paper Publication:</span></i></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=3D"fon=
+t-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">=
+</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">The acce=
+pted and presented papers will be
+  published=C2=A0as proceedings with=C2=A0<span style=3D"color:rgb(244,67,5=
+4)">Springer</span>=C2=A0in
+  their prestigious=C2=A0<span style=3D"color:rgb(244,67,54)">Communication=
+s in Computer
+  and Information Science (CCIS)=C2=A0</span>series.</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Indexed =
+by=C2=A0<span style=3D"background:yellow">Scopus</span>, DBLP, Ei Compendex=
+, Google Scholar, and
+  Springerlink</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=C2=A0</span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=3D"=
+font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5p=
+t"></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><i><span style=3D"font-=
+size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spaci=
+ng:0.5pt">Journal Publication:</span></i></b><b><i><span style=3D"font-size=
+:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt"></span=
+></i></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><b><span style=3D"font-siz=
+e:12pt;font-family:&quot;Calisto MT&quot;,serif;color:black;letter-spacing:=
+0.5pt">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></b><b><span style=3D"=
+font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5p=
+t"></span></b></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">Authors =
+of selected papers will be invited to submit
+  extended article versions for a post-conference special issue of
+  peer-reviewed journals.</span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">=C2=A0</=
+span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-size:1=
+2pt;font-family:&quot;Calisto MT&quot;,serif;letter-spacing:0.5pt">If you h=
+ave PhD degree and if you want to join as
+  Technical Program Committee (TPC) member then please fill this Google for=
+m: </span><span lang=3D"EN-US" style=3D"font-size:12pt;font-family:&quot;Ca=
+listo MT&quot;,serif;color:red"><a href=3D"https://forms.gle/2T6EwDeUUTWxuX=
+9Q6" style=3D"color:rgb(5,99,193)">https://forms.gle/2T6EwDeUUTWxuX9Q6</a>=
+=C2=A0 </span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span lang=3D"EN-US" style=
+=3D"font-size:12pt;font-family:&quot;Calisto MT&quot;,serif;color:red">=C2=
+=A0</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=3D"618" valign=3D"top" style=3D"width:5.15in;background:rgb(255=
+,242,204);padding:0in 5.4pt">
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><span style=3D"font-size:10pt;font-family:Arial,sans-serif">=C2=A0=
+</span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Ari=
+al Narrow&quot;,sans-serif">Charotar University of Science and Technology (=
+CHARUSAT)</span><span style=3D"font-size:10pt;font-family:&quot;Arial Narro=
+w&quot;,sans-serif"></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Ari=
+al Narrow&quot;,sans-serif">(Center of Excellence by Govt. of Gujarat)</spa=
+n><span style=3D"font-size:10pt;font-family:&quot;Arial Narrow&quot;,sans-s=
+erif"></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Ari=
+al Narrow&quot;,sans-serif">(Accredited &quot;A+&quot; grade by NAAC, GoI)<=
+/span><span style=3D"font-size:10pt;font-family:&quot;Arial Narrow&quot;,sa=
+ns-serif"></span></p>
+  <p class=3D"MsoNormal" align=3D"center" style=3D"margin:0in 0in 0.0001pt;=
+text-align:center;line-height:normal;font-size:11pt;font-family:Calibri,san=
+s-serif"><span lang=3D"EN-US" style=3D"font-size:10pt;font-family:&quot;Ari=
+al Narrow&quot;,sans-serif">Changa, India</span><span style=3D"font-size:10=
+pt;font-family:&quot;Arial Narrow&quot;,sans-serif"></span></p>
+  <p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:norma=
+l;font-size:11pt;font-family:Calibri,sans-serif"><span lang=3D"EN-US" style=
+=3D"font-size:10pt;font-family:Arial,sans-serif">=C2=A0</span><span style=
+=3D"font-size:10pt;font-family:Arial,sans-serif"></span></p>
+  </td>
+ </tr>
+</tbody></table>
+
+</div>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:normal;=
+font-size:11pt;font-family:Calibri,sans-serif"><span style=3D"font-family:A=
+rial,sans-serif">=C2=A0</span></p></div><div><div dir=3D"ltr" class=3D"gmai=
+l_signature" data-smartmail=3D"gmail_signature"><div dir=3D"ltr"><div><div =
+dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"lt=
+r"><div><div dir=3D"ltr"><div><div dir=3D"ltr"><div><div dir=3D"ltr"><div><=
+div dir=3D"ltr"><div><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><di=
+v dir=3D"ltr"><div dir=3D"ltr"><font size=3D"1" face=3D"trebuchet ms, sans-=
+serif"><span style=3D"color:black"></span></font><div><div><span style=3D"f=
+ont-family:garamond,times new roman,serif"><font size=3D"1">warm regards,<b=
+r><br>K. K. Patel, Ph.D.</font><font size=3D"1"><br></font></span></div><di=
+v><span style=3D"font-family:garamond,times new roman,serif"><font size=3D"=
+1">Cell#: +91-820 010 3724</font></span></div><div><div><font size=3D"1" fa=
+ce=3D"garamond, times new roman, serif"><a href=3D"https://www.charusat.ac.=
+in/icSoftComp2024" target=3D"_blank">https://www.charusat.ac.in/icSoftComp2=
+024</a></font></div></div><div></div><div><div style=3D"text-align:left"><d=
+iv style=3D"text-align:left"><br></div></div><div><b><span style=3D"font-si=
+ze:10pt;color:black"></span></b></div><span style=3D"font-family:Verdana;fo=
+nt-size:medium"><span></span></span></div></div></div></div></div></div></d=
+iv></div></div></div></div></div></div></div></div></div></div></div></div>=
+</div></div></div></div></div></div></div></div></div>
+
+--000000000000fd2201061e0f7712--
