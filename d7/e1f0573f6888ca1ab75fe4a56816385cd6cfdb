@@ -1,0 +1,787 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=reject dis=none) header.from=udea.edu.co
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=Xr5PMU4k;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=udea.edu.co header.i=@udea.edu.co header.a=rsa-sha256 header.s=google header.b=JEc0S5/u;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 54CA5B80123
+	for <caml-list@tunbury.org>; Mon, 29 Jul 2024 12:38:30 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=xOLRDFEpjyQC51Yn/eRPCU4AEBD5fiWBbYdyUiy8zh4=;
+  b=Xr5PMU4kM1Aw4FUk0wS5ijG0ancr8Q2l111ikIjntF9XwOuTAdo3agTu
+   NDmJRhILqhCgNvX05+1+RdAMtGMDIRRyzBy5sJq0WkFFjZ4XzINQGefGo
+   4lyExxQphrYaAt7EZdYbb8HxZ2ZneRmPU0ky143G+Xs2nVqgfS77WQ8rn
+   U=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@udea.edu.co
+X-IronPort-AV: E=Sophos;i="6.09,245,1716242400"; 
+   d="scan'208,217";a="177365194"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 29 Jul 2024 13:38:29 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id F140BE013D; Mon, 29 Jul 2024 13:38:28 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 0A5F7E0133
+	for <caml-list@sympa.inria.fr>; Mon, 29 Jul 2024 13:38:26 +0200 (CEST)
+IronPort-SDR: 66a77f2f_lxZOwLQOgfddkikMrtdzI+2t8PZAoKhTsIdmV1DpyxpAHYk
+ UwMMeskqOx2fmfWzH5b7rMUnWmkohCfEVIvYbow==
+X-IPAS-Result: =?us-ascii?q?A0EDEAD2fadmf7bQVdFaHAEBATwBAQQEAQECAQEHAQGBZ?=
+ =?us-ascii?q?oE/GwJmfFk0BAtIhFaBI4Isi3yCIpFIjGCBEQMYFigGCQEDAQ0UAgECDhILB?=
+ =?us-ascii?q?AEBAwEDgguCLkaJPwIeBwEENBMBAgQBAQEBAwIDAQEBAQEBCAEBBQEBAQIBA?=
+ =?us-ascii?q?QIEBgECEAEBIhkHDhIphXULAoJKDAMDARsjb14HCTcBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBEQIUHBckFyELBh0BASYFDSUHJgoCIxIBBQEOGgEoBjiCJ?=
+ =?us-ascii?q?4JkAxEGnhyBBUKLO4EygQGCDAEBBoEIgQwF2W4JDYFjAwYUgTICAQGIOwGBW?=
+ =?us-ascii?q?QIChAyDcYEhgiiBFTWCQoF2AYFbAgGBIRVWgy4WglOGL2ppCYJVgRJoboIug?=
+ =?us-ascii?q?jGBJ4EFgzsYgW6BVII6Jo0/IwMmAwcHDitJDgEhAyYzNAFVExcLBAUFNkEDB?=
+ =?us-ascii?q?AILAwMKFgMFAx8SAgYGBwQFIgQCAyIDCQImAgMDBQYDAwMDAwIHAwUGAwUCA?=
+ =?us-ascii?q?wUEBRs3AgIDAwsDAwo1AgQKBgQNBQ0DAwIEGwMDAgMDBQIHAwMEBAMDHAMDA?=
+ =?us-ascii?q?xQCBQIFBwYEBQUkAwIGAwMDAgsFIwIGAwMEAwNYAgMFBwcFBQtEGwMEBQcDA?=
+ =?us-ascii?q?yEHEgMMMyADGwcmNwwFCgcCBiARGAkTBBEZAywGDQMaAzoFBgMIBAMsBDUSG?=
+ =?us-ascii?q?AMCKAMGEQQQCQENAwMZBQgPAwoHBQMxBQUYDQUEBQwtAxQOCTAGAwMfEAw/F?=
+ =?us-ascii?q?AoKBwQRBQoFCwMsJAMFGhwEAwsFMQcGEScIBSIFAgMCAwMQDwYFDCwIAycJV?=
+ =?us-ascii?q?hcBAwgBB1kFAwMhBQoFJFYCAhEDCzsFAwMDA1QIBQIKA1EDNAMCBwMFAxomB?=
+ =?us-ascii?q?FADBQVFAwkIAwQCSQkFPggLCwsIDwYLAwYJBANlBzsCAgQDBSYHBgMPUwQKA?=
+ =?us-ascii?q?gIDAyICBRY4AwMGBToFGBADAgYFAwIpBQICAwMvBwUvJwOBIAgGDBVLAgUHC?=
+ =?us-ascii?q?hMLNEECAwtFAxMFBSkHAwUOdzuBBAUGHQMEAwMVAQI1EQYOPx1AAwtiCz01L?=
+ =?us-ascii?q?0yiEYMjNC9rDRoWAhMBOywdBRMSDxMEKxkFBhGTHQiRcYtslH0PByuDbYwUl?=
+ =?us-ascii?q?T8zgVAInkCKJod7nm6VGRgWAhOFKxEjgVsjPIEggXEGZwmBDAEzTwMZD1eNV?=
+ =?us-ascii?q?gsLFoJZYwaFFMcxHygyAjkCBwEKAQEDCYhuLQeBSgEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ SufelZhKFx6FpDeVWXFdj7pbWJJ5Sq3I/WH
+IronPort-HdrOrdr: A9a23:hnPCQKyy1E3STpBEsnP/KrPwv71zdoMgy1knxilNYDdeeKWj5q
+ aTdZUgpGLJYVMqMk3I9urwWpVoLUmslqKdgrNwAV7BZniChILAFugLhrcKqAeQfxEWmNQtsp
+ tIQuxVLfvNIBxBoey/yDb9M9EuxrC8gdiVrNab5VJKcSwvUY1Lqy9HTjyWFVAefng+ObMJUL
+ Wb/dROvDetdDA6ac6hFmAZU+WrnbH2fVHdDiIuNloI7E22jDOz6a6SKWnj4j4uFx1KhY06+W
+ ytqX2D2kxgiZyGI9PnuVM7Jq42pOfc
+X-Talos-CUID: 9a23:G9Bvs2FpLJ9JfaAdqmJh9mgwGZE9T0H49y2ODWqcDTo4TqGsHAo=
+X-Talos-MUID: =?us-ascii?q?9a23=3ARZxUPA7wEyplzWjNSplSLVE8xoxyvoaSUGUQlq4?=
+ =?us-ascii?q?aptHdbC1MCyifz2uOF9o=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.09,245,1716242400"; 
+   d="scan'208,217";a="93156930"
+X-MGA-submission: =?us-ascii?q?MDFxZAOH68XnpEpvr+ADSX6vZKVr0iB/UsKW85?=
+ =?us-ascii?q?HVgI7kvhT1tNuSHtccIZhpwZOkXGAl2wZTfvlQWs9pkD3H0+6SBTPxj1?=
+ =?us-ascii?q?KenqVSMJwheNamOKWFwZ/mdFgqb14mogBQcBxOW7zscLv05MWTxZbChb?=
+ =?us-ascii?q?hBFL6QtrxlUfKEHcdblFvxzw=3D=3D?=
+Received: from mail-lj1-f182.google.com ([209.85.208.182])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2024 13:38:22 +0200
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2f0271b0ae9so42999221fa.1
+        for <caml-list@inria.fr>; Mon, 29 Jul 2024 04:38:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=udea.edu.co; s=google; t=1722253101; x=1722857901; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=xOLRDFEpjyQC51Yn/eRPCU4AEBD5fiWBbYdyUiy8zh4=;
+        b=JEc0S5/uTb2zCombsw3JvANF7tpDE8lVcHhUdDwx518DA89QUxOhzT9xfZ6CNxAmMZ
+         p9xiWsiV2zY3gzatIwmALzbAVXeFF4Z7jEiumsePWvor/NvS5L0/lYO2NbKzH2Lok5WT
+         VMU/sjLmBJd3H7+ioQ+EN5BXRbvvaYaQenQncgoKppgCWy6ObmNEBG+Bwb8Dym9Gdirs
+         4nbY/xt6BIZ/uXx524voSGOdUx4xIlHoI9YpIIZqlYoX85I7k93ax2xDhNXmUwN+QIH+
+         eSsZLa/KuM+kdagkD5zr7x8yZnsJKlCyEkJPi/gNUIwgmJmzwr94CLK/Z/Wnhwx0wG2u
+         Uk8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722253101; x=1722857901;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=xOLRDFEpjyQC51Yn/eRPCU4AEBD5fiWBbYdyUiy8zh4=;
+        b=ig1OUYdCQRzCBGc0ikHhwc3FNH7RrJrekThYAZ/hIsWW4y5/t+eljlB8p4m76TGVwa
+         ThWheNXYvuqIwr5Szd9q4l5vh5KheuGTpCYNOd9mKcb+JhUB5RKjnarVkeigk+isjwGF
+         eQnnzer/Q5hzH6Zv6xHp7Q5x3fAAjcKS68oTQboM+T4eQhbGDbR0XVpL1QAeNrfgrcu+
+         I8205NDTQOvbNG/m3NvE2v/vQ7M4vSzQFbOo8X8nN17U0iditOXxLYGiB9q+8jjoNRyW
+         DPNZSM17lXmqrkOD3LKHe/VOgWVn0cjuhVP08c/ytkcKV5fOxLXA7nvnuwx/+nufGzmq
+         yvcQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXw2pCZdBOB5IFVN+rdoD8Ev8RmBbmddxXua22Q8LFtoj/rT5TE4EZ3m09AXktlDPAnsX2NOhNgsxwgTanoo9BvImg=
+X-Gm-Message-State: AOJu0YxMkl8IY8jAvrPyTKeFtkL4W6CJPTetOIGPL3ptE1Q3PLfMkiz3
+	BRHl1/Yu3eGuwY6qNi8xbcff8EHzeG77acsP67tJmxXxYLWkY9nCAGEkbeRZ0jqEkoOfHkaAoce
+	kdTbyVbdO0ADqIY27YE1iZTdgyqERQF1qL2KSXBl90zqkbeuIWj39RjVq9FeY2rFL1bopFRO8Pq
+	6SzN0NDi7vWw4+RFZt1z3xmzVPqov68Zn8/fuUnOMF8EI+OvetwRZuFfu7QXatEPg/p/lsJPkU0
+	3aMTu/HIgG2ecGKdMbLNiWsRxK5NMp97/xfOLU/PiSRE3R1RSc1IAQQQ2BKf3ts2Mw=
+X-Google-Smtp-Source: AGHT+IHrgtyS4JOpDtFZV0FgB1vAP6+VNOV8S7XR99tQ6jDfM2vnLD81KCCsI336dVSBcxltjJIXZJ0SoZ/FY8QtejY=
+X-Received: by 2002:a2e:818b:0:b0:2ef:2d13:b1a with SMTP id
+ 38308e7fff4ca-2f12ee1bdcfmr50616681fa.33.1722253099953; Mon, 29 Jul 2024
+ 04:38:19 -0700 (PDT)
+MIME-Version: 1.0
+From: SERGIO ARMANDO GUTIERREZ BETANCUR <sergio.gutierrezb@udea.edu.co>
+Date: Mon, 29 Jul 2024 06:38:03 -0500
+Message-ID: <CAO_ru9XRk+8g4WGAM8RbhUt=sn9USWS=yJyRyeRBg=pZvUCspQ@mail.gmail.com>
+To: undisclosed-recipients:;
+X-CLOUD-SEC-AV-Sent: true
+X-CLOUD-SEC-AV-Info: udeauniversidaddeantioquia,google_mail,monitor
+X-Gm-Spam: 0
+X-Gm-Phishy: 0
+Content-Type: multipart/alternative; boundary="0000000000003c9ee8061e614ce0"
+Subject: [Caml-list] IEEE LATINCOM 2024 - 7 days until deadline submission
+ (August 5 - Hard Deadline)
+Reply-To: SERGIO ARMANDO GUTIERREZ BETANCUR <sergio.gutierrezb@udea.edu.co>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19165
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-07/CAO_ru9XRk%2B8g4WGAM8RbhUt%3Dsn9USWS%3DyJyRyeRBg%3DpZvUCspQ%40mail.gmail.com>
+
+--0000000000003c9ee8061e614ce0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+*********************************************************************
+ We apologize if you receive multiple copies of this CFP.
+ We thank in advance to share this information with students
+ and colleagues and through social networks
+*********************************************************************
+
+***************************************************************
+CALL FOR PAPERS =E2=80=93 IEEE LATINCOM 2024
+
+16th IEEE Latin-American Conference on Communications
+
+November 6 - 8, 2024
+Medell=C3=ADn, Colombia
+
+https://latincom2024.ieee-latincom.org/
+********************************************************************
+
+
+Paper submission (FIRM) deadline: 5 August 2024 COT (GMT-5)
+Notification of acceptance: 6 September 2024
+Camera-ready papers: 7 October 2024
+Authors registration deadline: 29 September 2024
+
+
+The IEEE Latin-American Conference on Communications, LATINCOM, will be
+held in
+Medellin, Colombia, from November 6th to 8th 2024, organized by
+Universidad de Antioquia.
+
+The IEEE LATINCOM is an international conference organized by the IEEE
+Communications Society (ComSoc) Latin America Region. IEEE LATINCOM is the
+most
+important conference on communications in Latin America; it is held
+annually and
+attracts submissions and participants from all around the world.
+
+LATINCOM 2024 will include original full-paper presentations and tutorial
+sessions. It will also include Keynote Speeches presented by top
+researchers,
+industry panel sessions and complementary activities that will be of high
+interest to the attendees.
+
+
+Accepted and presented papers will be published in the IEEE LATINCOM 2024
+Conference Proceedings and submitted to IEEE Xplore as well as other
+Abstracting and Indexing (A&I) databases.
+
+
+Topics of interest include, but are not limited to:
+
+Mobile and Wireless Networking
+
+* Cellular systems, 4G/5G/B5G/6G
+* Cognitive radio networks
+* Device-to-device/machine-to-machine communications
+* Green wireless networks
+* Large-scale LEO satellite networking
+* Opportunistic wireless networks
+* Pervasive and wearable computing and networking
+* Reconfigurable wireless networks
+* Software-defined wireless networks
+* Underwater wireless networks
+* Vehicular networks
+* UAV
+* Wireless network virtualization
+* Wireless multimedia networks
+* WLAN, WPAN, and other home/personal networking technologies
+* Wireless networking techniques based on AI
+
+
+Communication Services, Software and Multimedia Applications
+
+* Cooperative networking for streaming media content
+* E-health, E-governance, E-agriculture, etc.
+* High quality service provisioning for multimedia applications
+* Location-based services
+* ML techniques for video delivery and service
+* ML techniques for multimedia content analysis
+* Multimedia cloud, streaming, multicast and broadcast services
+* Multimedia fog/edge computing and communication
+* QoE and QoS
+* Quality-oriented routing algorithms
+* Real time communication services
+* Service orchestration and management
+* Service security and privacy
+* Triple and quadruple play services
+
+
+Communication QoS, Reliability and Performance Modeling
+
+* Networks and communication systems modeling and performance evaluation
+* Reliability of systems and networks
+* Traffic measurement, modeling, visualization, and engineering
+* Security and trust in network design
+* Integration aspects in IoT and Big Data systems
+* Design of cloud, edge and other distributed computing networks
+* QoS and network efficiency
+
+
+Optical Networks
+
+* AI, ML and data analytics for optical systems and networks
+* Elastic, flexible rate and flexi-grid optical networks
+* Free-space optical networks
+* Optical network control and management
+* Optical network survivability and availability
+* Optical and wireless convergence
+* Routing and spectrum assignment for optical networks
+* Software defined optical networks
+* Ultraviolet communications and networks
+* Underwater optical communications
+* Virtualization and slicing in optical networks
+* Visible light communications
+
+
+Communications Theory & Signal Processing
+
+* Communication theory of ad-hoc and sensor networks
+* Communication theory of distributed and edge computing
+* Communication theory of networks and cross-layer design
+* Multi-antenna, multi-user and multi-node systems
+* Radio communications
+* Satellite & space communications
+* Signal processing for all aspects of communications and networking
+* Theoretical aspects of blockchain and ML in networks
+
+
+Next-generation Networking and Internet
+
+* 5G/B5G/6G architecture
+* Blockchain in next generation communications and networks
+* Content-centric networking
+* Centralized-RAN and Cloud-RAN architectures
+* Future Internet and next-generation networking architectures
+* High speed architectures for next generation routers/switches
+* Management of service-oriented control plane in 5G/B5G
+* Network functions virtualization
+* Next-generation access networks
+* Next-generation IP multimedia subsystem
+* Next-generation network management and control
+* Parallel architectures for next generation routers/switches
+* Software-defined networking
+
+
+AI, Big Data and ML for Networking
+
+* AI and ML for network slicing, virtualization, and network management
+* Big data for all aspects of communications and networking
+* Cloud and network data analytics, modeling and visualization
+* Cooperative learning for software-defined and virtualized networks
+* Data analytics for QoS and traffic classification
+* Data analytics for faults and root-cause analysis
+* Data-driven network management
+* ML based distributed training and learning over-the-air
+* Operational analytics and intelligence
+* Predictive analytics and real-time analytics
+
+
+Selected Areas in Communications
+
+* Blockchain in communications and networks
+* Cloud, fog and edge computing
+* Internet-of-Things and Internet-of-everything
+* New Space applications
+* Smart cities and urban computing
+* Smart grid communications
+* Social networks, crowdsourcing, and crowdsensing
+* Tactile Internet
+* Carbon-aware networking
+
+Paper Submission
+Authors are invited to submit present original, unpublished research or
+experiences. Papers under review elsewhere must not be submitted to the
+conference. Maximum 6 pages are allowed for each paper, including all
+illustrations and references.
+
+Paper must be written in English, unpublished and not being considered in
+other conferences or journals. Full papers must be formatted as the standar=
+d
+IEEE double-column conference template and submitted in PDF via JEMS
+submission
+system (https://jems3.sbc.org.br/latincom2024).
+
+Manuscript templates are available at:
+https://www.ieee.org/conferences/publishing/templates.html
+
+
+Technical Program Co-Chairs
+George Rouskas (North Carolina State University, USA)
+Juan Felipe Botero Vega (Universidad de Antioquia, Colombia)
+
+
+General Co-Chairs
+Natalia Gaviria G=C3=B3mez (Universidad de Antioquia, Colombia)
+Sergio Armando Guti=C3=A9rrez (Universidad de Antioquia, Colombia)
+
+
+Steering Committee
+Stefano Bregni, Politecnico di Milano, Italy
+Nelson Fonseca, Universidade de Campinas, Brazil
+Carlos Lozano Garzon, Universidad de los Andes, Colombia
+Jose-David Cely, Universidad Distrital Francisco Jos=C3=A9 de Caldas, Colom=
+bia
+Lisandro Zambenedetti Granville, Universidade Federal do Rio Grande do
+Sul, Brazil
+Carlos A. Gutierrez, Universidad Aut=C3=B3noma de San Luis Potos=C3=AD, Mex=
+ico
+Marco To De Leon, Universidad Galileo, Guatemala
+Miguel Elias Campista, Universidade Federal do Rio de Janeiro, Brazil
+
+********************************************************************
+
+
+--
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Sergio Armando Guti=C3=A9rrez, Ph.D.
+Professor
+Colombia Chapter Chair - IEEE ComSoc
+Dept. of Electronics and Telecommunications Engineering
+Universidad de Antioquia
+Calle 67 # 53 =E2=80=93 108, Oficina 19-455A, Medell=C3=ADn - Colombia
+Tel: +57 - 3002700310
+Web Page: https://sites.google.com/a/unal.edu.co/sergiogutierrez/
+
+--=20
+
+
+"La informaci=C3=B3n aqu=C3=AD contenida es para uso exclusivo de la person=
+a o=20
+entidad de destino. Est=C3=A1 estrictamente prohibida su utilizaci=C3=B3n, =
+copia,=20
+descarga, distribuci=C3=B3n, modificaci=C3=B3n y/o reproducci=C3=B3n total =
+o parcial, sin=20
+el permiso expreso de Universidad de Antioquia, pues su contenido puede ser=
+=20
+de car=C3=A1cter confidencial y/o contener material privilegiado. Si usted=
+=20
+recibi=C3=B3 esta informaci=C3=B3n por error, por favor contacte en forma i=
+nmediata a=20
+quien la envi=C3=B3 y borre este material de su computador.=C2=A0Universida=
+d de=20
+Antioquia=C2=A0no es=C2=A0responsable por la informaci=C3=B3n contenida en =
+esta=20
+comunicaci=C3=B3n, el directo responsable es quien la firma o el autor de l=
+a=20
+misma."
+
+
+--=20
+UdeA
+
+--0000000000003c9ee8061e614ce0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr" class=3D"gmail_signature" data-smartmail=
+=3D"gmail_signature"><div dir=3D"ltr"><div dir=3D"ltr" style=3D"color:rgb(3=
+4,34,34)"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"lt=
+r"><div style=3D"font-size:12.8px"><span style=3D"font-size:small">********=
+**********************</span><span style=3D"font-size:small">**************=
+****************</span><span style=3D"font-size:small">*********</span><div=
+ dir=3D"auto" style=3D"font-size:small">=C2=A0We apologize if you receive m=
+ultiple copies of this CFP.</div><div style=3D"font-size:small">=C2=A0We th=
+ank in advance to share this information with students</div><div style=3D"f=
+ont-size:small">=C2=A0and colleagues and through social networks</div><div =
+dir=3D"auto" style=3D"font-size:small">************************************=
+*********************************</div><div dir=3D"auto" style=3D"font-size=
+:small"><br></div><div dir=3D"auto" style=3D"font-size:small">*************=
+**************************************************</div><div dir=3D"auto" s=
+tyle=3D"font-size:small">CALL FOR PAPERS =E2=80=93 IEEE LATINCOM 2024</div>=
+<div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" sty=
+le=3D"font-size:small">16th IEEE Latin-American Conference on Communication=
+s</div><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"au=
+to" style=3D"font-size:small">November 6 - 8, 2024</div><div dir=3D"auto" s=
+tyle=3D"font-size:small">Medell=C3=ADn, Colombia</div><div dir=3D"auto" sty=
+le=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:small=
+"><a href=3D"https://latincom2024.ieee-latincom.org/" rel=3D"noreferrer" ta=
+rget=3D"_blank">https://latincom2024.ieee-latincom.org/</a></div><div dir=
+=3D"auto" style=3D"font-size:small">***************************************=
+*****************************</div><div dir=3D"auto" style=3D"font-size:sma=
+ll"><br></div><div dir=3D"auto" style=3D"font-size:small"><br></div><div di=
+r=3D"auto" style=3D"font-size:small">Paper submission (FIRM) deadline: 5 Au=
+gust 2024 COT (GMT-5)</div><div dir=3D"auto" style=3D"font-size:small">Noti=
+fication of acceptance: 6 September 2024</div><div dir=3D"auto" style=3D"fo=
+nt-size:small">Camera-ready papers: 7 October 2024</div><div dir=3D"auto" s=
+tyle=3D"font-size:small">Authors registration deadline: 29 September 2024</=
+div><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto"=
+ style=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:s=
+mall">The IEEE Latin-American Conference on Communications, LATINCOM, will =
+be held in</div><div dir=3D"auto" style=3D"font-size:small">Medellin, Colom=
+bia, from November 6th to 8th 2024, organized by</div><div dir=3D"auto" sty=
+le=3D"font-size:small">Universidad de Antioquia.</div><div dir=3D"auto" sty=
+le=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:small=
+">The IEEE LATINCOM is an international conference organized by the IEEE</d=
+iv><div dir=3D"auto" style=3D"font-size:small">Communications Society (ComS=
+oc) Latin America Region. IEEE LATINCOM is the most</div><div dir=3D"auto" =
+style=3D"font-size:small">important conference on communications in Latin A=
+merica; it is held annually and</div><div dir=3D"auto" style=3D"font-size:s=
+mall">attracts submissions and participants from all around the world.</div=
+><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" st=
+yle=3D"font-size:small">LATINCOM 2024 will include original full-paper pres=
+entations and tutorial</div><div dir=3D"auto" style=3D"font-size:small">ses=
+sions. It will also include Keynote Speeches presented by top researchers,<=
+/div><div dir=3D"auto" style=3D"font-size:small">industry panel sessions an=
+d complementary activities that will be of high</div><div dir=3D"auto" styl=
+e=3D"font-size:small">interest to the attendees.</div><div dir=3D"auto" sty=
+le=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:small=
+"><br></div><div dir=3D"auto" style=3D"font-size:small">Accepted and presen=
+ted papers will be published in the IEEE LATINCOM 2024</div><div dir=3D"aut=
+o" style=3D"font-size:small">Conference Proceedings and submitted to IEEE X=
+plore as well as other</div><div dir=3D"auto" style=3D"font-size:small">Abs=
+tracting and Indexing (A&amp;I) databases.</div><div dir=3D"auto" style=3D"=
+font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:small"><br>=
+</div><div dir=3D"auto" style=3D"font-size:small">Topics of interest includ=
+e, but are not limited to:</div><div dir=3D"auto" style=3D"font-size:small"=
+><br></div><div dir=3D"auto" style=3D"font-size:small">Mobile and Wireless =
+Networking</div><div dir=3D"auto" style=3D"font-size:small"><br></div><div =
+dir=3D"auto" style=3D"font-size:small">* Cellular systems, 4G/5G/B5G/6G</di=
+v><div dir=3D"auto" style=3D"font-size:small">* Cognitive radio networks</d=
+iv><div dir=3D"auto" style=3D"font-size:small">* Device-to-device/machine-t=
+o-machine communications</div><div dir=3D"auto" style=3D"font-size:small">*=
+ Green wireless networks</div><div dir=3D"auto" style=3D"font-size:small">*=
+ Large-scale LEO satellite networking</div><div dir=3D"auto" style=3D"font-=
+size:small">* Opportunistic wireless networks</div><div dir=3D"auto" style=
+=3D"font-size:small">* Pervasive and wearable computing and networking</div=
+><div dir=3D"auto" style=3D"font-size:small">* Reconfigurable wireless netw=
+orks</div><div dir=3D"auto" style=3D"font-size:small">* Software-defined wi=
+reless networks</div><div dir=3D"auto" style=3D"font-size:small">* Underwat=
+er wireless networks</div><div dir=3D"auto" style=3D"font-size:small">* Veh=
+icular networks</div><div dir=3D"auto" style=3D"font-size:small">* UAV</div=
+><div dir=3D"auto" style=3D"font-size:small">* Wireless network virtualizat=
+ion</div><div dir=3D"auto" style=3D"font-size:small">* Wireless multimedia =
+networks</div><div dir=3D"auto" style=3D"font-size:small">* WLAN, WPAN, and=
+ other home/personal networking technologies</div><div dir=3D"auto" style=
+=3D"font-size:small">* Wireless networking techniques based on AI</div><div=
+ dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" style=
+=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:small">=
+Communication Services, Software and Multimedia Applications</div><div dir=
+=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"fo=
+nt-size:small">* Cooperative networking for streaming media content</div><d=
+iv dir=3D"auto" style=3D"font-size:small">* E-health, E-governance, E-agric=
+ulture, etc.</div><div dir=3D"auto" style=3D"font-size:small">* High qualit=
+y service provisioning for multimedia applications</div><div dir=3D"auto" s=
+tyle=3D"font-size:small">* Location-based services</div><div dir=3D"auto" s=
+tyle=3D"font-size:small">* ML techniques for video delivery and service</di=
+v><div dir=3D"auto" style=3D"font-size:small">* ML techniques for multimedi=
+a content analysis</div><div dir=3D"auto" style=3D"font-size:small">* Multi=
+media cloud, streaming, multicast and broadcast services</div><div dir=3D"a=
+uto" style=3D"font-size:small">* Multimedia fog/edge computing and communic=
+ation</div><div dir=3D"auto" style=3D"font-size:small">* QoE and QoS</div><=
+div dir=3D"auto" style=3D"font-size:small">* Quality-oriented routing algor=
+ithms</div><div dir=3D"auto" style=3D"font-size:small">* Real time communic=
+ation services</div><div dir=3D"auto" style=3D"font-size:small">* Service o=
+rchestration and management</div><div dir=3D"auto" style=3D"font-size:small=
+">* Service security and privacy</div><div dir=3D"auto" style=3D"font-size:=
+small">* Triple and quadruple play services</div><div dir=3D"auto" style=3D=
+"font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:small"><br=
+></div><div dir=3D"auto" style=3D"font-size:small">Communication QoS, Relia=
+bility and Performance Modeling</div><div dir=3D"auto" style=3D"font-size:s=
+mall"><br></div><div dir=3D"auto" style=3D"font-size:small">* Networks and =
+communication systems modeling and performance evaluation</div><div dir=3D"=
+auto" style=3D"font-size:small">* Reliability of systems and networks</div>=
+<div dir=3D"auto" style=3D"font-size:small">* Traffic measurement, modeling=
+, visualization, and engineering</div><div dir=3D"auto" style=3D"font-size:=
+small">* Security and trust in network design</div><div dir=3D"auto" style=
+=3D"font-size:small">* Integration aspects in IoT and Big Data systems</div=
+><div dir=3D"auto" style=3D"font-size:small">* Design of cloud, edge and ot=
+her distributed computing networks</div><div dir=3D"auto" style=3D"font-siz=
+e:small">* QoS and network efficiency</div><div dir=3D"auto" style=3D"font-=
+size:small"><br></div><div dir=3D"auto" style=3D"font-size:small"><br></div=
+><div dir=3D"auto" style=3D"font-size:small">Optical Networks</div><div dir=
+=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"fo=
+nt-size:small">* AI, ML and data analytics for optical systems and networks=
+</div><div dir=3D"auto" style=3D"font-size:small">* Elastic, flexible rate =
+and flexi-grid optical networks</div><div dir=3D"auto" style=3D"font-size:s=
+mall">* Free-space optical networks</div><div dir=3D"auto" style=3D"font-si=
+ze:small">* Optical network control and management</div><div dir=3D"auto" s=
+tyle=3D"font-size:small">* Optical network survivability and availability</=
+div><div dir=3D"auto" style=3D"font-size:small">* Optical and wireless conv=
+ergence</div><div dir=3D"auto" style=3D"font-size:small">* Routing and spec=
+trum assignment for optical networks</div><div dir=3D"auto" style=3D"font-s=
+ize:small">* Software defined optical networks</div><div dir=3D"auto" style=
+=3D"font-size:small">* Ultraviolet communications and networks</div><div di=
+r=3D"auto" style=3D"font-size:small">* Underwater optical communications</d=
+iv><div dir=3D"auto" style=3D"font-size:small">* Virtualization and slicing=
+ in optical networks</div><div dir=3D"auto" style=3D"font-size:small">* Vis=
+ible light communications</div><div dir=3D"auto" style=3D"font-size:small">=
+<br></div><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D=
+"auto" style=3D"font-size:small">Communications Theory &amp; Signal Process=
+ing</div><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"=
+auto" style=3D"font-size:small">* Communication theory of ad-hoc and sensor=
+ networks</div><div dir=3D"auto" style=3D"font-size:small">* Communication =
+theory of distributed and edge computing</div><div dir=3D"auto" style=3D"fo=
+nt-size:small">* Communication theory of networks and cross-layer design</d=
+iv><div dir=3D"auto" style=3D"font-size:small">* Multi-antenna, multi-user =
+and multi-node systems</div><div dir=3D"auto" style=3D"font-size:small">* R=
+adio communications</div><div dir=3D"auto" style=3D"font-size:small">* Sate=
+llite &amp; space communications</div><div dir=3D"auto" style=3D"font-size:=
+small">* Signal processing for all aspects of communications and networking=
+</div><div dir=3D"auto" style=3D"font-size:small">* Theoretical aspects of =
+blockchain and ML in networks</div><div dir=3D"auto" style=3D"font-size:sma=
+ll"><br></div><div dir=3D"auto" style=3D"font-size:small"><br></div><div di=
+r=3D"auto" style=3D"font-size:small">Next-generation Networking and Interne=
+t</div><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"au=
+to" style=3D"font-size:small">* 5G/B5G/6G architecture</div><div dir=3D"aut=
+o" style=3D"font-size:small">* Blockchain in next generation communications=
+ and networks</div><div dir=3D"auto" style=3D"font-size:small">* Content-ce=
+ntric networking</div><div dir=3D"auto" style=3D"font-size:small">* Central=
+ized-RAN and Cloud-RAN architectures</div><div dir=3D"auto" style=3D"font-s=
+ize:small">* Future Internet and next-generation networking architectures</=
+div><div dir=3D"auto" style=3D"font-size:small">* High speed architectures =
+for next generation routers/switches</div><div dir=3D"auto" style=3D"font-s=
+ize:small">* Management of service-oriented control plane in 5G/B5G</div><d=
+iv dir=3D"auto" style=3D"font-size:small">* Network functions virtualizatio=
+n</div><div dir=3D"auto" style=3D"font-size:small">* Next-generation access=
+ networks</div><div dir=3D"auto" style=3D"font-size:small">* Next-generatio=
+n IP multimedia subsystem</div><div dir=3D"auto" style=3D"font-size:small">=
+* Next-generation network management and control</div><div dir=3D"auto" sty=
+le=3D"font-size:small">* Parallel architectures for next generation routers=
+/switches</div><div dir=3D"auto" style=3D"font-size:small">* Software-defin=
+ed networking</div><div dir=3D"auto" style=3D"font-size:small"><br></div><d=
+iv dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" style=
+=3D"font-size:small">AI, Big Data and ML for Networking</div><div dir=3D"au=
+to" style=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"font-siz=
+e:small">* AI and ML for network slicing, virtualization, and network manag=
+ement</div><div dir=3D"auto" style=3D"font-size:small">* Big data for all a=
+spects of communications and networking</div><div dir=3D"auto" style=3D"fon=
+t-size:small">* Cloud and network data analytics, modeling and visualizatio=
+n</div><div dir=3D"auto" style=3D"font-size:small">* Cooperative learning f=
+or software-defined and virtualized networks</div><div dir=3D"auto" style=
+=3D"font-size:small">* Data analytics for QoS and traffic classification</d=
+iv><div dir=3D"auto" style=3D"font-size:small">* Data analytics for faults =
+and root-cause analysis</div><div dir=3D"auto" style=3D"font-size:small">* =
+Data-driven network management</div><div dir=3D"auto" style=3D"font-size:sm=
+all">* ML based distributed training and learning over-the-air</div><div di=
+r=3D"auto" style=3D"font-size:small">* Operational analytics and intelligen=
+ce</div><div dir=3D"auto" style=3D"font-size:small">* Predictive analytics =
+and real-time analytics</div><div dir=3D"auto" style=3D"font-size:small"><b=
+r></div><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"a=
+uto" style=3D"font-size:small">Selected Areas in Communications</div><div d=
+ir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"=
+font-size:small">* Blockchain in communications and networks</div><div dir=
+=3D"auto" style=3D"font-size:small">* Cloud, fog and edge computing</div><d=
+iv dir=3D"auto" style=3D"font-size:small">* Internet-of-Things and Internet=
+-of-everything</div><div dir=3D"auto" style=3D"font-size:small">* New Space=
+ applications</div><div dir=3D"auto" style=3D"font-size:small">* Smart citi=
+es and urban computing</div><div dir=3D"auto" style=3D"font-size:small">* S=
+mart grid communications</div><div dir=3D"auto" style=3D"font-size:small">*=
+ Social networks, crowdsourcing, and crowdsensing</div><div dir=3D"auto" st=
+yle=3D"font-size:small">* Tactile Internet</div><div dir=3D"auto" style=3D"=
+font-size:small">* Carbon-aware networking</div><div dir=3D"auto" style=3D"=
+font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:small">Pape=
+r Submission</div><div dir=3D"auto" style=3D"font-size:small">Authors are i=
+nvited to submit present original, unpublished research or</div><div dir=3D=
+"auto" style=3D"font-size:small">experiences. Papers under review elsewhere=
+ must not be submitted to the</div><div dir=3D"auto" style=3D"font-size:sma=
+ll">conference. Maximum 6 pages are allowed for each paper, including all</=
+div><div dir=3D"auto" style=3D"font-size:small">illustrations and reference=
+s.</div><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"a=
+uto" style=3D"font-size:small">Paper must be written in English, unpublishe=
+d and not being considered in</div><div dir=3D"auto" style=3D"font-size:sma=
+ll">other conferences or journals. Full papers must be formatted as the sta=
+ndard</div><div dir=3D"auto" style=3D"font-size:small">IEEE double-column c=
+onference template and submitted in PDF via JEMS submission</div><div dir=
+=3D"auto" style=3D"font-size:small">system (<a href=3D"https://jems3.sbc.or=
+g.br/latincom2024" rel=3D"noreferrer" target=3D"_blank">https://jems3.sbc.o=
+rg.br/latincom2024</a>).</div><div dir=3D"auto" style=3D"font-size:small"><=
+br></div><div dir=3D"auto" style=3D"font-size:small">Manuscript templates a=
+re available at:</div><div dir=3D"auto" style=3D"font-size:small"><a href=
+=3D"https://www.ieee.org/conferences/publishing/templates.html" rel=3D"nore=
+ferrer" target=3D"_blank">https://www.ieee.org/conferences/publishing/templ=
+ates.html</a></div><div dir=3D"auto" style=3D"font-size:small"><br></div><d=
+iv dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" style=
+=3D"font-size:small">Technical Program Co-Chairs</div><div dir=3D"auto" sty=
+le=3D"font-size:small">George Rouskas (North Carolina State University, USA=
+)</div><div dir=3D"auto" style=3D"font-size:small">Juan Felipe Botero Vega =
+(Universidad de Antioquia, Colombia)</div><div dir=3D"auto" style=3D"font-s=
+ize:small"><br></div><div dir=3D"auto" style=3D"font-size:small"><br></div>=
+<div dir=3D"auto" style=3D"font-size:small">General Co-Chairs</div><div dir=
+=3D"auto" style=3D"font-size:small">Natalia Gaviria G=C3=B3mez (Universidad=
+ de Antioquia, Colombia)</div><div dir=3D"auto" style=3D"font-size:small">S=
+ergio Armando Guti=C3=A9rrez (Universidad de Antioquia, Colombia)</div><div=
+ dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" style=
+=3D"font-size:small"><br></div><div dir=3D"auto" style=3D"font-size:small">=
+Steering Committee</div><div dir=3D"auto" style=3D"font-size:small">Stefano=
+ Bregni, Politecnico di Milano, Italy</div><div dir=3D"auto" style=3D"font-=
+size:small">Nelson Fonseca, Universidade de Campinas, Brazil</div><div dir=
+=3D"auto" style=3D"font-size:small">Carlos Lozano Garzon, Universidad de lo=
+s Andes, Colombia</div><div dir=3D"auto" style=3D"font-size:small">Jose-Dav=
+id Cely, Universidad Distrital Francisco Jos=C3=A9 de Caldas, Colombia</div=
+><div dir=3D"auto" style=3D"font-size:small">Lisandro Zambenedetti Granvill=
+e, Universidade Federal do Rio Grande do</div><div dir=3D"auto" style=3D"fo=
+nt-size:small">Sul, Brazil</div><div dir=3D"auto" style=3D"font-size:small"=
+>Carlos A. Gutierrez, Universidad Aut=C3=B3noma de San Luis Potos=C3=AD, Me=
+xico</div><div dir=3D"auto" style=3D"font-size:small">Marco To De Leon, Uni=
+versidad Galileo, Guatemala</div><div dir=3D"auto" style=3D"font-size:small=
+">Miguel Elias Campista, Universidade Federal do Rio de Janeiro, Brazil</di=
+v><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" s=
+tyle=3D"font-size:small">**************************************************=
+******************</div><div dir=3D"auto" style=3D"font-size:small"><br></d=
+iv><div dir=3D"auto" style=3D"font-size:small"><br></div><div dir=3D"auto" =
+style=3D"font-size:small">--</div><div dir=3D"auto" style=3D"font-size:smal=
+l">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</div><div dir=3D"=
+auto" style=3D"font-size:small">Sergio Armando Guti=C3=A9rrez, Ph.D.</div><=
+div dir=3D"auto" style=3D"font-size:small">Professor</div><div dir=3D"auto"=
+ style=3D"font-size:small">Colombia Chapter Chair - IEEE ComSoc</div><div d=
+ir=3D"auto" style=3D"font-size:small">Dept. of Electronics and Telecommunic=
+ations Engineering</div><div dir=3D"auto" style=3D"font-size:small">Univers=
+idad de Antioquia</div><div dir=3D"auto" style=3D"font-size:small">Calle 67=
+ # 53 =E2=80=93 108, Oficina 19-455A, Medell=C3=ADn - Colombia</div><div di=
+r=3D"auto" style=3D"font-size:small">Tel: +57 - 3002700310</div><div dir=3D=
+"auto" style=3D"font-size:small">Web Page:=C2=A0<a href=3D"https://sites.go=
+ogle.com/a/unal.edu.co/sergiogutierrez/" rel=3D"noreferrer" target=3D"_blan=
+k">https://sites.google.com/a/unal.edu.co/sergiogutierrez/</a></div></div><=
+/div></div></div></div></div></div></div></div>
+
+<br>
+<div><font color=3D"#444444" face=3D"arial,sans-serif" size=3D"1"><br></fon=
+t></div><div><font color=3D"#444444" face=3D"arial,sans-serif" size=3D"1">&=
+quot;La informaci=C3=B3n aqu=C3=AD contenida es para uso exclusivo de la pe=
+rsona o entidad de destino. Est=C3=A1 estrictamente prohibida su utilizaci=
+=C3=B3n, copia, descarga, distribuci=C3=B3n, modificaci=C3=B3n y/o reproduc=
+ci=C3=B3n total o parcial, sin el permiso expreso de Universidad de Antioqu=
+ia, pues su contenido puede ser de car=C3=A1cter confidencial y/o contener =
+material privilegiado. Si usted recibi=C3=B3 esta informaci=C3=B3n por erro=
+r, por favor contacte en forma inmediata a quien la envi=C3=B3 y borre este=
+ material de su computador.=C2=A0</font><span style=3D"color:rgb(68,68,68);=
+font-family:arial,sans-serif;font-size:x-small">Universidad de Antioquia</s=
+pan><font color=3D"#444444" face=3D"arial,sans-serif" size=3D"1">=C2=A0no e=
+s=C2=A0responsable por la informaci=C3=B3n contenida en esta comunicaci=C3=
+=B3n, el directo responsable es quien la firma o el autor de la misma.&quot=
+;</font><br></div>
+<br>
+UdeA
+--0000000000003c9ee8061e614ce0--
