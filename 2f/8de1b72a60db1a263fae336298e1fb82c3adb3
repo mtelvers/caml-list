@@ -1,0 +1,736 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=tZ1Syz+h;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=SoFbeI/E;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 071B6B80123
+	for <caml-list@tunbury.org>; Tue, 13 Aug 2024 14:21:23 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=3oRWlWoxSJQs+DYGOq9MffXsG7wo04AJxiaqzaxaaX0=;
+  b=tZ1Syz+hyO41yLK/M+qaBZ4mqe6YThvkdvHA627MGoS5r0oWHg/FeXbQ
+   JoME3+HbQxIv5iK54LiAV9Xy4cmi62vJA7rlUwcPLCgSg+H0BSAMV0Nbl
+   MWgR9o3m8KqcJpCOCPZEx5OVvDycwA0HY/+FuILA+lVeCFk4Z20H8+h44
+   8=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.09,285,1716242400"; 
+   d="scan'208,217";a="178890283"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 13 Aug 2024 15:21:24 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 29B29E0CD1; Tue, 13 Aug 2024 15:21:23 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 18126E0035
+	for <caml-list@sympa.inria.fr>; Tue, 13 Aug 2024 15:21:17 +0200 (CEST)
+IronPort-SDR: 66bb5dcd_JQiqMquki2TE/albob0sqPCLXtvy3AnXUGqHaMvO+5lY/Kq
+ Vs5A4358p6cGmPn1xD1qFQeUMjCphhM6VZrYNuA==
+X-IPAS-Result: =?us-ascii?q?A0FBAQAaXbtmmCIeaIFaFoQDgQMZAWNaMwcISARdg3WDT?=
+ =?us-ascii?q?44gnD+DFjUYAQMBDS4BDgQBAgQBAQMBAgGCC4J0AhaJTgIfBgEENBMBAgQBA?=
+ =?us-ascii?q?QEBAwIDAQEBAQEBCAEBBQEBAQIBAQIEBgECEAEBAQEBAQEBNwVJhXUNgkYZF?=
+ =?us-ascii?q?SNvgSUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QECDAGBAiUKEwEBOBgjAxALAwIEDQE1FwESGoJmAYJkAwQBDAaSC5s8eoEyg?=
+ =?us-ascii?q?QGCDAEBBoEIPgEBAQEKAgIDDy4B2gSBYwmBSIgxGgEqSGoChEKEOycPgVVEh?=
+ =?us-ascii?q?AcHb4FQehcBAQEBgTwBARE8CYMlgmmGKlWFUmyBCINTgSmCfVcPggdUDoN/J?=
+ =?us-ascii?q?U1nhxaBHIkJgUciAyYzIRMBVRMXCwkFZIYTgkqDKYIWhBeFJ4FnCWGHbYFvg?=
+ =?us-ascii?q?T6BXkqCdEuFW4EDgll0Tj8CDQI3gTgdQAMLbT01FBumFQQNJwGBWgGBcA44g?=
+ =?us-ascii?q?UFQCA4LHwsZIxEcLhKTERUssg40B4QXgV0GDIkBgSSVcoQFgVakZiKYTSKCN?=
+ =?us-ascii?q?IcggSUJgleVHSyFVIF+I4FcMxowQ4IzAQEyCQk9HA+SG4E+gmI5O4E9xV1BN?=
+ =?us-ascii?q?QIBAQcwAgcBCgEBAwmFRR0BAYUHMoFLAQE?=
+IronPort-PHdr: A9a23:Po3h/hWcwTUP5hNSPh8+mCtuG/PV8KxOXTF92vMcY1JmTK2v8tzYM
+ VDF4r011RmVBt2dsqoewLSO+4nbGkU+or+580o+OKRWUBEEjchE1ycBO+WiTXPBEfjxciYhF
+ 95DXlI2t1uyMExSBdqsLwaK+i764jEdAAjwOhRoLerpBIHSk9631+ev8JHPfglEnjWwbL1uI
+ BmssAndqtcajYRjJ6ot1xDEvmZGd+NKyGxnIl6egwzy6sCs8pB97i9eoegh98lOUaX7e6Q3U
+ 7lVByk4Pm42+cPmqwDNQROA6XUAXGoWlAFIAxXe4xHhQpjxqCr6ufFj1yScIMb7UKo7WTWm7
+ 6dsVR/olCIKPCM3/W3LlsB9ir9QrBKiqRx53Y7UYZqVNPtlcaPZY9wRWGRAXsFLVyNcGYO3c
+ o8DAuQdMepdqYT2ulkAogakBQS0BO3h1CJGiHH106I1z+ssChvJ0BA6Et8UrHjYsNf4OaEPW
+ u611qnIyjDDYutK1Df58ofIdA0qr+yQUrJwdMrRyFUvFx/YhViXs4PlOyma1uIXv2iA8+VgV
+ eevi287qwFtuTWv3sAsio3Jh4IJ1F/L6SV5wIA0Jd2hVU50f8SoEJxKtyGVLoZ7RN4pTG50t
+ igg0LIGpYK7czYQyJQh3xPSaPKKfoiG7B7/VuufISl0in1qdr6ihxu/80iuxvDhWsS33ltGs
+ CVLn8TCuH4D1hHe6daLR/hh80qjxDqC1w/d5+dZKk46kqrbLoQuwr82lpcLqUTMADP2mETqj
+ KCIbkUk/e2o6+H5bbn8oJ+TKZN0hhn5MqsygMO/BOA4PhIJX2iB9uSwzKDs/UziQLVJk/02j
+ LPVv4zdJcQevqK5AglV0pwi6xmlFTum3s4YkWEILFJEZBKHi5LmNErULP/kCve/hkygkDhqx
+ /DaPr3hH47CImLfn7fmeLZx80lcxxYpwtBa45JYEKsNIPXpWk/+rNDYFQc5Mxa1w+bhB9Vyy
+ JkeVXiTDa+eNaPft0KD6OE3I+SUeYMZpjLwJ+I46/LygnI1g1EQcbWz0ZYZZ320BvprLkeDb
+ Xbxg9oME30Gshc6QeHkklGOTyNfa2i0Uqkh+Dw7DJ+mDZzfRo+zmryPwSa7H5xIaW1eFlyBF
+ 2rjeZ+eVPcWci2SJ9dskjwaWrilTI8szRSutQDnx7Z9NurU/SkYtJL/1Ndr++LTlRcy9T1tD
+ 8SAzW6BVWZ0nnkHRzMu3aB/p1Jyykub3KRlnfBVEcZf6+5VXgo1L5LRwfB2B8r8Vw/OZtuJT
+ UypQtSiATE/VNIxxNoObl5gFdu+kx7PwzKnDLEJm7GPHJI56rjS0X/pKsZlzHbG0Kkgj0U4T
+ cRTNW2mgK9/9xHOB4HXiUmZkLyqdasE0SHX8GeM12yOsFtDUAFsUaXFWHEfZlfKrdni/UzCS
+ KKuCbI7PQRf0s6OMK5KZ9LmjFlcQ/fjItveb3q3m2irHRmI3K+DbJL2e2UB2yXQEFUInxgJ/
+ XmaLQg+Gjuho2XGATNyD13vZkfs/fB6qHO6VU800xqHb1Zh1rqw4h4an+aQS/IV3rIeuScus
+ S94HFin34GeN93V7Q5+eu8UNdci5n9DymSfsQFhaNjoJKlnghsach9rl0LozRR+TItawuYwq
+ 3Z/5Q57L+qj21NEdi+ElcT5PrTRbHL5/BWud7L+wlbawcqb8acJ6e0lphPkpg7/RRlqyGluz
+ 9QAiyjU3Z7NFgdHCsqZuicf8hF7o+ufeSwh/8bO0nYqN6CoszjE0tZvBe0/yx/mcc0MeLicG
+ lrUFMsXT9OrNPRsg0KgOxsANeYU76U0OsK6a9Oe36q6IOtrnDSnlHlKpodn3RHE7DJyH9bBx
+ I1N2PSExk2CXjb4gk2mt5XMo7scMAxKT0zq8Q2xHIlVd7F/doYNCH6zLouw3NorjprkXThD/
+ 16mBk8a8MWuZByZYke72FFAk0MNri/vgjO2mgR9iCphta+DxGrOzuDlIQIAIXJOTXJ+gE3EJ
+ JjtycgdWFm0YgMpkhq8+Eu8wLJUzEhmB0/UR0oAPy3/LmU4F7C1qqLHeclErpUhrSRQVu24J
+ 1GcUL/05RUAgWvlGCNFyTY3eivP2N2xlgFmiG+bMHd4rWbIMcB2yxDF4dXARPlXljMYTSh8g
+ DPTCxCyJd6stdmTkp7CtKi5WQfDHtVadSDti5iLtC66+XFCGRq7juy+kd3hEBEn3Gn8zdYrH
+ STEoRDgY5X6grygOLECHAEgD1v95sxmX4Bmx9Jq1ddJgSRc3c3TpiZU9AW7ec9W0q//cncXE
+ DsCwtqPpRPgxFUmNHWCgYTwSnSaxMJlIdi8eGIfnCwnvKUoQO+Z6qJJmSxtrx+2twXUNLJGp
+ AxFnMZ2uVhPu8RcoA0p3zmQCbAUHFBFMGrrjRvd5tS3quNMb2aqcKSs/EB5gNaqAarEp11MH
+ nHjdd1xeE04ptU6K1/K3HDpv8vtfNDWK8kYthiVjwvol+9ROY48nfoMhDN6NCT6p3JvmItZx
+ VR+mJq9uoaAMWBk+qm0VwVZOjPCbMQW4jjxjKxak656xqiXF456UnUOVZrsF7ezFS4K8O7gP
+ ECIGSE9rXGSHfzeGxWe4QFotSCHH5euPnCRbH4XqLcqDCKnHxQKvVhFemACu8shEQS72MHqc
+ EF4/y0coFnipU5FzutucQL0UmLeuBuAYDApTpOSN1xTshEE4F3aVK7Wpu5+BCBX+JS9oRfFc
+ zbKIV0QUSdSAgrfWxjqJfG26MPF8vSEC+b2NPbIbbiU6Ik8H7+JyZ+pzop67mOJP8SLMGNlC
+ q5z0U5CUHZlXsXBzmxVGmpOz36LNJbd/0vvn08/5tqy+/nqRg/1sI6GCr8IdM5q5wjzm6CIc
+ eiZmCd+Lz9ckJIK337BjrYFjztww2ljcSegFbMYuGvDVqXVz+VsNSVDPh4rZe0d14dpxg5JK
+ NLWgdPz16dlg7gyEVgQXFjonIeybswPIn2hHFnAGUCAOa/AIGHbhcbtbunvLN8YxPURrBC2t
+ TuBRgXYBA/bwgSxBjb6CcQZlCafLQBTs4G7cw9wBC7kVt2zYxmyNplshj0zwKEornnNKGgXP
+ CM6dh9d6LqK4mkL55c3U3wE5X1jI+6eni+f5OSNMZcav8xgBSFsnv5b6nA3mPNFqTtJT/tvl
+ G7Ov8Zj9hu4x/KXxGMtA38s4n5bwZiGtkJ4NeDF+4lcDDzaqQkV4zzYSBUS+4k8UIyp4vgMj
+ IOX0vmvYHRD646GpJFNQZGMdITcaDx6bH+LUHaXDRNZH2/ycziF3goDyrfLriLd7Zki9Mq2w
+ MJXGOMCWARnH6FFA0k4To5cLMgnDGh/9NzTxI0J/STs9kGJHZcG55yfBKvAUKnjJWTL0uIaa
+ 0lXneygZcEaMomxs6B7QmFzh5+CW0/ZXNQX5zZkchdxukJGtn53Umw03UvhLAKr+n4aU/Cuz
+ FY6jQ53YOJl8zmJgR9/Pl3RuC45i1U8g/3gkWnXaDn1Pbu9VoFQCjPpug42KJyzTwtubAK0l
+ FBpL3+dHeMX1uM8MzszzlSA8ZJUfJwUBbVJehoR2e2aa70z3FJQpz/mjU5L6O3ZCIdzwQsnd
+ Zn/53lE2g9lcJs0PfmJfvsPlwAMwPnW+HT0hYVTiEcEKk0A8X2fYnsNsU0MbPw9Ijawu/Zr4
+ kqEkidCf24FU7wrpOhr/wUzIbflrWqo3rhdJ0S2L+HaIbmevj2KrvSzGgYNjhIuwnFgqKBx1
+ dY/fkGUUUE20bbXEA4GYMPGIAcTdMFS8XnPYQ6EtvjLyp9ueYDhBqbvV+DE58N2ygq0WR0kG
+ YgB9JFLBp63zETRNtvqNpYA2Uxr/APvNUmIB/RPeQuWnXEAuc71n/oVlcFNYzoaB2t6KyC+4
+ L3a8xQrjPS0V9Azen4GX4EAOyF+SIigliVepXgFECiv37dT1l2Z9zGl7He1bnG0f595afyTf
+ x8pFNym5WB17f2tkVCOupyWYmj+MZ4KUjrn8eQetoqKAPNSTKBgvgHbgYYKHxRCvEbFFsOzL
+ JXrLYxwfZrzEHnoCzRXahowX563JNGpP7SFigHuRJ9Jvc+cxj9xbKeA
+IronPort-Data: A9a23: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
+ vlALkXS3Hi4FX0=
+IronPort-HdrOrdr: A9a23:MfzrUK5xzSlaWDih8wPXwPXXdLJyesId70hD6qkRc203TiX8ra
+ qTdZsguyMc5Ax9ZJhCo7C90cu7IE80nKQdieIs1NyZMzUO1lHFEKhSqaPchxfgFyf9+uM179
+ YDT4FOTPvqAxxfhcb+iTPId+rILeP3lZyVuQ==
+X-Talos-CUID: =?us-ascii?q?9a23=3AXbWWMmkX1rK6LYJ9qJ9kU4Wy6/fXOUCHyS/1JkG?=
+ =?us-ascii?q?4NXRSQ7fKSFa0w7xujsU7zg=3D=3D?=
+X-Talos-MUID: 9a23:1fdGfgvPDybVZdF9682npxJTMMJsxqWXD1EzmK4tntKYHhV8JGLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.09,285,1716242400"; 
+   d="scan'208,217";a="178890256"
+X-MGA-submission: =?us-ascii?q?MDE7xLgIW3qZXEYrIFQ83AodoTUutCqw1KynjD?=
+ =?us-ascii?q?AUoKot5XqAfPJ9kfIntb4ZM2QdRPMBzW85L2iHS1DSRQA/+D3JEb+Cto?=
+ =?us-ascii?q?qvpSFCEEZurdvA+TeciFqzFnQJoZQibHv3jykB1s/Cb5MzRnydxH+GQ9?=
+ =?us-ascii?q?nJmrOD94Zn8PkLTCcOOuPkrw=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2024 15:21:17 +0200
+Received: from TM.local (unknown [37.167.193.212])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 127D75647CC;
+	Tue, 13 Aug 2024 15:21:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1723555275;
+	bh=C18sGUPrwxCNiVky9UnAlA+5WWB0Lx/ClYG8fQSj+Lc=;
+	h=From:To:Subject:Date:Message-ID;
+	b=SoFbeI/EU29nVn8XfvpE6h+MEHhN8laItDW5JbHdph1nRO4Iw4rMjVL61Zo3XQ8qW
+	 26S93V9Fzi5+BHMhFCEX6/y7+CYVDlQ7WNdItVFdZt7FHSN4ZSApBSCPvWD7J8qL2y
+	 vm4ni3qy2zhhkqhpvJasRNXNB5qWS1+FruDl37Ow=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 13 Aug 2024 15:21:11 +0200
+Message-ID: <m2frr8lfso.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Aug 13 15:21:15 2024 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.426237, queueID=81A3B5647CD
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19172
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-08/m2frr8lfso.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+SGVsbG8NCg0KSGVyZSBpcyB0aGUgbGF0ZXN0IE9DYW1sIFdlZWtseSBOZXdzLCBmb3IgdGhlIHdl
+ZWsgb2YgQXVndXN0IDA2IHRvIDEzLA0KMjAyNC4NCg0KVGFibGUgb2YgQ29udGVudHMNCuKUgOKU
+gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgA0KDQpNbEZyb250
+IC0gQSBKYXZhLWxpa2UgcGFja2FnZSBzeXN0ZW0gZm9yIE9DYW1sDQpGaXJzdCByZWxlYXNlIG9m
+IGhlY3Rvcg0KRHVuZSBkZXYgbWVldGluZw0KT3RoZXIgT0NhbWwgTmV3cw0KT2xkIENXTg0KDQoN
+Ck1sRnJvbnQgLSBBIEphdmEtbGlrZSBwYWNrYWdlIHN5c3RlbSBmb3IgT0NhbWwNCuKVkOKVkOKV
+kOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKV
+kOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKV
+kOKVkOKVkOKVkOKVkOKVkA0KDQogIEFyY2hpdmU6DQogIDxodHRwczovL2Rpc2N1c3Mub2NhbWwu
+b3JnL3QvYW5uLW1sZnJvbnQtYS1qYXZhLWxpa2UtcGFja2FnZS1zeXN0ZW0tZm9yLW9jYW1sLzE1
+MDcyLzQ+DQoNCg0KQ29udGludWluZyB0aGlzIHRocmVhZCwgamJlY2tmb3JkIGFubm91bmNlZA0K
+4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSADQoNCiAgSSd2ZSBhZGRlZCBhIHRoaXJkIHBvc3Q6IFtodHRwczovL2Rp
+c2t1di5jb20vbWxmcm9udC9vdmVydmlldy0zL10NCg0KICBJbiBpdCBJIGRlc2NyaWJlIGEgc21h
+bGwgYnV0IHVzZWZ1bCAvcmVmZXJlbmNlIGJ1aWxkIHN5c3RlbS8gZm9yDQogIE1sRnJvbnQgd2hp
+Y2ggY2FuIHRha2UgcGFja2FnZXMgbGlrZToNCg0KICDilIzilIDilIDilIDilIANCiAg4pSCIC4N
+CiAg4pSCIOKUnOKUgOKUgCBBY21lV2lkZ2V0c19TdGQvDQogIOKUgiDilIIgICDilJTilIDilIAg
+QS5tbA0KICDilIIg4pSU4pSA4pSAIEJvYkJ1aWxkZXJfU3RkLw0KICDilIIgICAgIOKUlOKUgOKU
+gCBCLm1sDQogIOKUlOKUgOKUgOKUgOKUgA0KDQogIGFuZCBwcm9kdWNlIHN0YW5kYWxvbmUgYnVp
+bGQgc2NyaXB0cyB0aGF0IGNhbiBiZSBjb21taXR0ZWQgdG8gc291cmNlDQogIGNvbnRyb2w6DQoN
+CiAg4pSM4pSA4pSA4pSA4pSADQogIOKUgiAkIG1sZnJvbnQtYm9vdCAtbmF0aXZlIC1vIGJ1aWxk
+c2NyaXB0DQogIOKUgiANCiAg4pSCICQgLi9idWlsZHNjcmlwdC5zaCAjIC5cYnVpbGRzY3JpcHQu
+Y21kIGlzIGFsc28gY3JlYXRlZA0KICDilIIgDQogIOKUgiAkIHRhcmdldC9Cb2JCdWlsZGVyX1N0
+ZC5CDQogIOKUgiBJIGFtIGFuIEEhDQogIOKUgiBJIGFtIGEgQiENCiAg4pSU4pSA4pSA4pSA4pSA
+DQoNCiAgT24gYSByZWxhdGVkIG5vdGUsIEkndmUgYmVndW4gdG8gaW1wbGVtZW50IGEgc21hbGwg
+cGFydCBvZg0KICA8aHR0cHM6Ly9nYWxsaXVtLmlucmlhLmZyL35zY2hlcmVyL25hbWVzcGFjZXMv
+c3BlYy5wZGY+LiBJdCBpcyBub3QNCiAgc3RyaWN0bHkgcmVxdWlyZWQgYnV0IFtOYW1lc3BhY2Vz
+Lm1saV0gd2lsbCBiZSB2ZXJ5IGhlbHBmdWwgZm9yDQogIHVwZ3JhZGluZyBleGlzdGluZyBwcm9q
+ZWN0cyB0byBgTWxGcm9udCctc3R5bGUgcGFja2FnZXMgd2l0aG91dA0KICBjaGFuZ2luZyBjb2Rl
+LiBUaGF0IHdpbGwgYmUgZm9yIGEgZnV0dXJlIChub3Qgc29vbikgcG9zdC4NCg0KDQpbaHR0cHM6
+Ly9kaXNrdXYuY29tL21sZnJvbnQvb3ZlcnZpZXctMy9dDQo8aHR0cHM6Ly9kaXNrdXYuY29tL21s
+ZnJvbnQvb3ZlcnZpZXctMy8+DQoNCltOYW1lc3BhY2VzLm1saV0NCjxodHRwczovL2dpdGxhYi5j
+b20vZGttbC9idWlsZC10b29scy9NbEZyb250Ly0vYmxvYi9mMWY2ZTZkMDczNTAwZmViYjVjOWU0
+MjkyMTJjOGJkYWFhMTc3YzM1L3NyYy9NbEZyb250X0NvZGVwdC9OYW1lc3BhY2VzLm1saT4NCg0K
+DQpGaXJzdCByZWxlYXNlIG9mIGhlY3Rvcg0K4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQDQoNCiAgQXJjaGl2ZToNCiAg
+PGh0dHBzOi8vZGlzY3Vzcy5vY2FtbC5vcmcvdC9hbm4tZmlyc3QtcmVsZWFzZS1vZi1oZWN0b3Iv
+MTUwOTkvMT4NCg0KDQpGcmFuw6dvaXMgUG90dGllciBhbm5vdW5jZWQNCuKUgOKUgOKUgOKUgOKU
+gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
+gOKUgOKUgA0KDQogIEl0IGlzIG15IHBsZWFzdXJlIHRvIGFubm91bmNlIHRoZSBmaXJzdCByZWxl
+YXNlIG9mIGBoZWN0b3InLCBhbiBPQ2FtbA0KICBsaWJyYXJ5IHRoYXQgb2ZmZXJzIC92ZWN0b3Jz
+LyAoYWxzbyBrbm93biBhcyBkeW5hbWljIGFycmF5cywgb3INCiAgcmVzaXplYWJsZSBhcnJheXMp
+Lg0KDQogIFRvIGluc3RhbGwgaXQsIHR5cGUgYG9wYW0gdXBkYXRlICYmIG9wYW0gaW5zdGFsbCBo
+ZWN0b3InLg0KDQogIGBoZWN0b3InIG9mZmVycyAqcG9seW1vcnBoaWMgdmVjdG9ycyosIHdoZXJl
+IHRoZSB0eXBlIG9mIHRoZSBlbGVtZW50cw0KICBpcyBhIHBhcmFtZXRlciwgKm1vbm9tb3JwaGlj
+IHZlY3RvcnMqLCB3aGVyZSB0aGUgdHlwZSBvZiB0aGUgZWxlbWVudHMNCiAgaXMgZml4ZWQsIGFu
+ZCAqaW50ZWdlciB2ZWN0b3JzKiwgYSBzcGVjaWFsIGNhc2Ugb2YgbW9ub21vcnBoaWMNCiAgdmVj
+dG9ycy4NCg0KICBgaGVjdG9yJydzIHZlY3RvcnMgYXJlICpub3QgdGhyZWFkLXNhZmUqIGFuZCAq
+ZG8gbm90IGluY2x1ZGUgYQ0KICBwcm90ZWN0aW9uIGFnYWluc3QgbWVtb3J5IGxlYWtzKi4gQ29t
+cGFyZWQgd2l0aCB0aGUgYER5bmFycmF5JyBtb2R1bGUNCiAgaW4gT0NhbWwncyBzdGFuZGFyZCBs
+aWJyYXJ5LCBgaGVjdG9yJydzIHBvbHltb3JwaGljIGFuZCBtb25vbW9ycGhpYw0KICB2ZWN0b3Jz
+IGFyZSAqc2xpZ2h0bHkgZmFzdGVyKiwgYW5kIGBoZWN0b3InJ3MgaW50ZWdlciB2ZWN0b3JzIGFy
+ZQ0KICAqc2lnbmlmaWNhbnRseSBmYXN0ZXIqLiBgaGVjdG9yJyBvZmZlcnMgZmFzdCAoYnV0IGRh
+bmdlcm91cykgKnVuc2FmZQ0KICBhY2Nlc3Mgb3BlcmF0aW9ucyosIG5hbWVseSBgdW5zYWZlX2dl
+dCcsIGB1bnNhZmVfc2V0JywgYW5kDQogIGB1bnNhZmVfYm9ycm93Jy4gRm9yIGEgbW9yZSBkZXRh
+aWxlZCBvdmVydmlldywgc2VlIHRoZQ0KICBbZG9jdW1lbnRhdGlvbl0uDQoNCg0KW2RvY3VtZW50
+YXRpb25dIDxodHRwczovL2NhbWJpdW0uaW5yaWEuZnIvfmZwb3R0aWVyL2hlY3Rvci9kb2MvaGVj
+dG9yLz4NCg0KDQpEdW5lIGRldiBtZWV0aW5nDQrilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZANCg0KICBBcmNoaXZlOiA8aHR0cHM6Ly9kaXNjdXNzLm9jYW1s
+Lm9yZy90L2Fubi1kdW5lLWRldi1tZWV0aW5nLzE0OTk0Lzk+DQoNCg0KQ29udGludWluZyB0aGlz
+IHRocmVhZCwgTWFyZWsgS3ViaWNhIGFubm91bmNlZA0K4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+DQoNCiAgVGhhbmtzIGZvciBldmVyeW9uZSB3aG8gam9pbmVkIHRvZGF5ISBUaGUgW21lZXRpbmcg
+bWludXRlc10gYXJlIG9ubGluZQ0KICBhbmQgdGhlIG5leHQgbWVldGluZyB3aWxsIGJlIGluIHR3
+byB3ZWVrcywgMjFzdCBvZiBBdWd1c3QgYXQgMTA6MDANCiAgKEFNKSBDRVNULg0KDQoNClttZWV0
+aW5nIG1pbnV0ZXNdDQo8aHR0cHM6Ly9naXRodWIuY29tL29jYW1sL2R1bmUvd2lraS9kZXYtbWVl
+dGluZy0yMDI0LTA4LTA3Pg0KDQoNCk90aGVyIE9DYW1sIE5ld3MNCuKVkOKVkOKVkOKVkOKVkOKV
+kOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkA0KDQpGcm9tIHRoZSBvY2FtbC5vcmcgYmxv
+Zw0K4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSADQoNCiAgSGVyZSBhcmUgbGlua3MgZnJvbSBtYW55IE9DYW1sIGJsb2dz
+IGFnZ3JlZ2F0ZWQgYXQgW3RoZSBvY2FtbC5vcmcNCiAgYmxvZ10uDQoNCiAg4oCiIFtUaGUgR3Vp
+ZGUgdG8gU29mdHdhcmUgVmVyaWZpY2F0aW9uIHdpdGggRnJhbWEtQyBpcyBhdmFpbGFibGVdDQoN
+Cg0KW3RoZSBvY2FtbC5vcmcgYmxvZ10gPGh0dHBzOi8vb2NhbWwub3JnL2Jsb2cvPg0KDQpbVGhl
+IEd1aWRlIHRvIFNvZnR3YXJlIFZlcmlmaWNhdGlvbiB3aXRoIEZyYW1hLUMgaXMgYXZhaWxhYmxl
+XQ0KPGh0dHBzOi8vZnJhbWEtYy5jb21odHRwcy8vbGluay5zcHJpbmdlci5jb20vYm9vay8xMC4x
+MDA3Lzk3OC0zLTAzMS01NTYwOC0xPg0KDQoNCk9sZCBDV04NCuKVkOKVkOKVkOKVkOKVkOKVkOKV
+kA0KDQogIElmIHlvdSBoYXBwZW4gdG8gbWlzcyBhIENXTiwgeW91IGNhbiBbc2VuZCBtZSBhIG1l
+c3NhZ2VdIGFuZCBJJ2xsIG1haWwNCiAgaXQgdG8geW91LCBvciBnbyB0YWtlIGEgbG9vayBhdCBb
+dGhlIGFyY2hpdmVdIG9yIHRoZSBbUlNTIGZlZWQgb2YgdGhlDQogIGFyY2hpdmVzXS4NCg0KICBJ
+ZiB5b3UgYWxzbyB3aXNoIHRvIHJlY2VpdmUgaXQgZXZlcnkgd2VlayBieSBtYWlsLCB5b3UgbWF5
+IHN1YnNjcmliZQ0KICB0byB0aGUgW2NhbWwtbGlzdF0uDQoNCiAgW0FsYW4gU2NobWl0dF0NCg0K
+DQpbc2VuZCBtZSBhIG1lc3NhZ2VdIDxtYWlsdG86YWxhbi5zY2htaXR0QHBvbHl0ZWNobmlxdWUu
+b3JnPg0KDQpbdGhlIGFyY2hpdmVdIDxodHRwczovL2FsYW4ucGV0aXRlcG9tbWUubmV0L2N3bi8+
+DQoNCltSU1MgZmVlZCBvZiB0aGUgYXJjaGl2ZXNdIDxodHRwczovL2FsYW4ucGV0aXRlcG9tbWUu
+bmV0L2N3bi9jd24ucnNzPg0KDQpbY2FtbC1saXN0XSA8aHR0cHM6Ly9zeW1wYS5pbnJpYS5mci9z
+eW1wYS9pbmZvL2NhbWwtbGlzdD4NCg0KW0FsYW4gU2NobWl0dF0gPGh0dHBzOi8vYWxhbi5wZXRp
+dGVwb21tZS5uZXQvPg0KDQo=
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-08-13 Tue 15:19 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.08.06.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.08.20.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of August 06 to 13, 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">MlFront - A Java-like package system for OCaml</a></li>
+<li><a href=3D"#2">First release of hector</a></li>
+<li><a href=3D"#3">Dune dev meeting</a></li>
+<li><a href=3D"#4">Other OCaml News</a></li>
+<li><a href=3D"#org0160ec5">Old CWN</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">MlFront - A Java-like package system for OCaml</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-mlfront-a-java-like-pac=
+kage-system-for-ocaml/15072/4">https://discuss.ocaml.org/t/ann-mlfront-a-ja=
+va-like-package-system-for-ocaml/15072/4</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgd710dc4" class=3D"outline-3">
+<h3 id=3D"orgd710dc4">Continuing this thread, jbeckford announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd710dc4">
+<p>
+I've added a third post: <a href=3D"https://diskuv.com/mlfront/overview-3/"=
+>https://diskuv.com/mlfront/overview-3/</a>
+</p>
+
+<p>
+In it I describe a small but useful <i>reference build system</i> for MlFro=
+nt which can take packages like:
+</p>
+
+<pre class=3D"example" id=3D"orgc6c64c3">
+.
+=E2=94=9C=E2=94=80=E2=94=80 AcmeWidgets_Std/
+=E2=94=82   =E2=94=94=E2=94=80=E2=94=80 A.ml
+=E2=94=94=E2=94=80=E2=94=80 BobBuilder_Std/
+    =E2=94=94=E2=94=80=E2=94=80 B.ml
+</pre>
+
+<p>
+and produce standalone build scripts that can be committed to source contro=
+l:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-shell">$ mlfront-boot -native -o buildscript
+
+$ ./buildscript.sh <span style=3D"color: #8f6f4a; font-style: italic;"># </=
+span><span style=3D"color: #8f6f4a; font-style: italic;">.\buildscript.cmd =
+is also created</span>
+
+$ target/BobBuilder_Std.B
+I am an A!
+I am a B!
+</pre>
+</div>
+
+<p>
+On a related note, I've begun to implement a small part of <a href=3D"https=
+://gallium.inria.fr/~scherer/namespaces/spec.pdf">https://gallium.inria.fr/=
+~scherer/namespaces/spec.pdf</a>. It is not strictly required but <a href=
+=3D"https://gitlab.com/dkml/build-tools/MlFront/-/blob/f1f6e6d073500febb5c9=
+e429212c8bdaaa177c35/src/MlFront_Codept/Namespaces.mli">Namespaces.mli</a> =
+will be very helpful for upgrading existing projects to <code>MlFront</code=
+>-style packages without changing code. That will be for a future (not soon=
+) post.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">First release of hector</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-first-release-of-hector=
+/15099/1">https://discuss.ocaml.org/t/ann-first-release-of-hector/15099/1</=
+a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgaa4001b" class=3D"outline-3">
+<h3 id=3D"orgaa4001b">Fran=C3=A7ois Pottier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgaa4001b">
+<p>
+It is my pleasure to announce the first release of <code>hector</code>, an =
+OCaml library that offers <i>vectors</i> (also known as dynamic arrays, or =
+resizeable arrays).
+</p>
+
+<p>
+To install it, type <code>opam update &amp;&amp; opam install hector</code>.
+</p>
+
+<p>
+<code>hector</code> offers <b>polymorphic vectors</b>, where the type of th=
+e elements is a parameter, <b>monomorphic vectors</b>, where the type of th=
+e elements is fixed, and <b>integer vectors</b>, a special case of monomorp=
+hic vectors.
+</p>
+
+<p>
+<code>hector</code>'s vectors are <b>not thread-safe</b> and <b>do not incl=
+ude a protection against memory leaks</b>. Compared with the <code>Dynarray=
+</code> module in OCaml's standard library, <code>hector</code>'s polymorph=
+ic and monomorphic vectors are <b>slightly faster</b>, and <code>hector</co=
+de>'s integer vectors are <b>significantly faster</b>. <code>hector</code> =
+offers fast (but dangerous) <b>unsafe access operations</b>, namely <code>u=
+nsafe_get</code>, <code>unsafe_set</code>, and <code>unsafe_borrow</code>. =
+For a more detailed overview, see the <a href=3D"https://cambium.inria.fr/~=
+fpottier/hector/doc/hector/">documentation</a>.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Dune dev meeting</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/=
+9">https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/9</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orga557ea2" class=3D"outline-3">
+<h3 id=3D"orga557ea2">Continuing this thread, Marek Kubica announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga557ea2">
+<p>
+Thanks for everyone who joined today! The <a href=3D"https://github.com/oca=
+ml/dune/wiki/dev-meeting-2024-08-07">meeting minutes</a> are online and the=
+ next meeting will be in two weeks, 21st of August at 10:00 (AM) CEST.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+</div>
+<div id=3D"outline-container-org4232b23" class=3D"outline-3">
+<h3 id=3D"org4232b23">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org4232b23">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://frama-c.comhttps//link.springer.com/book/10.1007/978=
+-3-031-55608-1">The Guide to Software Verification with Frama-C is availabl=
+e</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-org0160ec5" class=3D"outline-2">
+<h2 id=3D"org0160ec5">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org0160ec5">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org1d517f9">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
