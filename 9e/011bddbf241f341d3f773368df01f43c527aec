@@ -1,0 +1,1200 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=E3CWv93p;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=6n2sB26F;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id A83B5B80123
+	for <caml-list@tunbury.org>; Tue,  3 Sep 2024 09:24:23 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=o+TIV7p60rpF0QRwDtx/UOy3RSsGmDLFbS0A5C82j0M=;
+  b=E3CWv93pypHXmttZSlvFEvrtllQLis9tZIcMaMB+YKC6RCEcL7gpoygJ
+   94HiVlHvdopycT4Wjq9t+BHIpOMC3ozAE+GkihPJbmAqGkSrHwxiu/BcF
+   jcbbIclLTgE4WHYv749ndCJUgQpi81xNH9Wa2DlFctdSQLRa9tthkvwUD
+   U=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.10,198,1719871200"; 
+   d="scan'208,217";a="181197185"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 03 Sep 2024 10:24:22 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id EFC48E00B6; Tue,  3 Sep 2024 10:24:21 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id B076EE00B6
+	for <caml-list@sympa.inria.fr>; Tue,  3 Sep 2024 10:24:19 +0200 (CEST)
+IronPort-SDR: 66d6c7b2_LLkF02N3BFjQT52WUX4zzcBeVcBiDMrfXyqRzAxj+sZJyfh
+ 3eWH8sKEAm78GYqkUdy2rbfqgOSAJtY8U/lihiQ==
+X-IPAS-Result: =?us-ascii?q?A0ECAgAQx9ZmmCIeaIFaHQEBPAEFBQECAQkBgWQCgT+BA?=
+ =?us-ascii?q?xkBY1ozBwhIYYN1g0+OH5xAgnsDGBYjFAEDAQ0UAgECDgcBDgQBAgQBAQMBA?=
+ =?us-ascii?q?gGFAAKJbgIfBgEEMwYOAQIEAQEBAQMCAwEBAQEBAQgBAQUBAQECAQECBAYBA?=
+ =?us-ascii?q?hABAQEBAQEBATcFSYV1DYJGLiNvXgcJNgEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQECDAEMFzsBSAQGEwEBJgUNGCMDEAQBB?=
+ =?us-ascii?q?gMCEQE1FwESFAaCZgGCZAMFDAaQXJs8en8zgQGCDAEBBoEIPgIBCwIFAQ4JJ?=
+ =?us-ascii?q?toEgWMJgUgBiDAaASpIagKEQwmEMScPgVVEgRWCKFFvgVBvCxcCAQEYgSEDA?=
+ =?us-ascii?q?QEKQwmDJYJphiRVhVNsgQpFDVGBTksWHA2BAGcGAgEBBhaBGA9HVw9FBA5vP?=
+ =?us-ascii?q?lQOgUWBPXwjAk1WEIcSgRqEK4hPgUciAyYzIRMBVRMXCwkFZIYPgkqDKYIUh?=
+ =?us-ascii?q?BiFJ4FnCWGHaIFvgT6BWkeCckuFU4EEgldsTjwCDQI3gi8lboJkNx1AAwttP?=
+ =?us-ascii?q?TUUG6kWBA0GIQGBWgGCEwgGXh4PDDYqAlYCBRYBHSMZDQUJGjALCwItjiWEH?=
+ =?us-ascii?q?DSdZ5NPgQo0B4QYgV0GDIkCgSSOJ4N2g1WEBUyBCosrmT8imE8iiVSBJQkHg?=
+ =?us-ascii?q?lCIboxcFoU+gX0kgSsxMxowQw0GgiABMwkJPRwPV41WFoNYgT6BJoE8OTvIY?=
+ =?us-ascii?q?0E1AgEBNwIHAQoBAQMJhUUdAQGFUzOBSwEB?=
+IronPort-PHdr: A9a23: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
+ WXrjLIxZgPuvAklcanjMEGfyNr8Gg6Q
+IronPort-Data: A9a23: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
+ vRALZTz6IRp5X29AIGr9Dg=
+IronPort-HdrOrdr: A9a23:SlcgNas5z1dxCYyDKv0L8Yl97skDS9V00zEX/kB9WHVpm62j5q
+ OTdZEgvyMc5wx+ZJhNo7290cq7IU80l6QV3WB5B97LNzUO01HGEGgN1+ff6gylMxK73O9Q36
+ VtfsFFeb/NJGk/q931pC2xE9NI+qjizElEv5a680tQ
+X-Talos-CUID: =?us-ascii?q?9a23=3AGreLb2qkYEgC9JNvqpJRFtTmUZ0Ob3r2wkbsGGu?=
+ =?us-ascii?q?hMmhqEoOvYkGTqZoxxg=3D=3D?=
+X-Talos-MUID: 9a23:HUoAVgVE7BjEtO/q/GDR2DtmFecw34mVKxESkosG6siDEwUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.10,198,1719871200"; 
+   d="scan'208,217";a="181197147"
+X-MGA-submission: =?us-ascii?q?MDFOC25EpHafH2pC0VcLItT6PL/TkLbo3uQmzk?=
+ =?us-ascii?q?tBPdiTWw2FEv09nDH6OB2l0S+LH63OZ+GifRisynksHnoyhNjDehxe8t?=
+ =?us-ascii?q?zqxerVckBFbaCvcxZqo45rgKXivnc8bXEoJnBhS7ie1ZS8D4QbF5uMec?=
+ =?us-ascii?q?tE3Jb54FLsZjA4tXdnDQjkDg=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2024 10:24:18 +0200
+Received: from TM.local (unknown [131.254.252.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id D4176564A8A;
+	Tue,  3 Sep 2024 10:24:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1725351857;
+	bh=O0ue5ajfPIML/Nj8so8R+dWfNd80/cqG1VyfOXry4CA=;
+	h=From:To:Subject:Date:Message-ID;
+	b=6n2sB26FjNneQwSZGKJ02ZQpIQnc4eo3p5gnDWBSg0RrROAsI2Bif/4aUOYW22eEA
+	 0+imT+pL+XIUDm5Mhkaz4BxK136AkmwcAQXBHmtolaDNKuHevuIyq6bW2lEhePQXpT
+	 mx9K0tj11JQNIo0MH8j8bJbBwV7OjdEC4lTB8vMM=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 03 Sep 2024 10:24:17 +0200
+Message-ID: <m2cyll16xa.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Sep  3 10:24:18 2024 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.443358, queueID=15FF9564A8C
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19176
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-09/m2cyll16xa.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of August 27 to
+September 03, 2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+ppx_minidebug 2.0: verbosity levels
+Ppx by example - repo to help on ppx learning
+Blog Post: Simple Example where Ocaml calls a C function
+Outreachy December 2024 Round
+Other OCaml News
+Old CWN
+
+
+ppx_minidebug 2.0: verbosity levels
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ppx-minidebug-2-0-verbosity-levels/15212=
+/1>
+
+
+Lukasz Stafiniak announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  I'm pleased to mention that [ppx_minidebug 2.0] is available now. The
+  README at [ppx_minidebug - GitHub] is the user manual, and the runtime
+  API is documented here: [ppx_minidebug.Minidebug_runtime].
+
+  Version 2.0 brings linear verbosity log levels. Both logging scopes
+  and individual log statements can be either: at a default (omitted)
+  log level, at a compile-time log level (e.g. `[%log2 "test"]' logs
+  `test' at level 2), or at a runtime-provided log level (e.g. `[%logN
+  for_level; "test"]' logs `test' at level `for_level'). When the level
+  to log at is omitted, it is inherited from its direct syntactic
+  logging scope (i.e. the log entry that the log or log entry is
+  syntactically in =E2=80=93 not the log entry that the log is dynamically
+  attached to, if it's different). Providing a compile-time log level
+  will prune the generated code accordingly. See more here:
+  [ppx_minidebug: Using as a logging framework].
+
+  Version 1.6 brought support for local runtimes, where the runtime for
+  logging in a logging scope is fetched by a user-provided function. The
+  function can for example use domain-local storage. See more here:
+  [ppx_minidebug: Dealing with concurrent execution].
+
+  Happy debugging!
+
+
+[ppx_minidebug 2.0] <https://github.com/lukstafi/ppx_minidebug>
+
+[ppx_minidebug - GitHub] <https://github.com/lukstafi/ppx_minidebug>
+
+[ppx_minidebug.Minidebug_runtime]
+<https://lukstafi.github.io/ppx_minidebug/ppx_minidebug/Minidebug_runtime/i=
+ndex.html>
+
+[ppx_minidebug: Using as a logging framework]
+<https://github.com/lukstafi/ppx_minidebug?tab=3Dreadme-ov-file#using-as-a-=
+logging-framework>
+
+[ppx_minidebug: Dealing with concurrent execution]
+<https://github.com/lukstafi/ppx_minidebug?tab=3Dreadme-ov-file#dealing-wit=
+h-concurrent-execution>
+
+
+Ppx by example - repo to help on ppx learning
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ppx-by-example-repo-to-help-on-ppx-learning/=
+15213/1>
+
+
+Pedro Braga announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Over the past few weeks, I've started my journey to learn PPX, and
+  during this process, I found it challenging to find examples. So, I
+  began creating my own examples and adding explanations for myself.
+
+  I realized that I could make my examples and explanations public
+  because this would push me to learn more deeply (as I=E2=80=99d need to
+  provide better and clearer explanations) and could also help anyone
+  else on this learning path. @davesnx also encouraged me to share my
+  process (maybe through a blog post in the future). So, I created this
+  repository: [github.com/pedrobslisboa/ppx-by-example].
+
+  The idea is to have examples and an explanation for each detail on
+  those. It has also a brief explanation about the subject on every
+  README.
+
+  I have a few notes:
+  =E2=80=A2 It is a wip project, which means that there are parts in
+    development. But sharing it is also a way to push me to improve this
+    project.
+  =E2=80=A2 As I said, I'm on the process of learning PPX, so probably I mi=
+ssed
+    or added something wrongly, so please If you notice it, share it on
+    the repo so I can fix.
+  =E2=80=A2 I am also in the process of learning OCaml. I started coding in
+    OCaml this year (professionally just last month), so this repository
+    might not have the best code. If you think it can be improved,
+    please let me know. :heart:
+  =E2=80=A2 I'm not a native English speaker or the best writer. I asked Ch=
+atGPT
+    to help fix some mistakes and improve cohesion, but if you notice
+    anything that needs to be improved, please let me know. :heart:
+
+  Besides that, any comments, help, or additions are welcome. I hope
+  this can be helpful :3 Thank you all!
+
+
+[github.com/pedrobslisboa/ppx-by-example]
+<https://github.com/pedrobslisboa/ppx-by-example>
+
+
+Blog Post: Simple Example where Ocaml calls a C function
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/blog-post-simple-example-where-ocaml-calls-a=
+-c-function/15211/3>
+
+
+Deep in this thread, Tim McGilchrist said
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  My favourite example at the moment is this one from [Retrofitting
+  Effect Handlers onto OCaml]. It shows OCaml calling C, C calling an
+  OCaml callback and exceptions crossing those boundaries.
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ cat meander.ml
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 external ocaml_to_c
+  =E2=94=82          : unit -> int =3D "ocaml_to_c"
+  =E2=94=82 exception E1
+  =E2=94=82 exception E2
+  =E2=94=82 let c_to_ocaml () =3D raise E1
+  =E2=94=82 let _ =3D Callback.register
+  =E2=94=82           "c_to_ocaml" c_to_ocaml
+  =E2=94=82 let omain () =3D
+  =E2=94=82   try (* h1 *)
+  =E2=94=82     try (* h2 *) ocaml_to_c ()
+  =E2=94=82     with E2 -> 0
+  =E2=94=82   with E1 -> 42
+  =E2=94=82 let _ =3D assert (omain () =3D 42)
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ cat meander_c.c
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 #include <caml/mlvalues.h>
+  =E2=94=82 #include <caml/callback.h>
+  =E2=94=82=20
+  =E2=94=82 value ocaml_to_c (value unit) {
+  =E2=94=82     caml_callback(*caml_named_value
+  =E2=94=82                   ("c_to_ocaml"), Val_unit);
+  =E2=94=82     return Val_int(0);
+  =E2=94=82 }
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Compile it with OCaml 5.2:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ ocamlopt --version
+  =E2=94=82 5.2.0
+  =E2=94=82 $ ocamlopt meander_c.c meander.ml -o meander.exe
+  =E2=94=82 $ ./meander.exe
+  =E2=94=82 $ echo $?
+  =E2=94=82 0
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Bonus you can use GDB/LLDB on this to set breakpoints in both OCaml
+  and C.
+
+
+[Retrofitting Effect Handlers onto OCaml]
+<https://doi.org/10.1145/3453483.3454039>
+
+
+Outreachy December 2024 Round
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/outreachy-december-2024-round/15223/1>
+
+
+Patrick Ferris announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  With the conclusion of the previous Outreachy round (see [Outreachy
+  Demo Presentation]), the next round is fast approaching and the OCaml
+  community has signed up again to participate!
+
+
+[Outreachy Demo Presentation]
+<https://discuss.ocaml.org/t/outreachy-demo-presentation/15189>
+
+The Next Round
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The *deadline for mentors to [submit a project] is [date=3D2024-09-11
+  timezone=3D"Europe/London"]*. If people are interested in mentoring and
+  they maintain an open-source project, then they can reach out directly
+  to me and I can help scope a project, explain the contribution period
+  and provide as much other help as we can! Co-mentoring is also an
+  option for people who are interested in mentoring but do not have a
+  specific project =E2=80=93 do reply to this thread if that's you!
+
+  When signing up mentors propose an open-source project where
+  prospective interns submit PRs during the =E2=80=9Ccontribution phases=E2=
+=80=9D as
+  part of their application. Mentors will then choose an intern to work
+  with for 3 months. A more detailed explanation is available [on the
+  Outreachy mentor section ].
+
+  I'm particularly interested in *projects from some of the larger OCaml
+  projects* (e.g. dune, opam, ppxlib, miou, eio, cohttp, melange
+  etc.). I'm very happy to help with co-mentoring on any of these
+  projects. If you are interested and are a maintainer of a larger
+  project, please do reach out. Of course, smaller projects are still
+  very much possible.
+
+
+[submit a project] <https://www.outreachy.org/communities/cfp/ocaml/>
+
+[on the Outreachy mentor section ]
+<https://www.outreachy.org/mentor/#mentor>
+
+
+Funding
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  _Funding for this upcoming Outreachy round is not yet finalised_. We
+  hope to have funding for three interns, I will reply to this thread
+  once things are confirmed which should be soon. If any company is
+  interested in supporting the OCaml community Outreachy initative
+  please do reach out to me.
+
+  I'd also like to take this moment to raise some awareness for the
+  current [struggles Outreachy is facing]. The OCaml community has
+  benefited massively from Outreachy. Both by participating directly as
+  a community (see <https://ocaml.org/outreachy> for some past projects)
+  and via the participation of other communities. I'm very grateful for
+  everyone who has taken part in some way, including non-mentors
+  engaging with the interns.
+
+  As always if you have any general questions or mentoring ideas do
+  comment on this thread or reach out directly.
+
+  Thanks!
+
+
+[struggles Outreachy is facing]
+<https://www.outreachy.org/blog/2024-08-14/outreachy-needs-your-help/>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [The Biggest Functional Programming Conference of the Year: Wha=
+t are
+    we Bringing to ICFP?]
+  =E2=80=A2 [ICFP 2024]
+  =E2=80=A2 [Project-Wide Occurrences: A New Navigation Feature for OCaml 5=
+.2
+    Users]
+  =E2=80=A2 [What the interns have wrought, 2024 edition]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[The Biggest Functional Programming Conference of the Year: What are we
+Bringing to ICFP?]
+<https://tarides.com/blog/2024-08-30-the-biggest-functional-programming-con=
+ference-of-the-year-what-are-we-bringing-to-icfp>
+
+[ICFP 2024] <https://blog.janestreet.com/icfp-2024-index/>
+
+[Project-Wide Occurrences: A New Navigation Feature for OCaml 5.2 Users]
+<https://tarides.com/blog/2024-08-28-project-wide-occurrences-a-new-navigat=
+ion-feature-for-ocaml-5-2-users>
+
+[What the interns have wrought, 2024 edition]
+<https://blog.janestreet.com/what-the-interns-have-wrought-2024-edition-ind=
+ex/>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-09-03 Tue 10:23 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.08.27.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.09.10.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of August 27 to Septembe=
+r 03, 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">ppx_minidebug 2.0: verbosity levels</a></li>
+<li><a href=3D"#2">Ppx by example - repo to help on ppx learning</a></li>
+<li><a href=3D"#3">Blog Post: Simple Example where Ocaml calls a C function=
+</a></li>
+<li><a href=3D"#4">Outreachy December 2024 Round</a></li>
+<li><a href=3D"#5">Other OCaml News</a></li>
+<li><a href=3D"#org9c1dde5">Old CWN</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">ppx_minidebug 2.0: verbosity levels</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ppx-minidebug-2-0-verbo=
+sity-levels/15212/1">https://discuss.ocaml.org/t/ann-ppx-minidebug-2-0-verb=
+osity-levels/15212/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org0fac7be" class=3D"outline-3">
+<h3 id=3D"org0fac7be">Lukasz Stafiniak announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org0fac7be">
+<p>
+I'm pleased to mention that <a href=3D"https://github.com/lukstafi/ppx_mini=
+debug">ppx_minidebug 2.0</a> is available now. The README at <a href=3D"htt=
+ps://github.com/lukstafi/ppx_minidebug">ppx_minidebug - GitHub</a> is the u=
+ser manual, and the runtime API is documented here: <a href=3D"https://luks=
+tafi.github.io/ppx_minidebug/ppx_minidebug/Minidebug_runtime/index.html">pp=
+x_minidebug.Minidebug_runtime</a>.
+</p>
+
+<p>
+Version 2.0 brings linear verbosity log levels. Both logging scopes and ind=
+ividual log statements can be either: at a default (omitted) log level, at =
+a compile-time log level (e.g. <code>[%log2 "test"]</code> logs <code>test<=
+/code> at level 2), or at a runtime-provided log level (e.g. <code>[%logN f=
+or_level; "test"]</code> logs <code>test</code> at level <code>for_level</c=
+ode>). When the level to log at is omitted, it is inherited from its direct=
+ syntactic logging scope (i.e. the log entry that the log or log entry is s=
+yntactically in &#x2013; not the log entry that the log is dynamically atta=
+ched to, if it's different). Providing a compile-time log level will prune =
+the generated code accordingly. See more here: <a href=3D"https://github.co=
+m/lukstafi/ppx_minidebug?tab=3Dreadme-ov-file#using-as-a-logging-framework"=
+>ppx_minidebug: Using as a logging framework</a>.
+</p>
+
+<p>
+Version 1.6 brought support for local runtimes, where the runtime for loggi=
+ng in a logging scope is fetched by a user-provided function. The function =
+can for example use domain-local storage. See more here: <a href=3D"https:/=
+/github.com/lukstafi/ppx_minidebug?tab=3Dreadme-ov-file#dealing-with-concur=
+rent-execution">ppx_minidebug: Dealing with concurrent execution</a>.
+</p>
+
+<p>
+Happy debugging!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Ppx by example - repo to help on ppx learning</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ppx-by-example-repo-to-help=
+-on-ppx-learning/15213/1">https://discuss.ocaml.org/t/ppx-by-example-repo-t=
+o-help-on-ppx-learning/15213/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org5dfa438" class=3D"outline-3">
+<h3 id=3D"org5dfa438">Pedro Braga announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org5dfa438">
+<p>
+Over the past few weeks, I've started my journey to learn PPX, and during t=
+his process, I found it challenging to find examples. So, I began creating =
+my own examples and adding explanations for myself.
+</p>
+
+<p>
+I realized that I could make my examples and explanations public because th=
+is would push me to learn more deeply (as I=E2=80=99d need to provide bette=
+r and clearer explanations) and could also help anyone else on this learnin=
+g path. @davesnx also encouraged me to share my process (maybe through a bl=
+og post in the future). So, I created this repository: <a href=3D"https://g=
+ithub.com/pedrobslisboa/ppx-by-example">github.com/pedrobslisboa/ppx-by-exa=
+mple</a>.
+</p>
+
+<p>
+The idea is to have examples and an explanation for each detail on those. I=
+t has also a brief explanation about the subject on every README.
+</p>
+
+<p>
+I have a few notes:
+</p>
+<ul class=3D"org-ul">
+<li>It is a wip project, which means that there are parts in development. B=
+ut sharing it is also a way to push me to improve this project.</li>
+<li>As I said, I'm on the process of learning PPX, so probably I missed or =
+added something wrongly, so please If you notice it, share it on the repo s=
+o I can fix.</li>
+<li>I am also in the process of learning OCaml. I started coding in OCaml t=
+his year (professionally just last month), so this repository might not hav=
+e the best code. If you think it can be improved, please let me know. :hear=
+t:</li>
+<li>I'm not a native English speaker or the best writer. I asked ChatGPT to=
+ help fix some mistakes and improve cohesion, but if you notice anything th=
+at needs to be improved, please let me know. :heart:</li>
+</ul>
+
+<p>
+Besides that, any comments, help, or additions are welcome. I hope this can=
+ be helpful :3
+Thank you all!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Blog Post: Simple Example where Ocaml calls a C function</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/blog-post-simple-example-wh=
+ere-ocaml-calls-a-c-function/15211/3">https://discuss.ocaml.org/t/blog-post=
+-simple-example-where-ocaml-calls-a-c-function/15211/3</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org3f99e26" class=3D"outline-3">
+<h3 id=3D"org3f99e26">Deep in this thread, Tim McGilchrist said</h3>
+<div class=3D"outline-text-3" id=3D"text-org3f99e26">
+<p>
+My favourite example at the moment is this one from <a href=3D"https://doi.=
+org/10.1145/3453483.3454039">Retrofitting Effect Handlers onto OCaml</a>. I=
+t shows OCaml calling C, C calling an OCaml callback and exceptions crossin=
+g those boundaries.
+</p>
+
+<pre class=3D"example" id=3D"org3775855">
+$ cat meander.ml
+</pre>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">external</span> <span style=3D"color: #a7601f;">ocaml_to_c</span>
+         : unit -&gt; int =3D <span style=3D"color: #ca3400;">"ocaml_to_c"<=
+/span>
+<span style=3D"color: #006f00; font-weight: bold;">exception</span> <span s=
+tyle=3D"color: #242521; background-color: #fcf7ef;">E1</span>
+<span style=3D"color: #006f00; font-weight: bold;">exception</span> <span s=
+tyle=3D"color: #242521; background-color: #fcf7ef;">E2</span>
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">c_to_ocaml</span> () =3D <span style=3D"color: #557400=
+; font-weight: bold;">raise</span> <span style=3D"color: #242521; backgroun=
+d-color: #fcf7ef;">E1</span>
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">_</span> =3D <span style=3D"color: #444fcf;">Callback.=
+</span>register
+          <span style=3D"color: #ca3400;">"c_to_ocaml"</span> c_to_ocaml
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">omain</span> () =3D
+  <span style=3D"color: #006f00; font-weight: bold;">try</span> <span style=
+=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=3D"color: #8=
+f6f4a; font-style: italic;">h1</span><span style=3D"color: #8f6f4a; font-st=
+yle: italic;"> *)</span>
+    <span style=3D"color: #006f00; font-weight: bold;">try</span> <span sty=
+le=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=3D"color: =
+#8f6f4a; font-style: italic;">h2</span><span style=3D"color: #8f6f4a; font-=
+style: italic;"> *)</span> ocaml_to_c ()
+    <span style=3D"color: #006f00; font-weight: bold;">with</span> <span st=
+yle=3D"color: #242521; background-color: #fcf7ef;">E2</span> -&gt; 0
+  <span style=3D"color: #006f00; font-weight: bold;">with</span> <span styl=
+e=3D"color: #242521; background-color: #fcf7ef;">E1</span> -&gt; 42
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">_</span> =3D <span style=3D"color: #006f00; font-weigh=
+t: bold;">assert</span> (omain () =3D 42)
+</pre>
+</div>
+
+<pre class=3D"example" id=3D"orgf2d5145">
+$ cat meander_c.c
+</pre>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-c"><span style=3D"color: #9f0d0f;">#include</span> <s=
+pan style=3D"color: #ca3400;">&lt;caml/mlvalues.h&gt;</span>
+<span style=3D"color: #9f0d0f;">#include</span> <span style=3D"color: #ca34=
+00;">&lt;caml/callback.h&gt;</span>
+
+<span style=3D"color: #444fcf;">value</span> <span style=3D"color: #a7601f;=
+">ocaml_to_c</span> (<span style=3D"color: #444fcf;">value</span> <span sty=
+le=3D"color: #007a9f;">unit</span>) {
+    caml_callback(*caml_named_value
+                  (<span style=3D"color: #ca3400;">"c_to_ocaml"</span>), Va=
+l_unit);
+    <span style=3D"color: #006f00; font-weight: bold;">return</span> Val_in=
+t(0);
+}
+</pre>
+</div>
+
+<p>
+Compile it with OCaml 5.2:
+</p>
+
+<pre class=3D"example" id=3D"org2bea0ee">
+$ ocamlopt --version
+5.2.0
+$ ocamlopt meander_c.c meander.ml -o meander.exe
+$ ./meander.exe
+$ echo $?
+0
+</pre>
+
+<p>
+Bonus you can use GDB/LLDB on this to set breakpoints in both OCaml and C.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Outreachy December 2024 Round</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/outreachy-december-2024-rou=
+nd/15223/1">https://discuss.ocaml.org/t/outreachy-december-2024-round/15223=
+/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org3307edf" class=3D"outline-3">
+<h3 id=3D"org3307edf">Patrick Ferris announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3307edf">
+<p>
+With the conclusion of the previous Outreachy round (see <a href=3D"https:/=
+/discuss.ocaml.org/t/outreachy-demo-presentation/15189">Outreachy Demo Pres=
+entation</a>), the next round is fast approaching and the OCaml community h=
+as signed up again to participate!
+</p>
+</div>
+
+<div id=3D"outline-container-org27e2f21" class=3D"outline-4">
+<h4 id=3D"org27e2f21">The Next Round</h4>
+<div class=3D"outline-text-4" id=3D"text-org27e2f21">
+<p>
+The <b>deadline for mentors to <a href=3D"https://www.outreachy.org/communi=
+ties/cfp/ocaml/">submit a project</a> is [date=3D2024-09-11 timezone=3D"Eur=
+ope/London"]</b>. If people are interested in mentoring and they maintain a=
+n open-source project, then they can reach out directly to me and I can hel=
+p scope a project, explain the contribution period and provide as much othe=
+r help as we can! Co-mentoring is also an option for people who are interes=
+ted in mentoring but do not have a specific project &#x2013; do reply to th=
+is thread if that's you!=20
+</p>
+
+<p>
+When signing up mentors propose an open-source project where prospective in=
+terns submit PRs during the =E2=80=9Ccontribution phases=E2=80=9D as part o=
+f their application. Mentors will then choose an intern to work with for 3 =
+months. A more detailed explanation is available <a href=3D"https://www.out=
+reachy.org/mentor/#mentor">on the Outreachy mentor section </a>.
+</p>
+
+<p>
+I'm particularly interested in <b>projects from some of the larger OCaml pr=
+ojects</b> (e.g. dune, opam, ppxlib, miou, eio, cohttp, melange etc.). I'm =
+very happy to help with co-mentoring on any of these projects. If you are i=
+nterested and are a maintainer of a larger project, please do reach out. Of=
+ course, smaller projects are still very much possible.=20
+</p>
+</div>
+</div>
+
+<div id=3D"outline-container-org8ef8ac3" class=3D"outline-4">
+<h4 id=3D"org8ef8ac3">Funding</h4>
+<div class=3D"outline-text-4" id=3D"text-org8ef8ac3">
+<p>
+<span class=3D"underline">Funding for this upcoming Outreachy round is not =
+yet finalised</span>. We hope to have funding for three interns, I will rep=
+ly to this thread once things are confirmed which should be soon. If any co=
+mpany is interested in supporting the OCaml community Outreachy initative p=
+lease do reach out to me.
+</p>
+
+<p>
+I'd also like to take this moment to raise some awareness for the current <=
+a href=3D"https://www.outreachy.org/blog/2024-08-14/outreachy-needs-your-he=
+lp/">struggles Outreachy is facing</a>. The OCaml community has benefited m=
+assively from Outreachy. Both by participating directly as a community (see=
+ <a href=3D"https://ocaml.org/outreachy">https://ocaml.org/outreachy</a> fo=
+r some past projects) and via the participation of other communities. I'm v=
+ery grateful for everyone who has taken part in some way, including non-men=
+tors engaging with the interns.=20
+</p>
+
+<p>
+As always if you have any general questions or mentoring ideas do comment o=
+n this thread or reach out directly.
+</p>
+
+<p>
+Thanks!
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+</div>
+<div id=3D"outline-container-org03a98dc" class=3D"outline-3">
+<h3 id=3D"org03a98dc">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org03a98dc">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2024-08-30-the-biggest-functional-p=
+rogramming-conference-of-the-year-what-are-we-bringing-to-icfp">The Biggest=
+ Functional Programming Conference of the Year: What are we Bringing to ICF=
+P?</a></li>
+<li><a href=3D"https://blog.janestreet.com/icfp-2024-index/">ICFP 2024</a><=
+/li>
+<li><a href=3D"https://tarides.com/blog/2024-08-28-project-wide-occurrences=
+-a-new-navigation-feature-for-ocaml-5-2-users">Project-Wide Occurrences: A =
+New Navigation Feature for OCaml 5.2 Users</a></li>
+<li><a href=3D"https://blog.janestreet.com/what-the-interns-have-wrought-20=
+24-edition-index/">What the interns have wrought, 2024 edition</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-org9c1dde5" class=3D"outline-2">
+<h2 id=3D"org9c1dde5">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org9c1dde5">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgfe52cba">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
