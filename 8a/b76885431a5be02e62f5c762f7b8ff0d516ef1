@@ -1,0 +1,1696 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=NbwNiETw;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=2HzAA+q5;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id C02D2B80123
+	for <caml-list@tunbury.org>; Tue, 17 Sep 2024 15:02:54 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=Hxt8qbH3KPldc50sZXyYq2DLgbvQTCfGw0Mi2D+pvIE=;
+  b=NbwNiETwfrmznERG8GZT0rJXsuGRwF1GzvmnIfkQGYcWrpRgVqzvGSlV
+   7l4zOIjD/O1V3Gb6Sjc+Ztm9h9oTLo+H3T+TR9hJaC3DaELq098k6nsyZ
+   GfhVNgBfvkUoeV4mW1IHbWGNU+DqmCexRKDzwkPDzlo5cDjOO31ASNAkH
+   8=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.10,235,1719871200"; 
+   d="scan'208,217";a="183624455"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Sep 2024 16:02:53 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 674A9E0D1F; Tue, 17 Sep 2024 16:02:53 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 846E3E0131
+	for <caml-list@sympa.inria.fr>; Tue, 17 Sep 2024 16:02:50 +0200 (CEST)
+IronPort-SDR: 66e98c08_O4KmTKZIFpZWbda0XP+ULeBmcQa/+0HmeuHAPxn+a1O6Ys7
+ dG0JF1T6sYznLxTizDJYcLAdWzVJAs2psaLdSRA==
+X-IPAS-Result: =?us-ascii?q?A0EeDgCMi+lmmCIeaIFagliBQVIxGQFdBlozBwhIA4RTg?=
+ =?us-ascii?q?0+FNIhrgRaBK5oAgVaBQBYjFAEDAQ0uAQ4EAQIEAQEDAQIBggyCLkYCiX0CH?=
+ =?us-ascii?q?wYBBDAJDgECBAEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGAQIQAQEBAQEBA?=
+ =?us-ascii?q?QE3BUmFdQ2CRhkUASNxXgMEAwYGAQEBAQEBAQEBJwEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECCAQBDBcfHAEjHAkKEwEBM?=
+ =?us-ascii?q?QcYIwMQBAEGAwIRATUDFAESGoJYDwGCZAMEAQwGkmuaaxo3eoEygQGCDAEBB?=
+ =?us-ascii?q?oEIPgMLAgIDDy4B2gWBGUoJgUiIMRoBKkhqAoRDhDonD4FVRIEVgihKB2+CP?=
+ =?us-ascii?q?xcLAQEBARhCYgEBETwJGIMNgmmDMYJvVYMYP4ESOi9sgQlSgnEPgSmBF2Z+V?=
+ =?us-ascii?q?w+CBFQCDIMCfCWBIxCGMF+BF4Qbi26BRyIDJjMhEwFVExcLCQVkhguCSoMmg?=
+ =?us-ascii?q?hSEFoUlgWcJYIdngW+BPoFZR4JySoVTgQaCUWtOOQINAjeCKSVuglqDeWEdQ?=
+ =?us-ascii?q?AMLbT01FBurOgQNJwGBXAFHgXMOCxQfATEbFQIhCgEHFA4BAQQeNjgLAgIVM?=
+ =?us-ascii?q?AQEARAIJwYQAgQWF5JPEQIRBCUHnTyTbW00B4QagV0GDIkCgSSVc4QFgVaLK?=
+ =?us-ascii?q?4Z+kkEimFMigjSCdIQsgSUJgW0eTIhvjF8hhTOBZzpJYgEdDAczGjBDDQaCI?=
+ =?us-ascii?q?AEzCQk9HA+IIYlSKIE+gSaBdTu/ckE1AgEBDikCBwEKAQEDCYVFHQEBhUYCJ?=
+ =?us-ascii?q?gQIgUsBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ 9VsD7UD6Jy5FX1s
+IronPort-HdrOrdr: A9a23:kXvYsaozWr1N4cYpxuJ2E6IaV5oWeYIsimQD101hICG9E/bo9P
+ xG+c5w6faaslgssR0b9OxoW5PhfZq/z/9ICOAqVN/IYOCMggSVxe9ZgbfK8nnJJGnV9+JW16
+ tsGpIOauHYPBxdlsi/xAG5Fr8bsb26GU2T9ILj80s=
+X-Talos-CUID: =?us-ascii?q?9a23=3ACPF3mWqHexTuv0A8xahBT8rmUeUmMU/FlCbaGFO?=
+ =?us-ascii?q?1FWZyEZuQW3HK8qwxxg=3D=3D?=
+X-Talos-MUID: 9a23:2zuOZwraYCM7BmVqst8ezzU7BfhS5Yr2Mmwqvr4A4PiVay8pFB7I2Q==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.10,235,1719871200"; 
+   d="scan'208,217";a="96606908"
+X-MGA-submission: =?us-ascii?q?MDFv4rmZOOz2Eu7wMLZbG4H4p7Vx04Ibv4DkOb?=
+ =?us-ascii?q?apVI6w2l0DF4CW5PRbZMcU6TqAnr6jGTF4lWAQmONCLeWkMiNPpde2Xp?=
+ =?us-ascii?q?KUfho/Eu6c+hqS0O7NKkytQ/bKJjhXX/7QYNtyp8CGopf802qh8Q4uWo?=
+ =?us-ascii?q?iByIIlDkGekb0JvxtqzFPYTQ=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Sep 2024 16:02:48 +0200
+Received: from TM.local (unknown [82.66.240.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 30D50564A7A;
+	Tue, 17 Sep 2024 16:02:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1726581767;
+	bh=FeGAVae8tiMfwJ6qPW6eUYSKLFlGFM15TC2qG2vAuHQ=;
+	h=From:To:Subject:Date:Message-ID;
+	b=2HzAA+q5YH9wR9TnZxap1aCk0FX0Wt3ItHf0nVJMcB2IIrCZTb9wWQw83B8vyU0vU
+	 2Od6jBUVtgSZ0m6Iz+YAvmqc/BQ+kIGTEdz1wVCOWHwb/29UEnSOqWCuxhd3sOvPBy
+	 /g/zXKx2ff3aOD1o9PcJvvm7GdCIyR4Yxvdyx3vg=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 17 Sep 2024 16:02:45 +0200
+Message-ID: <m2ed5i5qey.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Sep 17 16:02:47 2024 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.476866, queueID=67F9B564A7B
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19179
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-09/m2ed5i5qey.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of September 10 to
+17, 2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Ptime 1.2.0 =E2=80=93 Mtime 2.1.0 =E2=80=93 Qrc 0.2.0
+Unicode 16.0.0 update for Uucd, Uucp, Uunf and Uuseg
+Outreachy Demo Presentation
+Live Stream to follow OCaml Workshop, ML Workshop, and other talks at ICFP
+DkML 2.1.2 and opam 2.2.0
+store v0.1.0
+Tsdl 1.1.0
+OCaml-css 0.2.0
+OCaml-stk 0.2.0 and Chamo 4.1.0
+DkCoder 2.1.3
+Other OCaml News
+Old CWN
+
+
+Ptime 1.2.0 =E2=80=93 Mtime 2.1.0 =E2=80=93 Qrc 0.2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ptime-1-2-0-mtime-2-1-0-qrc-0-2-0/15268/=
+1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  There are new releases of these packages:
+
+  =E2=80=A2 [Ptime] POSIX time for OCaml, [release notes], [docs]
+  =E2=80=A2 [Mtime] Monotonic time for OCaml, [release notes], [docs]
+  =E2=80=A2 [Qrc] QR code encoder for OCaml, [release notes], [docs]
+
+  See the individual release notes for details about the changes.
+
+  The library structure of Ptime and Mtime was changed to align it on
+  the mythical library convention and make it for less surprising names
+  (it used to make sense, it no longer does):
+
+  =E2=80=A2 The `{M,P}time_clock' modules are now in the `{p,m}time.clock'
+    libraries as they should be. These libraries were also made to
+    [export] the base `{p,m}time' library so that you can trim you
+    `requires' when you use the clocks.
+  =E2=80=A2 The libraries `{p,m}time.clock.os' are deprecated. They now sim=
+ply
+    export `{p,m}time.clock' and warn on usage.
+
+  Best and a big thanks to my [donors]
+
+
+[Ptime] <https://erratique.ch/software/ptime>
+
+[release notes]
+<https://github.com/dbuenzli/ptime/blob/master/CHANGES.md#v120-2024-09-10-z=
+agreb>
+
+[docs] <https://erratique.ch/software/ptime/doc>
+
+[Mtime] <https://erratique.ch/software/mtime>
+
+[release notes]
+<https://github.com/dbuenzli/mtime/blob/master/CHANGES.md#v210-2024-09-10-z=
+agreb>
+
+[docs] <https://erratique.ch/software/mtime/doc>
+
+[Qrc] <https://erratique.ch/software/qrc>
+
+[release notes]
+<https://github.com/dbuenzli/qrc/blob/master/CHANGES.md#v020-2024-09-10-zag=
+reb>
+
+[docs] <https://erratique.ch/software/qrc/doc>
+
+[export]
+<https://discuss.ocaml.org/t/proposal-a-new-exports-field-in-findlib-meta-f=
+iles>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+
+Unicode 16.0.0 update for Uucd, Uucp, Uunf and Uuseg
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-unicode-16-0-0-update-for-uucd-uucp-uunf=
+-and-uuseg/15270/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Unicode 16.0.0 was released on September 10th. It adds 5185 new
+  characters for a total of 154'998 characters.
+
+  If you are into retrocomputing or terminal graphics this may be your
+  ultimate chance to find an odd character to make an effect among the
+  686 new [symbols for legacy computing] that are added =E2=80=93 I'm heari=
+ng
+  this may me be the last batch, the resource is finite!  See the
+  [announcement page] for links to all the other equally interesting
+  additions.
+
+  If you are obsessed about deep linking into standard definitions, note
+  that the normative core specification becomes a proper [HTML
+  document]; rather than a bunch of PDF files or that 1400 pages
+  hard-copy I once purchased for 5.0.0 circa 2007 :=E2=80=93). The neat res=
+ult
+  is that we can now precisely hyperlink to the [normative definition]
+  of an OCaml [`Uchar.t'] value.
+
+  Accordingly these libraries had to be updated (aggregated, boring,
+  release notes [here])
+
+  =E2=80=A2 [Uucd] 16.0.0 Unicode character database decoder for OCaml, [do=
+cs]
+  =E2=80=A2 [Uucp] 16.0.0 Unicode character properties for OCaml, [docs]
+  =E2=80=A2 [Uunf] 16.0.0 Unicode text normalization for OCaml, [docs]
+  =E2=80=A2 [Uuseg] 16.0.0 Unicode text segmentation for OCaml, [docs]
+
+  Both `Uucd' and `Uucp' are incompatible releases sinces new block and
+  script enumerants were added.
+
+  Other than that the minimal Unicode introduction and Unicode OCaml
+  tips is still [here] and remember that despite the uninformed myths
+  OCaml :heart: Unicode.
+
+  A big thanks for funding from the [OCaml Software Foundation] and from
+  my faithful [donors].
+
+
+[symbols for legacy computing]
+<https://www.unicode.org/charts/PDF/Unicode-16.0/U160-1CC00.pdf>
+
+[announcement page]
+<https://blog.unicode.org/2024/09/announcing-unicode-standard-version-160.h=
+tml>
+
+[HTML document]
+<https://www.unicode.org/versions/Unicode16.0.0/core-spec/>
+
+[normative definition]
+<https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-3/#G25539>
+
+[`Uchar.t'] <https://ocaml.org/manual/5.2/api/Uchar.html#TYPEt>
+
+[here] <https://github.com/ocaml/opam-repository/pull/26534>
+
+[Uucd] <http://erratique.ch/software/uucd>
+
+[docs] <http://erratique.ch/software/uucd/doc>
+
+[Uucp] <http://erratique.ch/software/uucp>
+
+[docs] <http://erratique.ch/software/uucp/doc>
+
+[Uunf] <http://erratique.ch/software/uunf>
+
+[docs] <http://erratique.ch/software/uunf/doc>
+
+[Uuseg] <http://erratique.ch/software/uuseg>
+
+[docs] <http://erratique.ch/software/uuseg/doc>
+
+[here] <https://erratique.ch/software/uucp/doc/unicode.html>
+
+[OCaml Software Foundation] <http://ocaml-sf.org/>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+
+Outreachy Demo Presentation
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/outreachy-demo-presentation/15189/4>
+
+
+Patrick Ferris announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The demo presentation video is now online:
+  <https://watch.ocaml.org/w/peT3MdWjS1BYYMbowEJ1gv> =E2=80=93 thank you to
+  everyone who joined and particularly the mentors, co-mentors and
+  interns!
+
+  A big thank you also to [Tarides] and [Jane Street] for providing
+  resources and funding to make this round possible. A reminder that
+  _today_ is the last day to sign up to the next round =E2=80=93 [Outreachy
+  December 2024 Round]!
+
+
+[Tarides] <https://tarides.com>
+
+[Jane Street] <https://www.janestreet.com>
+
+[Outreachy December 2024 Round]
+<https://discuss.ocaml.org/t/outreachy-december-2024-round/15223>
+
+
+Live Stream to follow OCaml Workshop, ML Workshop, and other talks at ICFP
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/live-stream-to-follow-ocaml-workshop-ml-work=
+shop-and-other-talks-at-icfp/15232/4>
+
+
+jbeckford announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  FYI: For people like me who were on vacation or otherwise unavailable,
+  the several hour Live Stream is still available.
+
+  The intro to the workshop and the first OCaml talk start at
+  <https://www.youtube.com/live/OuQqblCxJ2Y?t=3D2254s>.
+
+
+DkML 2.1.2 and opam 2.2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-dkml-2-1-2-and-opam-2-2-0/15187/5>
+
+
+jbeckford announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  DkML 2.1.3 was released. The major changes are:
+
+  =E2=80=A2 Upgraded from opam 2.2.0 to opam 2.2.1.
+  =E2=80=A2 The ocaml/opam-repository tag was advanced to Sep 10, 2024.
+  =E2=80=A2 bugfix: `dk Ml.Switch init' was broken on Linux and macOS. DkML
+    2.1.2 had incorrectly pinned the `dkml-host-abi' and
+    `dkml-target-abi' of the master DkML build
+    machine. <https://gitlab.com/dkml/distributions/dkml/-/issues/24>
+  =E2=80=A2 Allow prereleases of Visual Studio; requested at
+    <https://gitlab.com/dkml/distributions/dkml/-/issues/23>.
+
+  Upgrading is:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 winget remove dkml # Ignore "exit code: 4294967295"
+  =E2=94=82 winget install dkml
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The full release notes are at
+  <https://gitlab.com/dkml/distributions/dkml/-/releases/2.1.3>.
+
+
+store v0.1.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-store-v0-1-0/15274/1>
+
+
+Basile Cl=C3=A9ment announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I would like to announce the first release of `store' ([docs]), a
+  library providing a snapshottable bag of mutable references, an
+  efficient data-structure for back-tracking workloads.
+
+  To install it, type `opam update && opam install store'.
+
+  Store provides a simple API for capturing and restoring state as well
+  as easy-to-use high-level wrappers to automatically rollback changes
+  on failure (`tentatively') or unconditionally (`temporarily'). It
+  boasts almost-zero overhead when back-tracking is not used and
+  best-in-class performance for back-tracking use cases.
+
+  The design and implementation of Store is described in the paper
+  [Snapshottable stores], which was given a Distinguished Paper award at
+  this year's ICFP in Milan. As recognized by this award, the paper is
+  well-written and easy to understand; please give it a read if you are
+  interested in either back-tracking workloads or subtle data structure
+  invariants!
+
+  I also want to give a shout-out to Fran=C3=A7ois Pottier's Monolith, which
+  proved invaluable during the development of Store to find and diagnose
+  subtle bugs.
+
+  Store was developed through collaboration between myself (Basile
+  Cl=C3=A9ment) at OCamlPro and Gabriel Scherer at Inria, and the persistent
+  interface was formally verified by Cl=C3=A9ment Allain and Alexandre Moine
+  at Inria.
+
+
+[docs] <https://ocaml.org/p/store/latest/doc/Store/index.html>
+
+[Snapshottable stores] <https://doi.org/10.1145/3674637>
+
+
+Tsdl 1.1.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-tsdl-1-1-0/15275/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  There's a new release of [Tsdl], thin bindings to the C [SDL
+  library]. See the [release notes] for details.
+
+  =E2=80=A2 Docs: [online] or `odig doc tsdl'
+  =E2=80=A2 Install: `opam install tsdl'
+
+  Daniel
+
+  A big thanks to my [donors].
+
+
+[Tsdl] <https://erratique.ch/software/tsdl>
+
+[SDL library] <https://www.libsdl.org/>
+
+[release notes]
+<https://github.com/dbuenzli/tsdl/blob/master/CHANGES.md#v110-2024-09-12-za=
+greb>
+
+[online] <https://erratique.ch/software/tsdl/doc/>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+
+OCaml-css 0.2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-ocaml-css-0-2-0/15276/1>
+
+
+Zoggy announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  [OCaml-css] 0.2.0 is released and already available in opam (package
+  `css').
+
+  OCaml-css is a library to parse and print CSS. ([docs])
+
+  Main changes are the introduction of property spaces and partial
+  handling of nested rules.
+
+  Properties are now defined in [spaces]. A [Css] space is predefined,
+  with some CSS properties, but you can define a new space with specific
+  properties to use the CSS syntax for these properties in your
+  application. (this is what is done in the to be not yet released 0.2.0
+  version of [stk]).
+
+  Nested style rules are now parsed and can be [expanded]. Nested
+  @-rules are not handled yet.
+
+
+[OCaml-css] <https://zoggy.frama.io/ocaml-css/>
+
+[docs] <https://zoggy.frama.io/ocaml-css/refdoc/css/index.html>
+
+[spaces]
+<https://zoggy.frama.io/ocaml-css/refdoc/css/Css/P/index.html#val-mk_prop_s=
+pace>
+
+[Css]
+<https://zoggy.frama.io/ocaml-css/refdoc/css/Css/P/index.html#module-Css>
+
+[stk] <https://zoggy.frama.io/ocaml-stk/>
+
+[expanded]
+<https://zoggy.frama.io/ocaml-css/refdoc/css/Css/S/index.html#val-expand_ne=
+sted>
+
+
+OCaml-stk 0.2.0 and Chamo 4.1.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ocaml-stk-0-2-0-and-chamo-4-1-0/15288/1>
+
+
+Zoggy announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+Stk
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+  A new release of [OCaml-stk], 0.2.0, is now available in opam (package
+  `stk').
+
+  OCaml-stk is a Graphical User Interface library based on on [libSDL
+  2], through the [Tsdl] bindings.
+
+  As the library is under heavy development, this release includes [many
+  changes]: new widgets, better memory management, css-like theming, =E2=80=
+=A6
+
+  By cloning [the repository] and running `make', you can then run
+  `./_build/default/examples/examples.exe'. This example application
+  contains demonstrations of each widget with the corresponding code in
+  the same window.
+
+
+[OCaml-stk] <https://zoggy.frama.io/ocaml-stk/>
+
+[libSDL 2] <https://www.libsdl.org/>
+
+[Tsdl] <https://erratique.ch/software/tsdl>
+
+[many changes]
+<https://zoggy.frama.io/ocaml-stk/posts/release-0.2.0.html#changes>
+
+[the repository] <https://framagit.org/zoggy/ocaml-stk>
+
+
+Chamo
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  A new release of [Chamo], 4.1.0, is also available in opam (package
+  `chamo').
+
+  Chamo is a source code editor, even if it can be used to edit any text
+  file. It is based on OCaml-stk. This release contains small bug fixes
+  and follows changes in OCaml-stk.
+
+
+[Chamo] <https://zoggy.frama.io/chamo/>
+
+
+DkCoder 2.1.3
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dkcoder-2-1-3/15295/1>
+
+
+jbeckford announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  I am happy to announce another release of DkCoder - a no-install
+  OCaml-based scripting framework.
+
+  Major changes:
+  =E2=80=A2 Split out the Java-like packaging and security tools into the
+    MlFront project:
+    <https://discuss.ocaml.org/t/ann-mlfront-a-java-like-package-system-for=
+-ocaml/15072>.
+  =E2=80=A2 The DkCoder and MlFront version numbers are now in sync with Dk=
+ML
+    version numbers. However, DkCoder is **still alpha** and there is at
+    least one breaking change coming.
+  =E2=80=A2 Several third-party "Us" scripts are embedded and supported. (T=
+hey
+    are listed at bottom of this post).
+
+  Docs: The main doc page is
+  <https://diskuv.com/dksdk/coder/2024-intro-scripting/>. But I don't
+  yet have good reference docs. The samples below have been updated and
+  are good ways to see what DkCoder can do (use the `V2_1' branches):
+  =E2=80=A2 <https://gitlab.com/diskuv/samples/dkcoder/DkHelloScript.git>
+  =E2=80=A2 <https://gitlab.com/diskuv/samples/devops/DkSubscribeWebhook.gi=
+t>
+  =E2=80=A2 <https://gitlab.com/diskuv/samples/dkcoder/SanetteBogue.git>
+
+  There are many bug fixes and new features. The full list is at
+  [https://github.com/diskuv/dkcoder/blob/1.0/CHANGES.md#2132] - all the
+  sections from `0.4.0.1' to `2.1.3.2' (inclusive) are new.
+
+
+[https://github.com/diskuv/dkcoder/blob/1.0/CHANGES.md#2132]
+<https://github.com/diskuv/dkcoder/blob/1.0/CHANGES.md#2132>
+
+New "Us" scripts
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  /These scripts can be run inside any of the sample projects above, or
+  used as ordinary modules in your own DkCoder project source code. Some
+  scripts, but not all, have a `--help' option./
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 ./dk DkFs_C99.Dir - Directory manipulation operations.
+  =E2=94=82 ./dk DkFs_C99.File - (no help) File manipulation operations.
+  =E2=94=82 ./dk DkFs_C99.Path - Path manipulation operations.
+  =E2=94=82 ./dk DkNet_Std.Browser - Browser operations.
+  =E2=94=82 ./dk DkNet_Std.Http - Download content.
+  =E2=94=82 ./dk DkDev_Std.Legal.Record - Asks for and records your accepta=
+nce of legal terms and agreements.
+  =E2=94=82 ./dk DkDev_Std.Exec - Execute a command in the DkCoder 2.1 runt=
+ime environment.
+  =E2=94=82 ./dk DkDev_Std.Export - Create an `exports` field inside dkproj=
+ect.jsonc summarizing all the You libraries.
+  =E2=94=82 ./dk DkDev_Std.Jsontree - (no help) For in-place edits of JSON =
+files.
+  =E2=94=82 ./dk DkStdRestApis_Gen.* - (no help) (unstable, not ready). Ope=
+nAPI 3 service and client generator.
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Upcoming OCaml Events (Sep 15, 2024 and onwards)]
+  =E2=80=A2 [Feature Parity Series: Compaction is Back!]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Upcoming OCaml Events (Sep 15, 2024 and onwards)]
+<https://ocaml.org/events>
+
+[Feature Parity Series: Compaction is Back!]
+<https://tarides.com/blog/2024-09-11-feature-parity-series-compaction-is-ba=
+ck>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-09-17 Tue 16:01 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.09.10.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.09.24.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of September 10 to 17, 2=
+024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Ptime 1.2.0 =E2=80=93 Mtime 2.1.0 =E2=80=93 Qrc 0.2.0</a=
+></li>
+<li><a href=3D"#2">Unicode 16.0.0 update for Uucd, Uucp, Uunf and Uuseg</a>=
+</li>
+<li><a href=3D"#3">Outreachy Demo Presentation</a></li>
+<li><a href=3D"#4">Live Stream to follow OCaml Workshop, ML Workshop, and o=
+ther talks at ICFP</a></li>
+<li><a href=3D"#5">DkML 2.1.2 and opam 2.2.0</a></li>
+<li><a href=3D"#6">store v0.1.0</a></li>
+<li><a href=3D"#7">Tsdl 1.1.0</a></li>
+<li><a href=3D"#8">OCaml-css 0.2.0</a></li>
+<li><a href=3D"#9">OCaml-stk 0.2.0 and Chamo 4.1.0</a></li>
+<li><a href=3D"#10">DkCoder 2.1.3</a></li>
+<li><a href=3D"#11">Other OCaml News</a></li>
+<li><a href=3D"#orgbe6d4a9">Old CWN</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Ptime 1.2.0 =E2=80=93 Mtime 2.1.0 =E2=80=93 Qrc 0.2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ptime-1-2-0-mtime-2-1-0=
+-qrc-0-2-0/15268/1">https://discuss.ocaml.org/t/ann-ptime-1-2-0-mtime-2-1-0=
+-qrc-0-2-0/15268/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org71d8818" class=3D"outline-3">
+<h3 id=3D"org71d8818">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org71d8818">
+<p>
+There are new releases of these packages:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://erratique.ch/software/ptime">Ptime</a> POSIX time fo=
+r OCaml, <a href=3D"https://github.com/dbuenzli/ptime/blob/master/CHANGES.m=
+d#v120-2024-09-10-zagreb">release notes</a>, <a href=3D"https://erratique.c=
+h/software/ptime/doc">docs</a></li>
+<li><a href=3D"https://erratique.ch/software/mtime">Mtime</a> Monotonic tim=
+e for OCaml, <a href=3D"https://github.com/dbuenzli/mtime/blob/master/CHANG=
+ES.md#v210-2024-09-10-zagreb">release notes</a>, <a href=3D"https://erratiq=
+ue.ch/software/mtime/doc">docs</a></li>
+<li><a href=3D"https://erratique.ch/software/qrc">Qrc</a> QR code encoder f=
+or OCaml, <a href=3D"https://github.com/dbuenzli/qrc/blob/master/CHANGES.md=
+#v020-2024-09-10-zagreb">release notes</a>, <a href=3D"https://erratique.ch=
+/software/qrc/doc">docs</a></li>
+</ul>
+
+<p>
+See the individual release notes for details about the changes.
+</p>
+
+<p>
+The library structure of Ptime and Mtime was changed to align it on the myt=
+hical library convention and make it for less surprising names (it used to =
+make sense, it no longer does):
+</p>
+
+<ul class=3D"org-ul">
+<li>The <code>{M,P}time_clock</code> modules are now in the <code>{p,m}time=
+.clock</code> libraries as they should be. These libraries were also made t=
+o <a href=3D"https://discuss.ocaml.org/t/proposal-a-new-exports-field-in-fi=
+ndlib-meta-files">export</a> the base <code>{p,m}time</code> library so tha=
+t you can trim you <code>requires</code> when you use the clocks.</li>
+<li>The libraries <code>{p,m}time.clock.os</code> are deprecated. They now =
+simply export <code>{p,m}time.clock</code> and warn on usage.</li>
+</ul>
+
+<p>
+Best and a big thanks to my <a href=3D"https://github.com/sponsors/dbuenzli=
+">donors</a>
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Unicode 16.0.0 update for Uucd, Uucp, Uunf and Uuseg</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-unicode-16-0-0-update-f=
+or-uucd-uucp-uunf-and-uuseg/15270/1">https://discuss.ocaml.org/t/ann-unicod=
+e-16-0-0-update-for-uucd-uucp-uunf-and-uuseg/15270/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org48b360d" class=3D"outline-3">
+<h3 id=3D"org48b360d">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org48b360d">
+<p>
+Unicode 16.0.0 was released on September 10th. It adds 5185 new characters =
+for a total of 154'998 characters.
+</p>
+
+<p>
+If you are into retrocomputing or terminal graphics this may be your ultima=
+te chance to find an odd character to make an effect among the 686 new <a h=
+ref=3D"https://www.unicode.org/charts/PDF/Unicode-16.0/U160-1CC00.pdf">symb=
+ols for legacy computing</a> that are added =E2=80=93 I'm hearing this may =
+me be the last batch, the resource is finite!  See the <a href=3D"https://b=
+log.unicode.org/2024/09/announcing-unicode-standard-version-160.html">annou=
+ncement page</a> for links to all the other equally interesting additions.
+</p>
+
+<p>
+If you are obsessed about deep linking into standard definitions, note that=
+ the normative core specification becomes a proper <a href=3D"https://www.u=
+nicode.org/versions/Unicode16.0.0/core-spec/">HTML document</a>; rather tha=
+n a bunch of PDF files or that 1400 pages hard-copy I once purchased for 5.=
+0.0 circa 2007 :=E2=80=93). The neat result is that we can now precisely hy=
+perlink to the <a href=3D"https://www.unicode.org/versions/Unicode16.0.0/co=
+re-spec/chapter-3/#G25539">normative definition</a> of an OCaml <a href=3D"=
+https://ocaml.org/manual/5.2/api/Uchar.html#TYPEt"><code>Uchar.t</code></a>=
+ value.
+</p>
+
+<p>
+Accordingly these libraries had to be updated (aggregated, boring, release =
+notes <a href=3D"https://github.com/ocaml/opam-repository/pull/26534">here<=
+/a>)
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"http://erratique.ch/software/uucd">Uucd</a> 16.0.0 Unicode c=
+haracter database decoder for OCaml, <a href=3D"http://erratique.ch/softwar=
+e/uucd/doc">docs</a></li>
+<li><a href=3D"http://erratique.ch/software/uucp">Uucp</a> 16.0.0 Unicode c=
+haracter properties for OCaml, <a href=3D"http://erratique.ch/software/uucp=
+/doc">docs</a></li>
+<li><a href=3D"http://erratique.ch/software/uunf">Uunf</a> 16.0.0 Unicode t=
+ext normalization for OCaml, <a href=3D"http://erratique.ch/software/uunf/d=
+oc">docs</a></li>
+<li><a href=3D"http://erratique.ch/software/uuseg">Uuseg</a> 16.0.0 Unicode=
+ text segmentation for OCaml, <a href=3D"http://erratique.ch/software/uuseg=
+/doc">docs</a></li>
+</ul>
+
+<p>
+Both <code>Uucd</code> and <code>Uucp</code> are incompatible releases sinc=
+es new block and script enumerants were added.
+</p>
+
+<p>
+Other than that the minimal Unicode introduction and Unicode OCaml tips is =
+still <a href=3D"https://erratique.ch/software/uucp/doc/unicode.html">here<=
+/a> and remember that despite the uninformed myths OCaml :heart: Unicode.
+</p>
+
+<p>
+A big thanks for funding from the <a href=3D"http://ocaml-sf.org/">OCaml So=
+ftware Foundation</a> and from my faithful <a href=3D"https://github.com/sp=
+onsors/dbuenzli">donors</a>.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Outreachy Demo Presentation</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/outreachy-demo-presentation=
+/15189/4">https://discuss.ocaml.org/t/outreachy-demo-presentation/15189/4</=
+a>
+</p>
+</div>
+
+<div id=3D"outline-container-org1ce4392" class=3D"outline-3">
+<h3 id=3D"org1ce4392">Patrick Ferris announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org1ce4392">
+<p>
+The demo presentation video is now online: <a href=3D"https://watch.ocaml.o=
+rg/w/peT3MdWjS1BYYMbowEJ1gv">https://watch.ocaml.org/w/peT3MdWjS1BYYMbowEJ1=
+gv</a> &#x2013; thank you to everyone who joined and particularly the mento=
+rs, co-mentors and interns!
+</p>
+
+<p>
+A big thank you also to <a href=3D"https://tarides.com">Tarides</a> and <a =
+href=3D"https://www.janestreet.com">Jane Street</a> for providing resources=
+ and funding to make this round possible. A reminder that <span class=3D"un=
+derline">today</span> is the last day to sign up to the next round &#x2013;=
+ <a href=3D"https://discuss.ocaml.org/t/outreachy-december-2024-round/15223=
+">Outreachy December 2024 Round</a>!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Live Stream to follow OCaml Workshop, ML Workshop, and other t=
+alks at ICFP</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/live-stream-to-follow-ocaml=
+-workshop-ml-workshop-and-other-talks-at-icfp/15232/4">https://discuss.ocam=
+l.org/t/live-stream-to-follow-ocaml-workshop-ml-workshop-and-other-talks-at=
+-icfp/15232/4</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orga73b4d8" class=3D"outline-3">
+<h3 id=3D"orga73b4d8">jbeckford announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga73b4d8">
+<p>
+FYI: For people like me who were on vacation or otherwise unavailable, the =
+several hour Live Stream is still available.
+</p>
+
+<p>
+The intro to the workshop and the first OCaml talk start at <a href=3D"http=
+s://www.youtube.com/live/OuQqblCxJ2Y?t=3D2254s">https://www.youtube.com/liv=
+e/OuQqblCxJ2Y?t=3D2254s</a>.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">DkML 2.1.2 and opam 2.2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dkml-2-1-2-and-opam-2-2=
+-0/15187/5">https://discuss.ocaml.org/t/ann-dkml-2-1-2-and-opam-2-2-0/15187=
+/5</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org361cc4f" class=3D"outline-3">
+<h3 id=3D"org361cc4f">jbeckford announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org361cc4f">
+<p>
+DkML 2.1.3 was released. The major changes are:
+</p>
+
+<ul class=3D"org-ul">
+<li>Upgraded from opam 2.2.0 to opam 2.2.1.</li>
+<li>The ocaml/opam-repository tag was advanced to Sep 10, 2024.</li>
+<li>bugfix: <code>dk Ml.Switch init</code> was broken on Linux and macOS. D=
+kML 2.1.2 had incorrectly pinned the <code>dkml-host-abi</code> and <code>d=
+kml-target-abi</code> of the master DkML build machine. <a href=3D"https://=
+gitlab.com/dkml/distributions/dkml/-/issues/24">https://gitlab.com/dkml/dis=
+tributions/dkml/-/issues/24</a></li>
+<li>Allow prereleases of Visual Studio; requested at <a href=3D"https://git=
+lab.com/dkml/distributions/dkml/-/issues/23">https://gitlab.com/dkml/distri=
+butions/dkml/-/issues/23</a>.</li>
+</ul>
+
+<p>
+Upgrading is:
+</p>
+
+<pre class=3D"example" id=3D"org9c4814f">
+winget remove dkml # Ignore "exit code: 4294967295"
+winget install dkml
+</pre>
+
+<p>
+The full release notes are at <a href=3D"https://gitlab.com/dkml/distributi=
+ons/dkml/-/releases/2.1.3">https://gitlab.com/dkml/distributions/dkml/-/rel=
+eases/2.1.3</a>.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">store v0.1.0</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-store-v0-1-0/15274/1">h=
+ttps://discuss.ocaml.org/t/ann-store-v0-1-0/15274/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgd309817" class=3D"outline-3">
+<h3 id=3D"orgd309817">Basile Cl=C3=A9ment announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd309817">
+<p>
+I would like to announce the first release of <code>store</code> (<a href=
+=3D"https://ocaml.org/p/store/latest/doc/Store/index.html">docs</a>), a lib=
+rary providing a snapshottable bag of mutable references, an efficient data=
+-structure for back-tracking workloads.
+</p>
+
+<p>
+To install it, type <code>opam update &amp;&amp; opam install store</code>.
+</p>
+
+<p>
+Store provides a simple API for capturing and restoring state as well as ea=
+sy-to-use high-level wrappers to automatically rollback changes on failure =
+(<code>tentatively</code>) or unconditionally (<code>temporarily</code>). I=
+t boasts almost-zero overhead when back-tracking is not used and best-in-cl=
+ass performance for back-tracking use cases.
+</p>
+
+<p>
+The design and implementation of Store is described in the paper <a href=3D=
+"https://doi.org/10.1145/3674637">Snapshottable stores</a>, which was given=
+ a Distinguished Paper award at this year's ICFP in Milan. As recognized by=
+ this award, the paper is well-written and easy to understand; please give =
+it a read if you are interested in either back-tracking workloads or subtle=
+ data structure invariants!
+</p>
+
+<p>
+I also want to give a shout-out to Fran=C3=A7ois Pottier's Monolith, which =
+proved invaluable during the development of Store to find and diagnose subt=
+le bugs.
+</p>
+
+<p>
+Store was developed through collaboration between myself (Basile Cl=C3=A9me=
+nt) at OCamlPro and Gabriel Scherer at Inria, and the persistent interface =
+was formally verified by Cl=C3=A9ment Allain and Alexandre Moine at Inria.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Tsdl 1.1.0</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-tsdl-1-1-0/15275/1">htt=
+ps://discuss.ocaml.org/t/ann-tsdl-1-1-0/15275/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgc42be27" class=3D"outline-3">
+<h3 id=3D"orgc42be27">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc42be27">
+<p>
+There's a new release of <a href=3D"https://erratique.ch/software/tsdl">Tsd=
+l</a>, thin bindings to the C <a href=3D"https://www.libsdl.org/">SDL libra=
+ry</a>. See the <a href=3D"https://github.com/dbuenzli/tsdl/blob/master/CHA=
+NGES.md#v110-2024-09-12-zagreb">release notes</a> for details.
+</p>
+
+<ul class=3D"org-ul">
+<li>Docs: <a href=3D"https://erratique.ch/software/tsdl/doc/">online</a> or=
+ <code>odig doc tsdl</code></li>
+<li>Install: <code>opam install tsdl</code></li>
+</ul>
+
+<p>
+Daniel
+</p>
+
+<p>
+A big thanks to my <a href=3D"https://github.com/sponsors/dbuenzli">donors<=
+/a>.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">OCaml-css 0.2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocaml-css-0-2-0/15276/1=
+">https://discuss.ocaml.org/t/ann-ocaml-css-0-2-0/15276/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org82c8618" class=3D"outline-3">
+<h3 id=3D"org82c8618">Zoggy announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org82c8618">
+<p>
+<a href=3D"https://zoggy.frama.io/ocaml-css/">OCaml-css</a> 0.2.0 is releas=
+ed and already available in opam (package <code>css</code>).=20
+</p>
+
+<p>
+OCaml-css is a library to parse and print CSS. (<a href=3D"https://zoggy.fr=
+ama.io/ocaml-css/refdoc/css/index.html">docs</a>)
+</p>
+
+<p>
+Main changes are the introduction of property spaces and partial handling o=
+f nested rules.
+</p>
+
+<p>
+Properties are now defined in <a href=3D"https://zoggy.frama.io/ocaml-css/r=
+efdoc/css/Css/P/index.html#val-mk_prop_space">spaces</a>. A <a href=3D"http=
+s://zoggy.frama.io/ocaml-css/refdoc/css/Css/P/index.html#module-Css">Css</a=
+> space is predefined, with some CSS properties, but you can define a new s=
+pace with specific properties to use the CSS syntax for these properties in=
+ your application. (this is what is done in the to be not yet released 0.2.=
+0 version of <a href=3D"https://zoggy.frama.io/ocaml-stk/">stk</a>).
+</p>
+
+<p>
+Nested style rules are now parsed and can be <a href=3D"https://zoggy.frama=
+.io/ocaml-css/refdoc/css/Css/S/index.html#val-expand_nested">expanded</a>. =
+Nested @-rules are not handled yet.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">OCaml-stk 0.2.0 and Chamo 4.1.0</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocaml-stk-0-2-0-and-cha=
+mo-4-1-0/15288/1">https://discuss.ocaml.org/t/ann-ocaml-stk-0-2-0-and-chamo=
+-4-1-0/15288/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org27bc2a9" class=3D"outline-3">
+<h3 id=3D"org27bc2a9">Zoggy announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org27bc2a9">
+</div>
+<div id=3D"outline-container-orgb686693" class=3D"outline-4">
+<h4 id=3D"orgb686693">Stk</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb686693">
+<p>
+A new release of <a href=3D"https://zoggy.frama.io/ocaml-stk/">OCaml-stk</a=
+>, 0.2.0, is now available in opam (package <code>stk</code>).
+</p>
+
+<p>
+OCaml-stk is a Graphical User Interface library based on on <a href=3D"http=
+s://www.libsdl.org/">libSDL 2</a>, through the <a href=3D"https://erratique=
+.ch/software/tsdl">Tsdl</a> bindings.
+</p>
+
+<p>
+As the library is under heavy development, this release includes <a href=3D=
+"https://zoggy.frama.io/ocaml-stk/posts/release-0.2.0.html#changes">many ch=
+anges</a>: new widgets, better memory management, css-like theming, &#x2026;
+</p>
+
+<p>
+By cloning <a href=3D"https://framagit.org/zoggy/ocaml-stk">the repository<=
+/a> and running <code>make</code>, you can then run <code>./_build/default/=
+examples/examples.exe</code>. This example application contains demonstrati=
+ons of each widget with the corresponding code in the same window.
+</p>
+</div>
+</div>
+
+<div id=3D"outline-container-org3f9c2e7" class=3D"outline-4">
+<h4 id=3D"org3f9c2e7">Chamo</h4>
+<div class=3D"outline-text-4" id=3D"text-org3f9c2e7">
+<p>
+A new release of <a href=3D"https://zoggy.frama.io/chamo/">Chamo</a>, 4.1.0=
+, is also available in opam (package <code>chamo</code>).
+</p>
+
+<p>
+Chamo is a source code editor, even if it can be used to edit any text file=
+. It is based on OCaml-stk. This release contains small bug fixes and follo=
+ws changes in OCaml-stk.
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-10" class=3D"outline-2">
+<h2 id=3D"10">DkCoder 2.1.3</h2>
+<div class=3D"outline-text-2" id=3D"text-10">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dkcoder-2-1-3/15295/1">=
+https://discuss.ocaml.org/t/ann-dkcoder-2-1-3/15295/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org85b391f" class=3D"outline-3">
+<h3 id=3D"org85b391f">jbeckford announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org85b391f">
+<p>
+I am happy to announce another release of DkCoder -  a no-install OCaml-bas=
+ed scripting framework.
+</p>
+
+<p>
+Major changes:
+</p>
+<ul class=3D"org-ul">
+<li>Split out the Java-like packaging and security tools into the MlFront p=
+roject: <a href=3D"https://discuss.ocaml.org/t/ann-mlfront-a-java-like-pack=
+age-system-for-ocaml/15072">https://discuss.ocaml.org/t/ann-mlfront-a-java-=
+like-package-system-for-ocaml/15072</a>.</li>
+<li>The DkCoder and MlFront version numbers are now in sync with DkML versi=
+on numbers. However, DkCoder is <b><b>still alpha</b></b> and there is at l=
+east one breaking change coming.</li>
+<li>Several third-party "Us" scripts are embedded and supported. (They are =
+listed at bottom of this post).</li>
+</ul>
+
+<p>
+Docs: The main doc page is <a href=3D"https://diskuv.com/dksdk/coder/2024-i=
+ntro-scripting/">https://diskuv.com/dksdk/coder/2024-intro-scripting/</a>. =
+But I don't yet have good reference docs. The samples below have been updat=
+ed and are good ways to see what DkCoder can do (use the <code>V2_1</code> =
+branches):
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://gitlab.com/diskuv/samples/dkcoder/DkHelloScript.git"=
+>https://gitlab.com/diskuv/samples/dkcoder/DkHelloScript.git</a></li>
+<li><a href=3D"https://gitlab.com/diskuv/samples/devops/DkSubscribeWebhook.=
+git">https://gitlab.com/diskuv/samples/devops/DkSubscribeWebhook.git</a></l=
+i>
+<li><a href=3D"https://gitlab.com/diskuv/samples/dkcoder/SanetteBogue.git">=
+https://gitlab.com/diskuv/samples/dkcoder/SanetteBogue.git</a></li>
+</ul>
+
+<p>
+There are many bug fixes and new features. The full list is at <a href=3D"h=
+ttps://github.com/diskuv/dkcoder/blob/1.0/CHANGES.md#2132">https://github.c=
+om/diskuv/dkcoder/blob/1.0/CHANGES.md#2132</a> - all the sections from <cod=
+e>0.4.0.1</code> to <code>2.1.3.2</code> (inclusive) are new.
+</p>
+</div>
+
+<div id=3D"outline-container-org5d8dd0d" class=3D"outline-4">
+<h4 id=3D"org5d8dd0d">New "Us" scripts</h4>
+<div class=3D"outline-text-4" id=3D"text-org5d8dd0d">
+<p>
+<i>These scripts can be run inside any of the sample projects above, or use=
+d as ordinary modules in your own DkCoder project source code. Some scripts=
+, but not all, have a <code>--help</code> option.</i>
+</p>
+
+<pre class=3D"example" id=3D"org3024444">
+./dk DkFs_C99.Dir - Directory manipulation operations.
+./dk DkFs_C99.File - (no help) File manipulation operations.
+./dk DkFs_C99.Path - Path manipulation operations.
+./dk DkNet_Std.Browser - Browser operations.
+./dk DkNet_Std.Http - Download content.
+./dk DkDev_Std.Legal.Record - Asks for and records your acceptance of legal=
+ terms and agreements.
+./dk DkDev_Std.Exec - Execute a command in the DkCoder 2.1 runtime environm=
+ent.
+./dk DkDev_Std.Export - Create an `exports` field inside dkproject.jsonc su=
+mmarizing all the You libraries.
+./dk DkDev_Std.Jsontree - (no help) For in-place edits of JSON files.
+./dk DkStdRestApis_Gen.* - (no help) (unstable, not ready). OpenAPI 3 servi=
+ce and client generator.
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-11" class=3D"outline-2">
+<h2 id=3D"11">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-11">
+</div>
+<div id=3D"outline-container-orgc9c4e7f" class=3D"outline-3">
+<h3 id=3D"orgc9c4e7f">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc9c4e7f">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/events">Upcoming OCaml Events (Sep 15, 202=
+4 and onwards)</a></li>
+<li><a href=3D"https://tarides.com/blog/2024-09-11-feature-parity-series-co=
+mpaction-is-back">Feature Parity Series: Compaction is Back!</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-orgbe6d4a9" class=3D"outline-2">
+<h2 id=3D"orgbe6d4a9">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-orgbe6d4a9">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgde586f0">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
