@@ -1,0 +1,1921 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=ewAVTJ1O;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=VM4zZWn/;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id A031FB80123
+	for <caml-list@tunbury.org>; Tue,  1 Oct 2024 14:37:26 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=c+cQB+M0ss8kX3Lkl0mZUChwfMlAmtNF6jLOds5xBmY=;
+  b=ewAVTJ1O8qihzsy5FvFiKTX+lMTGGYILjtw52ZFFN/0wRSg+6N0riZt8
+   0JipWMpJdbgZFf7x1e1iy//nYBEMBAl5H0EQnR3EgpplHQk8Friltlqa+
+   gJvbFmvG8vSEMIruDCVJqxm72ST1KlahOcSmp8gUofiM2Dpf3fbiO6SGQ
+   o=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.11,167,1725314400"; 
+   d="scan'208,217";a="186260533"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 01 Oct 2024 15:37:25 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id BF0AAE0035; Tue,  1 Oct 2024 15:37:25 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 8866DE00B7
+	for <caml-list@sympa.inria.fr>; Tue,  1 Oct 2024 15:37:20 +0200 (CEST)
+IronPort-SDR: 66fbfb0e_JmBgWGGmnp0O0HWKqz8x+26U50td6ZW3AWJUGLO5jFtf+jl
+ A71siMmkH+fYBg8QSqR0hnqMkJL7tkCUlZuTXXg==
+X-IPAS-Result: =?us-ascii?q?A0ELBwCH+vtm/yIeaIFagliBQVsoBxIBY1ozBwhIA4RTg?=
+ =?us-ascii?q?0+OIIEWmHuCMYFWFIERAxgWIxQBAwENLgENBQECBAEBAwECAYIMgi5ABAICi?=
+ =?us-ascii?q?hkCHwYBBDIHDgECBAEBAQEDAgMBAQEBAQEIAQEFAQEBAgEBAgQGAQKBCggLh?=
+ =?us-ascii?q?TVGDYJGLiNTHl4HCQYBAQEBAQEBAQECAQEBIgEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECCAQBESIEC1wBAgYKEwEBKwcGG?=
+ =?us-ascii?q?BQPAxQBBgMCEQE1AxQBEhQGgg9Zgh9FAwUMBj+UNJstEHqBMoEBggwBAQaBC?=
+ =?us-ascii?q?D4CAQsCAgMBDgklAdoFgWMJgUiIMRoBKkhQGgKEQwmDFIEfByAPgVVEgRU1g?=
+ =?us-ascii?q?j0Hb4FCXCELFwEBAQEYgQwFARECAQIEAgkJDyQJgyWCaYQjgXxNCINXgQZ1W?=
+ =?us-ascii?q?hKBCUUPT4IvgSlhDgEBBgcPCIEQVlcPRQQOb1BCAgwyA4EQgT18IwKBIhCGI?=
+ =?us-ascii?q?1+BF4QUgzcJJYk/gUdLMyETAVUTFwsJBWSGC4JJgyaCFIQVhSWBZwlhh2eBb?=
+ =?us-ascii?q?4E+gVlHgnFKhUaBBoJRa045Ag0CN4IoJGqCWYNkgRV/HUADC209NRQbrBwED?=
+ =?us-ascii?q?SgBgVsBR4IFDgozAQIVJw8VCRUKBQsJCAgCBQEiDSEEBA4fCwEKJw8JBQUEG?=
+ =?us-ascii?q?wIiBQYIAQIHBAItkk0QFQMqA3SOOo4PlFo0B4QbgV0GDIQjhGCBJINZkhqEB?=
+ =?us-ascii?q?YFWiyuZPyKYVCKCNIJBhF8KgRsJX4EOapUSPCCFNIFuATU5MD8eDAczGjBDg?=
+ =?us-ascii?q?jMBMwkKDD4OD4ghhgkCARaDMCgQMX2DGztRgXAcELUbQTUCAQEOKQIHAQoBA?=
+ =?us-ascii?q?QMJhWIBAYVzMmtgAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23:94/TD66Td7zbzykMIXnBBwxRtMnGchMFZxGqfqrLsTDasY5as4F+v
+ mVND2yFPfuLZjP2e4wjPIrjp0tUvpDWz4BrQQE//H8zZn8b8sCt6faxfh6hZXvKRiHgZBs6t
+ JtGMoGowOQcFCK0SsKFa+C5xZVE/fjUAOC6UoYoAwgpLSd8UiAtlBl/rOAwh49skLCRDhiE0
+ T/Ii5S31GSNhXgtawr414rZ8Ekz5ayq4WtD1rADTakjUGH2xyF94K03fvnZw0vQGuF8AuO8T
+ uDf+7C1lkuxE8AFV7tJOp6iGqE7aua60Tqm0hK6aID+6vR2nRHe545gXBYqhei7vB3S9zx54
+ I0lWZVd0m7FNIWU8AgWe0Ew/y2TocSqUVIISJSymZX78qHIT5fj6+9zXR8XOtIAw9x2DExNy
+ MQmJmEAcinW0opawJrjIgVtrsEzdY/zO4cOpnxrzTfYFOsrB5fZTM0m5/cBhmZ235gSW62GI
+ ZFFAdZsREyojxlnAW0sUMcOkOSO00CiJiVfrEOJqKE35WnK0QE316LiZdPRc9rMXs5Vm0eEu
+ krM+Hn/CRwBctnD2XyC6H3EaurnxHOlAtxKSO3mnhJsqGC8/0gSKDYSbGrloci+gRTldMwAL
+ WVBr0LCqoB3riRHVOLVVBS9pDuAvwUAc8FBFvUzrgCL0KvdpQiDblXoVRZEeIVgrMgyVCAn3
+ V+Pnsr0CHpoqrL9pW+hy4p4ZAiaYUA9RVLurwddJeeoy4CLTF0b5v4OcjpiLEJxptjlQHfox
+ DSbsCU1h7MSlNMGkaKh8jgrRhqy84PRQFddChr/BwqYAsFRPeZJpLBELXDR6utGJ4uCCFzdr
+ D4Dgcf2ACUmE8SWjCLUKAkSNOjB2htGWQEwRXZ3GJ0w6zmm+3iiZJ1dpjZkKy+F9yrClSDBO
+ CfuhO+a2HOf0LZGo0O6j0JdxvnGFZTdKOk=
+IronPort-HdrOrdr: A9a23:yIz84atVvgvg5s7w2zU/bRtJ7skDaNV00zEX/kB9WHVpm6uj+f
+ xG/c526feX4Ax6ZJhOo6HjBEDtexPhHP1OjrX5X43SOTUO0VHAROoO0WKI+Vzd8kPFh41g6Z
+ s=
+X-Talos-CUID: 9a23:rk+cfm6FUaEbzI0UEdss7lNFROEiLWXk9nbdDkyFMVhnGbCJcArF
+X-Talos-MUID: 9a23:g/zSawXTr2q1MJrq/ALDvRVjFOxs2pXwCHEKms9dlNfbMwUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.11,167,1725314400"; 
+   d="scan'208,217";a="186260486"
+X-URL-ContentFilter: 
+X-MGA-submission: =?us-ascii?q?MDGfDGSncodra3bN34xFy/YoO5bW49oMYjcTE+?=
+ =?us-ascii?q?aREbg01ATXdMlaQT6MQf8aLEm07OBhI2C++16djbyvHxWS8m+35EvPkp?=
+ =?us-ascii?q?WYiiP00mLwD+8tFNnfSzStAPyu269vgJCJoza/PSD21VSKYDQIuUaukt?=
+ =?us-ascii?q?Zci3pZi9ftYFH9UAivbDrH2w=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2024 15:37:16 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id E81F4564A63;
+	Tue,  1 Oct 2024 15:37:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1727789828;
+	bh=makdXhi0c3O9ypMOgaXhsYb9r59PQtFOIVPoI36DZII=;
+	h=From:To:Subject:Date:Message-ID;
+	b=VM4zZWn/GHz+tZIs6Z+Vu8DH7mrRbi+95rtfvgGz0UO9G923k3TISQn6roXZS2Dda
+	 1jrkahr5LSectHwsCAF4K7spAtpCgtfdkH37kVTeZK2kVs/lQyw0tZZ6qxvtpeeOM4
+	 MVa1qG7THfAJalwhrKCa6TcGdimTY5kgY6rdDB7g=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 01 Oct 2024 15:37:07 +0200
+Message-ID: <m2r09054ho.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Oct  1 15:37:08 2024 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.092226, queueID=2EFD6564A64
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19182
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-10/m2r09054ho.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of September 24 to
+October 01, 2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Dune Developer Preview Updates
+Uuidm 0.9.9
+first release of ppx_deriving_jsonschema
+Bogue, the OCaml GUI
+New release of Merlin
+Releases of mirage-crypto 1.0.0, tls 1.0.0, x509 1.0.0, asn1-combinators 0.=
+3.0, let's encrypt 1.0.0, awa 0.4.0, kdf 1.0.0, paf 0.7.0, git 3.17.0
+ICFP 2023 OCaml Presentations on YouTube
+Dune dev meeting
+Other OCaml News
+Old CWN
+
+
+Dune Developer Preview Updates
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-dune-developer-preview-updates/15160/7>
+
+
+ostera announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello folks! :wave:
+
+
+Call for Feedback
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C
+
+  We'd like to welcome everyone to try and play with the [Dune Developer
+  Preview]! :tada:
+
+  This experimental nightly release of dune includes a lot of
+  improvements, including the much expected package management features,
+  and it can be installed from that website or by using the new
+  installation script:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ curl https://dune.ci.dev/install | bash
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  In a few seconds you should be ready to OCaml by calling `dune' =E2=80=93=
+ you
+  can watch a demo of this here: [X], [Mastodon].
+
+  Please try it out and let us know what you think :pray:
+
+  :calendar: You can book a feedback call with us [here]
+
+  :memo: You can submit feedback using [this form]
+
+  :bug: You can submit issues to Github on [ocaml/dune]
+
+
+[Dune Developer Preview] <https://dune.ci.dev>
+
+[X] <https://x.com/leostera/status/1838969568795979922>
+
+[Mastodon] <https://mas.to/deck/@leostera/113198996085937679>
+
+[here]
+<https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3HaJ=
+bskiCLHqLS6Oi1S3-rWYwv0hb_Iz8O9VlspuDdK5qbXYUZDpRRlWfEY1GP8KFy6XY8MFb9>
+
+[this form]
+<https://docs.google.com/forms/u/2/d/e/1FAIpQLSda-mOTHIdATTt_e9dFmNgUCy-fD5=
+5Qzr3bGGsxpfY_Ecfyxw/viewform?usp=3Dsend_form>
+
+[ocaml/dune] <https://github.com/ocaml/dune/issues/new/choose>
+
+
+Changes since last update
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The Dune shared cache has been enabled by default. We're starting off
+  by caching all downloads and dependencies.
+
+  We have improved support for dev tools. We're working to streamline
+  this but in the latest binary you can:
+
+  =E2=80=A2 Configure your LSP (in Neovim, Vim, Emacs, etc) to call `dune t=
+ools
+    exec ocamllsp' to get LSP support for your projects out of the box =E2=
+=80=93
+    this may take a little bit the first time it builds the LSP for a
+    compiler version, but its pretty much instant afterwards.
+  =E2=80=A2 Call `dune fmt' to get your project formatted =E2=80=93 remembe=
+r to add an
+    `.ocamlformat' file if you don't have one yet. An empty one is
+    enough.
+  =E2=80=A2 Call `dune ocaml doc' to get documentation built
+
+
+What's next?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  We're looking forward to streamlining the DX, working on better
+  dependency locks, and looking into supporting Windows.
+
+  In particular, we're considering work on a few things:
+
+  =E2=80=A2 `dune create <repo>' =E2=80=93 to let the community create temp=
+lates that
+    can be easily used from within dune
+  =E2=80=A2 `dune pkg fetch' =E2=80=93 to prefetch packages and prepare a r=
+epository for
+    working in offline mode
+  =E2=80=A2 `dune build @deps' - to build all dependencies, useful for stag=
+ed
+    builds in Dockerfiles
+  =E2=80=A2 `dune pkg add <name>' - to make adding packages straightforward
+  =E2=80=A2 a short-hand syntax for pins on github
+  =E2=80=A2 and more!
+
+  If you've got any ideas, we'd love to hear them, so please open a
+  feature request on Github :pray:
+
+
+Other updates
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A FunOCaml Presentation
+
+  At *FunOCaml* we had a last-minute opportunity to present the work
+  being done on Dune and we used it to introduce the Developer Preview
+  to the community, and even tested Package Management live with
+  suggestions from the audience (thanks @anmonteiro and Paul-Elliot for
+  participating!) =E2=80=93 you can [watch it on Twitch].
+
+
+  [watch it on Twitch]
+  <https://www.twitch.tv/videos/2252408016?t=3D08h12m00s>
+
+
+=E2=97=8A New design
+
+  We're working with @Claire_Vandenberghe on redesigning the Developer
+  Preview website so that it'd feel like a seamless extension of
+  OCaml.org =E2=80=93 in this current iteration we've made it easier to get
+  started and we're putting the FAQ front and center.
+
+  We'll be iterating on this design in the coming weeks until it fits
+  perfectly within the OCaml.org design system :art:
+
+  You can check the new website here: <https://dune.ci.dev>
+
+
+=E2=97=8A Upcoming Blog posts
+
+  In the near future we'll be publishing blog posts about the Developer
+  Preview and Package Management, which we're working on with
+  @professor.rose :clap:
+
+
+Uuidm 0.9.9
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-uuidm-0-9-9/15336/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  There's a new release of [Uuidm], a library to handle universally
+  unique identifiers (UUIDs).
+
+  This very old module has been slightly renovated implying a few
+  deprecations, a [quick start] has been added to the docs and foremost
+  new constructors and generators were added to support the latest [RFC
+  9562] V7 time and random based UUID definitions; thanks to `xen-api'
+  folks for getting the ball rolling on this. See the [release notes]
+  for the details.
+
+  =E2=80=A2 Docs: [online] or `odig doc uuidm'
+  =E2=80=A2 Install: `opam install uuidm' ([PR])
+
+  A big thanks to my [donors].
+
+
+[Uuidm] <https://erratique.ch/software/uuidm>
+
+[quick start] <https://erratique.ch/software/uuidm/doc/#quick>
+
+[RFC 9562] <https://www.rfc-editor.org/rfc/rfc9562>
+
+[release notes]
+<https://github.com/dbuenzli/uuidm/blob/master/CHANGES.md#v099-2024-09-26-z=
+agreb>
+
+[online] <https://erratique.ch/software/uuidm/doc/>
+
+[PR] <https://github.com/ocaml/opam-repository/pull/26621>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+
+first release of ppx_deriving_jsonschema
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-first-release-of-ppx-deriving-jsonschema=
+/15320/2>
+
+
+Louis Roch=C3=A9 announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Released 0.0.2 on opam. It feels like the project is in a good shape
+  now.
+
+  Changes:
+  =E2=80=A2 support for nativeint, bytes, ref, unit
+  =E2=80=A2 add ~variant_as_array for compatibility with ppx_deriving_yojson
+  =E2=80=A2 support variant payloads
+  =E2=80=A2 support polymorphic variants inheritance
+  =E2=80=A2 fix encoding of tuples
+  =E2=80=A2 change encoding of variants from enum to anyOf
+
+  I'm considering making `variant_as_array' the default in 0.0.3 as it
+  would be more consistent with the ocaml ecosystem.
+
+
+Bogue, the OCaml GUI
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-bogue-the-ocaml-gui/9099/62>
+
+
+sanette announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+  I'm happy to announce a brand new version of [Bogue], version
+  20240928, now availble on `opam'.
+
+  Changes are mostly under the hood. We have nice improvements by @edwin
+  : automatic monitor vsync is now enabled by default, for smoother
+  animations, and most importantly *we finally align with the latest
+  version of `tsdl'*. It will simplify maintenance, but it also implies
+  that *too old versions of SDL will not work anymore*. On the other
+  hand we were kind of obliged to move forward, because `tsdl.0.9.8'
+  won't install on `ocaml 5.2'.
+
+  =E2=80=A2 if you're on Ubuntu 20.04, installing Bogue with `opam install
+    bogue' will by default pull `tsdl.1.1.0' in, which requires SDL >=3D
+    2.0.18, not shipped by the OS. A workaround is to explicitly require
+    `opam install tsdl.1.0.0' (or manually installing a newer SDL)
+  =E2=80=A2 if your OS ships SDL < 2.0.10 you have no other choice than man=
+ually
+    installing a newer [SDL] (which is not that complicated)
+
+  Happy bogue-ing!
+
+
+[Bogue] <https://github.com/sanette/bogue>
+
+[SDL] <https://github.com/libsdl-org/SDL/releases/tag/release-2.30.7>
+
+
+New release of Merlin
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-new-release-of-merlin/15358/1>
+
+
+vds announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I am very pleased to announce a new release of Merlin for OCaml 5.2,
+  5.1 and 4.14. This release brings a handful of fixes but also a
+  handful of of new commands:
+
+  =E2=80=A2 `signature_help' and `inlay_hint' have been upstreamed from
+    `ocaml-lsp-server'
+  =E2=80=A2 `expand_node' a command to get the ppxed-source when called on
+    relevant annotations
+  =E2=80=A2 =F0=9F=95=B5=EF=B8=8F=E2=80=8D=E2=99=80=EF=B8=8F `search-by-typ=
+e' a [sherlodoc]-inspired syntax to search for
+    values in the environment, that superseeds `polarity-search'.
+
+  Only `search-by-type' has an Emacs binding right now (and one for vim
+  on is [in the works]), we hope to have some time to work on more
+  client implementations in the near future.
+
+  [demo1]
+
+  [demo2]
+
+
+[sherlodoc] <https://doc.sherlocode.com/>
+
+[in the works] <https://github.com/ocaml/merlin/pull/1846>
+
+[demo1]
+<https://private-user-images.githubusercontent.com/5732466/368645764-3af522=
+7a-c174-41ad-b493-cb4869e31db8.gif?jwt=3DeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC=
+J9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIs=
+ImtleSI6ImtleTUiLCJleHAiOjE3Mjc2ODUzNzksIm5iZiI6MTcyNzY4NTA3OSwicGF0aCI6Ii8=
+1NzMyNDY2LzM2ODY0NTc2NC0zYWY1MjI3YS1jMTc0LTQxYWQtYjQ5My1jYjQ4NjllMzFkYjguZ2=
+lmP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQ=
+VZDT0RZTFNBNTNQUUs0WkElMkYyMDI0MDkzMCUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1=
+ZXN0JlgtQW16LURhdGU9MjAyNDA5MzBUMDgzMTE5WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1=
+TaWduYXR1cmU9YjBhYmI0NzhjYjEwOTdkMmMwODYxY2JiNjJjZjAzNmFmMWNkN2Q5YzQ3NzIxMj=
+I3MmMwYTFjM2ZmOGI0ZGUzMiZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.xPSJX60YU1Br9z=
+ti85R5cU2N7GPglL2NNFo9Jge8tBY>
+
+[demo2]
+<https://private-user-images.githubusercontent.com/5732466/368645869-4917c6=
+aa-d67c-4dff-a326-c33e5a8615cf.gif?jwt=3DeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC=
+J9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIs=
+ImtleSI6ImtleTUiLCJleHAiOjE3Mjc2ODUzNzksIm5iZiI6MTcyNzY4NTA3OSwicGF0aCI6Ii8=
+1NzMyNDY2LzM2ODY0NTg2OS00OTE3YzZhYS1kNjdjLTRkZmYtYTMyNi1jMzNlNWE4NjE1Y2YuZ2=
+lmP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQ=
+VZDT0RZTFNBNTNQUUs0WkElMkYyMDI0MDkzMCUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1=
+ZXN0JlgtQW16LURhdGU9MjAyNDA5MzBUMDgzMTE5WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1=
+TaWduYXR1cmU9MzM5NzdhNmU3M2U2MGJhMGI4OTg1MDZkYThjOGYyMTM1N2Q4NTJhMzM2NGRiMW=
+E4MzdmZDQxOTZjNGFiNWFhYyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.028jtKfrrYwSqs=
+JwmZn1rn2314IrijpGwPIqPOqffdc>
+
+Complete changelog:
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C
+
+  Fri Sep 27 12:02:42 CEST 2024
+
+  =E2=81=83 merlin binary
+    =E2=80=A2 A new `WRAPPING_PREFIX' configuration directive that can be u=
+sed
+      to tell Merlin what to append to the current unit name in the
+      presence of wrapping (ocaml/merlin#1788)
+    =E2=80=A2 Add `-unboxed-types' and `-no-unboxed-types' as ocaml ignored
+      flags (ocaml/merlin#1795, fixes ocaml/merlin#1794)
+    =E2=80=A2 destruct: Refinement in the presence of optional arguments
+      (ocaml/merlin#1800 ocaml/merlin#1807, fixes ocaml/merlin#1770)
+    =E2=80=A2 Implement new expand-node command for expanding PPX annotatio=
+ns
+      (ocaml/merlin#1745)
+    =E2=80=A2 Implement new inlay-hints command for adding hints on a sourc=
+etree
+      (ocaml/merlin#1812)
+    =E2=80=A2 Implement new search-by-type command for searching values by =
+types
+      (ocaml/merlin#1828)
+    =E2=80=A2 Canonicalize paths in occurrences. This helps deduplicate the
+      results and show more user-friendly paths. (ocaml/merlin#1840)
+    =E2=80=A2 Fix dot-merlin-reader ignoring `SOURCE_ROOT' and `STDLIB'
+      directives (ocaml/merlin#1839, ocaml/merlin#1803)
+  =E2=81=83 editor modes
+    =E2=80=A2 vim: fix python-3.12 syntax warnings in merlin.py
+      (ocaml/merlin#1798)
+    =E2=80=A2 vim: Dead code / doc removal for previously deleted MerlinPhr=
+ase
+      command (ocaml/merlin#1804)
+    =E2=80=A2 emacs: Improve the way that result of polarity search is disp=
+layed
+      (ocaml/merlin#1814)
+    =E2=80=A2 emacs: Add `merlin-search-by-type', `merlin-search-by-polarit=
+y'
+      and change the behaviour of `merlin-search' to switch between
+      `by-type' or `by-polarity' depending on the query
+      (ocaml/merlin#1828)
+
+  cc @xvw @PizieDust
+
+
+Releases of mirage-crypto 1.0.0, tls 1.0.0, x509 1.0.0, asn1-combinators 0.=
+3.0, let's encrypt 1.0.0, awa 0.4.0, kdf 1.0.0, paf 0.7.0, git 3.17.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/releases-of-mirage-crypto-1-0-0-tls-1-0-0-x5=
+09-1-0-0-asn1-combinators-0-3-0-lets-encrypt-1-0-0-awa-0-4-0-kdf-1-0-0-paf-=
+0-7-0-git-3-17-0/15359/1>
+
+
+Hannes Mehnert announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Dear OCaml developers,
+
+  we're pleased to finally release a full stack of packages that do not
+  rely on Cstruct.t/Bigarray, but use string / bytes instead. This
+  brings us a massive performance boost (e.g. a factor of 3 in tls), and
+  brings a easier to comprehend API. It also makes performance tooling
+  work much more smoothly with our released packages. We announced this
+  upcoming change earlier this year
+  <https://discuss.ocaml.org/t/ann-mirage-crypto-0-11-3-with-more-speed-for=
+-elliptic-curves-and-the-future-roadmap-of-mirage-crypto>
+
+  For further details, please see the specific release pages:
+  =E2=80=A2 [mirage-crypto 1.0.0] (also [1.0.1], and [1.1.0]) - cryptograph=
+ic
+    operations in OCaml (symmetric ciphers, asymmetric ciphers (RSA,
+    DSA, DH), fortuna (a cryptographic secure pseudo random number
+    generator), elliptic curves (from [fiat-crypto]) =E2=80=93 the hash
+    algorithms have been removed - use [digestif] instead
+  =E2=80=A2 [tls 1.0.0] (also [1.0.1], [1.0.2], and [1.0.3]) - a Transport =
+layer
+    security implementation (HTTPS) in OCaml, supporting TLS 1.0, 1.1,
+    1.2, and 1.3
+  =E2=80=A2 [x509 1.0.0] (also [1.0.1], [1.0.2], [1.0.3], and [1.0.4]) - X5=
+09
+    certificates (signing requests, certificate revocation lists,
+    PKCS12)
+  =E2=80=A2 [asn1-combinators 0.3.0] (also [0.3.1] and [0.3.2]) - ASN.1 par=
+ser
+    combinators
+  =E2=80=A2 [let's encrypt 1.0.0] - a client for <https://letsencrypt.org> -
+    automated TLS certificate issuance
+  =E2=80=A2 [awa 0.4.0] - a SSH client and server implementation
+  =E2=80=A2 [kdf 1.0.0] - supporting different key derivation functions: hk=
+df
+    (used in TLS), PBKDF2, SCRYPT
+  =E2=80=A2 [paf 0.7.0] - protocol-agnostic client (http / http2)
+  =E2=80=A2 [git 3.17.0] - an implementation of the version control system =
+git
+    <https://git-scm.com>
+  =E2=80=A2 [dns 9.0.0] (also [9.0.1]) - an implementation of the domain na=
+me
+    system
+
+  As you can envision, there was a lot of coordination and releasing
+  involved in preparing these API-breaking changes. The list above
+  likely misses various packages that have been released to support the
+  new mirage-crypto and tls API.
+
+  There have already been various issues reported and fixed in the
+  subsequent minor releases. We encourage you to upgrade your software
+  stack to the new release series, and report issues while you encounter
+  them (being it API questions, or correctness issues). Earlier releases
+  are not maintained anymore (due to lack of interest and lack of time),
+  thus if you encounter issues in earlier releases, please first update
+  to the most recent releases (although this may need some effort =E2=80=93=
+ a PR
+  that uses the packages heavily is
+  <https://github.com/robur-coop/miragevpn/pull/279>). If you're stuck
+  or lack time to port your code to the new API, we at robur offer
+  commercial support in upgrading your codebase. Reach out to us via
+  email: team@robur.coop.
+
+  This work has been conducted by the [robur collective]. Parts of this
+  work was sponsored by Tarides.
+
+
+[mirage-crypto 1.0.0]
+<https://github.com/mirage/mirage-crypto/releases/tag/v1.0.0>
+
+[1.0.1] <https://github.com/mirage/mirage-crypto/releases/tag/v1.0.1>
+
+[1.1.0] <https://github.com/mirage/mirage-crypto/releases/tag/v1.1.0>
+
+[fiat-crypto] <https://github.com/mit-plv/fiat-crypto/>
+
+[digestif] <https://github.com/mirage/digestif>
+
+[tls 1.0.0] <https://github.com/mirleft/ocaml-tls/releases/tag/v1.0.0>
+
+[1.0.1] <https://github.com/mirleft/ocaml-tls/releases/tag/v1.0.1>
+
+[1.0.2] <https://github.com/mirleft/ocaml-tls/releases/tag/v1.0.2>
+
+[1.0.3] <https://github.com/mirleft/ocaml-tls/releases/tag/v1.0.0>
+
+[x509 1.0.0] <https://github.com/mirleft/ocaml-x509/releases/tag/v1.0.0>
+
+[1.0.1] <https://github.com/mirleft/ocaml-x509/releases/tag/v1.0.1>
+
+[1.0.2] <https://github.com/mirleft/ocaml-x509/releases/tag/v1.0.2>
+
+[1.0.3] <https://github.com/mirleft/ocaml-x509/releases/tag/v1.0.3>
+
+[1.0.4] <https://github.com/mirleft/ocaml-x509/releases/tag/v1.0.4>
+
+[asn1-combinators 0.3.0]
+<https://github.com/mirleft/ocaml-asn1-combinators/releases/tag/v0.3.0>
+
+[0.3.1]
+<https://github.com/mirleft/ocaml-asn1-combinators/releases/tag/v0.3.1>
+
+[0.3.2]
+<https://github.com/mirleft/ocaml-asn1-combinators/releases/tag/v0.3.2>
+
+[let's encrypt 1.0.0]
+<https://github.com/robur-coop/ocaml-letsencrypt/releases/tag/v1.0.0>
+
+[awa 0.4.0] <https://github.com/mirage/awa-ssh/releases/tag/v0.4.0>
+
+[kdf 1.0.0] <https://github.com/robur-coop/kdf/releases/tag/v1.0.0>
+
+[paf 0.7.0]
+<https://github.com/dinosaure/paf-le-chien/releases/tag/0.7.0>
+
+[git 3.17.0] <https://github.com/mirage/ocaml-git/releases/tag/3.17.0>
+
+[dns 9.0.0] <https://github.com/mirage/ocaml-dns/releases/tag/v9.0.0>
+
+[9.0.1] <https://github.com/mirage/ocaml-dns/releases/tag/v9.0.1>
+
+[robur collective] <https://robur.coop>
+
+
+ICFP 2023 OCaml Presentations on YouTube
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-icfp-2023-ocaml-presentations-on-youtube=
+/13554/2>
+
+
+Anil Madhavapeddy announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80
+
+  After a respectable pause, I've now imported these videos into the
+  Watch.OCaml.org instance so we have a non-YouTube mirror. They're up
+  on the [OCaml Workshop 2023 channel] now. Enjoy your ad-free viewing!
+  :slight_smile:
+
+
+[OCaml Workshop 2023 channel]
+<https://watch.ocaml.org/c/ocaml2023/videos?s=3D1>
+
+
+Dune dev meeting
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/12>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hi Dune enthusiasts!  :camel:
+
+  We will hold our regular Dune dev meeting tomorrow, on *Wednesday,
+  October, 2nd at 16:00 CET*. As usual, the session will be one hour
+  long.
+
+  Whether you are a maintainer, a regular contributor, a new joiner or
+  just curious, you are welcome to join: these discussions are opened!
+  The goal of these meetings is to provide a place to discuss the
+  ongoing work together and synchronise between the Dune developers
+  :smile:
+
+
+:calendar: Agenda
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C
+
+  The agenda is available on the [meeting dedicated page ]. Feel free to
+  ask if you want to add more items in it.
+
+
+[meeting dedicated page ]
+<https://github.com/ocaml/dune/wiki/dev-meeting-2024-10-02>
+
+
+:computer: Links
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 Meeting link: [zoom ]
+  =E2=80=A2 Calendar event: [google calendar ]
+  =E2=80=A2 Wiki with information and previous notes: [GitHub Wiki ]
+
+
+[zoom ]
+<https://us06web.zoom.us/j/85096877776?pwd=3DcWNhU1dHQ1ZNSjZuOUZCQ0h2by9Udz=
+09>
+
+[google calendar ]
+<https://calendar.google.com/calendar/embed?src=3Dc_5cd698df6784e385b1cdcdc=
+1dbca18c061faa96959a04781566d304dc9ec7319%40group.calendar.google.com>
+
+[GitHub Wiki ] <https://github.com/ocaml/dune/wiki#dev-meetings>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [[OCaML'23] Modern DSL compiler architecture in OCaml our exper=
+ience
+    with Catala]
+  =E2=80=A2 [[OCaML'23] Eio 1.0 =E2=80=93 Effects-based IO for OCaml 5]
+  =E2=80=A2 [[OCaML'23] Less Power for More Learning: Restricting OCaml Fea=
+tures
+    for Effective Teaching]
+  =E2=80=A2 [[OCaML'23] Efficient OCaml compilation with Flambda 2]
+  =E2=80=A2 [[OCaML'23] Buck2 for OCaml Users & Developers]
+  =E2=80=A2 [[OCaML'23] Parallel Sequences in Multicore OCaml]
+  =E2=80=A2 [[OCaML'23] Building a lock-free STM for OCaml]
+  =E2=80=A2 [[OCaML'23] MetaOCaml Theory and Implementation]
+  =E2=80=A2 [[OCaML'23] Osiris: an Iris-based program logic for OCaml]
+  =E2=80=A2 [[OCaML'23] State of the OCaml Platform 2023]
+  =E2=80=A2 [[OCaML'23] Owi: an interpreter and a toolkit for WebAssembly
+    written in OCaml]
+  =E2=80=A2 [[OCaML'23] Targeted Static Analysis for OCaml C Stubs: Elimina=
+ting
+    gremlins from the code]
+  =E2=80=A2 [Introducing Dune: The Essential Build System for OCaml Develop=
+ers]
+  =E2=80=A2 [Summer of Internships: Projects From the OCaml Compiler Team]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[[OCaML'23] Modern DSL compiler architecture in OCaml our experience
+with Catala] <https://watch.ocaml.org/w/7ZxKnBY2w3XCztpzbKm8YG>
+
+[[OCaML'23] Eio 1.0 =E2=80=93 Effects-based IO for OCaml 5]
+<https://watch.ocaml.org/w/9Hxc81ac3k6GQF1fdZLx7d>
+
+[[OCaML'23] Less Power for More Learning: Restricting OCaml Features for
+Effective Teaching] <https://watch.ocaml.org/w/uABzLbyAasoKbjyRwganh4>
+
+[[OCaML'23] Efficient OCaml compilation with Flambda 2]
+<https://watch.ocaml.org/w/qGN45zFDCVGxiKRz9mKkVp>
+
+[[OCaML'23] Buck2 for OCaml Users & Developers]
+<https://watch.ocaml.org/w/cYiKFa5EbS3AqVgYzMHP5V>
+
+[[OCaML'23] Parallel Sequences in Multicore OCaml]
+<https://watch.ocaml.org/w/6K7mqY88PyDZFC2bJvs2Xe>
+
+[[OCaML'23] Building a lock-free STM for OCaml]
+<https://watch.ocaml.org/w/v3LtkXGeW5KXjziPQdzRJZ>
+
+[[OCaML'23] MetaOCaml Theory and Implementation]
+<https://watch.ocaml.org/w/rnQXcND8aaY9qUtikB9tSc>
+
+[[OCaML'23] Osiris: an Iris-based program logic for OCaml]
+<https://watch.ocaml.org/w/1Hfi9pjTo1hz1ej2WtVGCR>
+
+[[OCaML'23] State of the OCaml Platform 2023]
+<https://watch.ocaml.org/w/9GtFUSDDpmU8ZDD54A7V7e>
+
+[[OCaML'23] Owi: an interpreter and a toolkit for WebAssembly written in
+OCaml] <https://watch.ocaml.org/w/3pYGmveWpNNLH4B6TUv5ww>
+
+[[OCaML'23] Targeted Static Analysis for OCaml C Stubs: Eliminating
+gremlins from the code]
+<https://watch.ocaml.org/w/sj5jf9iieZA7E1cbDbnv2j>
+
+[Introducing Dune: The Essential Build System for OCaml Developers]
+<https://tarides.com/blog/2024-09-26-introducing-dune-the-essential-build-s=
+ystem-for-ocaml-developers>
+
+[Summer of Internships: Projects From the OCaml Compiler Team]
+<https://tarides.com/blog/2024-09-24-summer-of-internships-projects-from-th=
+e-ocaml-compiler-team>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-10-01 Tue 15:36 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.09.24.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.10.08.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of September 24 to Octob=
+er 01, 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Dune Developer Preview Updates</a></li>
+<li><a href=3D"#2">Uuidm 0.9.9</a></li>
+<li><a href=3D"#3">first release of ppx_deriving_jsonschema</a></li>
+<li><a href=3D"#4">Bogue, the OCaml GUI</a></li>
+<li><a href=3D"#5">New release of Merlin</a></li>
+<li><a href=3D"#6">Releases of mirage-crypto 1.0.0, tls 1.0.0, x509 1.0.0, =
+asn1-combinators 0.3.0, let's encrypt 1.0.0, awa 0.4.0, kdf 1.0.0, paf 0.7.=
+0, git 3.17.0</a></li>
+<li><a href=3D"#7">ICFP 2023 OCaml Presentations on YouTube</a></li>
+<li><a href=3D"#8">Dune dev meeting</a></li>
+<li><a href=3D"#9">Other OCaml News</a></li>
+<li><a href=3D"#org93c12d3">Old CWN</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Dune Developer Preview Updates</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-developer-preview-=
+updates/15160/7">https://discuss.ocaml.org/t/ann-dune-developer-preview-upd=
+ates/15160/7</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org93ccc54" class=3D"outline-3">
+<h3 id=3D"org93ccc54">ostera announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org93ccc54">
+<p>
+Hello folks! :wave:=20
+</p>
+</div>
+
+<div id=3D"outline-container-orgf46690c" class=3D"outline-4">
+<h4 id=3D"orgf46690c">Call for Feedback</h4>
+<div class=3D"outline-text-4" id=3D"text-orgf46690c">
+<p>
+We'd like to welcome everyone to try and play with the <a href=3D"https://d=
+une.ci.dev">Dune Developer Preview</a>! :tada:=20
+</p>
+
+<p>
+This experimental nightly release of dune includes a lot of improvements, i=
+ncluding the much expected package management features, and it can be insta=
+lled from that website or by using the new installation script:
+</p>
+
+<pre class=3D"example" id=3D"org1d60911">
+$ curl https://dune.ci.dev/install | bash
+</pre>
+
+<p>
+In a few seconds you should be ready to OCaml by calling <code>dune</code> =
+=E2=80=93 you can watch a demo of this here: <a href=3D"https://x.com/leost=
+era/status/1838969568795979922">X</a>, <a href=3D"https://mas.to/deck/@leos=
+tera/113198996085937679">Mastodon</a>.
+</p>
+
+<p>
+Please try it out and let us know what you think :pray:=20
+</p>
+
+<p>
+:calendar: You can book a feedback call with us <a href=3D"https://calendar=
+.google.com/calendar/u/0/appointments/schedules/AcZssZ3HaJbskiCLHqLS6Oi1S3-=
+rWYwv0hb_Iz8O9VlspuDdK5qbXYUZDpRRlWfEY1GP8KFy6XY8MFb9">here</a>
+</p>
+
+<p>
+:memo:  You can submit feedback using <a href=3D"https://docs.google.com/fo=
+rms/u/2/d/e/1FAIpQLSda-mOTHIdATTt_e9dFmNgUCy-fD55Qzr3bGGsxpfY_Ecfyxw/viewfo=
+rm?usp=3Dsend_form">this form</a>
+</p>
+
+<p>
+:bug:  You can submit issues to Github on <a href=3D"https://github.com/oca=
+ml/dune/issues/new/choose">ocaml/dune</a>
+</p>
+</div>
+</div>
+
+<div id=3D"outline-container-org345f3ed" class=3D"outline-4">
+<h4 id=3D"org345f3ed">Changes since last update</h4>
+<div class=3D"outline-text-4" id=3D"text-org345f3ed">
+<p>
+The Dune shared cache has been enabled by default. We're starting off by ca=
+ching all downloads and dependencies.
+</p>
+
+<p>
+We have improved support for dev tools. We're working to streamline this bu=
+t in the latest binary you can:
+</p>
+
+<ul class=3D"org-ul">
+<li>Configure your LSP (in Neovim, Vim, Emacs, etc) to call <code>dune tool=
+s exec ocamllsp</code> to get LSP support for your projects out of the box =
+=E2=80=93 this may take a little bit the first time it builds the LSP for a=
+ compiler version, but its pretty much instant afterwards.</li>
+<li>Call <code>dune fmt</code> to get your project formatted =E2=80=93 reme=
+mber to add an <code>.ocamlformat</code> file if you don't have one yet. An=
+ empty one is enough.</li>
+<li>Call <code>dune ocaml doc</code> to get documentation built</li>
+</ul>
+</div>
+</div>
+
+<div id=3D"outline-container-org3df909b" class=3D"outline-4">
+<h4 id=3D"org3df909b">What's next?</h4>
+<div class=3D"outline-text-4" id=3D"text-org3df909b">
+<p>
+We're looking forward to streamlining the DX, working on better dependency =
+locks, and looking into supporting Windows.
+</p>
+
+<p>
+In particular, we're considering work on a few things:
+</p>
+
+<ul class=3D"org-ul">
+<li><code>dune create &lt;repo&gt;</code> =E2=80=93 to let the community cr=
+eate templates that can be easily used from within dune</li>
+<li><code>dune pkg fetch</code> =E2=80=93 to prefetch packages and prepare =
+a repository for working in offline mode</li>
+<li><code>dune build @deps</code> - to build all dependencies, useful for s=
+taged builds in Dockerfiles</li>
+<li><code>dune pkg add &lt;name&gt;</code> - to make adding packages straig=
+htforward</li>
+<li>a short-hand syntax for pins on github</li>
+<li>and more!</li>
+</ul>
+
+<p>
+If you've got any ideas, we'd love to hear them, so please open a feature r=
+equest on Github :pray:=20
+</p>
+</div>
+</div>
+
+<div id=3D"outline-container-org325d967" class=3D"outline-4">
+<h4 id=3D"org325d967">Other updates</h4>
+<div class=3D"outline-text-4" id=3D"text-org325d967">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org8474dac"></a>FunOCaml Presentation<br />
+<div class=3D"outline-text-5" id=3D"text-org8474dac">
+<p>
+At <b>FunOCaml</b> we had a last-minute opportunity to present the work bei=
+ng done on Dune and we used it to introduce the Developer Preview to the co=
+mmunity, and even tested Package Management live with suggestions from the =
+audience (thanks @anmonteiro and Paul-Elliot for participating!) =E2=80=93 =
+you can <a href=3D"https://www.twitch.tv/videos/2252408016?t=3D08h12m00s">w=
+atch it on Twitch</a>.
+</p>
+</div>
+</li>
+
+<li><a id=3D"org9b651b6"></a>New design<br />
+<div class=3D"outline-text-5" id=3D"text-org9b651b6">
+<p>
+We're working with @Claire_Vandenberghe on redesigning the Developer Previe=
+w website so that it'd feel like a seamless extension of OCaml.org =E2=80=
+=93 in this current iteration we've made it easier to get started and we're=
+ putting the FAQ front and center.
+</p>
+
+<p>
+We'll be iterating on this design in the coming weeks until it fits perfect=
+ly within the OCaml.org design system :art:=20
+</p>
+
+<p>
+You can check the new website here: <a href=3D"https://dune.ci.dev">https:/=
+/dune.ci.dev</a>=20
+</p>
+</div>
+</li>
+
+<li><a id=3D"org12da660"></a>Upcoming Blog posts<br />
+<div class=3D"outline-text-5" id=3D"text-org12da660">
+<p>
+In the near future we'll be publishing blog posts about the Developer Previ=
+ew and Package Management, which we're working on with @professor.rose :cla=
+p:
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Uuidm 0.9.9</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-uuidm-0-9-9/15336/1">ht=
+tps://discuss.ocaml.org/t/ann-uuidm-0-9-9/15336/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org4c82d42" class=3D"outline-3">
+<h3 id=3D"org4c82d42">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org4c82d42">
+<p>
+There's a new release of <a href=3D"https://erratique.ch/software/uuidm">Uu=
+idm</a>, a library to handle universally unique identifiers (UUIDs).
+</p>
+
+<p>
+This very old module has been slightly renovated implying a few deprecation=
+s, a  <a href=3D"https://erratique.ch/software/uuidm/doc/#quick">quick star=
+t</a> has been added to the docs and foremost new constructors and generato=
+rs were added to support the latest <a href=3D"https://www.rfc-editor.org/r=
+fc/rfc9562">RFC 9562</a> V7 time and random based UUID definitions; thanks =
+to <code>xen-api</code> folks for getting the ball rolling on this. See the=
+ <a href=3D"https://github.com/dbuenzli/uuidm/blob/master/CHANGES.md#v099-2=
+024-09-26-zagreb">release notes</a> for the details.=20
+</p>
+
+<ul class=3D"org-ul">
+<li>Docs: <a href=3D"https://erratique.ch/software/uuidm/doc/">online</a> o=
+r <code>odig doc uuidm</code></li>
+<li>Install: <code>opam install uuidm</code> (<a href=3D"https://github.com=
+/ocaml/opam-repository/pull/26621">PR</a>)</li>
+</ul>
+
+<p>
+A big thanks to my <a href=3D"https://github.com/sponsors/dbuenzli">donors<=
+/a>.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">first release of ppx_deriving_jsonschema</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-first-release-of-ppx-de=
+riving-jsonschema/15320/2">https://discuss.ocaml.org/t/ann-first-release-of=
+-ppx-deriving-jsonschema/15320/2</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org5c37d45" class=3D"outline-3">
+<h3 id=3D"org5c37d45">Louis Roch=C3=A9 announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org5c37d45">
+<p>
+Released 0.0.2 on opam. It feels like the project is in a good shape now.
+</p>
+
+<p>
+Changes:
+</p>
+<ul class=3D"org-ul">
+<li>support for nativeint, bytes, ref, unit</li>
+<li>add ~variant_as_array for compatibility with ppx_deriving_yojson</li>
+<li>support variant payloads</li>
+<li>support polymorphic variants inheritance</li>
+<li>fix encoding of tuples</li>
+<li>change encoding of variants from enum to anyOf</li>
+</ul>
+
+<p>
+I'm considering making <code>variant_as_array</code> the default in 0.0.3 a=
+s it would be more consistent with the ocaml ecosystem.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Bogue, the OCaml GUI</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-bogue-the-ocaml-gui/909=
+9/62">https://discuss.ocaml.org/t/ann-bogue-the-ocaml-gui/9099/62</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgd58aa75" class=3D"outline-3">
+<h3 id=3D"orgd58aa75">sanette announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd58aa75">
+<p>
+I'm happy to announce a brand new version of <a href=3D"https://github.com/=
+sanette/bogue">Bogue</a>, version 20240928, now availble on <code>opam</cod=
+e>.
+</p>
+
+<p>
+Changes are mostly under the hood. We have nice improvements by @edwin : au=
+tomatic monitor vsync is now enabled by default, for smoother animations, a=
+nd most importantly <b>we finally align with the latest version of <code>ts=
+dl</code></b>. It will simplify maintenance, but it also implies that <b>to=
+o old versions of SDL will not work anymore</b>. On the other hand we were =
+kind of obliged to move forward, because <code>tsdl.0.9.8</code> won't inst=
+all on <code>ocaml 5.2</code>.
+</p>
+
+<ul class=3D"org-ul">
+<li>if you're on Ubuntu 20.04, installing Bogue with <code>opam install bog=
+ue</code> will by default pull <code>tsdl.1.1.0</code> in, which requires S=
+DL &gt;=3D 2.0.18, not shipped by the OS. A workaround is to explicitly req=
+uire <code>opam install tsdl.1.0.0</code> (or manually installing a newer S=
+DL)</li>
+<li>if your OS ships SDL &lt; 2.0.10 you have no other choice than manually=
+ installing a newer <a href=3D"https://github.com/libsdl-org/SDL/releases/t=
+ag/release-2.30.7">SDL</a> (which is not that complicated)</li>
+</ul>
+
+<p>
+Happy bogue-ing!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">New release of Merlin</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-new-release-of-merlin/1=
+5358/1">https://discuss.ocaml.org/t/ann-new-release-of-merlin/15358/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org8d22c19" class=3D"outline-3">
+<h3 id=3D"org8d22c19">vds announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8d22c19">
+<p>
+I am very pleased to announce a new release of Merlin for OCaml 5.2, 5.1 an=
+d 4.14. This release brings a handful of fixes but also a handful of of new=
+ commands:=20
+</p>
+
+<ul class=3D"org-ul">
+<li><code>signature_help</code> and <code>inlay_hint</code> have been upstr=
+eamed from <code>ocaml-lsp-server</code></li>
+<li><code>expand_node</code> a command to get the ppxed-source when called =
+on relevant annotations</li>
+<li>=F0=9F=95=B5=EF=B8=8F=E2=80=8D=E2=99=80=EF=B8=8F <code>search-by-type</=
+code> a <a href=3D"https://doc.sherlocode.com/">sherlodoc</a>-inspired synt=
+ax to search for values in the environment, that superseeds <code>polarity-=
+search</code>.</li>
+</ul>
+
+<p>
+Only <code>search-by-type</code> has an Emacs binding right now (and one fo=
+r vim on is <a href=3D"https://github.com/ocaml/merlin/pull/1846">in the wo=
+rks</a>), we hope to have some time to work on more client implementations =
+in the near future.
+</p>
+
+<p>
+<a href=3D"https://private-user-images.githubusercontent.com/5732466/368645=
+764-3af5227a-c174-41ad-b493-cb4869e31db8.gif?jwt=3DeyJhbGciOiJIUzI1NiIsInR5=
+cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW=
+50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjc2ODUzNzksIm5iZiI6MTcyNzY4NTA3OSwic=
+GF0aCI6Ii81NzMyNDY2LzM2ODY0NTc2NC0zYWY1MjI3YS1jMTc0LTQxYWQtYjQ5My1jYjQ4Njll=
+MzFkYjguZ2lmP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnR=
+pYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI0MDkzMCUyRnVzLWVhc3QtMSUyRnMzJTJGYX=
+dzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNDA5MzBUMDgzMTE5WiZYLUFtei1FeHBpcmVzPTMwM=
+CZYLUFtei1TaWduYXR1cmU9YjBhYmI0NzhjYjEwOTdkMmMwODYxY2JiNjJjZjAzNmFmMWNkN2Q5=
+YzQ3NzIxMjI3MmMwYTFjM2ZmOGI0ZGUzMiZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.xPSJ=
+X60YU1Br9zti85R5cU2N7GPglL2NNFo9Jge8tBY">demo1</a>
+</p>
+
+<p>
+<a href=3D"https://private-user-images.githubusercontent.com/5732466/368645=
+869-4917c6aa-d67c-4dff-a326-c33e5a8615cf.gif?jwt=3DeyJhbGciOiJIUzI1NiIsInR5=
+cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW=
+50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Mjc2ODUzNzksIm5iZiI6MTcyNzY4NTA3OSwic=
+GF0aCI6Ii81NzMyNDY2LzM2ODY0NTg2OS00OTE3YzZhYS1kNjdjLTRkZmYtYTMyNi1jMzNlNWE4=
+NjE1Y2YuZ2lmP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnR=
+pYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI0MDkzMCUyRnVzLWVhc3QtMSUyRnMzJTJGYX=
+dzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNDA5MzBUMDgzMTE5WiZYLUFtei1FeHBpcmVzPTMwM=
+CZYLUFtei1TaWduYXR1cmU9MzM5NzdhNmU3M2U2MGJhMGI4OTg1MDZkYThjOGYyMTM1N2Q4NTJh=
+MzM2NGRiMWE4MzdmZDQxOTZjNGFiNWFhYyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.028j=
+tKfrrYwSqsJwmZn1rn2314IrijpGwPIqPOqffdc">demo2</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org7859b20" class=3D"outline-4">
+<h4 id=3D"org7859b20">Complete changelog:</h4>
+<div class=3D"outline-text-4" id=3D"text-org7859b20">
+<p>
+Fri Sep 27 12:02:42 CEST 2024
+</p>
+
+<ul class=3D"org-ul">
+<li>merlin binary
+<ul class=3D"org-ul">
+<li>A new <code>WRAPPING_PREFIX</code> configuration directive that can be =
+used to tell Merlin
+what to append to the current unit name in the presence of wrapping (ocaml/=
+merlin#1788)</li>
+<li>Add <code>-unboxed-types</code> and <code>-no-unboxed-types</code> as o=
+caml ignored flags (ocaml/merlin#1795, fixes ocaml/merlin#1794)</li>
+<li>destruct: Refinement in the presence of optional arguments (ocaml/merli=
+n#1800 ocaml/merlin#1807, fixes ocaml/merlin#1770)</li>
+<li>Implement new expand-node command for expanding PPX annotations (ocaml/=
+merlin#1745)</li>
+<li>Implement new inlay-hints command for adding hints on a sourcetree (oca=
+ml/merlin#1812)</li>
+<li>Implement new search-by-type command for searching values by types (oca=
+ml/merlin#1828)</li>
+<li>Canonicalize paths in occurrences. This helps deduplicate the results a=
+nd
+show more user-friendly paths. (ocaml/merlin#1840)</li>
+<li>Fix dot-merlin-reader ignoring <code>SOURCE_ROOT</code> and <code>STDLI=
+B</code> directives
+(ocaml/merlin#1839, ocaml/merlin#1803)</li>
+</ul></li>
+<li>editor modes
+<ul class=3D"org-ul">
+<li>vim: fix python-3.12 syntax warnings in merlin.py (ocaml/merlin#1798)</=
+li>
+<li>vim: Dead code / doc removal for previously deleted MerlinPhrase comman=
+d (ocaml/merlin#1804)</li>
+<li>emacs: Improve the way that result of polarity search is displayed (oca=
+ml/merlin#1814)</li>
+<li>emacs: Add <code>merlin-search-by-type</code>, <code>merlin-search-by-p=
+olarity</code> and change the
+behaviour of <code>merlin-search</code> to switch between <code>by-type</co=
+de> or <code>by-polarity</code>
+depending on the query (ocaml/merlin#1828)</li>
+</ul></li>
+</ul>
+
+<p>
+cc @xvw @PizieDust
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Releases of mirage-crypto 1.0.0, tls 1.0.0, x509 1.0.0, asn1-c=
+ombinators 0.3.0, let's encrypt 1.0.0, awa 0.4.0, kdf 1.0.0, paf 0.7.0, git=
+ 3.17.0</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/releases-of-mirage-crypto-1=
+-0-0-tls-1-0-0-x509-1-0-0-asn1-combinators-0-3-0-lets-encrypt-1-0-0-awa-0-4=
+-0-kdf-1-0-0-paf-0-7-0-git-3-17-0/15359/1">https://discuss.ocaml.org/t/rele=
+ases-of-mirage-crypto-1-0-0-tls-1-0-0-x509-1-0-0-asn1-combinators-0-3-0-let=
+s-encrypt-1-0-0-awa-0-4-0-kdf-1-0-0-paf-0-7-0-git-3-17-0/15359/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org3f646d3" class=3D"outline-3">
+<h3 id=3D"org3f646d3">Hannes Mehnert announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3f646d3">
+<p>
+Dear OCaml developers,
+</p>
+
+<p>
+we're pleased to finally release a full stack of packages that do not rely =
+on Cstruct.t/Bigarray, but use string / bytes instead. This brings us a mas=
+sive performance boost (e.g. a factor of 3 in tls), and brings a easier to =
+comprehend API. It also makes performance tooling work much more smoothly w=
+ith our released packages. We announced this upcoming change earlier this y=
+ear <a href=3D"https://discuss.ocaml.org/t/ann-mirage-crypto-0-11-3-with-mo=
+re-speed-for-elliptic-curves-and-the-future-roadmap-of-mirage-crypto">https=
+://discuss.ocaml.org/t/ann-mirage-crypto-0-11-3-with-more-speed-for-ellipti=
+c-curves-and-the-future-roadmap-of-mirage-crypto</a>
+</p>
+
+<p>
+For further details, please see the specific release pages:
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/mirage/mirage-crypto/releases/tag/v1.0.0"=
+>mirage-crypto 1.0.0</a> (also <a href=3D"https://github.com/mirage/mirage-=
+crypto/releases/tag/v1.0.1">1.0.1</a>, and <a href=3D"https://github.com/mi=
+rage/mirage-crypto/releases/tag/v1.1.0">1.1.0</a>) - cryptographic operatio=
+ns in OCaml (symmetric ciphers, asymmetric ciphers (RSA, DSA, DH), fortuna =
+(a cryptographic secure pseudo random number generator), elliptic curves (f=
+rom <a href=3D"https://github.com/mit-plv/fiat-crypto/">fiat-crypto</a>) &#=
+x2013; the hash algorithms have been removed - use <a href=3D"https://githu=
+b.com/mirage/digestif">digestif</a> instead</li>
+<li><a href=3D"https://github.com/mirleft/ocaml-tls/releases/tag/v1.0.0">tl=
+s 1.0.0</a> (also <a href=3D"https://github.com/mirleft/ocaml-tls/releases/=
+tag/v1.0.1">1.0.1</a>, <a href=3D"https://github.com/mirleft/ocaml-tls/rele=
+ases/tag/v1.0.2">1.0.2</a>, and <a href=3D"https://github.com/mirleft/ocaml=
+-tls/releases/tag/v1.0.0">1.0.3</a>) - a Transport layer security implement=
+ation (HTTPS) in OCaml, supporting TLS 1.0, 1.1, 1.2, and 1.3</li>
+<li><a href=3D"https://github.com/mirleft/ocaml-x509/releases/tag/v1.0.0">x=
+509 1.0.0</a> (also <a href=3D"https://github.com/mirleft/ocaml-x509/releas=
+es/tag/v1.0.1">1.0.1</a>, <a href=3D"https://github.com/mirleft/ocaml-x509/=
+releases/tag/v1.0.2">1.0.2</a>, <a href=3D"https://github.com/mirleft/ocaml=
+-x509/releases/tag/v1.0.3">1.0.3</a>, and <a href=3D"https://github.com/mir=
+left/ocaml-x509/releases/tag/v1.0.4">1.0.4</a>) - X509 certificates (signin=
+g requests, certificate revocation lists, PKCS12)</li>
+<li><a href=3D"https://github.com/mirleft/ocaml-asn1-combinators/releases/t=
+ag/v0.3.0">asn1-combinators 0.3.0</a> (also <a href=3D"https://github.com/m=
+irleft/ocaml-asn1-combinators/releases/tag/v0.3.1">0.3.1</a> and <a href=3D=
+"https://github.com/mirleft/ocaml-asn1-combinators/releases/tag/v0.3.2">0.3=
+.2</a>) - ASN.1 parser combinators</li>
+<li><a href=3D"https://github.com/robur-coop/ocaml-letsencrypt/releases/tag=
+/v1.0.0">let's encrypt 1.0.0</a> - a client for <a href=3D"https://letsencr=
+ypt.org">https://letsencrypt.org</a> - automated TLS certificate issuance</=
+li>
+<li><a href=3D"https://github.com/mirage/awa-ssh/releases/tag/v0.4.0">awa 0=
+.4.0</a> - a SSH client and server implementation</li>
+<li><a href=3D"https://github.com/robur-coop/kdf/releases/tag/v1.0.0">kdf 1=
+.0.0</a> - supporting different key derivation functions: hkdf (used in TLS=
+), PBKDF2, SCRYPT</li>
+<li><a href=3D"https://github.com/dinosaure/paf-le-chien/releases/tag/0.7.0=
+">paf 0.7.0</a> - protocol-agnostic client (http / http2)</li>
+<li><a href=3D"https://github.com/mirage/ocaml-git/releases/tag/3.17.0">git=
+ 3.17.0</a> - an implementation of the version control system git <a href=
+=3D"https://git-scm.com">https://git-scm.com</a></li>
+<li><a href=3D"https://github.com/mirage/ocaml-dns/releases/tag/v9.0.0">dns=
+ 9.0.0</a> (also <a href=3D"https://github.com/mirage/ocaml-dns/releases/ta=
+g/v9.0.1">9.0.1</a>) - an implementation of the domain name system</li>
+</ul>
+
+<p>
+As you can envision, there was a lot of coordination and releasing involved=
+ in preparing these API-breaking changes. The list above likely misses vari=
+ous packages that have been released to support the new mirage-crypto and t=
+ls API.
+</p>
+
+<p>
+There have already been various issues reported and fixed in the subsequent=
+ minor releases. We encourage you to upgrade your software stack to the new=
+ release series, and report issues while you encounter them (being it API q=
+uestions, or correctness issues). Earlier releases are not maintained anymo=
+re (due to lack of interest and lack of time), thus if you encounter issues=
+ in earlier releases, please first update to the most recent releases (alth=
+ough this may need some effort &#x2013; a PR that uses the packages heavily=
+ is <a href=3D"https://github.com/robur-coop/miragevpn/pull/279">https://gi=
+thub.com/robur-coop/miragevpn/pull/279</a>). If you're stuck or lack time t=
+o port your code to the new API, we at robur offer commercial support in up=
+grading your codebase. Reach out to us via email: team@robur.coop.
+</p>
+
+<p>
+This work has been conducted by the <a href=3D"https://robur.coop">robur co=
+llective</a>. Parts of this work was sponsored by Tarides.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">ICFP 2023 OCaml Presentations on YouTube</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-icfp-2023-ocaml-present=
+ations-on-youtube/13554/2">https://discuss.ocaml.org/t/ann-icfp-2023-ocaml-=
+presentations-on-youtube/13554/2</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org664f14b" class=3D"outline-3">
+<h3 id=3D"org664f14b">Anil Madhavapeddy announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org664f14b">
+<p>
+After a respectable pause, I've now imported these videos into the Watch.OC=
+aml.org instance so we have a non-YouTube mirror. They're up on the <a href=
+=3D"https://watch.ocaml.org/c/ocaml2023/videos?s=3D1">OCaml Workshop 2023 c=
+hannel</a> now. Enjoy your ad-free viewing! :slight_smile:
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">Dune dev meeting</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/=
+12">https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/12</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgf027c0f" class=3D"outline-3">
+<h3 id=3D"orgf027c0f">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgf027c0f">
+<p>
+Hi Dune enthusiasts!  :camel:=20=20
+</p>
+
+<p>
+We will hold our regular Dune dev meeting tomorrow, on <b>Wednesday, Octobe=
+r, 2nd at 16:00 CET</b>. As usual, the session will be one hour long.
+</p>
+
+<p>
+Whether you are a maintainer, a regular contributor, a new joiner or just c=
+urious, you are welcome to join: these discussions are opened! The goal of =
+these meetings is to provide a place to discuss the ongoing work together a=
+nd synchronise between the Dune developers :smile:
+</p>
+</div>
+
+<div id=3D"outline-container-org6de516f" class=3D"outline-4">
+<h4 id=3D"org6de516f">:calendar: Agenda</h4>
+<div class=3D"outline-text-4" id=3D"text-org6de516f">
+<p>
+The agenda is available on the <a href=3D"https://github.com/ocaml/dune/wik=
+i/dev-meeting-2024-10-02">meeting dedicated page </a>. Feel free to ask if =
+you want to add more items in it.
+</p>
+</div>
+</div>
+
+<div id=3D"outline-container-org6625a03" class=3D"outline-4">
+<h4 id=3D"org6625a03">:computer: Links</h4>
+<div class=3D"outline-text-4" id=3D"text-org6625a03">
+<ul class=3D"org-ul">
+<li>Meeting link: <a href=3D"https://us06web.zoom.us/j/85096877776?pwd=3DcW=
+NhU1dHQ1ZNSjZuOUZCQ0h2by9Udz09">zoom </a></li>
+<li>Calendar event: <a href=3D"https://calendar.google.com/calendar/embed?s=
+rc=3Dc_5cd698df6784e385b1cdcdc1dbca18c061faa96959a04781566d304dc9ec7319%40g=
+roup.calendar.google.com">google calendar </a></li>
+<li>Wiki with information and previous notes: <a href=3D"https://github.com=
+/ocaml/dune/wiki#dev-meetings">GitHub Wiki </a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+</div>
+<div id=3D"outline-container-org140d408" class=3D"outline-3">
+<h3 id=3D"org140d408">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org140d408">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://watch.ocaml.org/w/7ZxKnBY2w3XCztpzbKm8YG">[OCaML'23]=
+ Modern DSL compiler architecture in OCaml our experience with Catala</a></=
+li>
+<li><a href=3D"https://watch.ocaml.org/w/9Hxc81ac3k6GQF1fdZLx7d">[OCaML'23]=
+ Eio 1.0 =E2=80=93 Effects-based IO for OCaml 5</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/uABzLbyAasoKbjyRwganh4">[OCaML'23]=
+ Less Power for More Learning: Restricting OCaml Features for Effective Tea=
+ching</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/qGN45zFDCVGxiKRz9mKkVp">[OCaML'23]=
+ Efficient OCaml compilation with Flambda 2</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/cYiKFa5EbS3AqVgYzMHP5V">[OCaML'23]=
+ Buck2 for OCaml Users &amp; Developers</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/6K7mqY88PyDZFC2bJvs2Xe">[OCaML'23]=
+ Parallel Sequences in Multicore OCaml</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/v3LtkXGeW5KXjziPQdzRJZ">[OCaML'23]=
+ Building a lock-free STM for OCaml</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/rnQXcND8aaY9qUtikB9tSc">[OCaML'23]=
+ MetaOCaml Theory and Implementation</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/1Hfi9pjTo1hz1ej2WtVGCR">[OCaML'23]=
+ Osiris: an Iris-based program logic for OCaml</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/9GtFUSDDpmU8ZDD54A7V7e">[OCaML'23]=
+ State of the OCaml Platform 2023</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/3pYGmveWpNNLH4B6TUv5ww">[OCaML'23]=
+ Owi: an interpreter and a toolkit for WebAssembly written in OCaml</a></li>
+<li><a href=3D"https://watch.ocaml.org/w/sj5jf9iieZA7E1cbDbnv2j">[OCaML'23]=
+ Targeted Static Analysis for OCaml C Stubs: Eliminating gremlins from the =
+code</a></li>
+<li><a href=3D"https://tarides.com/blog/2024-09-26-introducing-dune-the-ess=
+ential-build-system-for-ocaml-developers">Introducing Dune: The Essential B=
+uild System for OCaml Developers</a></li>
+<li><a href=3D"https://tarides.com/blog/2024-09-24-summer-of-internships-pr=
+ojects-from-the-ocaml-compiler-team">Summer of Internships: Projects From t=
+he OCaml Compiler Team</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-org93c12d3" class=3D"outline-2">
+<h2 id=3D"org93c12d3">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org93c12d3">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org6b9a7b2">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
