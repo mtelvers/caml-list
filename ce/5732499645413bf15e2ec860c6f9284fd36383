@@ -1,0 +1,1611 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=W8kuVanW;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=45HfOKIT;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 6CBBEB80123
+	for <caml-list@tunbury.org>; Tue, 22 Oct 2024 13:42:29 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=xpFbw8dzxIZuD+CzC4DQ6PQpaxs3stvXrKsvBsR6BLA=;
+  b=W8kuVanWeOJVsK6CxCL2Za/dbZb5ROOZvN47KP90pvpurFd07LwgPeQL
+   jE+Lqn/b4+9LPsJoWWMqUe9cYmw6OrwE28adG0rsGchqiOIDnDSYmHI4v
+   dagmhyR+wd2q9lPE4IxImtLFPAZ1mynMCoaZBI0tEX8i9vxmF9JjcCsbb
+   g=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.11,223,1725314400"; 
+   d="scan'208,217";a="190132378"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 22 Oct 2024 14:42:27 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 072BCE0CD4; Tue, 22 Oct 2024 14:42:27 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 34A7FE00B7
+	for <caml-list@sympa.inria.fr>; Tue, 22 Oct 2024 14:42:25 +0200 (CEST)
+IronPort-SDR: 67179daf_IZ5l9FZXHTyhGPp890NrYgud3Kqu4+WMBTWYkzTOmMsW9fn
+ 2u6paWmEu/3r1V0+RrtdgeJDz42V5gNUFKYPYdA==
+X-IPAS-Result: =?us-ascii?q?A0E/AQAZnRdnjyIeaIFaEwEBgkeBQYEDGQFjWjMHCEhDH?=
+ =?us-ascii?q?oN1gWOBbI4fmhKCL4FWgSUDGBYjFAEDAQ0uAQ4EAQIEAQEDAQIBhQACiiQCH?=
+ =?us-ascii?q?wYBBDAJDgECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEBAQEBO?=
+ =?us-ascii?q?QVJhXsNgkVRcWUJNwEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQIMAQxSAT0CCQoTAQEpCQYYIwMUAQYDAhEBNQMBEwESFAIEg?=
+ =?us-ascii?q?mcBgmQDBQwGkxqbSnqBMoEBggwBAQaBCD4CAQsCAgMYJQHaBoFjCYFIhWqCS?=
+ =?us-ascii?q?BoBKkhqAoRGhDwnD4FVRIFKgXNRb4FAEG8LFwEBAQEYgSQBAQhFCYMlgmmGH?=
+ =?us-ascii?q?FV7hCktgXVFDYF5aQQFFYEpZwgCBhYIAoENVlcPggISQg6DAXwjAoEzhhleg?=
+ =?us-ascii?q?ROBb4IXgy0dhy+Cd4FHSzMhEwFVExcLCQVkhguCRoMmghSEEIUlgWcJYYdlg?=
+ =?us-ascii?q?WmBPoFZR4JySoU3gQY5ghZqTjcCDQI3giQkXIJRg1uCTx1AAwttPTUUG6wcB?=
+ =?us-ascii?q?A0qAYFaAUaBai8OCy04MBMHBAMCCAIBBxQOAQEgAjYOKwoZEQwOCUoLAQoCH?=
+ =?us-ascii?q?g+STxAUBCwBjzCOEJRaNAeEHYFdBgyJA4EklXaEBYFWiyuHAJJGIphVIoI0h?=
+ =?us-ascii?q?yIKgRsJgW1qiG8BgRqLRROFQYFnOjxvHAIMBzMaMCIhgmcJRhwPji0Wg1iBP?=
+ =?us-ascii?q?i2CNTk7wzdBNQIBAQcwAgcBCgEBAwmFYgEBhmaBSwEB?=
+IronPort-PHdr: A9a23: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
+ MhMlhba1OqubIlYUDHuFzpaYQqd/EIE
+IronPort-Data: A9a23:Z7iMBa+zNRKIPWtYhgRDDrUDNHqTJUtcMsCJ2f8bNWPcYEJGY0x3m
+ DcdDTzQOq7YMzH0eNp3YYyw/UgD7JPRzN9iGwRrrnpEQiMRo6IpJ/zJdxaqZ3v6wu7rFR88s
+ Z1GMrEsCOhuExcwcz/0auCJQUFUjP3OHPymYAL9EngZbRd+Tys8gg5Ulec8g4p56fC0GArlV
+ ena+qUzA3f7nWctWo4ow/jb8k825K6o4GlwUmEWPJingneOzxH5M7pEfcldH1OgKqFIE+izQ
+ fr0zb3R1gs1KD9wYj8Nuu+TnnwiGtY+DyDW4pZlc/TKbix5m8AH+v1T2Mzwxqtgo27hc9hZk
+ L2hvHErIOsjFvWkdO81C3G0H8ziVEHvFXCuzXWX6KSuI0P6n3TE+elPJUskBp8j17hKCn0R/
+ 9pEAREwYUXW7w626OrTpuhEg9R6atHsOJIDt3pgyzDAEPtgRorMK0nIzYYCjXFp3pwIRq6YP
+ JZxhTlHNHwsZzV0AGxPXZhhlfj9vEKqazpcuU6Yrqox4nHOwUp2yre4Od7cfJqRTsVQn1qEj
+ mjB4mLyDwpcMYCPjz2f/RpAg8eezHynA99PTtVU8NZPkEyK7VYdJyYJfmfirP20lR7jd8pQf
+ hl8Fi0G9vVuqhf0FrERRSaQq3eBulsYWsFMO/Yr7RmEjKvS+QeQQGYeJgOtc/QjpJZwXTsux
+ 0OElNPvBCVyvfuSU331GqqoQS2aAzQ0BGUQXj0/YFU46MW8qqdvpzPyQYM2eEKqteHdFTb1y
+ jGMiSExgbQPkMIGv5lXG3ib3FpAQbCVEGYIChXrY46z0u9uTKCfD7FEBHDe/a8GNIGdX0WMt
+ 3gCmtGD4aYJF57leM2xrAclQuvBCxWtaWO0bbtT838JrWrFF5mLJ9843d2GDB01WvvogBewC
+ KMphStf5YVIIFyhZrJtboS6BqwClPe6RIm+C62IPoEfOfCdkTNrGgkyOiZ8OEixzyARfV0XY
+ /93jO7yUCtBV8yLMhLtGLtFuVPU+szO7TiOGc6gkEzPPUu2aXWSTbpNKFyKf/w056OCoRzI/
+ p5SL9CB031ivB7WP0HqHXooBQlSdxATXMmuw+QOL77rClQ9QgkJVaSOqY7NjqQ5xMy5YM+Up
+ SnlAie1CTPX2RX6FOl9Qik+MeuwBcgu/StT0O5FFQ/A5kXPqL2HtM83H6bbt5F+nAC65a8lF
+ 6s2aI+bD+5RSz/K3T0YYNOv5MZhbRmnz0bGdSasfDF1LdYqSh3r6+3UWFLl1BAPKS6r6uo4g
+ bmrjT3ATbQ5Gg9NMcfxadCU9W2Xg0QzouxIYhb3EoFhQ3m0qIlOAA7tv8AzOPAJeEnixCPF9
+ gO4AiU4hOjqoq00+oL3mJHekZWNFrMmE2EHAWLe5reSHgvZ91qF3oVvfrupfzfcdWWs44SkR
+ 7xf4M/dOc09vmRhktRDAZcy6oxm/PrphbtR7jo8LUXxd17xV49ReCiX7/dApohm5+F/uzLvf
+ mmt59MDG7GCGP29IW4rPAB/M9iyj6AFqALzs8YwDl7xvhJs3by9Vk5XARmApQpdIJZxM6In2
+ e0Rg9EX2SPulisVNsu6sQ4M+1SuNnAgV4AVhqMeCqLviSspzQhmSr7YASnU/pqOSottNm8HH
+ zyqv5fB1o9snhf6T3kOFHb2zbV8g7YKs0t011MsHQmCtefEof4V5ydv1woLYD5b9Th59t5iG
+ 3NKMhR1LJqe/j0zi8lkWXutKj57BxaY2xLQzgJVsVaEUEPyRjHBA1M/MMnQ5EspzWZ4e2lKz
+ qC500fgay7hJ+vq7xsxWGlkiv3tdsNw/Qv8g/KaH9yJMp05QDj9iIq8TDMshzq+Ju1pn2zBh
+ +1h3NgoWJ3BLSRK/pEKUdiL54ofWDWvBTJkQ8g42IgrAGuFWjW5+QbWGnCLYskXesD7qx6pO
+ fdPePBKeQ+1jhuVjzYhAqUJHb94sdgp6PcGeZLpPWQ2iKSenBU4rKPv8jXCu0FzT+VMicodL
+ qbjRwCGGEGUhlpWnDbph+tAMWyaf9IFRVPd2MaYzeY3LK8A4dpcKRwK7riJvnuuIFRG+TCQt
+ 1j9fKP49bFp5rltuIrOKZ99ITuIB+n9b8myyzDrge9yNYvOFezsqzIqrkLWOlUKHLkJBPVyu
+ 7e/kP/2+0Lno7xsQz3VtKeDHoYU/c6CYu5zN5PmHmh7hgqHYtfnuDEYylC7KLtIsdJT3damT
+ A2Gc/mNdcYZdtNe5X9NYQ1cLkotMLv2ZaLeui+NlfSAJRwD2wjhLtn813vWQUxEVy0PYbvSN
+ xTVvquw29Vms4h8Ph8IKPV4CZteIlW4e68HdcX0hAaIHFuTnVKOlbvzpyUOsQiRJCG/L//7x
+ pbZSjzVVhe44vjIxe4Elb1ChEQcCXIljNQgek4YxcVNtAm7K2w7NsUYD4QND8BFsy711aygX
+ gr3UkkZNXzfUwhHIDLG2/aybjfHU6ZKcp38Kycy9kyZVzauCcnSSPF9/yNn+DFtdiGl0OijL
+ soE92btOgSqhKtkXvsX+ufxlNIPKik2HZ7U0RuVfw3O7xci7XEi0Ww4WhJKUT3bHsrNkkTSO
+ GVzQnpLKK1+YVCkCt5uIha5BzlA1A4DDR1xBctM/Dobk4+c0etLxea5Pr3jlLoZY6zm4ZYQE
+ GjvSTLlD3++gxQuVGhAhz7tqbdzDeOXE8O6Kq76WABUmLu/goji0wXuggJXJPwfFMVj/58xW
+ 9ViD7XSxKhIFayJ5ICr9A==
+IronPort-HdrOrdr: A9a23:vLN7rq3sdgBPrBwxKQoSxgqjBI8kLtp133Aq2lEZdPU1SL36qy
+ nKpp4mPHDP5gr5NEtMpTniAsm9qBHnlKKdiLN5VdyftWLd11dAQrsP0aLShxXeXwf++uRe2a
+ oISdkdNPTASX5gg4Lf6Am8euxQpOVvHZrY4Nvj8w==
+X-Talos-CUID: 9a23:f7Ofp2GhL5FjQbwGqmJd6G89ENIeYEbwkkrbPxCyLzpAaYCaHAo=
+X-Talos-MUID: 9a23:pu0RHAQblsVVPKucRXTJlCB7H/1mzJ+xI3xUnJELpJnZGTR/bmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.11,223,1725314400"; 
+   d="scan'208,217";a="99743552"
+X-MGA-submission: =?us-ascii?q?MDEe8PW9SV7ft3fCxa7wrcmtoY5Y38Hxi+/RsC?=
+ =?us-ascii?q?2aFyZGfaxXJF9tKP9SJBDhwiGUtv6Uf+GbQUDdgC/D7xn/VKezI7A0We?=
+ =?us-ascii?q?wG/Ey6lxkySwMaL7BQB12+OteAe7niLNGYdMI47nXvibPI84XRIdZ/oy?=
+ =?us-ascii?q?VBDpwMMjIGdJVc0yj2g/eBdw=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2024 14:42:23 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 41E22564703;
+	Tue, 22 Oct 2024 14:42:22 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1729600942;
+	bh=eVbAsMcSAaDP6l/1BPhBdKgRpwOgAdzgy6CVs1rGDN0=;
+	h=From:To:Subject:Date:Message-ID;
+	b=45HfOKIT2x5hb9eqy7kb+6mg1t8D3Z6ywEiCyJiyi+9jwKjPDiZEaIlJKzGXDDRYD
+	 A3Mu3YhG3FUVkZ7y8KfXf5ATBpq6y4fraug9GqlqfNULdz5S9uouc3r6sbhucR6bgw
+	 7typ20q3Vvooos+H4u3LLc8otrulnHMBEz0gL74E=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 22 Oct 2024 14:42:21 +0200
+Message-ID: <m2h69471hu.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Oct 22 14:42:22 2024 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.381948, queueID=91FB2564704
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19189
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-10/m2h69471hu.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of October 15 to 22,
+2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+opam 2.3.0~beta1
+Dune dev meeting
+Wildcard expansion on Windows
+OCamlformat and GitHub actions
+New vs. Old OCaml Academic Users Page Survey
+New vs. Old OCaml Industrial Users Page
+Eliom 11 and Ocsigen Start 7
+Other OCaml News
+Old CWN
+
+
+opam 2.3.0~beta1
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-opam-2-3-0-beta1/15450/1>
+
+
+Kate announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We're happy to announce the first beta release of opam 2.3.0.
+
+  As we're closing on the final release of opam 2.3.0, we'd be happy for
+  people to test this beta and report any regression.
+
+
+What's new?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C
+
+  This release consists mostly in regression fixes compared to
+  2.3.0~alpha1:
+
+  =E2=80=A2 Fix a regression where pinning a local source repository contai=
+ning
+    initialized git submodules would cause a failure when fetching the
+    package. ([#5809])
+  =E2=80=A2 Fix a regression which would make opam crash on platforms such =
+as
+    OpenBSD. ([#6215])
+  =E2=80=A2 Fix the internal cache of installed packages, which was storing=
+ the
+    wrong version of the opam file after a build failure. ([#6213])
+  =E2=80=A2 Fix a regression in lint W59 with local urls that are not
+    archives. ([#6218])
+
+  A couple of other improvements were made and bugs were fixed.
+  :open_book: You can read our [blog post] for more information about
+  these changes and more, and for even more details you can take a look
+  at the [release note] or the [changelog].
+
+
+[#5809] <https://github.com/ocaml/opam/issues/5809>
+
+[#6215] <https://github.com/ocaml/opam/issues/6215>
+
+[#6213] <https://github.com/ocaml/opam/pull/6213>
+
+[#6218] <https://github.com/ocaml/opam/issues/6218>
+
+[blog post] <https://opam.ocaml.org/blog/opam-2-3-0-beta1/>
+
+[release note] <https://github.com/ocaml/opam/releases/tag/2.3.0-beta1>
+
+[changelog] <https://github.com/ocaml/opam/blob/2.3.0-beta1/CHANGES>
+
+
+Try it!
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The upgrade instructions are pretty much the same:
+
+  For Unix systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 bash -c "sh <(curl -fsSL https://opam.ocaml.org/install.sh) --v=
+ersion 2.3.0~beta1"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  or from PowerShell for Windows systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 Invoke-Expression "& { $(Invoke-RestMethod https://opam.ocaml.o=
+rg/install.ps1) } -Version 2.3.0~beta1"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Please report any issues to [the bug-tracker].
+
+
+[the bug-tracker] <https://github.com/ocaml/opam/issues>
+
+
+Dune dev meeting
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/14>
+
+
+Steve Sherratt announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Notes from today's dune-dev meeting are [here]
+
+
+[here] <https://github.com/ocaml/dune/wiki/dev-meeting-2024-10-16>
+
+
+Wildcard expansion on Windows
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/wildcard-expansion-on-windows/15461/1>
+
+
+Benjamin Sigonneau announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80
+
+  While implementing a small CLI tool, I ran into a somehow undocumented
+  feature of the Ocaml compiler: it automatically expands wildcards
+  before doing anything else. Which proved to be a problem.
+
+  This post serves three different goals:
+
+  =E2=80=A2 give some visibility, in case someone else run into this issue =
+in
+    the future
+  =E2=80=A2 expose a possible workaround
+  =E2=80=A2 ask the community if there is a better way=E2=84=A2 to solve th=
+is
+
+
+Context
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  My tool uses `Cmdliner' for CLI args processing, and needs to handle
+  basic wildcard processing for one of its options, eg. it should handle
+  `mytool.exe -x *.ml'.
+
+  This would get expanded to `mytool.exe -x a.ml b.ml c.ml' which
+  Cmdliner cannot handle. Under any common Unix shell, this is not a
+  problem: we just have to escape the star character with
+  eg. `mytool.exe -x \*.ml', have mytool handle the expansion itself and
+  we're all set. So far, so good.
+
+  Then came Windows. Whatever I would do, it seemed like there was no
+  way of preventing that wildcard to be expanded. I learned that on
+  Windows, the calling program was responsible for dealing with
+  wildcards, not the shell. After some digging, the root cause of this
+  behaviour was found in the ocaml runtime itself, in
+  [`runtime/main.c']:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 int main_os(int argc, char_os **argv)
+  =E2=94=82 {
+  =E2=94=82 #ifdef _WIN32
+  =E2=94=82   /* Expand wildcards and diversions in command line */
+  =E2=94=82   caml_expand_command_line(&argc, &argv);
+  =E2=94=82 #endif
+  =E2=94=82=20
+  =E2=94=82 /* [...] */
+  =E2=94=82 }
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  After a bit of history digging, it turns out this behaviour dates back
+  from the very early stages of the Ocaml compiler, see [this commit] by
+  Xavier Leroy from=E2=80=A6 1996!
+
+
+[`runtime/main.c']
+<https://github.com/ocaml/ocaml/blob/a07799fceac25e2b2b81f3d2bab64d87ad5cec=
+8d/runtime/main.c#L32>
+
+[this commit]
+<https://github.com/ocaml/ocaml/commit/4426de9a130b4abef0f417b3a396a3aed705=
+28c2>
+
+
+Workaround
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C
+
+  The `runtime/main.c' file gives a hint on how to work around this:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 /* Main entry point (can be overridden by a user-provided main()
+  =E2=94=82    function that calls caml_main() later). */
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  So the most elegant workaround I could find was to create a copy of
+  the `main.c' file inside the source tree of mytool and comment out the
+  call to `caml_expand_command_line'. Then it was a matter of compiling
+  and linking everything altogether. I use `dune' to compile
+  `mytool.exe', and after a lot of trial-and-error, I found out it could
+  handle this very easily with the `foreign_stubs' stanza:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 (executable
+  =E2=94=82  (name mytool)
+  =E2=94=82  (foreign_stubs (language c) (names main))
+  =E2=94=82  ; ...
+  =E2=94=82 )
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+
+Minimal working example
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  I opened a Github repository containing a minimal project featuring a
+  custom entry point so that command-line arguments expansion does not
+  happen on Windows.
+
+  See: <https://github.com/benji-sb/ocaml-windows-argv>
+
+
+Open Questions
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 The root cause of this issue was introduced almost 30 years ago=
+. How
+    come no one on the Internets seem to have run into a similar issue?
+  =E2=80=A2 Why was this behaviour introduced in the first place? I suspect=
+ it
+    may have make it easier to setup a Windows toolchain back then, but
+    that's just wild speculation.
+  =E2=80=A2 Is this behaviour still needed, or could we get rid of it?
+  =E2=80=A2 Should this be more wildly documented, and if so, where? The oc=
+aml
+    compiler docs and the dune docs could probably benefit from a small
+    paragraph on how to override the default entry point.
+
+
+OCamlformat and GitHub actions
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ocamlformat-and-github-actions/15464/1>
+
+
+Hannes Mehnert announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  a small announcement for those using OCamlformat in their projects: if
+  you find the burden on external contributors very high, and always
+  express "please run ocamlformat on your PR" =E2=80=93 we've been in the s=
+ame
+  boat.
+
+  We developed a GitHub action which automatically runs OCamlformat and
+  pushes that on the PR. No need for contributors to remember running
+  OCamlformat, no need for "OCaml-CI" to fail since ocamlformat run
+  diverges.
+
+  If you're interested, take a look at
+  <https://github.com/robur-coop/mollymawk/blob/main/.github/workflows/form=
+at.yml>
+  =E2=80=93 please note that we use `find . -name \*ml -maxdepth 1' =E2=80=
+=93 depending
+  on your project you may be able to run `dune bu @fmt --auto' (or need
+  a slightly different `find' to look deeper or also for mli files).
+
+  Happy to share this action which turned out to be tremendously useful
+  for some of our projects.
+
+
+New vs. Old OCaml Academic Users Page Survey
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/new-vs-old-ocaml-academic-users-page-survey/=
+15484/1>
+
+
+Claire Vandenberghe announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We've recently *redesigned the OCaml Academic Users page* and would
+  love to *get your feedback* to ensure it=E2=80=99s as helpful as possible=
+. You
+  can view both versions here:
+
+  =E2=80=A2 New page:[ ocaml.org/academic-users]
+  =E2=80=A2 Old page:[ staging.ocaml.org/academic-users]
+
+  As a teacher, student expert or beginner developer using OCaml, we=E2=80=
+=99d
+  greatly appreciate your insights! Participate in the survey here:
+  [https://docs.google.com/forms/d/e/1FAIpQLSfc9qPR16deJ6VeVmXGXPVO4e3wZ9ZV=
+IYiWrS4f1RZsqcXxwQ/viewform?usp=3Dsf_link]
+  or we can discuss this topic below :)
+
+  Do you find the new page more useful and relevant for your academic
+  needs compared to the old one? If so, why?
+
+  Is there any information missing or anything you=E2=80=99d suggest improv=
+ing
+  on the new page?
+
+  Your feedback is incredibly valuable to us as we work to improve the
+  experience for the OCaml community.
+
+  Thank you in advance!
+
+
+[ ocaml.org/academic-users] <https://ocaml.org/academic-users>
+
+[ staging.ocaml.org/academic-users]
+<https://staging.ocaml.org/academic-users>
+
+[https://docs.google.com/forms/d/e/1FAIpQLSfc9qPR16deJ6VeVmXGXPVO4e3wZ9ZVIY=
+iWrS4f1RZsqcXxwQ/viewform?usp=3Dsf_link]
+<https://Survey>
+
+
+New vs. Old OCaml Industrial Users Page
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/new-vs-old-ocaml-industrial-users-page/15485=
+/1>
+
+
+Claire Vandenberghe announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We've recently redesigned the *OCaml Industrial Users pages* and would
+  love to get *your feedback* to ensure it=E2=80=99s as helpful as possible=
+. You
+  can view both versions here:
+
+  =E2=80=A2 New: <https://ocaml.org/industrial-users>
+  =E2=80=A2 Old: <https://staging.ocaml.org/industrial-users>
+
+  As an expert or beginner developer using OCaml, we=E2=80=99d greatly
+  appreciate your insights! You can also participate to the survey here:
+  <https://forms.gle/C7czFt36m7bx4fLt8> or we can discuss this topic
+  below :)
+
+  Do you find the new page more useful and relevant for industrial needs
+  compared to the old one? If so, why?
+
+  Is there any information missing or anything you=E2=80=99d suggest improv=
+ing
+  on the new page?
+
+  Your feedback is incredibly valuable to us as we work to improve the
+  experience for the OCaml community.
+
+  Thank you in advance!
+
+
+Eliom 11 and Ocsigen Start 7
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-eliom-11-and-ocsigen-start-7/15487/1>
+
+
+Vincent Balat announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Eliom 11 and Ocsigen Start 7 have been released a few weeks ago.
+  These versions follow the recent release of Ocsigen Server 6 and
+  leverage its new configuration API to make it easier to use it as a
+  library, without a configuration file.
+
+  Here is an example of a simple OCaml app generating a Web page from
+  server side (and serving static pages from directory
+  `"local/var/www/mysite"'):
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 let f _ () =3D
+  =E2=94=82   Lwt.return
+  =E2=94=82     Eliom_content.Html.F.(html (head (title (txt "")) [])
+  =E2=94=82                                (body [h1 [txt "Hello"]]))
+  =E2=94=82=20
+  =E2=94=82 let myservice =3D
+  =E2=94=82   Eliom_service.create
+  =E2=94=82     ~path:(Eliom_service.Path [])
+  =E2=94=82     ~meth:(Eliom_service.Get Eliom_parameter.any)
+  =E2=94=82     ()
+  =E2=94=82=20
+  =E2=94=82 let () =3D Eliom_registration.Html.register ~service:myservice f
+  =E2=94=82=20
+  =E2=94=82 let () =3D Ocsigen_server.start=20
+  =E2=94=82     [ Ocsigen_server.host
+  =E2=94=82        [ Staticmod.run ~dir:"local/var/www/mysite" ()
+  =E2=94=82        ; Eliom.run () ] ]
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  To use it, just install Eliom and your favorite version of Ocipersist,
+  then create a new Dune project:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam install ocsipersist-sqlite-config eliom
+  =E2=94=82 dune init project mysite
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Put the code above in file `bin/mysite.ml'
+
+  Update file `bin/dune':
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 (executable
+  =E2=94=82  (public_name mysite)
+  =E2=94=82  (name main)
+  =E2=94=82  (libraries
+  =E2=94=82   ocsigenserver
+  =E2=94=82   ocsigenserver.ext.staticmod
+  =E2=94=82   ocsipersist-sqlite
+  =E2=94=82   eliom.server))
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Build and execute:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 dune exec mysite
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Open URL `http://localhost:8080/'.
+
+
+  Ocsigen Start's application template has been updated to support both
+  the use as an executable or as a library (lynked dynamically from the
+  server's config file).
+
+  Links:
+  =E2=80=A2 [Ocsigen]
+  =E2=80=A2 [Github]
+
+
+[Ocsigen] <https://ocsigen.org/>
+
+[Github] <https://github.com/ocsigen>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Developer education at Jane Street]
+  =E2=80=A2 [Dune Developer Preview: Installing The OCaml Compiler With Dune
+    Package Management]
+  =E2=80=A2 [Upcoming OCaml Events]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Developer education at Jane Street]
+<https://blog.janestreet.com/developer-education-at-jane-street-index/>
+
+[Dune Developer Preview: Installing The OCaml Compiler With Dune Package
+Management]
+<https://tarides.com/blog/2024-10-16-dune-developer-preview-installing-the-=
+ocaml-compiler-with-dune-package-management>
+
+[Upcoming OCaml Events] <https://ocaml.org/events>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-10-22 Tue 14:38 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.10.15.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.10.29.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of October 15 to 22, 202=
+4.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">opam 2.3.0~beta1</a></li>
+<li><a href=3D"#2">Dune dev meeting</a></li>
+<li><a href=3D"#3">Wildcard expansion on Windows</a></li>
+<li><a href=3D"#4">OCamlformat and GitHub actions</a></li>
+<li><a href=3D"#5">New vs. Old OCaml Academic Users Page Survey</a></li>
+<li><a href=3D"#6">New vs. Old OCaml Industrial Users Page</a></li>
+<li><a href=3D"#7">Eliom 11 and Ocsigen Start 7</a></li>
+<li><a href=3D"#8">Other OCaml News</a></li>
+<li><a href=3D"#orgfec4e49">Old CWN</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">opam 2.3.0~beta1</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-opam-2-3-0-beta1/15450/=
+1">https://discuss.ocaml.org/t/ann-opam-2-3-0-beta1/15450/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgec4c3e6" class=3D"outline-3">
+<h3 id=3D"orgec4c3e6">Kate announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgec4c3e6">
+<p>
+We're happy to announce the first beta release of opam 2.3.0.
+</p>
+
+<p>
+As we're closing on the final release of opam 2.3.0, we'd be happy for peop=
+le to test this beta and report any regression.
+</p>
+</div>
+
+<div id=3D"outline-container-org71778a0" class=3D"outline-4">
+<h4 id=3D"org71778a0">What's new?</h4>
+<div class=3D"outline-text-4" id=3D"text-org71778a0">
+<p>
+This release consists mostly in regression fixes compared to 2.3.0~alpha1:
+</p>
+
+<ul class=3D"org-ul">
+<li>Fix a regression where pinning a local source repository containing ini=
+tialized git submodules would cause a failure when fetching the package. (<=
+a href=3D"https://github.com/ocaml/opam/issues/5809">#5809</a>)</li>
+<li>Fix a regression which would make opam crash on platforms such as OpenB=
+SD. (<a href=3D"https://github.com/ocaml/opam/issues/6215">#6215</a>)</li>
+<li>Fix the internal cache of installed packages, which was storing the wro=
+ng version of the opam file after a build failure. (<a href=3D"https://gith=
+ub.com/ocaml/opam/pull/6213">#6213</a>)</li>
+<li>Fix a regression in lint W59 with local urls that are not archives. (<a=
+ href=3D"https://github.com/ocaml/opam/issues/6218">#6218</a>)</li>
+</ul>
+
+<p>
+A couple of other improvements were made and bugs were fixed.
+:open_book: You can read our <a href=3D"https://opam.ocaml.org/blog/opam-2-=
+3-0-beta1/">blog post</a> for more information about these changes and more=
+, and for even more details you can take a look at the <a href=3D"https://g=
+ithub.com/ocaml/opam/releases/tag/2.3.0-beta1">release note</a> or the <a h=
+ref=3D"https://github.com/ocaml/opam/blob/2.3.0-beta1/CHANGES">changelog</a=
+>.
+</p>
+</div>
+</div>
+
+<div id=3D"outline-container-orgb8f54c7" class=3D"outline-4">
+<h4 id=3D"orgb8f54c7">Try it!</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb8f54c7">
+<p>
+The upgrade instructions are pretty much the same:
+</p>
+
+<p>
+For Unix systems
+</p>
+<pre class=3D"example" id=3D"orgdf82ff0">
+bash -c "sh &lt;(curl -fsSL https://opam.ocaml.org/install.sh) --version 2.=
+3.0~beta1"
+</pre>
+<p>
+or from PowerShell for Windows systems
+</p>
+<pre class=3D"example" id=3D"org65ef1fa">
+Invoke-Expression "&amp; { $(Invoke-RestMethod https://opam.ocaml.org/insta=
+ll.ps1) } -Version 2.3.0~beta1"
+</pre>
+
+<p>
+Please report any issues to <a href=3D"https://github.com/ocaml/opam/issues=
+">the bug-tracker</a>.
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Dune dev meeting</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/=
+14">https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/14</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orgb1ba689" class=3D"outline-3">
+<h3 id=3D"orgb1ba689">Steve Sherratt announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgb1ba689">
+<p>
+Notes from today's dune-dev meeting are <a href=3D"https://github.com/ocaml=
+/dune/wiki/dev-meeting-2024-10-16">here</a>
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Wildcard expansion on Windows</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/wildcard-expansion-on-windo=
+ws/15461/1">https://discuss.ocaml.org/t/wildcard-expansion-on-windows/15461=
+/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-orge6ba7c6" class=3D"outline-3">
+<h3 id=3D"orge6ba7c6">Benjamin Sigonneau announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orge6ba7c6">
+<p>
+While implementing a small CLI tool, I ran into a somehow undocumented feat=
+ure of the Ocaml compiler: it automatically expands wildcards before doing =
+anything else. Which proved to be a problem.
+</p>
+
+<p>
+This post serves three different goals:
+</p>
+
+<ul class=3D"org-ul">
+<li>give some visibility, in case someone else run into this issue in the f=
+uture</li>
+<li>expose a possible workaround</li>
+<li>ask the community if there is a better way=E2=84=A2 to solve this</li>
+</ul>
+</div>
+
+<div id=3D"outline-container-org935c860" class=3D"outline-4">
+<h4 id=3D"org935c860">Context</h4>
+<div class=3D"outline-text-4" id=3D"text-org935c860">
+<p>
+My tool uses <code>Cmdliner</code> for CLI args processing, and needs to ha=
+ndle basic wildcard processing for one of its options, eg. it should handle=
+ <code>mytool.exe -x *.ml</code>.
+</p>
+
+<p>
+This would get expanded to <code>mytool.exe -x a.ml b.ml c.ml</code> which =
+Cmdliner cannot handle. Under any common Unix shell, this is not a problem:=
+ we just have to escape the star character with eg. <code>mytool.exe -x \*.=
+ml</code>, have mytool handle the expansion itself and we're all set. So fa=
+r, so good.
+</p>
+
+<p>
+Then came Windows. Whatever I would do, it seemed like there was no way of =
+preventing that wildcard to be expanded. I learned that on Windows, the cal=
+ling program was responsible for dealing with wildcards, not the shell. Aft=
+er some digging, the root cause of this behaviour was found in the ocaml ru=
+ntime itself, in <a href=3D"https://github.com/ocaml/ocaml/blob/a07799fceac=
+25e2b2b81f3d2bab64d87ad5cec8d/runtime/main.c#L32"><code>runtime/main.c</cod=
+e></a>:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-c"><span style=3D"color: #444fcf;">int</span> <span s=
+tyle=3D"color: #a7601f;">main_os</span>(<span style=3D"color: #444fcf;">int=
+</span> <span style=3D"color: #007a9f;">argc</span>, <span style=3D"color: =
+#444fcf;">char_os</span> **<span style=3D"color: #007a9f;">argv</span>)
+{
+<span style=3D"color: #9f0d0f;">#ifdef</span> _WIN32
+  <span style=3D"color: #8f6f4a; font-style: italic;">/* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Expand wildcards and diversions in=
+ command line</span><span style=3D"color: #8f6f4a; font-style: italic;"> */=
+</span>
+  caml_expand_command_line(&amp;argc, &amp;argv);
+<span style=3D"color: #9f0d0f;">#endif</span>
+
+<span style=3D"color: #8f6f4a; font-style: italic;">/* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">[...]</span><span style=3D"color: =
+#8f6f4a; font-style: italic;"> */</span>
+}
+</pre>
+</div>
+
+<p>
+After a bit of history digging, it turns out this behaviour dates back from=
+ the very early stages of the Ocaml compiler, see <a href=3D"https://github=
+.com/ocaml/ocaml/commit/4426de9a130b4abef0f417b3a396a3aed70528c2">this comm=
+it</a> by Xavier Leroy from&#x2026; 1996!
+</p>
+</div>
+</div>
+
+<div id=3D"outline-container-orgadcf58d" class=3D"outline-4">
+<h4 id=3D"orgadcf58d">Workaround</h4>
+<div class=3D"outline-text-4" id=3D"text-orgadcf58d">
+<p>
+The <code>runtime/main.c</code> file gives a hint on how to work around thi=
+s:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-c"><span style=3D"color: #8f6f4a; font-style: italic;=
+">/* </span><span style=3D"color: #8f6f4a; font-style: italic;">Main entry =
+point (can be overridden by a user-provided main()</span>
+<span style=3D"color: #8f6f4a; font-style: italic;">   function that calls =
+caml_main() later).</span><span style=3D"color: #8f6f4a; font-style: italic=
+;"> */</span>
+</pre>
+</div>
+
+<p>
+So the most elegant workaround I could find was to create a copy of the <co=
+de>main.c</code> file inside the source tree of mytool and comment out the =
+call to <code>caml_expand_command_line</code>. Then it was a matter of comp=
+iling and linking everything altogether. I use <code>dune</code> to compile=
+ <code>mytool.exe</code>, and after a lot of trial-and-error, I found out i=
+t could handle this very easily with the <code>foreign_stubs</code> stanza:
+</p>
+
+<pre class=3D"example" id=3D"orga5ba67d">
+(executable
+ (name mytool)
+ (foreign_stubs (language c) (names main))
+ ; ...
+)
+</pre>
+</div>
+</div>
+
+<div id=3D"outline-container-orgcb7d1fa" class=3D"outline-4">
+<h4 id=3D"orgcb7d1fa">Minimal working example</h4>
+<div class=3D"outline-text-4" id=3D"text-orgcb7d1fa">
+<p>
+I opened a Github repository containing a minimal project featuring a custo=
+m entry point so that command-line arguments expansion does not happen on W=
+indows.
+</p>
+
+<p>
+See: <a href=3D"https://github.com/benji-sb/ocaml-windows-argv">https://git=
+hub.com/benji-sb/ocaml-windows-argv</a>
+</p>
+</div>
+</div>
+
+<div id=3D"outline-container-org60a7592" class=3D"outline-4">
+<h4 id=3D"org60a7592">Open Questions</h4>
+<div class=3D"outline-text-4" id=3D"text-org60a7592">
+<ul class=3D"org-ul">
+<li>The root cause of this issue was introduced almost 30 years ago. How co=
+me no one on the Internets seem to have run into a similar issue?</li>
+<li>Why was this behaviour introduced in the first place? I suspect it may =
+have make it easier to setup a Windows toolchain back then, but that's just=
+ wild speculation.</li>
+<li>Is this behaviour still needed, or could we get rid of it?</li>
+<li>Should this be more wildly documented, and if so, where? The ocaml comp=
+iler docs and the dune docs could probably benefit from a small paragraph o=
+n how to override the default entry point.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">OCamlformat and GitHub actions</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocamlformat-and-github-acti=
+ons/15464/1">https://discuss.ocaml.org/t/ocamlformat-and-github-actions/154=
+64/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org9f306e6" class=3D"outline-3">
+<h3 id=3D"org9f306e6">Hannes Mehnert announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9f306e6">
+<p>
+a small announcement for those using OCamlformat in their projects: if you =
+find the burden on external contributors very high, and always express "ple=
+ase run ocamlformat on your PR" &#x2013; we've been in the same boat.
+</p>
+
+<p>
+We developed a GitHub action which automatically runs OCamlformat and pushe=
+s that on the PR. No need for contributors to remember running OCamlformat,=
+ no need for "OCaml-CI" to fail since ocamlformat run diverges.
+</p>
+
+<p>
+If you're interested, take a look at <a href=3D"https://github.com/robur-co=
+op/mollymawk/blob/main/.github/workflows/format.yml">https://github.com/rob=
+ur-coop/mollymawk/blob/main/.github/workflows/format.yml</a> &#x2013; pleas=
+e note that we use <code>find . -name \*ml -maxdepth 1</code> &#x2013; depe=
+nding on your project you may be able to run <code>dune bu @fmt --auto</cod=
+e> (or need a slightly different <code>find</code> to look deeper or also f=
+or mli files).
+</p>
+
+<p>
+Happy to share this action which turned out to be tremendously useful for s=
+ome of our projects.
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">New vs. Old OCaml Academic Users Page Survey</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/new-vs-old-ocaml-academic-u=
+sers-page-survey/15484/1">https://discuss.ocaml.org/t/new-vs-old-ocaml-acad=
+emic-users-page-survey/15484/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org7679383" class=3D"outline-3">
+<h3 id=3D"org7679383">Claire Vandenberghe announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org7679383">
+<p>
+We've recently <b>redesigned the OCaml Academic Users page</b> and would lo=
+ve to <b>get your feedback</b> to ensure it=E2=80=99s as helpful as possibl=
+e. You can view both versions here:
+</p>
+
+<ul class=3D"org-ul">
+<li>New page:<a href=3D"https://ocaml.org/academic-users"> ocaml.org/academ=
+ic-users</a></li>
+<li>Old page:<a href=3D"https://staging.ocaml.org/academic-users"> staging.=
+ocaml.org/academic-users</a></li>
+</ul>
+
+<p>
+As a teacher, student expert or beginner developer using OCaml, we=E2=80=99=
+d greatly appreciate your insights! Participate in the survey here: <a href=
+=3D"https://survey">https://docs.google.com/forms/d/e/1FAIpQLSfc9qPR16deJ6V=
+eVmXGXPVO4e3wZ9ZVIYiWrS4f1RZsqcXxwQ/viewform?usp=3Dsf_link</a>  or we can d=
+iscuss this topic below :)
+</p>
+
+<p>
+Do you find the new page more useful and relevant for your academic needs c=
+ompared to the old one? If so, why?
+</p>
+
+<p>
+Is there any information missing or anything you=E2=80=99d suggest improvin=
+g on the new page?
+</p>
+
+<p>
+Your feedback is incredibly valuable to us as we work to improve the experi=
+ence for the OCaml community.
+</p>
+
+<p>
+Thank you in advance!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">New vs. Old OCaml Industrial Users Page</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/new-vs-old-ocaml-industrial=
+-users-page/15485/1">https://discuss.ocaml.org/t/new-vs-old-ocaml-industria=
+l-users-page/15485/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org361f5ef" class=3D"outline-3">
+<h3 id=3D"org361f5ef">Claire Vandenberghe announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org361f5ef">
+<p>
+We've recently redesigned the <b>OCaml Industrial Users pages</b> and would=
+ love to get <b>your feedback</b> to ensure it=E2=80=99s as helpful as poss=
+ible. You can view both versions here:
+</p>
+
+<ul class=3D"org-ul">
+<li>New: <a href=3D"https://ocaml.org/industrial-users">https://ocaml.org/i=
+ndustrial-users</a></li>
+<li>Old: <a href=3D"https://staging.ocaml.org/industrial-users">https://sta=
+ging.ocaml.org/industrial-users</a></li>
+</ul>
+
+<p>
+As an expert or beginner developer using OCaml, we=E2=80=99d greatly apprec=
+iate your insights! You can also participate to the survey here: <a href=3D=
+"https://forms.gle/C7czFt36m7bx4fLt8">https://forms.gle/C7czFt36m7bx4fLt8</=
+a> or we can discuss this topic below :)
+</p>
+
+<p>
+Do you find the new page more useful and relevant for industrial needs comp=
+ared to the old one? If so, why?
+</p>
+
+<p>
+Is there any information missing or anything you=E2=80=99d suggest improvin=
+g on the new page?
+</p>
+
+<p>
+Your feedback is incredibly valuable to us as we work to improve the experi=
+ence for the OCaml community.
+</p>
+
+<p>
+Thank you in advance!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Eliom 11 and Ocsigen Start 7</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-eliom-11-and-ocsigen-st=
+art-7/15487/1">https://discuss.ocaml.org/t/ann-eliom-11-and-ocsigen-start-7=
+/15487/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org5deda24" class=3D"outline-3">
+<h3 id=3D"org5deda24">Vincent Balat announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org5deda24">
+<p>
+Eliom 11 and Ocsigen Start 7 have been released a few weeks ago.
+These versions follow the recent release of Ocsigen Server 6 and leverage i=
+ts new configuration API to make it easier to use it as a library, without =
+a configuration file.
+</p>
+
+<p>
+Here is an example of a simple OCaml app generating a Web page from server =
+side (and serving static pages from directory <code>"local/var/www/mysite"<=
+/code>):
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">let</span> <span style=3D"color: #a7601f;">f</span> <span style=3D"col=
+or: #007a9f;">_</span> () =3D
+  <span style=3D"color: #444fcf;">Lwt.</span>return
+    <span style=3D"color: #444fcf;">Eliom_content.Html.F.</span>(html (head=
+ (title (txt <span style=3D"color: #ca3400;">""</span>)) <span style=3D"col=
+or: #242521; background-color: #fcf7ef;">[]</span>)
+                               (body [h1 [txt <span style=3D"color: #ca3400=
+;">"Hello"</span>]]))
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">myservice</span> =3D
+  <span style=3D"color: #444fcf;">Eliom_service.</span>create
+    <span style=3D"color: #00824f;">~path</span>:(<span style=3D"color: #44=
+4fcf;">Eliom_service.</span><span style=3D"color: #242521; background-color=
+: #fcf7ef;">Path</span> <span style=3D"color: #242521; background-color: #f=
+cf7ef;">[]</span>)
+    <span style=3D"color: #00824f;">~meth</span>:(<span style=3D"color: #44=
+4fcf;">Eliom_service.</span><span style=3D"color: #242521; background-color=
+: #fcf7ef;">Get</span> <span style=3D"color: #444fcf;">Eliom_parameter.</sp=
+an>any)
+    ()
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> () =3D <span =
+style=3D"color: #444fcf;">Eliom_registration.Html.</span>register <span sty=
+le=3D"color: #00824f;">~service</span>:myservice f
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> () =3D <span =
+style=3D"color: #444fcf;">Ocsigen_server.</span>start=20
+    [ <span style=3D"color: #444fcf;">Ocsigen_server.</span>host
+       [ <span style=3D"color: #444fcf;">Staticmod.</span>run <span style=
+=3D"color: #00824f;">~dir</span>:<span style=3D"color: #ca3400;">"local/var=
+/www/mysite"</span> ()
+       ; <span style=3D"color: #444fcf;">Eliom.</span>run () ] ]
+</pre>
+</div>
+
+<p>
+To use it, just install Eliom and your favorite version of Ocipersist, then=
+ create a new Dune project:
+</p>
+<pre class=3D"example" id=3D"orga713130">
+opam install ocsipersist-sqlite-config eliom
+dune init project mysite
+</pre>
+
+<p>
+Put the code above in file <code>bin/mysite.ml</code>
+</p>
+
+<p>
+Update file <code>bin/dune</code>:
+</p>
+<pre class=3D"example" id=3D"orgf6bee31">
+(executable
+ (public_name mysite)
+ (name main)
+ (libraries
+  ocsigenserver
+  ocsigenserver.ext.staticmod
+  ocsipersist-sqlite
+  eliom.server))
+</pre>
+
+<p>
+Build and execute:
+</p>
+<pre class=3D"example" id=3D"orgf27d3d8">
+dune exec mysite
+</pre>
+
+<p>
+Open URL <code>http://localhost:8080/</code>.
+</p>
+
+
+<p>
+Ocsigen Start's application template has been updated to support both the u=
+se as an executable or as a library (lynked dynamically from the server's c=
+onfig file).
+</p>
+
+<p>
+Links:
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocsigen.org/">Ocsigen</a></li>
+<li><a href=3D"https://github.com/ocsigen">Github</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+</div>
+<div id=3D"outline-container-org35a484f" class=3D"outline-3">
+<h3 id=3D"org35a484f">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org35a484f">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://blog.janestreet.com/developer-education-at-jane-stre=
+et-index/">Developer education at Jane Street</a></li>
+<li><a href=3D"https://tarides.com/blog/2024-10-16-dune-developer-preview-i=
+nstalling-the-ocaml-compiler-with-dune-package-management">Dune Developer P=
+review: Installing The OCaml Compiler With Dune Package Management</a></li>
+<li><a href=3D"https://ocaml.org/events">Upcoming OCaml Events</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-orgfec4e49" class=3D"outline-2">
+<h2 id=3D"orgfec4e49">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-orgfec4e49">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org3959538">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
