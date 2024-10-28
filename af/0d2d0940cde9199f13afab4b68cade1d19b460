@@ -1,0 +1,436 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=tu-dresden.de
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=SSdfBB1c;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=tu-dresden.de header.i=@tu-dresden.de header.a=rsa-sha256 header.s=dkim2022 header.b=YfvIq807;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id B0864B80123
+	for <caml-list@tunbury.org>; Mon, 28 Oct 2024 15:30:34 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=vu+H1D6PS9ko9hmpk23kKeINi+ulUHKYrY76BpRhUZA=;
+  b=SSdfBB1c411OJS11j8BL1GOHqGPdP/PSU3mTKTHvJX8+/ZqsxpeuaaZa
+   tfCQKOSOMvjDMqD0yLH5L3ZIQU3IAdvZeML0ZJOjOwA7GJQREgyGC0BeD
+   tlXw4dNOHmKVUBR2I2pCGDbuFqzTbNWkD/2B7C06+sX6SNZl30I6TI8pp
+   I=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@tu-dresden.de
+X-IronPort-AV: E=Sophos;i="6.11,239,1725314400"; 
+   d="p7s'346?scan'346,208,346";a="191093748"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 28 Oct 2024 16:30:33 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 6F454E00B7; Mon, 28 Oct 2024 16:30:33 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 05A22E00B7;
+	Mon, 28 Oct 2024 16:30:31 +0100 (CET)
+IronPort-SDR: 671fae16_DAO19RWwlCAWtdnBmkZmwuFGOYSwsFb/uKkbSZ2d8+Gi5Jg
+ IlTpSeo3y/saxjCRjS6868xiFwPHuBwu2fmoneA==
+X-IPAS-Result: =?us-ascii?q?A0FmAACmrB9n/0pDHo1aDggEAQEBAQEBAQEBAQMBAQEBE?=
+ =?us-ascii?q?gEBAQECAgEBAQGCE4FyKigHdAIuLDMEC0gEhFKDT4t+giGTH4w5FigIBwEDA?=
+ =?us-ascii?q?QgEATQQBAEBAwEDggyCdIopAh4HAQQ0EwECBAEBAQEDAgMBAQEBAQEQAQEFA?=
+ =?us-ascii?q?QEBAgEBAgQGAQKBCggLhTVGDYJbgSxlCTcBAQEBAQEBAQEBAQEBAQEbAggHB?=
+ =?us-ascii?q?VcBQgYdAQE4EQFKAgRWBAEgghtYAYJTEQQDDQavSYEygQGCDAEBBoEIT0LaB?=
+ =?us-ascii?q?oFcBwmBSAGBV4E2gXJqglIQAYFagxyFaieBZESBFScbgjeDUAMBgV2DXDqCL?=
+ =?us-ascii?q?4IbIhiGZXolhzSBa4dGIolbSG+BDjIBVRMNCgsHBSuBE0EDgVqCJ21geiuBE?=
+ =?us-ascii?q?IEZOkeBFiWBKy8bIQtcgUCBGwEUBhUEgRGBAYJNaUs6Ag0CNoIkJFmCUIElB?=
+ =?us-ascii?q?AWFcB1AAwsYDUgRLDUGDhsGPm4HljQIXYEjgh5HgV5TgW0CEw0CVwIdLQgEQ?=
+ =?us-ascii?q?5NECRKyeQeCOIFlBYZWgzCCC5V2hASBVosrhkgGkniIApB1Iop8gXZqlj6EO?=
+ =?us-ascii?q?wIEAgQFAheBfiaBWU0kTyoBgjwJNhMLDg9XjUqDejOPAgkBvFpDNQIBAQE2A?=
+ =?us-ascii?q?gcBCgEBAwmGTY0QgUsBAQ?=
+IronPort-PHdr: A9a23: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
+ A==
+IronPort-Data: A9a23:oz4t1ateug265vrKHp1tG2u2dOfnVHxZMUV32f8akzHdYApBs4E2v
+ jNfGTXfaa7OOz2rZJktO86x6Alf7siEipMhHTLYn1l2SnNPpIzdWs/xwizYNH3Lc5zKHUw3s
+ 88VNNWccpluE3XW+RvxP7O/8XIiifrXTbH1BbLKMCwpHV48QSl+h0w7kbEwjNAy3tO0W1iD4
+ bsezyGx1HqNglaYZUpItPrbwP8WgNzypC8A7Bt5St1immOYkHIOFNQEKKqtLnT/BIJTG7b7e
+ o7/IMqCEh/kwj8tFs+9wPG8eVcOBKPJMBKSkGdNR+6phR0Fmxcf6JohKeEAU3x+oDiTg9F/y
+ d5EqZ23Ty40Iq3LguUBQl9TCSUmI+5EoL+fdjvnOyRblE3ab2O+hLJlFl1wIJYV4PptHHpSs
+ /cfLXcwVT25u/ir266BccBFisgfNtTwIKg2/Hp60WmUTq6sqViyQ7nW/Y0fmzA7ndgIAO3Tf
+ dYDdCFzKh/HZkUnBrtsM35NoQvSriK5K1VlgFKJubIssS+U1wF6zLniN5zefdnNbv1uxn6lz
+ l4qhF8VdSz2TvTEj2Ltz1qsmvPXhnG8H5kfH6G5+fksi1qWgVc2KTg7fmOA+ZGFZjWFt6Vix
+ zY8oWx2xZUPyXFHbuURfjXorHDf5hJFBYcBSeE0uAvRx/KFvQ+UCDcOQGQRZoV/uOY7FGcgv
+ rOrt4OwVGY36NV5alrEq+zK9WvqUcQxBTVfDcPRZVJdu7EPmKlq0lSVCIwL/Jed1rXdASv3z
+ y2BsB8wjrASid9j/6ig9DgruRr1znTyZlBzv1y/sl6NtFsjONf9PdzwszA30N4ZRGqnZgnZ1
+ JQ7s5PGhAw+JcnlvDCARuwLAIao656tWNELqQMH8zEJrlxBylb7FWxiyGkWyHRBbq7oTQTUj
+ Hr74mu90nP80EyCNseba6rpYygjIDOJ+d7NDpg4ZfIWCnR9mZPuEIiDqid80ki0+HXAn53TN
+ r+YV/+MUn0ZWJ9b5wSfGukf05oLlz0XkDa7qZDTl3xL0JKbbX+RTqoZax2cb+B/8L7BrB/Y6
+ NpSMY2Gxn2zUsWnPnCRqtZVcw9MciRT6ZPe86S7csaEJgt4FXtnBfLLx7ond4F3t7hI0+vS8
+ 2qxV0kexFeXaXjvcFTTMiE4N+mzNXp5hWk1FBJzGBGL4FIubo2tyL0gZ78MW5ByoYSPytYxF
+ ZHpYf6oCfNWDz/D5j41doj4tIUkdRKxhAvIMTDNSDM2epolQw3S5vf/bw73/W8PCDC2vI0wu
+ dWdOhjzRJMCQwN/EJ2QevOviU+s+HQHlfl+Uk2OLtQ7lFjQzbWG4hfZ1pcfS/zg4z2artc3/
+ 1/+7cswzQUMn2M0zDUNraWNroOuDvclWFhbHy/H8PO6LyTB8melh4NNOApNkfYxS0uskJhOp
+ 80Mpx0/DBHDtEpX9oZmHq1nwKR469aHS3py0FF/BHuSB7i0IuoIH5RFtPWjcoVR2/pVowatV
+ k+JvNVXUVlM1AUJD3ZJTDcYgi+/OT34V9UcATnZ4Kk32cOvwIe6bA==
+IronPort-HdrOrdr: A9a23:SuScEqru6jUYcCygX7ycX7saV5r0eYIsimQD101hICG9Kvbo8P
+ xG785rsyMc6QxhIk3I/OrqBEDuewK4yXcY2+cs1NSZLXTbUQmTXeVfBOLZqlWLdkGQygc378
+ ddmt1Feb/N5C9B/KXHCWeDcurIi+P3iZxAzd2ut0tFfEVWV4wl0AdjFhzeKEd/Qw5LCPMCZe
+ ahDlounUvaRUgq
+X-Talos-CUID: 9a23:RlY9bmFxYkB6NbAbqmJk0nc0RcsmI0bh50n5fkG6C0NJGaC8HAo=
+X-Talos-MUID: 9a23:VNURSATF6XPWHmVIRXT3ihhca+IvwJ+EBU8Gk7EchNmgDgpZbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.11,239,1725314400"; 
+   d="p7s'346?scan'346,208,346";a="191093724"
+X-MGA-submission: =?us-ascii?q?MDFW4p5+xKHll8JF9sTcn/n7aQNNjfrIXCC8Cn?=
+ =?us-ascii?q?hu5quPzOkW5kw33hbeNh/dkkrCUmrWlomwOqGijVjRaHHsZx7eM/cQlp?=
+ =?us-ascii?q?R0T+kLdqydndfN8v1Hu36/Lj3a3C7iwdHXQGKqgb8k3rbxdq/BYLqCqW?=
+ =?us-ascii?q?HMl5YYTNT7Vm6Wg3iUNxPQZA=3D=3D?=
+Received: from mailout3.zih.tu-dresden.de ([141.30.67.74])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2024 16:30:28 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=tu-dresden.de; s=dkim2022; h=MIME-Version:Content-Type:Message-ID:Date:
+	Subject:To:From:Sender:Reply-To:Cc:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=vu+H1D6PS9ko9hmpk23kKeINi+ulUHKYrY76BpRhUZA=; b=YfvIq807X0eUQhJ3F1GZaOJ7K7
+	OtZqwQBIlZnRnA6g6DAziI0Yzxo9qckzPitlEza5yhRSEa3isHgt1TXEqtnyGCW8qB7kNMmm7X2eH
+	WVnan+Viga7EfHBs49pjPkeweXEl453hq0YkloNrkZFdmaQR0MOl/u05ocLf8T4I+QzQhyCOceiZH
+	O2QWZny8exWEuRXaXW/uPFxOxODNAMOtktVYmkDf05wxesKTW+b/0S6DTzpHb2ptHZ1kkzQcV9yUr
+	7w+YyrdU2u8wohPqa0TK/8PawWupWT52NL8xnA2AZCC6owx06wRFBkYiUt7x0Vt0c4qaItdntKAFw
+	W27w+y2A==;
+Received: from [172.26.35.114] (helo=msx.tu-dresden.de)
+	by mailout3.zih.tu-dresden.de with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <oliver.fernandez@tu-dresden.de>)
+	id 1t5RhD-0042Yf-6K; Mon, 28 Oct 2024 16:30:19 +0100
+Received: from msx-t422.msx.ad.zih.tu-dresden.de (172.26.35.139) by
+ MSX-T314.msx.ad.zih.tu-dresden.de (172.26.35.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.39; Mon, 28 Oct 2024 16:29:49 +0100
+Received: from MSX-T415.msx.ad.zih.tu-dresden.de (172.26.35.135) by
+ msx-t422.msx.ad.zih.tu-dresden.de (172.26.35.139) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 28 Oct 2024 16:29:49 +0100
+Received: from MSX-T415.msx.ad.zih.tu-dresden.de ([fe80::1a19:1086:6894:64be])
+ by msx-t415.msx.ad.zih.tu-dresden.de ([fe80::1a19:1086:6894:64be%8]) with
+ mapi id 15.02.1544.011; Mon, 28 Oct 2024 16:29:49 +0100
+From: Oliver Fernandez Gil <oliver.fernandez@tu-dresden.de>
+To: "rewriting@ens-lyon.fr" <rewriting@ens-lyon.fr>, "coq-club@inria.fr"
+	<coq-club@inria.fr>, "caml-list@inria.fr" <caml-list@inria.fr>,
+	"ProofTheory@lists.bath.ac.uk" <ProofTheory@lists.bath.ac.uk>,
+	"fscd.conference@dcc.fc.up.pt" <fscd.conference@dcc.fc.up.pt>,
+	"theory-logic@cs.cmu.edu" <theory-logic@cs.cmu.edu>,
+	"cl-isabelle-users@lists.cam.ac.uk" <cl-isabelle-users@lists.cam.ac.uk>
+Thread-Topic: Call for Papers - Special Issue of JLAMP on Recent Advances on
+ Unification
+Thread-Index: AQHbKU46rWR68PcvvECjWNkj9BOGlw==
+Date: Mon, 28 Oct 2024 15:29:49 +0000
+Message-ID: <723BFB49-193F-4F23-8E05-2674AE393D3E@tu-dresden.de>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+x-mailer: Apple Mail (2.3776.700.51)
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_4B8295B8-983B-498E-B982-45F87E2580E8";
+	protocol="application/pkcs7-signature"; micalg=sha-256
+MIME-Version: 1.0
+X-TUD-Virus-Scanned: mailout3.zih.tu-dresden.de
+Subject: [Caml-list] Call for Papers - Special Issue of JLAMP on Recent
+ Advances on Unification
+Reply-To: Oliver Fernandez Gil <oliver.fernandez@tu-dresden.de>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19190
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-10/723BFB49-193F-4F23-8E05-2674AE393D3E%40tu-dresden.de>
+
+--Apple-Mail=_4B8295B8-983B-498E-B982-45F87E2580E8
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
+
+[Apologies for multiple copies]
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+			                      Call for Papers
+               Journal of Logical and Algebraic Methods in Programming   =
+     =20
+	             Special Issue on Recent Advances on Unification     =
+=20
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+Scope
+---------
+The Journal of Logical and Algebraic Methods in Programming (JLAMP) is=20=
+
+an international journal that complements Elsevier's Science of Computer=20=
+
+Programming and Theoretical Computer Science by its focus on the =
+foundations=20
+and the application of logical, algebraic and categorical methods to=20
+programming and to the development of trustworthy computing systems. The =
+aim=20
+of JLAMP special issues is to attract high-quality research papers in=20
+specific topics connected to logical and algebraic methods in the theory =
+and=20
+practice of software development and computing systems.
+
+The purpose of this special issue of JLAMP is to collect recent, =
+original,=20
+and high-quality contributions on unification theory and its =
+applications,=20
+as well as closely related topics. Unification is concerned with the =
+problem=20
+of making two given terms equal, either syntactically or modulo an =
+equational=20
+theory. It is a fundamental process used in various areas of computer =
+science,=20
+including automated reasoning, term rewriting, logic programming, =
+natural=20
+language processing, program analysis, knowledge representation, types, =
+etc.
+
+The International Workshop on Unification (UNIF) is the main =
+international=20
+event on unification. This special issue is related to the research =
+presented=20
+in the last four editions of the workshop, i.e., from UNIF 2021 to UNIF =
+2024.=20
+Nevertheless, submissions of high quality works on unification that were =
+not=20
+presented at UNIF are also welcome. Thus, participants of UNIF, as well =
+as=20
+other authors, are invited to submit contributions.
+
+
+Topics
+---------
+Following the tradition of UNIF, this special issue addresses the topic =
+of unification=20
+in a broad sense. A non-exhaustive list of topics of interest includes:
+
+  * syntactic and equational unification algorithms
+  * matching and constraint solving
+  * higher-order unification
+  * unification in modal, temporal, and description logics
+  * admissibility of inference rules
+  * narrowing
+  * disunification
+  * anti-unification
+  * complexity issues =20
+  * combination methods
+  * implementation techniques
+  * applications
+
+
+Submission
+----------------
+This special issue welcomes original and high-quality contributions on =
+unification=20
+theory and its applications, as well as closely related topics. =
+Submissions should=20
+consist of articles that have not been previously published and are not =
+under=20
+consideration for publication elsewhere. All submissions will be =
+peer-reviewed and=20
+handled according to the usual procedures of JLAMP.
+
+Submitted manuscripts should be written in English and prepared =
+following the guidelines=20
+of JLAMP. Papers should be submitted electronically by using the =
+Editorial Manager for=20
+JLAMP, which can be accessed at:
+
+  https://www.editorialmanager.com/jlamp/default.aspx
+ =20
+The submission deadline is: *February 15, 2025*.
+
+Please choose VSI:Recent Advances in Unification when you will be =
+selecting the article type.
+
+
+Guest Editors
+-------------------
+Santiago Escobar (Universitat Polit=C3=A8cnica de Val=C3=A8ncia)
+Oliver Fern=C3=A1ndez Gil (TU Dresden)
+
+
+Further information
+--------------------------
+https://lat.inf.tu-dresden.de/~fernandez/jlamp-unif.html=
+
+--Apple-Mail=_4B8295B8-983B-498E-B982-45F87E2580E8
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCDlAw
+ggbmMIIEzqADAgECAhAxAnDUNb6bJJr4VtDh4oVJMA0GCSqGSIb3DQEBDAUAMIGIMQswCQYDVQQG
+EwJVUzETMBEGA1UECBMKTmV3IEplcnNleTEUMBIGA1UEBxMLSmVyc2V5IENpdHkxHjAcBgNVBAoT
+FVRoZSBVU0VSVFJVU1QgTmV0d29yazEuMCwGA1UEAxMlVVNFUlRydXN0IFJTQSBDZXJ0aWZpY2F0
+aW9uIEF1dGhvcml0eTAeFw0yMDAyMTgwMDAwMDBaFw0zMzA1MDEyMzU5NTlaMEYxCzAJBgNVBAYT
+Ak5MMRkwFwYDVQQKExBHRUFOVCBWZXJlbmlnaW5nMRwwGgYDVQQDExNHRUFOVCBQZXJzb25hbCBD
+QSA0MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAs0riIl4nW+kEWxQENTIgFK600jFA
+xs1QwB6hRMqvnkphfy2Q3mKbM2otpELKlgE8/3AQPYBo7p7yeORuPMnAuA+oMGRb2wbeSaLcZbpw
+XgfCvnKxmq97/kQkOFX706F9O7/h0yehHhDjUdyMyT0zMs4AMBDRrAFn/b2vR3j0BSYgoQs16oSq
+adM3p+d0vvH/YrRMtOhkvGpLuzL8m+LTAQWvQJ92NwCyKiHspoP4mLPJvVpEpDMnpDbRUQdftSpZ
+zVKTNORvPrGPRLnJ0EEVCHR82LL6oz915WkrgeCY9ImuulBn4uVsd9ZpubCgM/EXvVBlViKqusCh
+SsZEn7juIsGIiDyaIhhLsd3amm8BS3bgK6AxdSMROND6hiHT182Lmf8C+gRHxQG9McvG35uUvRu8
+v7bPZiJRaT7ZC2f50P4lTlnbLvWpXv5yv7hheO8bMXltiyLweLB+VNvg+GnfL6TW3Aq1yF1yrZAZ
+zR4MbpjTWdEdSLKvz8+0wCwscQ81nbDOwDt9vyZ+0eJXbRkWZiqScnwAg5/B1NUD4TrYlrI4n6zF
+p2pyYUOiuzP+as/AZnz63GvjFK69WODR2W/TK4D7VikEMhg18vhuRf4hxnWZOy0vhfDR/g3aJbds
+Gac+diahjEwzyB+UKJOCyzvecG8bZ/u/U8PsEMZg07iIPi8CAwEAAaOCAYswggGHMB8GA1UdIwQY
+MBaAFFN5v1qqK0rPVIDh2JvAnfKyA2bLMB0GA1UdDgQWBBRpAKHHIVj44MUbILAK3adRvxPZ5DAO
+BgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHSUEFjAUBggrBgEFBQcDAgYI
+KwYBBQUHAwQwOAYDVR0gBDEwLzAtBgRVHSAAMCUwIwYIKwYBBQUHAgEWF2h0dHBzOi8vc2VjdGln
+by5jb20vQ1BTMFAGA1UdHwRJMEcwRaBDoEGGP2h0dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9VU0VS
+VHJ1c3RSU0FDZXJ0aWZpY2F0aW9uQXV0aG9yaXR5LmNybDB2BggrBgEFBQcBAQRqMGgwPwYIKwYB
+BQUHMAKGM2h0dHA6Ly9jcnQudXNlcnRydXN0LmNvbS9VU0VSVHJ1c3RSU0FBZGRUcnVzdENBLmNy
+dDAlBggrBgEFBQcwAYYZaHR0cDovL29jc3AudXNlcnRydXN0LmNvbTANBgkqhkiG9w0BAQwFAAOC
+AgEACgVOew2PHxM5AP1v7GLGw+3tF6rjAcx43D9Hl110Q+BABABglkrPkES/VyMZsfuds8fcDGvG
+E3o5UfjSno4sij0xdKut8zMazv8/4VMKPCA3EUS0tDUoL01ugDdqwlyXuYizeXyH2ICAQfXMtS+r
+az7mf741CZvO50OxMUMxqljeRfVPDJQJNHOYi2pxuxgjKDYx4hdZ9G2o+oLlHhu5+anMDkE8g0tf
+fjRKn8I1D1BmrDdWR/IdbBOj6870abYvqys1qYlPotv5N5dm+XxQ8vlrvY7+kfQaAYeO3rP1DM8B
+GdpEqyFVa+I0rpJPhaZkeWW7cImDQFerHW9bKzBrCC815a3WrEhNpxh72ZJZNs1HYJ+29NTB6uu4
+NJjaMxpk+g2puNSm4b9uVjBbPO9V6sFSG+IBqE9ckX/1XjzJtY8Grqoo4SiRb6zcHhp3mxj3oqWi
+8SKNohAOKnUc7RIP6ss1hqIFyv0xXZor4N9tnzD0Fo0JDIURjDPEgo5WTdti/MdGTmKFQNqxyZuT
+9uSI2Xvhz8p+4pCYkiZqpahZlHqMFxdw9XRZQgrP+cgtOkWEaiNkRBbvtvLdp7MCL2OsQhQEdEbU
+vDM9slzZXdI7NjJokVBq3O4pls3VD2z3L/bHVBe0rBERjyM2C/HSIh84rfmAqBgklzIOqXhd+4Rz
+adUwggdiMIIFSqADAgECAhBHy5E80x4gVfEvdAFbAdVqMA0GCSqGSIb3DQEBDAUAMEYxCzAJBgNV
+BAYTAk5MMRkwFwYDVQQKExBHRUFOVCBWZXJlbmlnaW5nMRwwGgYDVQQDExNHRUFOVCBQZXJzb25h
+bCBDQSA0MB4XDTI0MDIwNTAwMDAwMFoXDTI2MDIwNDIzNTk1OVowgdMxCzAJBgNVBAYTAkRFMRAw
+DgYDVQQIEwdTYWNoc2VuMSgwJgYDVQQKEx9UZWNobmlzY2hlIFVuaXZlcnNpdGFldCBEcmVzZGVu
+MREwDwYDVQRhEwhHT1ZERStTTjEtMCsGCSqGSIb3DQEJARYeb2xpdmVyLmZlcm5hbmRlekB0dS1k
+cmVzZGVuLmRlMRYwFAYDVQQEEw1GZXJuYW5kZXogR2lsMQ8wDQYDVQQqEwZPbGl2ZXIxHTAbBgNV
+BAMTFE9saXZlciBGZXJuYW5kZXogR2lsMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA
+sgbWnR9AveDJUV9bwgXHqUe50O/hekIgiyPRDRKBs0kpWbQEOjC+y5cr9KodbiOC/st/xfMTPhWH
+2DYcEYlJC+r4WUT+RI2udqYUNoCWiarVCqHWSYTWolQjVLCWqk75hcyIfsF91NEnPrJGUrww8beS
+b++V5XxYyLo9rjhRwEBP/fNMWn1Zc0QXAHpDD7mVDkk+7V2RwbDvzuN/rx4vRdv/34px6uJFRLzo
+QmdUsgDX10rp7rEN/enmKw4zXCTajOq1hM3wclzheM6UZCzkjZXyoBDzvjrIRitZQU0ffR16mugV
+HxCDtX2D/cxdovXx0Z6wvMkBPylnRgmpmZ0rz9CBQ+LlEQ+j9/KUFyQEMGoCI8QYPhBSpE0l2Us1
+rBjGbFXStlyoM9BtOMrq/aAtnuAnH28vZKxJjArY7Q5pWj4KpRiqOQrE3iSLpj0d8jUNGN7bfs9S
+fj8rsXj2EE28CFT257jnAEMPhZtMggQkwTVJijGW3eGDgINrFrCrXhinDtnZ0nfdDdohfJxaE5NJ
+xqtKdJRvbgIvc1QzhH2R/jiJcD9xN0tHJ+9+qbgr0BKpUT1SXGk8FktE54R8w9axcg1aha/s8Xgh
+nGvJ4tixtaGcdyYwpxUmnsVdD5hGRMO7MpvQhONMgo4y5suzmk4SK6pjFWRvIf1J9ZxPHAEcj7kC
+AwEAAaOCAbwwggG4MB8GA1UdIwQYMBaAFGkAocchWPjgxRsgsArdp1G/E9nkMB0GA1UdDgQWBBR4
+eB7bkGllIt8T/Zk8l2V3m99WKjAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUE
+FjAUBggrBgEFBQcDBAYIKwYBBQUHAwIwUAYDVR0gBEkwRzA6BgwrBgEEAbIxAQIBCgQwKjAoBggr
+BgEFBQcCARYcaHR0cHM6Ly9zZWN0aWdvLmNvbS9TTUlNRUNQUzAJBgdngQwBBQMCMEIGA1UdHwQ7
+MDkwN6A1oDOGMWh0dHA6Ly9HRUFOVC5jcmwuc2VjdGlnby5jb20vR0VBTlRQZXJzb25hbENBNC5j
+cmwweAYIKwYBBQUHAQEEbDBqMD0GCCsGAQUFBzAChjFodHRwOi8vR0VBTlQuY3J0LnNlY3RpZ28u
+Y29tL0dFQU5UUGVyc29uYWxDQTQuY3J0MCkGCCsGAQUFBzABhh1odHRwOi8vR0VBTlQub2NzcC5z
+ZWN0aWdvLmNvbTApBgNVHREEIjAggR5vbGl2ZXIuZmVybmFuZGV6QHR1LWRyZXNkZW4uZGUwDQYJ
+KoZIhvcNAQEMBQADggIBADXuBEOeqAYC1nlEZovxGsfXayC3hZWVpeTfvUYUJ8UxBDQUYHU8Tnk/
+8vHUtSG1JQs9rdNlR2SAQQbNqKae3iAxHXDnpvPsFrA741NVbr+NpFDkTLl9OpXNv7WWX+QzpPuY
+jRv/pr2e5yi4ow1Oue7SQ8Za8170IjHZzhJnT9RHaWmO1jtc3BLQjtNL3IqmHEN9pxUFz80WckYH
+6b0aYsp1EaaQwIDhLpPpvDfijKLrfm7KW2svaKHHRflPEvyTuH8HRbJNVIRCaqX8piqGY0m1zu7s
+cRcLBSGJ0WC4+7BiGloF3z3U+2WXDcDPbLK0qfd7R9PYmNWtYib44iMChRD5izkMmnFQUViTLSKV
+8p9FuRvbpAq6pOUR/ieaSxza4VbOWEP5QTbqfmAS/PCnw4AvmHFYqG4k1qKHjUlCIjQQkozOj2al
+rIp3KQKQCD/fUd5a5w6qkf+/NtWCm4RL2uOizEBd0QoFL8bcCSesTX03792iQ/PRHfpkEbA7r5Wj
+8IvhlsfsDDNkwI/R8P5Ixik9rZD22IheBXC2T1WsLP63Ao9R5l17yRT7elOkp1WFw63tXWtIu85N
+PwpmsBnRM5CYILa4K0SPv2/r1TCDOfhGmr7DX/TSfnECepLHFCuIgSlsVg0lIQPk/coplDvndui7
+HgrRS4VlrmKZS54BBS3oMYIDyjCCA8YCAQEwWjBGMQswCQYDVQQGEwJOTDEZMBcGA1UEChMQR0VB
+TlQgVmVyZW5pZ2luZzEcMBoGA1UEAxMTR0VBTlQgUGVyc29uYWwgQ0EgNAIQR8uRPNMeIFXxL3QB
+WwHVajANBglghkgBZQMEAgEFAKCCAUEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjQxMDI4MTUyOTM5WjAvBgkqhkiG9w0BCQQxIgQgyLihvLYPuWzJAY8jlPnpWs+e
+3qehneJlosScj570yWcwaQYJKwYBBAGCNxAEMVwwWjBGMQswCQYDVQQGEwJOTDEZMBcGA1UEChMQ
+R0VBTlQgVmVyZW5pZ2luZzEcMBoGA1UEAxMTR0VBTlQgUGVyc29uYWwgQ0EgNAIQR8uRPNMeIFXx
+L3QBWwHVajBrBgsqhkiG9w0BCRACCzFcoFowRjELMAkGA1UEBhMCTkwxGTAXBgNVBAoTEEdFQU5U
+IFZlcmVuaWdpbmcxHDAaBgNVBAMTE0dFQU5UIFBlcnNvbmFsIENBIDQCEEfLkTzTHiBV8S90AVsB
+1WowDQYJKoZIhvcNAQELBQAEggIArH6EQHvWpoZOIjqMvaP/Hih8qN1lAJHAtM5g3chenCaZWe5Q
+/4xewkIEA+z1H5VnSG3SjPK9S5gDZfzYjVmqcWP5e90hSoRdDqKXoEamGgaAwXjOY3V8FC45ArXM
+6qZhyonxxxkTftSzkWt4ODRRJVuf62asTLuJm5wldRLZeiHTXPNgL6Lmb+poGK6wrnff8k01gKb4
+OWHJgmwL9QtxIkPiL9vDnoUdmd9nMKEqDIwiW/FEvCF68hc0cVyN//hW0OSh8p4jHTMdUHjimb9w
+BLAgdtaC2Hzm39fI01ITSvSujd/zmrJgbCH/TYjRytGu+uaVMUNqeDMfsy/IzGNG8U6mDzlAXyN9
+w/Lf4B6pD9UU++R/CzXPCwqcxHSMu3zda3IcwMjQpzOwq8JmvFljEXWJcsYpi7pg1025T+8p4tvD
+HJnP+kClG/NUUTlG3yFeJlqfZzw0kCrjWRRAJIdZQ3519isBmfwf1NnUkjXYonZhed6vDYpmavpH
+HddgQhe0wFRlmhqcnQvWoqVFje9QLJKEXBIm55ZjzyuI9gPbdCuamzPico/86WwCG9HJRNRYM65m
+gCm6VPB6uriH2NywexS5AYSIFQ5/dyXHVD0KlYSliar51cHKfOcyY1JC0Xahz3oQvdrkFQWCJPQe
+Ogi/lP8q+gwQrMIgO8tJLGd/eLwAAAAAAAA=
+
+--Apple-Mail=_4B8295B8-983B-498E-B982-45F87E2580E8--
