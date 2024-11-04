@@ -1,0 +1,426 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=pass (p=none dis=none) header.from=inria.fr
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=DZC5Z9hL;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=eTw3ritp;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by plum.tunbury.org (Postfix) with ESMTP id DB34FB80123
+	for <caml-list@tunbury.org>; Mon,  4 Nov 2024 14:01:45 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:message-id:in-reply-to:references:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=rOgaR6uZVGAje5DKSpPY5IwhoqtLlkxEEpEodYD6VJw=;
+  b=DZC5Z9hLPimCYyaZoNNmShFJZ7l6bTF5rEJ4Z0XdvEiSwB0EiXHB0auL
+   bysMf/7zzZw+e3B+E54FcBkKyZt2k9Hy+Ec+z6BIjKUvQO4AQ0TBhndGv
+   YjtZyF9wruL7K+i8Ddq3iRxzR7L4+JNI36Bnn0MbLwGp3Ra2iQittQLNA
+   Q=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@inria.fr
+X-IronPort-AV: E=Sophos;i="6.11,257,1725314400"; 
+   d="scan'208,217";a="192048425"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Nov 2024 15:01:43 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id DFE41E0D2B; Mon,  4 Nov 2024 15:01:42 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id CE330E00B7
+	for <caml-list@sympa.inria.fr>; Mon,  4 Nov 2024 15:01:37 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:message-id:in-reply-to:references:subject:
+   mime-version;
+  bh=rOgaR6uZVGAje5DKSpPY5IwhoqtLlkxEEpEodYD6VJw=;
+  b=eTw3ritpv8lq0nVp85MWTCLt0jG4+k8UlhG5Wrj22IsbVE6M0i8EM8PV
+   sLyHKYVNNDAY/BlzhRa80DX3WnpVPEqCNYPB3PNiS6eWVqy00em+6gRk4
+   bb8S/RXVGCQpREZCUSLJ+bCmSg1dKhSOefdKc0hS+fWAWEVkxPDB2tg/j
+   M=;
+X-IronPort-AV: E=Sophos;i="6.11,257,1725314400"; 
+   d="scan'208,217";a="192048341"
+X-MGA-submission: =?us-ascii?q?MDEeOddHE6bZbXrQglgWxTsxLIszbC/1N2/xTm?=
+ =?us-ascii?q?FB6ItwR4qj4uZ77+pZ4BBB/FOcAXSlSHVMLSeg483NIXplIGA0TwSfqe?=
+ =?us-ascii?q?uqFLYMGaHCQjLAnIvWw9EAeb57J0/zcEk8CwhdfOy3UBhQl/hN19EGoN?=
+ =?us-ascii?q?Y90/vHZImrCYPZe+L172d7OQ=3D=3D?=
+Received: from zcs2-store1.inria.fr ([128.93.142.3])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Nov 2024 15:01:37 +0100
+Date: Mon, 4 Nov 2024 15:01:37 +0100 (CET)
+From: Florian Angeletti <florian.angeletti@inria.fr>
+To: caml-list <caml-list@inria.fr>
+Message-ID: <1285582154.14162009.1730728897645.JavaMail.zimbra@inria.fr>
+In-Reply-To: <6881226.6247772.1726857387616.JavaMail.zimbra@inria.fr>
+References: <6881226.6247772.1726857387616.JavaMail.zimbra@inria.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="=_a87e905f-ce1a-4267-9556-dadd22670b2a"
+X-Originating-IP: [128.93.64.106]
+X-Mailer: Zimbra 10.0.9_GA_4654 (ZimbraWebClient - FF131 (Linux)/10.0.9_GA_4654)
+Thread-Topic: First beta release of OCaml 5.3.0
+Thread-Index: qSSLcrIScwhvuW9kxxbPVz+FT82lzfwMYvg6
+Subject: [Caml-list] First beta release of OCaml 5.3.0
+Reply-To: Florian Angeletti <florian.angeletti@inria.fr>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19193
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-11/1285582154.14162009.1730728897645.JavaMail.zimbra%40inria.fr>
+
+--=_a87e905f-ce1a-4267-9556-dadd22670b2a
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Dear OCaml users,=20
+
+One month and half after the release of the first alpha for OCaml 5.3.0, th=
+e=20
+release of OCaml 5.3.0 is drawing near.=20
+
+The internal API of the compiler libraries has been frozen, and most core=
+=20
+developer tools support (or will support soon) the new version of the compi=
+ler.=20
+
+We have thus released a first beta version of OCaml 5.3.0 to help you updat=
+e=20
+your software and libraries ahead of the release (see below for the install=
+ation=20
+instructions). More information about the whole release process is now avai=
+lable=20
+in the compiler repository=20
+(https://github.com/ocaml/ocaml/blob/trunk/release-info/introduction.md).=
+=20
+
+Compared to the first alpha release, this beta contains a few runtime or=20
+typechecker fixes, a handful of fixes for the runtime event library and oth=
+er=20
+miscellaneous fixes.=20
+
+Exceptionally, this beta release also introduces a new flag `-keywords` for=
+ the=20
+compiler. This backward compatibility flag aims to help compiling old code =
+that=20
+are using `effect` as a normal identifier, now that `effect` is a keyword i=
+n the=20
+new effect handler syntax.=20
+
+The progresses on stabilising the ecosystem are tracked on the=20
+opam readiness for 5.3.0 meta-issue=20
+(https://github.com/ocaml/opam-repository/issues/26596).=20
+
+The full release is expected in the end of November or beginning of Decembe=
+r,=20
+see the new prospective calendar=20
+(https://github.com/ocaml/ocaml/blob/trunk/release-info/calendar.md) for mo=
+re=20
+information.=20
+
+If you find any bugs, please report them on OCaml's issue tracker=20
+(https://github.com/ocaml/ocaml/issues).=20
+
+If you are interested in full list of features and bug fixes of the new OCa=
+ml=20
+version, the updated change log for OCaml 5.3.0 is available on GitHub=20
+(https://github.com/ocaml/ocaml/blob/5.3/Changes),=20
+and a short list of the changes since the last alpha is available below.=20
+
+Happy hacking,=20
+Florian Angeletti for the OCaml team.=20
+
+---=20
+## Installation Instructions=20
+
+The base compiler can be installed as an opam switch with the following com=
+mands=20
+on opam 2.1 and later:=20
+
+```bash=20
+opam update=20
+opam switch create 5.3.0~beta1=20
+```=20
+
+The source code for the beta is also available at these addresses:=20
+
+* [GitHub](https://github.com/ocaml/ocaml/archive/5.3.0-beta1.tar.gz)=20
+* [OCaml archives at Inria](https://caml.inria.fr/pub/distrib/ocaml-5.3/oca=
+ml-5.3.0~beta1.tar.gz)=20
+
+### Fine-Tuned Compiler Configuration=20
+
+If you want to tweak the configuration of the compiler, you can switch to t=
+he option variant with:=20
+
+```bash=20
+opam update=20
+opam switch create <switch_name> ocaml-variants.5.3.0~beta1+options <option=
+_list>=20
+```=20
+
+where `option_list` is a space separated list of `ocaml-option-*` packages.=
+ For instance, for a flambda and no-flat-float-array switch:=20
+
+```bash=20
+opam switch create 5.3.0~beta1+flambda+nffa ocaml-variants.5.3.0~beta1+opti=
+ons ocaml-option-flambda ocaml-option-no-flat-float-array=20
+```=20
+
+All available options can be listed with `opam search ocaml-option`.=20
+
+-------=20
+
+## Changes since the first alpha=20
+
+### Runtime fixes=20
+
+- #13502(https://github.com/ocaml/ocaml/issues/13502): Fix misindexing rela=
+ted to `Gc.finalise_last` that could prevent=20
+finalisers from being run.=20
+(Nick Roberts, review by Mark Shinwell)=20
+
+- #13402(https://github.com/ocaml/ocaml/issues/13402), #13512(https://githu=
+b.com/ocaml/ocaml/issues/13512), #13549(https://github.com/ocaml/ocaml/issu=
+es/13549), #13553(https://github.com/ocaml/ocaml/issues/13553): Revise byte=
+code implementation of callbacks=20
+so that it no longer produces dangling registered bytecode fragments.=20
+(Xavier Leroy, report by Jan Midtgaard, analysis by Stephen Dolan,=20
+review by Miod Vallat)=20
+
+- #13520(https://github.com/ocaml/ocaml/issues/13520): Fix compilation of n=
+ative-code version of systhreads. Bytecode fields=20
+were being included in the thread descriptors.=20
+(David Allsopp, review by S=E9bastien Hinderer and Miod Vallat)=20
+
+### Typechecker fixes=20
+
+- #13579(https://github.com/ocaml/ocaml/issues/13579), [#13583](https://git=
+hub.com/ocaml/ocaml/issues/13583): Unsoundness involving non-injective type=
+s + gadts=20
+(Jacques Garrigue, report by @v-gb,=20
+review by Richard Eisenberg and Florian Angeletti)=20
+
+- #13388(https://github.com/ocaml/ocaml/issues/13388), [#13540](https://git=
+hub.com/ocaml/ocaml/issues/13540): raises an error message (and not an inte=
+rnal compiler error)=20
+when two local substitutions are incompatible (for instance `module type=20
+S:=3Dsig end type t:=3D(module S)`)=20
+(Florian Angeletti, report by Nailen Matschke, review by Gabriel Scherer, a=
+nd=20
+Leo White)=20
+
+### Compiler flag=20
+
+- #13471(https://github.com/ocaml/ocaml/issues/13471): add `-keywords <vers=
+ion?+list>` flag to define the list of keywords=20
+recognized by the lexer, for instance `-keywords 5.2` disable the `effect`=
+=20
+keyword.=20
+(Florian Angeletti, review by Gabriel Scherer)=20
+
+### Runtime event library fixes=20
+
+- #13419(https://github.com/ocaml/ocaml/issues/13419): Fix memory bugs in r=
+untime events system.=20
+(B. Szilvasy and Nick Barnes, review by Miod Vallat, Nick Barnes,=20
+Tim McGilchrist, and Gabriel Scherer)=20
+
+- #13407(https://github.com/ocaml/ocaml/issues/13407): Add Runtime_events.E=
+V_EMPTY_MINOR=20
+(Thomas Leonard)=20
+
+- #13522(https://github.com/ocaml/ocaml/issues/13522): Confirm runtime even=
+ts ring is still active after callback.=20
+(KC Sivaramakrishnan, review by Sadiq Jaffer and Miod Vallat)=20
+
+- #13529(https://github.com/ocaml/ocaml/issues/13529): Do not write to even=
+t ring after going out of stw participant set.=20
+(KC Sivaramakrishnan, review by Sadiq Jaffer)=20
+
+### Documentation=20
+
+- #13424(https://github.com/ocaml/ocaml/issues/13424): Fix `Gc.quick_stat` =
+documentation to clarify that returned fields=20
+`live_words`, `live_blocks`, `free_words`, and `fragments` are not zero.=20
+(Jan Midtgaard, review by Damien Doligez and KC Sivaramakrishnan)=20
+
+- #13440(https://github.com/ocaml/ocaml/issues/13440): Update documentation=
+ of `Gc.{control,get,set}` to reflect fields=20
+not currently supported on OCaml 5.=20
+(Jan Midtgaard, review by Gabriel Scherer)=20
+
+- #13469(https://github.com/ocaml/ocaml/issues/13469), #13474(https://githu=
+b.com/ocaml/ocaml/issues/13474), #13535(https://github.com/ocaml/ocaml/issu=
+es/13535): Document that [Hashtbl.create n] creates a hash table=20
+with a default minimal size, even if [n] is very small or negative.=20
+(Antonin D=E9cimo, Nick Bares, report by Nikolaus Huber and Jan Midtgaard,=
+=20
+review by Florian Angeletti, Anil Madhavapeddy, Gabriel Scherer,=20
+and Miod Vallat)=20
+
+### Standard library internal fix=20
+
+- #13543(https://github.com/ocaml/ocaml/issues/13543): Remove some String-B=
+ytes conversion from the stdlib to behave better=20
+with js_of_ocaml=20
+(Hugo Heuzard, review by Gabriel Scherer)=20
+
+### Toplevel fix=20
+
+- #13263(https://github.com/ocaml/ocaml/issues/13263), #13560(https://githu=
+b.com/ocaml/ocaml/issues/13560): fix printing true and false in toplevel an=
+d error=20
+messages (no more unexpected \#true)=20
+(Florian Angeletti, report by Samuel Vivien, review by Gabriel Scherer)=20
+
+### Compiler internals=20
+
+- #13391(https://github.com/ocaml/ocaml/issues/13391), [#13551](https://git=
+hub.com/ocaml/ocaml/issues/13551): fix a printing bug with `-dsource` when =
+using=20
+raw literal inside a locally abstract type constraint=20
+(i.e. `let f: type \#for. ... `)=20
+(Florian Angeletti, report by Nick Roberts, review by Richard Eisenberg)=20
+
+--=_a87e905f-ce1a-4267-9556-dadd22670b2a
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<html><body><div style=3D"font-family: arial, helvetica, sans-serif; font-s=
+ize: 12pt; color: #000000"><div>Dear OCaml users,<br><br>One month and half=
+ after the release of the first alpha for OCaml 5.3.0, the<br>release of OC=
+aml 5.3.0 is drawing near.<br><br>The internal API of the compiler librarie=
+s has been frozen, and most core<br>developer tools support (or will suppor=
+t soon) the new version of the compiler.<br><br>We have thus released a fir=
+st beta version of OCaml 5.3.0 to help you update<br>your software and libr=
+aries ahead of the release (see below for the installation<br>instructions)=
+. More information about the whole release process is now available<br>in t=
+he compiler repository<br>(https://github.com/ocaml/ocaml/blob/trunk/releas=
+e-info/introduction.md).<br><br>Compared to the first alpha release, this b=
+eta contains a few runtime or<br>typechecker fixes, a handful of fixes for =
+the runtime event library and other<br>miscellaneous fixes.<br><br>Exceptio=
+nally, this beta release also introduces a new flag `-keywords` for the<br>=
+compiler. This backward compatibility flag aims to help compiling old code =
+that<br>are using `effect` as a normal identifier, now that `effect` is a k=
+eyword in the<br>new effect handler syntax.<br><br>The progresses on stabil=
+ising the ecosystem are tracked on the<br>opam readiness for 5.3.0 meta-iss=
+ue<br>(https://github.com/ocaml/opam-repository/issues/26596).<br><br>The f=
+ull release is expected in the end of November or beginning of December,<br=
+>see the new prospective calendar<br>(https://github.com/ocaml/ocaml/blob/t=
+runk/release-info/calendar.md) for more<br>information.<br><br>If you find =
+any bugs, please report them on OCaml's issue tracker<br>(https://github.co=
+m/ocaml/ocaml/issues).<br><br>If you are interested in full list of feature=
+s and bug fixes of the new OCaml<br>version, the updated change log for OCa=
+ml 5.3.0 is available on GitHub<br>(https://github.com/ocaml/ocaml/blob/5.3=
+/Changes),</div><div> and a short list of the changes since the last alpha =
+is available below.<br><br>Happy hacking,<br>Florian Angeletti for the OCam=
+l team.<br><br>---<br>## Installation Instructions<br><br>The base compiler=
+ can be installed as an opam switch with the following commands<br>on opam =
+2.1 and later:<br><br>```bash<br>opam update<br>opam switch create 5.3.0~be=
+ta1<br>```<br><br>The source code for the beta is also available at these a=
+ddresses:<br><br>* [GitHub](https://github.com/ocaml/ocaml/archive/5.3.0-be=
+ta1.tar.gz)<br>* [OCaml archives at Inria](https://caml.inria.fr/pub/distri=
+b/ocaml-5.3/ocaml-5.3.0~beta1.tar.gz)<br><br>### Fine-Tuned Compiler Config=
+uration<br><br>If you want to tweak the configuration of the compiler, you =
+can switch to the option variant with:<br><br>```bash<br>opam update<br>opa=
+m switch create &lt;switch_name&gt; ocaml-variants.5.3.0~beta1+options &lt;=
+option_list&gt;<br>```<br><br>where `option_list` is a space separated list=
+ of `ocaml-option-*` packages. For instance, for a flambda and no-flat-floa=
+t-array switch:<br><br>```bash<br>opam switch create 5.3.0~beta1+flambda+nf=
+fa ocaml-variants.5.3.0~beta1+options ocaml-option-flambda ocaml-option-no-=
+flat-float-array<br>```<br><br>All available options can be listed with `op=
+am search ocaml-option`.<br><br>-------<br><br>## Changes since the first a=
+lpha<br><br>### Runtime fixes<br><br>- #13502(https://github.com/ocaml/ocam=
+l/issues/13502): Fix misindexing related to `Gc.finalise_last` that could p=
+revent<br>&nbsp; finalisers from being run.<br>&nbsp; (Nick Roberts, review=
+ by Mark Shinwell)<br><br>- #13402(https://github.com/ocaml/ocaml/issues/13=
+402), #13512(https://github.com/ocaml/ocaml/issues/13512), #13549(https://g=
+ithub.com/ocaml/ocaml/issues/13549), #13553(https://github.com/ocaml/ocaml/=
+issues/13553): Revise bytecode implementation of callbacks<br>&nbsp; so tha=
+t it no longer produces dangling registered bytecode fragments.<br>&nbsp; (=
+Xavier Leroy, report by Jan Midtgaard, analysis by Stephen Dolan,<br>&nbsp;=
+&nbsp; review by Miod Vallat)<br><br>- #13520(https://github.com/ocaml/ocam=
+l/issues/13520): Fix compilation of native-code version of systhreads. Byte=
+code fields<br>&nbsp; were being included in the thread descriptors.<br>&nb=
+sp; (David Allsopp, review by S=E9bastien Hinderer and Miod Vallat)<br><br>=
+### Typechecker fixes<br><br>- #13579(https://github.com/ocaml/ocaml/issues=
+/13579), [#13583](https://github.com/ocaml/ocaml/issues/13583): Unsoundness=
+ involving non-injective types + gadts<br>&nbsp; (Jacques Garrigue, report =
+by @v-gb,<br>&nbsp;&nbsp; review by Richard Eisenberg and Florian Angeletti=
+)<br><br>- #13388(https://github.com/ocaml/ocaml/issues/13388), [#13540](ht=
+tps://github.com/ocaml/ocaml/issues/13540): raises an error message (and no=
+t an internal compiler error)<br>&nbsp; when two local substitutions are in=
+compatible (for instance `module type<br>&nbsp; S:=3Dsig end type t:=3D(mod=
+ule S)`)<br>&nbsp; (Florian Angeletti, report by Nailen Matschke, review by=
+ Gabriel Scherer, and<br>&nbsp; Leo White)<br><br>### Compiler flag<br><br>=
+- #13471(https://github.com/ocaml/ocaml/issues/13471): add `-keywords &lt;v=
+ersion?+list&gt;` flag to define the list of keywords<br>&nbsp; recognized =
+by the lexer, for instance `-keywords 5.2` disable the `effect`<br>&nbsp; k=
+eyword.<br>&nbsp; (Florian Angeletti, review by Gabriel Scherer)<br><br>###=
+ Runtime event library fixes<br><br>- #13419(https://github.com/ocaml/ocaml=
+/issues/13419): Fix memory bugs in runtime events system.<br>&nbsp; (B. Szi=
+lvasy and Nick Barnes, review by Miod Vallat, Nick Barnes,<br>&nbsp;&nbsp; =
+Tim McGilchrist, and Gabriel Scherer)<br><br>- #13407(https://github.com/oc=
+aml/ocaml/issues/13407): Add Runtime_events.EV_EMPTY_MINOR<br>&nbsp; (Thoma=
+s Leonard)<br><br>- #13522(https://github.com/ocaml/ocaml/issues/13522): Co=
+nfirm runtime events ring is still active after callback.<br>&nbsp; (KC Siv=
+aramakrishnan, review by Sadiq Jaffer and Miod Vallat)<br><br>- #13529(http=
+s://github.com/ocaml/ocaml/issues/13529): Do not write to event ring after =
+going out of stw participant set.<br>&nbsp; (KC Sivaramakrishnan, review by=
+ Sadiq Jaffer)<br><br>### Documentation<br><br>- #13424(https://github.com/=
+ocaml/ocaml/issues/13424): Fix `Gc.quick_stat` documentation to clarify tha=
+t returned fields<br>&nbsp; `live_words`, `live_blocks`, `free_words`, and =
+`fragments` are not zero.<br>&nbsp; (Jan Midtgaard, review by Damien Dolige=
+z and KC Sivaramakrishnan)<br><br>- #13440(https://github.com/ocaml/ocaml/i=
+ssues/13440): Update documentation of `Gc.{control,get,set}` to reflect fie=
+lds<br>&nbsp; not currently supported on OCaml 5.<br>&nbsp; (Jan Midtgaard,=
+ review by Gabriel Scherer)<br><br>- #13469(https://github.com/ocaml/ocaml/=
+issues/13469), #13474(https://github.com/ocaml/ocaml/issues/13474), #13535(=
+https://github.com/ocaml/ocaml/issues/13535): Document that [Hashtbl.create=
+ n] creates a hash table<br>&nbsp; with a default minimal size, even if [n]=
+ is very small or negative.<br>&nbsp; (Antonin D=E9cimo, Nick Bares, report=
+ by Nikolaus Huber and Jan Midtgaard,<br>&nbsp;&nbsp; review by Florian Ang=
+eletti, Anil Madhavapeddy, Gabriel Scherer,<br>&nbsp;&nbsp; and Miod Vallat=
+)<br><br>### Standard library internal fix<br><br><br>- #13543(https://gith=
+ub.com/ocaml/ocaml/issues/13543): Remove some String-Bytes conversion from =
+the stdlib to behave better<br>&nbsp; with js_of_ocaml<br>&nbsp; (Hugo Heuz=
+ard, review by Gabriel Scherer)<br><br>### Toplevel fix<br><br>- #13263(htt=
+ps://github.com/ocaml/ocaml/issues/13263), #13560(https://github.com/ocaml/=
+ocaml/issues/13560): fix printing true and false in toplevel and error<br>&=
+nbsp; messages (no more unexpected \#true)<br>&nbsp; (Florian Angeletti, re=
+port by Samuel Vivien, review by Gabriel Scherer)<br><br>### Compiler inter=
+nals<br><br>- #13391(https://github.com/ocaml/ocaml/issues/13391), [#13551]=
+(https://github.com/ocaml/ocaml/issues/13551): fix a printing bug with `-ds=
+ource` when using<br>&nbsp; raw literal inside a locally abstract type cons=
+traint<br>&nbsp; (i.e. `let f: type \#for. ... `)<br>&nbsp; (Florian Angele=
+tti, report by Nick Roberts, review by Richard Eisenberg)<br><br data-mce-b=
+ogus=3D"1"></div></div></body></html>
+--=_a87e905f-ce1a-4267-9556-dadd22670b2a--
