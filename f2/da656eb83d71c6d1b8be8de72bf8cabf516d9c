@@ -1,0 +1,1536 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=polytechnique.org
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=P7A6Xtbh;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=Jq3SoD4l;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 1B0DAB80123
+	for <caml-list@tunbury.org>; Tue,  5 Nov 2024 13:22:51 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=lGQjVmU7i4sggw8n4EcSaFqMKxdVH7j+xyw+MAY0iv0=;
+  b=P7A6Xtbh6sYZvQblcZrrLG55HjrFclEgE+zK+PNKnz20NyJBevVtFUt6
+   RmiKOpPzSCCewyrgXbYiTwQn/BYpTfUR4imbCHbWicg6/MlIyk4GN4oK1
+   WD0C62QqTTjqlxVkxx+OisqbXLvVVlUMJubt6Gblzr+rU+HS10tsAMK/U
+   0=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.11,260,1725314400"; 
+   d="scan'208,217";a="192263894"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 05 Nov 2024 14:22:51 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id DF149E0D25; Tue,  5 Nov 2024 14:22:50 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 52DBDE00B7
+	for <caml-list@sympa.inria.fr>; Tue,  5 Nov 2024 14:22:48 +0100 (CET)
+IronPort-SDR: 672a1c26_lPi3HRo59AK2/DpDLkcAotXMBsIIaXcbJIUka9YljptgCZo
+ QE8apBkv5T3pEUIZugs4GiyHswwTdHGvSAlH2Qw==
+X-IPAS-Result: =?us-ascii?q?A0GGBAAiGypngSIeaIFaFoJGAoE/WygZAWNaMwcISAOEF?=
+ =?us-ascii?q?zyDT44fkUuKd4FWgVseFAEDAQ0uAQwGAQIEAQEDAQIBggyCdAKKNAIfBgEEM?=
+ =?us-ascii?q?AkOAQIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABAT0FSYV7DUkBE?=
+ =?us-ascii?q?AGBahk4Ux50AQEBAQEBAQEBAQEBAQEiAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQIMAYEQDgMGChMBATgYIwMUAQYDAhEBN?=
+ =?us-ascii?q?QMBEwESGoIPWYIfRQMFDAaSXJtKeoEygQGCDAEBBoEIPgIBCwIFAQ4JJtoGg?=
+ =?us-ascii?q?WQJgUiFaoJIGgEqSGoChEaDHYEfJw+BVUSBFTWBBm1Rb4I/CxcBAQEBgSgUA?=
+ =?us-ascii?q?QFNCYMlgmmCKgwVahI4CYNiJYEWEIZigQ2EAYM8E4YggTSIP4FHSzMyAVUTF?=
+ =?us-ascii?q?wsHBWCBGQOBeoFXgTmBUUOCXUqFG4EFOYIRaUs6Ag0CNoIkJFmCUINYgUWEc?=
+ =?us-ascii?q?IRsfR1AAwttPTUUG514AQkxaQFGgl4OHx9aChgTARgRAgQcAjZDGQ8CCBEKB?=
+ =?us-ascii?q?BEWBhkLDQQskk4oBSh0sSs0B4QdgV0GDIkDgSSVdoQEgVaLK5IGh0IimFUig?=
+ =?us-ascii?q?jSHJIElCYFtaohwjCM8BCqFJoFnOoFcMxowQw0QAoJICUYcD1eNUwIBFoNYE?=
+ =?us-ascii?q?IEugxs7vwxCNQIBAQ4pAgcBCgEBAwmFYgEBhTeEa4FLAQE?=
+IronPort-PHdr: A9a23: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
+ ZoKiBDH2PvlYJNRA3GbJw==
+IronPort-Data: A9a23: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
+ wSR
+IronPort-HdrOrdr: A9a23:M26CTq+JGR7wjee0emduk+DlI+orL9Y04lQ7vn2ZKCYlEfBw8v
+ rFoB1173HJYVoqNU3I+urhBEDjexLhHPdOiOF7AV7IZmbbUQWTQL1K3M/L/HnLGiH19OJRvJ
+ 0QEZRWOZnXFlY/qc775WCDYrIdKTS8gcWVuds=
+X-Talos-CUID: =?us-ascii?q?9a23=3ANMn/YmoV5lfpdIDusfDEoGzmUeMvX0DR42/SGVS?=
+ =?us-ascii?q?DG0ZjU7eNQ3PT06wxxg=3D=3D?=
+X-Talos-MUID: 9a23:A5zj4QTYID+VGuYhRXTTw25DM8RWwp6jS0kfsJkgoJSBZHZJbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.11,260,1725314400"; 
+   d="scan'208,217";a="100795364"
+X-URL-ContentFilter: 
+X-MGA-submission: =?us-ascii?q?MDEUWwbsPewEjOwAVXB6jcvSVIzpePkvgbdRuK?=
+ =?us-ascii?q?m1XNgvgzYMhYcwWiNrn/uawrcB6u/dNILyw29pGwjsn5VMUzRoLIys8W?=
+ =?us-ascii?q?GttcuBwgfuhcTqRamZhpC5DxvvSRLrzDKDecLhjjg/BMgtfjia3BjZOq?=
+ =?us-ascii?q?r4e6PWLvPLm94oj9qbRvUjWA=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2024 14:22:47 +0100
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 7A1925649DD;
+	Tue,  5 Nov 2024 14:22:45 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1730812965;
+	bh=h1k64kAthfQggFoax+gOoXPT2PpXW79yl9V1eHbcLng=;
+	h=From:To:Subject:Date:Message-ID;
+	b=Jq3SoD4lVPnQd+bC6VPhlBLIkY9tju085EzSOiqamJGUGdQQp05njpRihfMaPXFQJ
+	 7D/HQZ9MBNSD7U5TSmQ8UBbkR/cP2GnOabEhuQ5AyVCUsMnIaest36pv+Sb+/zEgJ4
+	 zX/6B0gkOpV+RC9I8RIv3zq4fA9HIWUlPhoOL6gM=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 05 Nov 2024 14:22:45 +0100
+Message-ID: <m2v7x1n7bu.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Nov  5 14:22:45 2024 +0100 (CET))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.170633, queueID=B13FC5649DE
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19195
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-11/m2v7x1n7bu.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of October 29 to
+November 05, 2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+GPTar 1.0.0
+opam 2.3.0~rc1
+Call for Contributions: BOB 2025 (Berlin, March 14 - Deadline Nov 15)
+First beta release for OCaml 5.3.0
+dune 3.16
+Other OCaml News
+Old CWN
+
+
+GPTar 1.0.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-gptar-1-0-0/15527/1>
+
+
+Reynir Bj=C3=B6rnsson announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  I am pleased to announce [GPTar] 1.0.0!
+
+  GPTar is a small library to create a /tartition table/, that is, a tar
+  archive that also contains a valid GUID partition table (GPT).
+
+  It exploits the fact that the important areas of a protective MBR in
+  GPT and a tar header are mostly disjoint. The tar header fits almost
+  exactly in the boot strap code of a master boot record (MBR) with the
+  last 54 bytes of the tar header overlapping with the partition table
+  of the (protective) MBR. Thakfully, those are the 54 last bytes of the
+  155 byte long NUL terminated "filename prefix" of the tar header. So
+  as long as we put a NUL byte before the partition table tar will
+  happily ignore the partition table data.
+
+  To further hide the actual GPT header & partition table from tar
+  utilities the first tar header uses the GNU volume header extension
+  with the GPT header & partition table as the "file contents". This
+  makes GNU tar list the volume header but when extracting files the
+  volume header is skipped. For *released* versions of bsdtar this
+  unfortunately results in a "bad archive" error - however, the as-yet
+  unreleased libarchive/bsdtar fixes this "bug" and allows for this
+  abuse of volume headers (see the "update" blog post).
+
+  For more in depth details you may be interested in reading the
+  following two blog articles:
+
+  =E2=80=A2 <https://blog.robur.coop/articles/gptar.html>
+  =E2=80=A2 <https://blog.robur.coop/articles/gptar-update.html>
+
+
+[GPTar] <https://github.com/reynir/gptar>
+
+Why!?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Great question. At [Robur] we developed an [opam-mirror] unikernel
+  that acts as an opam repository and package source archive cache
+  similar to <https://opam.ocaml.org/>. There we use tar as a filesystem
+  for the package source archive cache. Later, we started using the end
+  of the block device to cache data such as git state and computed
+  package source archive checksums.
+
+  The neat feature is we could use regular old bsdtar or GNU tar in the
+  host system to inspect the tar filesystem data. The downside was the
+  lack of a partition table using offsets provided by boot arguments for
+  where to find the cached data. With GPTar we can have both! Inspect
+  the tar filesystem data while being more robust with a partition
+  table.
+
+  Also, it was very fun to develop.
+
+
+[Robur] <https://robur.coop/>
+
+[opam-mirror] <https://git.robur.coop/robur/opam-mirror/>
+
+
+opam 2.3.0~rc1
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-opam-2-3-0-rc1/15533/1>
+
+
+Kate announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We're happy to announce the first and hopefully only release candidate
+  of opam 2.3.0.
+
+  This version does not have any significant change compared to the
+  previous 2.3.0~beta2 release and we hope the final release to also
+  have no significant change.  Regardless, we invite users to test this
+  version to make sure there isn't any regressions.
+
+  Unless a regression is spotted or another problem arises, we hope to
+  have the final release of 2.3.0 out on the 12th of November.
+
+
+Try it!
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The upgrade instructions are pretty much the same:
+
+  For Unix systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 bash -c "sh <(curl -fsSL https://opam.ocaml.org/install.sh) --v=
+ersion 2.3.0~rc1"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  or from PowerShell for Windows systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 Invoke-Expression "& { $(Invoke-RestMethod https://opam.ocaml.o=
+rg/install.ps1) } -Version 2.3.0~rc1"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Please report any issues to [the bug-tracker].
+
+
+[the bug-tracker] <https://github.com/ocaml/opam/issues>
+
+
+Call for Contributions: BOB 2025 (Berlin, March 14 - Deadline Nov 15)
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/call-for-contributions-bob-2025-berlin-march=
+-14-deadline-nov-15/15371/2>
+
+
+Later in this thread, Michael Sperber announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  OCaml content is most welcome at BOB - send us your proposal!
+
+
+First beta release for OCaml 5.3.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/first-beta-release-for-ocaml-5-3-0/15551/1>
+
+
+octachron announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  One month and half after the release of the first alpha for OCaml
+  5.3.0, the release of OCaml 5.3.0 is drawing near.
+
+  The internal API of the compiler libraries has been frozen, and most
+  core developer tools support (or will support soon) the new version of
+  the compiler.
+
+  We have thus released a first beta version of OCaml 5.3.0 to help you
+  update your software and libraries ahead of the release (see below for
+  the installation instructions). More information about the whole
+  release process is now available in the [compiler repository].
+
+  Compared to the first alpha release, this beta contains a few runtime
+  or typechecker fixes, a handful of fixes for the runtime event library
+  and other miscellaneous fixes.
+
+  Exceptionally, this beta release also introduces a new flag
+  `-keywords` for the compiler. This backward compatibility flag aims to
+  help compiling old code that are using `effect` as a normal
+  identifier, now that `effect` is a keyword in the new effect handler
+  syntax.
+
+  The progresses on stabilising the ecosystem are tracked on the [opam
+  readiness for 5.3.0 meta-issue].
+
+  The full release is expected in the end of November or beginning of
+  December, see the [new prospective calendar] for more information.
+
+  If you find any bugs, please report them on [OCaml's issue tracker].
+
+  If you are interested in full list of features and bug fixes of the
+  new OCaml version, the updated change log for OCaml 5.3.0 is available
+  [on GitHub] and a short list of the changes since the last alpha is
+  available below.
+
+
+[compiler repository]
+<https://github.com/ocaml/ocaml/blob/trunk/release-info/introduction.md>
+
+[opam readiness for 5.3.0 meta-issue]
+<https://github.com/ocaml/opam-repository/issues/26596>
+
+[new prospective calendar]
+<https://github.com/ocaml/ocaml/blob/trunk/release-info/calendar.md>
+
+[OCaml's issue tracker] <https://github.com/ocaml/ocaml/issues>
+
+[on GitHub] <https://github.com/ocaml/ocaml/blob/5.3/Changes>
+
+Installation Instructions
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The base compiler can be installed as an opam switch with the
+  following commands on opam 2.1 and later:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create 5.3.0~beta1
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The source code for the beta is also available at these addresses:
+
+  =E2=80=A2 [GitHub]
+  =E2=80=A2 [OCaml archives at Inria]
+
+
+[GitHub] <https://github.com/ocaml/ocaml/archive/5.3.0-beta1.tar.gz>
+
+[OCaml archives at Inria]
+<https://caml.inria.fr/pub/distrib/ocaml-5.3/ocaml-5.3.0~beta1.tar.gz>
+
+=E2=97=8A Fine-Tuned Compiler Configuration
+
+  If you want to tweak the configuration of the compiler, you can switch
+  to the option variant with:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create <switch_name> ocaml-variants.5.3.0~beta1+opt=
+ions <option_list>
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  where `option_list' is a space separated list of `ocaml-option-*'
+  packages. For instance, for a flambda and no-flat-float-array switch:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  switch create 5.3.0~beta1+flambda+nffa
+  ocaml-variants.5.3.0~beta1+options ocaml-option-flambda
+  ocaml-option-no-flat-float-array
+
+  All available options can be listed with `opam search ocaml-option'.
+
+
+Changes since the first alpha
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A Runtime fixes
+
+  =E2=80=A2 [#13502]: Fix misindexing related to `Gc.finalise_last' that co=
+uld
+    prevent finalisers from being run.  (Nick Roberts, review by Mark
+    Shinwell)
+  =E2=80=A2 [#13402], [#13512], [#13549], [#13553]: Revise bytecode
+    implementation of callbacks so that it no longer produces dangling
+    registered bytecode fragments.  (Xavier Leroy, report by Jan
+    Midtgaard, analysis by Stephen Dolan, review by Miod Vallat)
+  =E2=80=A2 [#13520]: Fix compilation of native-code version of
+    systhreads. Bytecode fields were being included in the thread
+    descriptors.  (David Allsopp, review by S=C3=A9bastien Hinderer and Miod
+    Vallat)
+
+
+  [#13502] <https://github.com/ocaml/ocaml/issues/13502>
+
+  [#13402] <https://github.com/ocaml/ocaml/issues/13402>
+
+  [#13512] <https://github.com/ocaml/ocaml/issues/13512>
+
+  [#13549] <https://github.com/ocaml/ocaml/issues/13549>
+
+  [#13553] <https://github.com/ocaml/ocaml/issues/13553>
+
+  [#13520] <https://github.com/ocaml/ocaml/issues/13520>
+
+
+=E2=97=8A Typechecker fixes
+
+  =E2=80=A2 [#13579], [#13583]: Unsoundness involving non-injective types +
+    gadts (Jacques Garrigue, report by @v-gb, review by Richard
+    Eisenberg and Florian Angeletti)
+  =E2=80=A2 [#13388], [#13540]: raises an error message (and not an internal
+    compiler error) when two local substitutions are incompatible (for
+    instance `module type S:=3Dsig end type t:=3D(module S)') (Florian
+    Angeletti, report by Nailen Matschke, review by Gabriel Scherer, and
+    Leo White)
+
+
+  [#13579] <https://github.com/ocaml/ocaml/issues/13579>
+
+  [#13583] <https://github.com/ocaml/ocaml/issues/13583>
+
+  [#13388] <https://github.com/ocaml/ocaml/issues/13388>
+
+  [#13540] <https://github.com/ocaml/ocaml/issues/13540>
+
+
+=E2=97=8A Compiler flag
+
+  =E2=80=A2 [#13471]: add `-keywords <version?+list>' flag to define the li=
+st of
+    keywords recognized by the lexer, for instance `-keywords 5.2'
+    disable the `effect' keyword.  (Florian Angeletti, review by Gabriel
+    Scherer)
+
+
+  [#13471] <https://github.com/ocaml/ocaml/issues/13471>
+
+
+=E2=97=8A Runtime event library fixes
+
+  =E2=80=A2 [#13419]: Fix memory bugs in runtime events system.  (B. Szilva=
+sy
+    and Nick Barnes, review by Miod Vallat, Nick Barnes, Tim
+    McGilchrist, and Gabriel Scherer)
+  =E2=80=A2 [#13407]: Add Runtime_events.EV_EMPTY_MINOR (Thomas Leonard)
+  =E2=80=A2 [#13522]: Confirm runtime events ring is still active after
+    callback.  (KC Sivaramakrishnan, review by Sadiq Jaffer and Miod
+    Vallat)
+  =E2=80=A2 [#13529]: Do not write to event ring after going out of stw
+    participant set.  (KC Sivaramakrishnan, review by Sadiq Jaffer)
+
+
+  [#13419] <https://github.com/ocaml/ocaml/issues/13419>
+
+  [#13407] <https://github.com/ocaml/ocaml/issues/13407>
+
+  [#13522] <https://github.com/ocaml/ocaml/issues/13522>
+
+  [#13529] <https://github.com/ocaml/ocaml/issues/13529>
+
+
+=E2=97=8A Documentation
+
+  =E2=80=A2 [#13424]: Fix `Gc.quick_stat' documentation to clarify that ret=
+urned
+    fields `live_words', `live_blocks', `free_words', and `fragments'
+    are not zero.  (Jan Midtgaard, review by Damien Doligez and KC
+    Sivaramakrishnan)
+  =E2=80=A2 [#13440]: Update documentation of `Gc.{control,get,set}' to ref=
+lect
+    fields not currently supported on OCaml 5.  (Jan Midtgaard, review
+    by Gabriel Scherer)
+  =E2=80=A2 [#13469], [#13474], [#13535]: Document that [Hashtbl.create n]
+    creates a hash table with a default minimal size, even if [n] is
+    very small or negative.  (Antonin D=C3=A9cimo, Nick Bares, report by
+    Nikolaus Huber and Jan Midtgaard, review by Florian Angeletti, Anil
+    Madhavapeddy, Gabriel Scherer, and Miod Vallat)
+
+
+  [#13424] <https://github.com/ocaml/ocaml/issues/13424>
+
+  [#13440] <https://github.com/ocaml/ocaml/issues/13440>
+
+  [#13469] <https://github.com/ocaml/ocaml/issues/13469>
+
+  [#13474] <https://github.com/ocaml/ocaml/issues/13474>
+
+  [#13535] <https://github.com/ocaml/ocaml/issues/13535>
+
+
+=E2=97=8A Standard library internal fix
+
+  =E2=80=A2 [#13543]: Remove some String-Bytes conversion from the stdlib to
+    behave better with js_of_ocaml (Hugo Heuzard, review by Gabriel
+    Scherer)
+
+
+  [#13543] <https://github.com/ocaml/ocaml/issues/13543>
+
+
+=E2=97=8A Toplevel fix
+
+  =E2=80=A2 [#13263], [#13560]: fix printing true and false in toplevel and
+    error messages (no more unexpected #true) (Florian Angeletti, report
+    by Samuel Vivien, review by Gabriel Scherer)
+
+
+  [#13263] <https://github.com/ocaml/ocaml/issues/13263>
+
+  [#13560] <https://github.com/ocaml/ocaml/issues/13560>
+
+
+=E2=97=8A Compiler internals
+
+  =E2=80=A2 [#13391], [#13551]: fix a printing bug with `-dsource' when usi=
+ng
+    raw literal inside a locally abstract type constraint (i.e. `let f:
+    type #for. ...')  (Florian Angeletti, report by Nick Roberts, review
+    by Richard Eisenberg)
+
+
+  [#13391] <https://github.com/ocaml/ocaml/issues/13391>
+
+  [#13551] <https://github.com/ocaml/ocaml/issues/13551>
+
+
+dune 3.16
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-3-16/14889/2>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We have release 3.16.1. This is a minor release of Dune to correct a
+  bug related to the C++ compile. It comes with the following changes:
+
+
+3.16.1 (2024-10-30)
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A Fixed
+
+  =E2=80=A2 Call the C++ compiler with `-std=3Dc++11' when using OCaml >=3D=
+ 5.0
+    (#10962, @kit-ty-kate)
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Making Crypto Safer: Introducing the ARGOS Project]
+  =E2=80=A2 [Postes, t=C3=A9l=C3=A9graphes et t=C3=A9l=C3=A9phones, next st=
+eps]
+  =E2=80=A2 [GPTar (update)]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Making Crypto Safer: Introducing the ARGOS Project]
+<https://tarides.com/blog/2024-10-30-making-crypto-safer-introducing-the-ar=
+gos-project>
+
+[Postes, t=C3=A9l=C3=A9graphes et t=C3=A9l=C3=A9phones, next steps]
+<https://blog.robur.coop/articles/2024-10-29-ptt.html>
+
+[GPTar (update)] <https://blog.robur.coop/articles/gptar-update.html>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-11-05 Tue 14:21 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.10.29.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.11.12.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of October 29 to Novembe=
+r 05, 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">GPTar 1.0.0</a></li>
+<li><a href=3D"#2">opam 2.3.0~rc1</a></li>
+<li><a href=3D"#3">Call for Contributions: BOB 2025 (Berlin, March 14 - Dea=
+dline Nov 15)</a></li>
+<li><a href=3D"#4">First beta release for OCaml 5.3.0</a></li>
+<li><a href=3D"#5">dune 3.16</a></li>
+<li><a href=3D"#6">Other OCaml News</a></li>
+<li><a href=3D"#org286991f">Old CWN</a></li>
+</ul>
+</div>
+</div>
+
+
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">GPTar 1.0.0</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-gptar-1-0-0/15527/1">ht=
+tps://discuss.ocaml.org/t/ann-gptar-1-0-0/15527/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org854dc0a" class=3D"outline-3">
+<h3 id=3D"org854dc0a">Reynir Bj=C3=B6rnsson announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org854dc0a">
+<p>
+I am pleased to announce <a href=3D"https://github.com/reynir/gptar">GPTar<=
+/a> 1.0.0!
+</p>
+
+<p>
+GPTar is a small library to create a <i>tartition table</i>, that is, a tar=
+ archive that also contains a valid GUID partition table (GPT).
+</p>
+
+<p>
+It exploits the fact that the important areas of a protective MBR in GPT an=
+d a tar header are mostly disjoint. The tar header fits almost exactly in t=
+he boot strap code of a master boot record (MBR) with the last 54 bytes of =
+the tar header overlapping with the partition table of the (protective) MBR=
+. Thakfully, those are the 54 last bytes of the 155 byte long NUL terminate=
+d "filename prefix" of the tar header. So as long as we put a NUL byte befo=
+re the partition table tar will happily ignore the partition table data.
+</p>
+
+<p>
+To further hide the actual GPT header &amp; partition table from tar utilit=
+ies the first tar header uses the GNU volume header extension with the GPT =
+header &amp; partition table as the "file contents". This makes GNU tar lis=
+t the volume header but when extracting files the volume header is skipped.=
+ For <b>released</b> versions of bsdtar this unfortunately results in a "ba=
+d archive" error - however, the as-yet unreleased libarchive/bsdtar fixes t=
+his "bug" and allows for this abuse of volume headers (see the "update" blo=
+g post).
+</p>
+
+<p>
+For more in depth details you may be interested in reading the following tw=
+o blog articles:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://blog.robur.coop/articles/gptar.html">https://blog.ro=
+bur.coop/articles/gptar.html</a></li>
+<li><a href=3D"https://blog.robur.coop/articles/gptar-update.html">https://=
+blog.robur.coop/articles/gptar-update.html</a></li>
+</ul>
+</div>
+
+<div id=3D"outline-container-orga951835" class=3D"outline-4">
+<h4 id=3D"orga951835">Why!?</h4>
+<div class=3D"outline-text-4" id=3D"text-orga951835">
+<p>
+Great question. At <a href=3D"https://robur.coop/">Robur</a> we developed a=
+n <a href=3D"https://git.robur.coop/robur/opam-mirror/">opam-mirror</a> uni=
+kernel that acts as an opam repository and package source archive cache sim=
+ilar to <a href=3D"https://opam.ocaml.org/">https://opam.ocaml.org/</a>. Th=
+ere we use tar as a filesystem for the package source archive cache. Later,=
+ we started using the end of the block device to cache data such as git sta=
+te and computed package source archive checksums.
+</p>
+
+<p>
+The neat feature is we could use regular old bsdtar or GNU tar in the host =
+system to inspect the tar filesystem data. The downside was the lack of a p=
+artition table using offsets provided by boot arguments for where to find t=
+he cached data. With GPTar we can have both! Inspect the tar filesystem dat=
+a while being more robust with a partition table.
+</p>
+
+<p>
+Also, it was very fun to develop.
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">opam 2.3.0~rc1</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-opam-2-3-0-rc1/15533/1"=
+>https://discuss.ocaml.org/t/ann-opam-2-3-0-rc1/15533/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org3d39e93" class=3D"outline-3">
+<h3 id=3D"org3d39e93">Kate announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3d39e93">
+<p>
+We're happy to announce the first and hopefully only release candidate of o=
+pam 2.3.0.
+</p>
+
+<p>
+This version does not have any significant change compared to the previous =
+2.3.0~beta2 release
+and we hope the final release to also have no significant change.
+Regardless, we invite users to test this version to make sure there isn't a=
+ny regressions.
+</p>
+
+<p>
+Unless a regression is spotted or another problem arises, we hope to have t=
+he final release of 2.3.0 out on the 12th of November.
+</p>
+</div>
+
+<div id=3D"outline-container-org14bb503" class=3D"outline-4">
+<h4 id=3D"org14bb503">Try it!</h4>
+<div class=3D"outline-text-4" id=3D"text-org14bb503">
+<p>
+The upgrade instructions are pretty much the same:
+</p>
+
+<p>
+For Unix systems
+</p>
+<pre class=3D"example" id=3D"orga590a28">
+bash -c "sh &lt;(curl -fsSL https://opam.ocaml.org/install.sh) --version 2.=
+3.0~rc1"
+</pre>
+
+<p>
+or from PowerShell for Windows systems
+</p>
+<pre class=3D"example" id=3D"org1026ee9">
+Invoke-Expression "&amp; { $(Invoke-RestMethod https://opam.ocaml.org/insta=
+ll.ps1) } -Version 2.3.0~rc1"
+</pre>
+
+<p>
+Please report any issues to <a href=3D"https://github.com/ocaml/opam/issues=
+">the bug-tracker</a>.
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Call for Contributions: BOB 2025 (Berlin, March 14 - Deadline =
+Nov 15)</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/call-for-contributions-bob-=
+2025-berlin-march-14-deadline-nov-15/15371/2">https://discuss.ocaml.org/t/c=
+all-for-contributions-bob-2025-berlin-march-14-deadline-nov-15/15371/2</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org2946ef6" class=3D"outline-3">
+<h3 id=3D"org2946ef6">Later in this thread, Michael Sperber announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org2946ef6">
+<p>
+OCaml content is most welcome at BOB - send us your proposal!
+</p>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">First beta release for OCaml 5.3.0</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/first-beta-release-for-ocam=
+l-5-3-0/15551/1">https://discuss.ocaml.org/t/first-beta-release-for-ocaml-5=
+-3-0/15551/1</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org65b46ea" class=3D"outline-3">
+<h3 id=3D"org65b46ea">octachron announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org65b46ea">
+<p>
+One month and half after the release of the first alpha for OCaml 5.3.0, th=
+e release of OCaml 5.3.0 is drawing near.
+</p>
+
+<p>
+The internal API of the compiler libraries has been frozen, and most core d=
+eveloper tools support (or will support soon) the new version of the compil=
+er.
+</p>
+
+<p>
+We have thus released a first beta version of OCaml 5.3.0 to help you updat=
+e your software and libraries ahead of the release (see below for the insta=
+llation instructions). More information about the whole release process is =
+now available in the <a href=3D"https://github.com/ocaml/ocaml/blob/trunk/r=
+elease-info/introduction.md">compiler repository</a>.
+</p>
+
+<p>
+Compared to the first alpha release, this beta contains a few runtime or ty=
+pechecker fixes, a handful of fixes for the runtime event library and other=
+ miscellaneous fixes.
+</p>
+
+<p>
+Exceptionally, this beta release also introduces a new flag `-keywords` for=
+ the compiler. This backward compatibility flag aims to help compiling old =
+code that are using `effect` as a normal identifier, now that `effect` is a=
+ keyword in the new effect handler syntax.
+</p>
+
+<p>
+The progresses on stabilising the ecosystem are tracked on the <a href=3D"h=
+ttps://github.com/ocaml/opam-repository/issues/26596">opam readiness for 5.=
+3.0 meta-issue</a>.
+</p>
+
+<p>
+The full release is expected in the end of November or beginning of Decembe=
+r, see the <a href=3D"https://github.com/ocaml/ocaml/blob/trunk/release-inf=
+o/calendar.md">new prospective calendar</a> for more information.
+</p>
+
+<p>
+If you find any bugs, please report them on <a href=3D"https://github.com/o=
+caml/ocaml/issues">OCaml's issue tracker</a>.
+</p>
+
+<p>
+If you are interested in full list of features and bug fixes of the new OCa=
+ml version, the updated change log for OCaml 5.3.0 is available <a href=3D"=
+https://github.com/ocaml/ocaml/blob/5.3/Changes">on GitHub</a> and a short =
+list of the changes since the last alpha is available below.
+</p>
+</div>
+
+<div id=3D"outline-container-orgb870021" class=3D"outline-4">
+<h4 id=3D"orgb870021">Installation Instructions</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb870021">
+<p>
+The base compiler can be installed as an opam switch with the following com=
+mands
+on opam 2.1 and later:
+</p>
+
+<pre class=3D"example" id=3D"orgdea234e">
+opam update
+opam switch create 5.3.0~beta1
+</pre>
+
+<p>
+The source code for the beta is also available at these addresses:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/archive/5.3.0-beta1.tar.gz">G=
+itHub</a></li>
+<li><a href=3D"https://caml.inria.fr/pub/distrib/ocaml-5.3/ocaml-5.3.0~beta=
+1.tar.gz">OCaml archives at Inria</a></li>
+</ul>
+</div>
+
+<ul class=3D"org-ul">
+<li><a id=3D"org8fbc600"></a>Fine-Tuned Compiler Configuration<br />
+<div class=3D"outline-text-5" id=3D"text-org8fbc600">
+<p>
+If you want to tweak the configuration of the compiler, you can switch to t=
+he option variant with:
+</p>
+
+<pre class=3D"example" id=3D"org5efe396">
+opam update
+opam switch create &lt;switch_name&gt; ocaml-variants.5.3.0~beta1+options &=
+lt;option_list&gt;
+</pre>
+
+<p>
+where <code>option_list</code> is a space separated list of <code>ocaml-opt=
+ion-*</code> packages. For instance, for a flambda and no-flat-float-array =
+switch:
+</p>
+
+<pre class=3D"example" id=3D"org02ddf93">
+opam
+</pre>
+<p>
+switch create 5.3.0~beta1+flambda+nffa ocaml-variants.5.3.0~beta1+options o=
+caml-option-flambda ocaml-option-no-flat-float-array
+</p>
+
+<p>
+All available options can be listed with <code>opam search ocaml-option</co=
+de>.
+</p>
+</div>
+</li>
+</ul>
+</div>
+
+<div id=3D"outline-container-orgc1faa39" class=3D"outline-4">
+<h4 id=3D"orgc1faa39">Changes since the first alpha</h4>
+<div class=3D"outline-text-4" id=3D"text-orgc1faa39">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orge7b18ba"></a>Runtime fixes<br />
+<div class=3D"outline-text-5" id=3D"text-orge7b18ba">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13502">#13502</a>: Fix=
+ misindexing related to <code>Gc.finalise_last</code> that could prevent
+finalisers from being run.
+(Nick Roberts, review by Mark Shinwell)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13402">#13402</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13512">#13512</a>, <a href=3D=
+"https://github.com/ocaml/ocaml/issues/13549">#13549</a>, <a href=3D"https:=
+//github.com/ocaml/ocaml/issues/13553">#13553</a>: Revise bytecode implemen=
+tation of callbacks
+so that it no longer produces dangling registered bytecode fragments.
+(Xavier Leroy, report by Jan Midtgaard, analysis by Stephen Dolan,
+ review by Miod Vallat)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13520">#13520</a>: Fix=
+ compilation of native-code version of systhreads. Bytecode fields
+were being included in the thread descriptors.
+(David Allsopp, review by S=C3=A9bastien Hinderer and Miod Vallat)</li>
+</ul>
+</div>
+</li>
+
+<li><a id=3D"org8946d6d"></a>Typechecker fixes<br />
+<div class=3D"outline-text-5" id=3D"text-org8946d6d">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13579">#13579</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13583">#13583</a>: Unsoundnes=
+s involving non-injective types + gadts
+(Jacques Garrigue, report by @v-gb,
+ review by Richard Eisenberg and Florian Angeletti)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13388">#13388</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13540">#13540</a>: raises an =
+error message (and not an internal compiler error)
+when two local substitutions are incompatible (for instance <code>module ty=
+pe S:=3Dsig end type t:=3D(module S)</code>)
+(Florian Angeletti, report by Nailen Matschke, review by Gabriel Scherer, a=
+nd
+Leo White)</li>
+</ul>
+</div>
+</li>
+
+<li><a id=3D"org5dbf0d6"></a>Compiler flag<br />
+<div class=3D"outline-text-5" id=3D"text-org5dbf0d6">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13471">#13471</a>: add=
+ <code>-keywords &lt;version?+list&gt;</code> flag to define the list of ke=
+ywords
+recognized by the lexer, for instance <code>-keywords 5.2</code> disable th=
+e <code>effect</code>
+keyword.
+(Florian Angeletti, review by Gabriel Scherer)</li>
+</ul>
+</div>
+</li>
+
+<li><a id=3D"org43db2d2"></a>Runtime event library fixes<br />
+<div class=3D"outline-text-5" id=3D"text-org43db2d2">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13419">#13419</a>: Fix=
+ memory bugs in runtime events system.
+(B. Szilvasy and Nick Barnes, review by Miod Vallat, Nick Barnes,
+ Tim McGilchrist, and Gabriel Scherer)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13407">#13407</a>: Add=
+ Runtime_events.EV_EMPTY_MINOR
+(Thomas Leonard)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13522">#13522</a>: Con=
+firm runtime events ring is still active after callback.
+(KC Sivaramakrishnan, review by Sadiq Jaffer and Miod Vallat)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13529">#13529</a>: Do =
+not write to event ring after going out of stw participant set.
+(KC Sivaramakrishnan, review by Sadiq Jaffer)</li>
+</ul>
+</div>
+</li>
+
+<li><a id=3D"org2442843"></a>Documentation<br />
+<div class=3D"outline-text-5" id=3D"text-org2442843">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13424">#13424</a>: Fix=
+ <code>Gc.quick_stat</code> documentation to clarify that returned fields
+<code>live_words</code>, <code>live_blocks</code>, <code>free_words</code>,=
+ and <code>fragments</code> are not zero.
+(Jan Midtgaard, review by Damien Doligez and KC Sivaramakrishnan)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13440">#13440</a>: Upd=
+ate documentation of <code>Gc.{control,get,set}</code> to reflect fields
+not currently supported on OCaml 5.
+(Jan Midtgaard, review by Gabriel Scherer)</li>
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13469">#13469</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13474">#13474</a>, <a href=3D=
+"https://github.com/ocaml/ocaml/issues/13535">#13535</a>: Document that [Ha=
+shtbl.create n] creates a hash table
+with a default minimal size, even if [n] is very small or negative.
+(Antonin D=C3=A9cimo, Nick Bares, report by Nikolaus Huber and Jan Midtgaar=
+d,
+ review by Florian Angeletti, Anil Madhavapeddy, Gabriel Scherer,
+ and Miod Vallat)</li>
+</ul>
+</div>
+</li>
+
+<li><a id=3D"org57fb681"></a>Standard library internal fix<br />
+<div class=3D"outline-text-5" id=3D"text-org57fb681">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13543">#13543</a>: Rem=
+ove some String-Bytes conversion from the stdlib to behave better
+with js_of_ocaml
+(Hugo Heuzard, review by Gabriel Scherer)</li>
+</ul>
+</div>
+</li>
+
+<li><a id=3D"org099ca03"></a>Toplevel fix<br />
+<div class=3D"outline-text-5" id=3D"text-org099ca03">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13263">#13263</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13560">#13560</a>: fix printi=
+ng true and false in toplevel and error
+messages (no more unexpected #true)
+(Florian Angeletti, report by Samuel Vivien, review by Gabriel Scherer)</li>
+</ul>
+</div>
+</li>
+
+<li><a id=3D"org20e8a8b"></a>Compiler internals<br />
+<div class=3D"outline-text-5" id=3D"text-org20e8a8b">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13391">#13391</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13551">#13551</a>: fix a prin=
+ting bug with <code>-dsource</code> when using
+raw literal inside a locally abstract type constraint
+(i.e. <code>let f: type #for. ...</code>)
+(Florian Angeletti, report by Nick Roberts, review by Richard Eisenberg)</l=
+i>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">dune 3.16</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-3-16/14889/2">http=
+s://discuss.ocaml.org/t/ann-dune-3-16/14889/2</a>
+</p>
+</div>
+
+<div id=3D"outline-container-org8625d55" class=3D"outline-3">
+<h3 id=3D"org8625d55">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8625d55">
+<p>
+We have release 3.16.1. This is a minor release of Dune to correct a bug re=
+lated to the C++ compile. It comes with the following changes:
+</p>
+</div>
+
+<div id=3D"outline-container-org8fd35b8" class=3D"outline-4">
+<h4 id=3D"org8fd35b8">3.16.1 (2024-10-30)</h4>
+<div class=3D"outline-text-4" id=3D"text-org8fd35b8">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orga2079d6"></a>Fixed<br />
+<div class=3D"outline-text-5" id=3D"text-orga2079d6">
+<ul class=3D"org-ul">
+<li>Call the C++ compiler with <code>-std=3Dc++11</code> when using OCaml &=
+gt;=3D 5.0
+(#10962, @kit-ty-kate)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+</div>
+<div id=3D"outline-container-org44478a6" class=3D"outline-3">
+<h3 id=3D"org44478a6">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org44478a6">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2024-10-30-making-crypto-safer-intr=
+oducing-the-argos-project">Making Crypto Safer: Introducing the ARGOS Proje=
+ct</a></li>
+<li><a href=3D"https://blog.robur.coop/articles/2024-10-29-ptt.html">Postes=
+, t=C3=A9l=C3=A9graphes et t=C3=A9l=C3=A9phones, next steps</a></li>
+<li><a href=3D"https://blog.robur.coop/articles/gptar-update.html">GPTar (u=
+pdate)</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+<div id=3D"outline-container-org286991f" class=3D"outline-2">
+<h2 id=3D"org286991f">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org286991f">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org117d6b3">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
