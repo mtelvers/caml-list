@@ -1,0 +1,438 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=math.cnrs.fr
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=tkQn5JzP;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=math.cnrs.fr header.i=@math.cnrs.fr header.a=rsa-sha256 header.s=mail header.b=cYLfBnUu;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=math.cnrs.fr header.i=@math.cnrs.fr header.a=rsa-sha256 header.s=mail header.b=fCkXZVdS;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 3001DB80123
+	for <caml-list@tunbury.org>; Sat, 16 Nov 2024 03:40:20 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:from:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=hdMYHHmyGUTITYhBsBhYeR+JdB/d2Lh97+9KUWlOuZw=;
+  b=tkQn5JzP3TaIx/Qs3/rK8JfOPouqgoFkY22o04RZgSg/XnV1RIyDh680
+   6/c5urFE7ssNGR1HePx/l2up+ZZgJyQ3oVDCvztgp2Gqa3QfVZMODAEzf
+   ad8N9Bxhh1QsM1G2PTPCNGTUGiejAqrfreCam/K2NVIDmkh4gKdochX0f
+   0=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@math.cnrs.fr
+X-IronPort-AV: E=Sophos;i="6.12,158,1728943200"; 
+   d="asc'?scan'208,217";a="194181323"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 16 Nov 2024 04:40:20 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 5B6E5E0D1E; Sat, 16 Nov 2024 04:40:20 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id CDA08E00B7
+	for <caml-list@sympa.inria.fr>; Sat, 16 Nov 2024 04:40:16 +0100 (CET)
+IronPort-SDR: 6738141e_ZryZtkursU/R9PVMviYDR4l24BHydBVESq1gCiZ48wNp34e
+ QRRz0F7XFG7SZcTDhT2dHps8aEkyn5aX9r/5lWQ==
+X-IPAS-Result: =?us-ascii?q?A0FaBwBiEzhnd5b/1oZaHQEBPAEFBQECAQkBgWgCgkJ9B?=
+ =?us-ascii?q?lQzBAtIhFaDT4UtiEUtnhoUgQgDXwgHAQMBCAUUAgECDhIIAQIEAQEDAQOPT?=
+ =?us-ascii?q?h8HAQQwCQ4BAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAFDSYV7D?=
+ =?us-ascii?q?YJbO3GBJQEBAQEBAQEBAQEBAQEdAg0HV0MGHQEBJhJcAnECAQGCfQGCZAMRs?=
+ =?us-ascii?q?haBFhyBAYIMAQEGgQhTD37Ze4EZBwMGgUgBgVeGdAEqgTACAoQLhXmBTYE8D?=
+ =?us-ascii?q?oIFOAeBdIFcBIEpAQsHAYN8gmmCRS07glRhZBIjAoEThCBRgRCBa1uHQYF5k?=
+ =?us-ascii?q?ACBaQNZMgFVExcLBwWBdgOCMoEWgTaBUYMQSoUMRj83ghNpSzcCDQI2giR9g?=
+ =?us-ascii?q?k+BJQQFg2yEbEAnLwMDAwODPIQHHTYKAgELbT01CQsbm20ISYEcgVEBCjJpA?=
+ =?us-ascii?q?UaDAEsUbyFPATICDCQdDgksHpMyC5EiD1yhAAeCHoF/BYZWgzCCC5UyBg8EL?=
+ =?us-ascii?q?4QEjQKGRgiSeph3jX+VaYU/gUIlOmxwTSeDMxM8AxkPV41hhE1Ug1bBHCU1O?=
+ =?us-ascii?q?wIHAQoBAQMJgjmDDQEBiRY0gUsBAQ?=
+IronPort-PHdr: A9a23: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
+ gEHyK7oa4EaKo290Ep4cR90htaSc3c=
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:puCiZKrevehRBMCQoLEJ20saV5omeYIsimQD101hICG9Afbo7v
+ xG/c576faQslx+ZJhOo6HiBEDtewK5yXcX2/hyAV7BZmnbUQKTRekIgeTfKlbbakrDH4BmpM
+ FdmuRFebjN5IdB4PrH3A==
+X-Talos-CUID: =?us-ascii?q?9a23=3An2LUhGn1iibykDwd24VP7fKYnNzXOUyF/S7oe0u?=
+ =?us-ascii?q?/NT0qcq+EUGTXpqZEqMU7zg=3D=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3AhhZstg9o2MczJ1MJIo6jPBiQf/tQxIWuIVxRqK8?=
+ =?us-ascii?q?Xg9Gib3MqEhib0Q3iFw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,158,1728943200"; 
+   d="asc'?scan'208,217";a="101779022"
+X-MGA-submission: =?us-ascii?q?MDGDQeifKGWE5SGlPvI84rRjGoiksluANlQerj?=
+ =?us-ascii?q?wGC2APj6FEsN5Mb6ZsQbj9tgLLKqUMjFxhq32AP8Nr6mZ2gVU1+HkdxB?=
+ =?us-ascii?q?7a/OiRF9mOIKAP9xoquUzpuLcmBf8aEdMp3B+BPVGl6AMXwk1zjphm2L?=
+ =?us-ascii?q?MYbRm0u2LzJLG4AavN5cYzMQ=3D=3D?=
+Received: from margaux.mathrice.fr (HELO margaux.math.cnrs.fr) ([134.214.255.150])
+  by mail3-smtp-sop.national.inria.fr with ESMTP; 16 Nov 2024 04:40:14 +0100
+Received: from localhost (localhost [127.0.0.1])
+	by margaux.math.cnrs.fr (Postfix) with ESMTP id 8F3B41DC
+	for <caml-list@inria.fr>; Sat, 16 Nov 2024 04:40:13 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=math.cnrs.fr;
+	s=mail; t=1731728413;
+	bh=hdMYHHmyGUTITYhBsBhYeR+JdB/d2Lh97+9KUWlOuZw=;
+	h=Date:From:Subject:To:From;
+	b=cYLfBnUuS0kKGr6xpcwX42EZAud7VgVNYYLgaiNzf59elqHWUVr7YllTZYK5PWGDH
+	 6edWhF8j5MIIfLlOKlb9LEnBU/PRFln6eSYF6DhBQ/kFnbAoLdBECzzspiMwVjCSXC
+	 eD7kV+IKYe2koIQIvs0KPOYOVUJFwwPnO1t+faIxybCQirfoQNno0cbA1UQBnHFM4Q
+	 FzcCkGodq57TBVY7R3QyjjET8/8e3lJfG6AT8my4cWE7enHPWFYH2USYalVQ/tMMz3
+	 vSVEmuschAe/QSe1oKWvHoXdPfkYylsWiaVYbkOPbp6/cmep4+ySsyoAzInb2P72qN
+	 DhdFeN2gr4XMw==
+X-Virus-Scanned: Debian amavisd-new at math.cnrs.fr
+Received: from margaux.math.cnrs.fr ([127.0.0.1])
+	by localhost (margaux.math.cnrs.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ISumsSQLLhfk for <caml-list@inria.fr>;
+	Sat, 16 Nov 2024 04:40:10 +0100 (CET)
+Received: from [192.168.8.41] (user-24-236-105-23.knology.net [24.236.105.23])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by margaux.math.cnrs.fr (Postfix) with ESMTPSA id 62AD0C8D
+	for <caml-list@inria.fr>; Sat, 16 Nov 2024 04:40:10 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=math.cnrs.fr;
+	s=mail; t=1731728410;
+	bh=hdMYHHmyGUTITYhBsBhYeR+JdB/d2Lh97+9KUWlOuZw=;
+	h=Date:From:Subject:To:From;
+	b=fCkXZVdSojikus4qO6g8t+88MG1PGYwuysEtpNyeLeflUVclaDpFGRCl7xjAjdR9R
+	 nj0E3cCwbDLQyTFmgwxSRqSxMo83B97gPpEnPZKl7GdWkN1KPZIdnRVUf9ZHGkgkH5
+	 TMt1PWdkvinuoHQZQE6qAC03t57KmOfFMWVcWlXfjh6AuoALz0503spzHkQp/CDug0
+	 B3jYzo4+kCFbEqI2sOIZIWssuNmJF2dAD9pKxZ9j5Kh2renE0fUwjCMpB1V4ovpOMq
+	 rPeCAQmUUJpDDcedhs8sC2vRpJSqjfi3AWU9FwF70lKnvgsksZWtnYu6JwxbEjEQUK
+	 zFLVuq1MXlu0Q==
+Content-Type: multipart/mixed; boundary="------------YmEwvNZP1e6t5D4V5X6QH3Gu"
+Message-ID: <fb919b38-b7a1-4fd3-a9dd-39896e9e58d3@math.cnrs.fr>
+Date: Fri, 15 Nov 2024 22:40:09 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: =?UTF-8?Q?Cl=C3=A9ment_Aubert?= <clement.aubert@math.cnrs.fr>
+To: caml-list@inria.fr
+Content-Language: en-US
+Subject: [Caml-list] Call for ECOOP 2025 Workshop Proposals
+Reply-To: =?UTF-8?Q?Cl=C3=A9ment_Aubert?= <clement.aubert@math.cnrs.fr>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19205
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-11/fb919b38-b7a1-4fd3-a9dd-39896e9e58d3%40math.cnrs.fr>
+
+This is a multi-part message in MIME format.
+--------------YmEwvNZP1e6t5D4V5X6QH3Gu
+Content-Type: multipart/alternative;
+ boundary="------------kfHeEgHQCRarUVR0bbKCdA39"
+
+--------------kfHeEgHQCRarUVR0bbKCdA39
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    CALL FOR WORKSHOPS
+%    ECOOP'25
+%    Mon 30 June - Fri 4 July 2025 Bergen, Norway
+<https://2025.ecoop.org/venue/ecoop-2025-venue>% https://2025.ecoop.org/
+% https://2025.ecoop.org/track/ecoop-2025-workshops#Call-for-Workshops
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Overview
+-------------
+
+ECOOP (the European Conference on Object-Oriented Programming) hosts a 
+diverse offering of workshops bringing together academics, industrial 
+researchers, and practitioners to exchange new ideas, problems, and 
+experiences.
+
+Topics for workshops may include, but are not limited to, the theory, 
+design, implementation, optimization, testing, and analysis of programs 
+and programming languages. Workshops will run after the program of the 
+main conference (Thu. 3 - Fri. 4 July 2025). The organizers will 
+investigate the possibility of organizing the publication of a 
+single-volume peer-reviewed post-proceedings if there is enough interest.
+
+Submission link: 
+https://framaforms.org/proposal-for-ecoop25-workshop-1729617158
+
+Please contact ECOOP'25 workshops chair, Clément Aubert 
+(caubert@augusta.edu or clement.aubert@math.cnrs.fr), if you have any 
+questions.
+
+Timeline
+-------------
+
+- Workshop proposal will be reviewed on a rolling basis, with the last 
+submission date being on January 24, 2025.
+- Workshops must send notifications for accepted papers by June 21, 
+2025, which will be about one week before the early registration deadline.
+- The workshop’s website must be live within two weeks of notification 
+of the workshop’s acceptance and include relevant information about the 
+organizers and any call for contributions.
+
+To submit a proposal for an ECOOP'25 workshop, please complete the 
+online form linked above. After submitting, you will receive an 
+automated email confirmation of your submission and, within at most four 
+weeks (or shortly after the final submission deadline), a formal 
+response notifying you if the workshop has been accepted for ECOOP'25.
+
+-- 
+     Clément Aubert, Associate Professor of Computer Science,
+     School of Computer and Cyber Sciences, Augusta University,
+     https://spots.augusta.edu/caubert/
+
+--------------kfHeEgHQCRarUVR0bbKCdA39
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<br>
+      %    CALL FOR WORKSHOPS<br>
+      %    ECOOP'25<br>
+      %    Mon 30 June - Fri 4 July 2025 Bergen, Norway<a
+        href="https://2025.ecoop.org/venue/ecoop-2025-venue"
+        class="navigate" moz-do-not-send="true"><br>
+      </a>%    <a class="moz-txt-link-freetext"
+        href="https://2025.ecoop.org/" moz-do-not-send="true">https://2025.ecoop.org/<br>
+      </a>%    <a class="moz-txt-link-freetext"
+href="https://2025.ecoop.org/track/ecoop-2025-workshops#Call-for-Workshops"
+        moz-do-not-send="true">https://2025.ecoop.org/track/ecoop-2025-workshops#Call-for-Workshops</a><br>
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<br>
+    </p>
+    <p><br>
+      Overview<br>
+      -------------<br>
+    </p>
+    <p>ECOOP (the European Conference on Object-Oriented Programming)
+      hosts a diverse offering of workshops bringing together academics,
+      industrial researchers, and practitioners to exchange new ideas,
+      problems, and experiences.<br>
+      <br>
+      Topics for workshops may include, but are not limited to, the
+      theory, design, implementation, optimization, testing, and
+      analysis of programs and programming languages. Workshops will run
+      after the program of the main conference (Thu. 3 - Fri. 4 July
+      2025). The organizers will investigate the possibility of
+      organizing the publication of a single-volume peer-reviewed
+      post-proceedings if there is enough interest.<br>
+      <br>
+      Submission link: <a class="moz-txt-link-freetext"
+href="https://framaforms.org/proposal-for-ecoop25-workshop-1729617158"
+        moz-do-not-send="true">https://framaforms.org/proposal-for-ecoop25-workshop-1729617158</a><br>
+      <br>
+      Please contact ECOOP'25 workshops chair, Clément Aubert (<a
+        class="moz-txt-link-abbreviated moz-txt-link-freetext"
+        href="mailto:caubert@augusta.edu" moz-do-not-send="true">caubert@augusta.edu</a>
+      or <a class="moz-txt-link-abbreviated moz-txt-link-freetext"
+        href="mailto:clement.aubert@math.cnrs.fr" moz-do-not-send="true">clement.aubert@math.cnrs.fr</a>),
+      if you have any questions.<br>
+      <br>
+      Timeline<br>
+      -------------<br>
+      <br>
+      - Workshop proposal will be reviewed on a rolling basis, with the
+      last submission date being on January 24, 2025.<br>
+      - Workshops must send notifications for accepted papers by June
+      21, 2025, which will be about one week before the early
+      registration deadline.<br>
+      - The workshop’s website must be live within two weeks of
+      notification of the workshop’s acceptance and include relevant
+      information about the organizers and any call for contributions.<br>
+      <br>
+      To submit a proposal for an ECOOP'25 workshop, please complete the
+      online form linked above. After submitting, you will receive an
+      automated email confirmation of your submission and, within at
+      most four weeks (or shortly after the final submission deadline),
+      a formal response notifying you if the workshop has been accepted
+      for ECOOP'25.<br>
+    </p>
+    <pre class="moz-signature" cols="72">-- 
+    Clément Aubert, Associate Professor of Computer Science,
+    School of Computer and Cyber Sciences, Augusta University,
+    <a class="moz-txt-link-freetext"
+    href="https://spots.augusta.edu/caubert/" moz-do-not-send="true">https://spots.augusta.edu/caubert/</a></pre>
+  </body>
+</html>
+
+--------------kfHeEgHQCRarUVR0bbKCdA39--
+--------------YmEwvNZP1e6t5D4V5X6QH3Gu
+Content-Type: application/pgp-keys; name="OpenPGP_0xDC72C5ECF4AC65AC.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xDC72C5ECF4AC65AC.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+=PMZS
+-----END PGP PUBLIC KEY BLOCK-----
+
+
+
+
+
+
+
+
+
+
+--------------YmEwvNZP1e6t5D4V5X6QH3Gu--
