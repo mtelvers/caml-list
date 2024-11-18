@@ -1,0 +1,418 @@
+Return-Path: <caml-list-owner@inria.fr>
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=<UNKNOWN> 
+Authentication-Results: plum; dmarc=fail (p=none dis=none) header.from=outlook.com
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=uOuPMf8c;
+	dkim=pass (2048-bit key; unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=G/IhWPRG;
+	dkim-atps=neutral
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 29FFEB80123
+	for <caml-list@tunbury.org>; Mon, 18 Nov 2024 19:18:27 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:references:in-reply-to:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=uvmFwZsxMYUYZnMy1hf+ZZCVAU1BqCsB7Q2ulNzjRdI=;
+  b=uOuPMf8cPZRUT0NuO6OvE2/J0eSmKITMDp1bDiz+EQWjhvxqAxhuKvcy
+   754Cx952yjjRudI9RnsEjmpTDWb9j6KL4rd7W3KjYlz6rFKpEiRMY9IRB
+   lJlDfzRexGNo3xLmbzgqKmT8i0QmgS3Ljq61hjq74+CSx1aXIdQ4Ngz0q
+   A=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@outlook.com
+X-IronPort-AV: E=Sophos;i="6.12,164,1728943200"; 
+   d="scan'208,217";a="194518725"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 18 Nov 2024 20:18:26 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 44CC0E0D20; Mon, 18 Nov 2024 20:18:26 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 7F9C4E00B7
+	for <caml-list@sympa.inria.fr>; Mon, 18 Nov 2024 20:18:23 +0100 (CET)
+IronPort-SDR: 673b92fe_mGJ91bPvT+J5Ktc5Ql2mJaF/XW+w7RR/OAIJFBQSADO4KjG
+ jKLCRiWtLiHB59ZcTCpW3UapwF2Gg6/WzqvxA3Q==
+X-IPAS-Result: =?us-ascii?q?A0GkDADukTtngR0mZzRaHAEBATwBAQQEAQECAQEHAQEVg?=
+ =?us-ascii?q?VMCgT8BMFJ7AlsyBAtIiCIDhS2IcgONBYYZiSODFj4PAQMBCwIUAQEBAiALB?=
+ =?us-ascii?q?AEBAwEDhQACilEfBwEEMwYOAQIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECB?=
+ =?us-ascii?q?AYBAhABATsHSYV7DYJbO0EwYQQDBgYBAQEBAQEBAQEnAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBBwINHz8BHgEBAQEDEi4BFCUPAgEDB?=
+ =?us-ascii?q?QQNBAEBLzEdCAIEARIIARmCWgIBAQKCHA0GAQMxBAIOBqRYAYFAAolaGjd4g?=
+ =?us-ascii?q?RwYgQGCDQaBCdlSAUsDdoFkCQGBRwGEcimBMiKBXAEqgTKEDAE7hDyCT4EVQ?=
+ =?us-ascii?q?oJoPoJWCwOBYYQTgi8Egi8ShQ8lTYQ5foIPbIczEoJPhHSLClJ1IgMmJA8yA?=
+ =?us-ascii?q?VUTFwQHBwU5A0MqDAUPASAECAM0QC0CEQgBCQIBASEOCw80CAMqBEYUIRMFC?=
+ =?us-ascii?q?QsDD0MIFFcTSwEECgIyJB40IAYBCgICBAcRIAFBJQ8GDCkPEnFICgEzIgRmC?=
+ =?us-ascii?q?AIjDHIaEwMECQUdDQ0CAgY/CDGBBQMHWwcBHykoBBRACyAGEQINAhMjCgVQA?=
+ =?us-ascii?q?gICATdVMgwLDRMFAUBzDiNMQB8rCSUmFDkDAgcLQRACAgILAwMGCBYUAykDB?=
+ =?us-ascii?q?hcBAS04YRcjLQICAgECAQIYIi4fGik0BQwCAy+BFiA/AgceAywDAwMDgSkCC?=
+ =?us-ascii?q?hlaCTdVAhQCNwMUAwICFgIFAQcCFEwCEwIiIzQQAQIBAQECEz4mHUADCxMII?=
+ =?us-ascii?q?TE9NQYOGwUEEUhcnWkBBwOBGwFGgmh3bCIBIy5LlCMMGguXf5sOg1dNFQGMA?=
+ =?us-ascii?q?I86gmqDPxeFW6RzmHciiVWECIkAjHKFDAIEAgQFAg8BAQY1gRwsJC6BLjMaI?=
+ =?us-ascii?q?1CCZwlGAxkPkhszhGHBEUQ0AjkCBwsBAQMJkTiBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:d3YTaqg6KVV71AFpWv9yXU+vinBQXwd13DAbv31ZSRFFG/FwyP
+ rCoB1L73XJYWgqM03IwerwQJVoMkmsjqKdgLNhSYtKOTOLhILGFvAH0WKP+Vzd8mjFh5dgPM
+ RbAt9D4b/LfD9HZK/BiWHWferIguP3lpxA7t2urEuFODsaDp2ImD0JaDpzfHcXeCB2Qb4CUL
+ aM7MtOoDStPV4NaN6gO3UDV+/f4/XWiZPPe3c9dlcawTjLqQntxK/xEhCe0BtbeShI260e/W
+ /MlBG8zrm/ssu81gTX2wbontxrcZrau5F+7IHlsLlfFtzfsHflWG1TYczMgNkBmpDj1L5z+O
+ O87SvIcf4Dqk85NVvF2ycFkzOQrQrGrUWSv2NxjRbY0LDErR8Berp8bLhiA2jkwltluMs53L
+ NA3mqfuZYSBRTcnD7l79yNUx1xjEK7rXcrjOZW1hVkIP4jQa4UqZZa8FJeEZ8GEi6/4Ic7EP
+ N2BMWZ4PpNa1uVY33Qo2Eqyt2xWXY4GAuAXyE5y76oOhRt7QFEJhEjtbMid187hewAd6U=
+X-Talos-CUID: 9a23:R20ojGCqXyZ1P+36EwNu2xEpApkdTkDc1iiXfEqiAGpxR4TAHA==
+X-Talos-MUID: =?us-ascii?q?9a23=3Ah9sXng1d/YIowf1CkjWeEgUJETUj26CBJBkvgLo?=
+ =?us-ascii?q?/sMTYFyNpZQejkhqea9py?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,164,1728943200"; 
+   d="scan'208,217";a="101968322"
+X-MGA-submission: =?us-ascii?q?MDF0Is1bpyhZHza56az3NI1uI12WuGS7Z4hIky?=
+ =?us-ascii?q?MLcFCOWT1Z+rczVRcWZkEQ476ds0y/wmZo9J2/a2oCwlSWYw6g6w6rKv?=
+ =?us-ascii?q?LmJYqnf6We5yJLTEVHclyznQV3l/KgnvGU/Hquii/TBwj5X+Wi5o+Xb5?=
+ =?us-ascii?q?TD65JkkwYpF9QHAgk+sw7S3g=3D=3D?=
+Received: from mail-ukwestazolkn19011029.outbound.protection.outlook.com (HELO CWXP265CU009.outbound.protection.outlook.com) ([52.103.38.29])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2024 20:18:23 +0100
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pFAh3pN06id1O4plMI5W3deTMfXc1Z3SDtB5IYmyUQHoBkFZRnwY8PcAxubcwvwLbMsevbOfjKTzrTILmfhZvvnqehFpQ6xnRsNamqrC5WpZeNYmcR/L26pWyPVAnkdRbs1wODH0rC+qgEBq9IthXzfuE7csZ1ftpocgZBo6I2hFKa5IRkUh46wRCGDA6fjU2HhwaFDwHjVtB/HIR6BxcuEqZdS5KX1ebu0yDbII55wn41JgUfM8ga29BjojtN7ToJASMSJEwhAYH5NSUuIhizwLVLxIhq2og5X6LX3H47ZvzI6LEMRGBIPS+9ac5lbPL0/FH4LTV+OIbhgy496eCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uvmFwZsxMYUYZnMy1hf+ZZCVAU1BqCsB7Q2ulNzjRdI=;
+ b=ORLKNHFjvgQWA/ldMHHr6yHWfFaKplN4lWDJLyOqNcOxmRfSmW3jRZ2Nv8vsKlZMPPpxvFj1CxB2lqU1GaMtMqmg1F87Tb1Vevl1/Ex3lF4F4kNdqF334frvfQFZwFaWo245z3wEyxU9eQ/tOlPjvNslALqfcliwmKX9auNAvHwk2iwBaxsoAfdxsldXi894QTxChZwAxckPN+hzfeVAmL5CYLcBe2Y+wyhhSFlGLaOFtheXBjKIoEl5uTzEAPwv7cBOsvac2uF9a/L8YEkFiR/nfsuemG81rkiDiTsACx8dKTov3QCCE0StZFMn9mWlamvnZ4HydTR6PY7a51bajg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uvmFwZsxMYUYZnMy1hf+ZZCVAU1BqCsB7Q2ulNzjRdI=;
+ b=G/IhWPRGFpNbPJiAXZKyYt0NUy419Sto1lFeY+CrZwuVFJCXGxcTojRvLFTZbke+YtxnUvQfE0uYpr7CatluVr9R+CK0sdR4Gewc171sRgYVXl9egUR0xdnXewAyMZqXM3hhJkpiQYkiF8sDZ8lwSpL5UqZjjUSVaYDsbanyoDpbF60/DBF75fwk5fSGxROHvCoVz165SII9o5Ln+3hj/YTC3vdkqWQqhV8gpd3l7S+0IMEeN4JDTABGL4mh1BZ6A/HEnz+vg3yMKad0sNSzEwnFZH1XPyv/GXwprHEA55RM0yw7xs7ardb+VMW1hxsq1UIDfKjGDtBq058OntjP5A==
+Received: from CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:12c::9)
+ by LO2P265MB5469.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:25c::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.23; Mon, 18 Nov
+ 2024 19:18:21 +0000
+Received: from CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::4f37:8f32:e4a6:e624]) by CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::4f37:8f32:e4a6:e624%4]) with mapi id 15.20.8158.023; Mon, 18 Nov 2024
+ 19:18:21 +0000
+From: Kate Deplaix <kit-ty-kate@outlook.com>
+To: "caml-list@inria.fr" <caml-list@inria.fr>, Gerd Stolpmann
+	<info@gerd-stolpmann.de>
+Thread-Topic: [Caml-list]  [ANN] findlib-1.9.8
+Thread-Index: AQHbOH4iTA0KmlFyXEatB8hFdSLA8LK9a2x3
+Date: Mon, 18 Nov 2024 19:18:21 +0000
+Message-ID:
+ <CWLP265MB4157B79BCE40795E4402A4E1BC272@CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM>
+References: <653acdb1-3693-4570-b49f-1d59c6c9c209@gerd-stolpmann.de>
+In-Reply-To: <653acdb1-3693-4570-b49f-1d59c6c9c209@gerd-stolpmann.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CWLP265MB4157:EE_|LO2P265MB5469:EE_
+x-ms-office365-filtering-correlation-id: d66717da-fb18-4dc7-83a4-08dd0805c3fd
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|8062599003|461199028|9400799024|19110799003|12050799009|15030799003|15080799006|8060799006|4302099013|440099028|3412199025|102099032|10035399004|1602099012;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?DgF/UN0uKnFkXh7Zp5DAt2iBdDYLyoyEZa8Rzj0cN+ub6ELeX3jjpRICe5mu?=
+ =?us-ascii?Q?DSRU7vqze/xH4tkDn89C9OQxbAgHG9hnDD2olaRriXXvkDtNFK9yWMAp8xL7?=
+ =?us-ascii?Q?+SnHeAqS5m+B+TKEjXlE04Pec5GGjNVXJGG8i3+2M+KsmR2TaATKmZ0yrEG5?=
+ =?us-ascii?Q?Y8q26GmWHZEXA1iDOql++ELVczFKHAWvAUtJ3d4+9Gfgv/jrTgOSbCP0N+LY?=
+ =?us-ascii?Q?u2VcZrPL6NylKjxzz8LEiMshsqDN13+BXLO3LrBt8Vld1F5y//AfuoSK842C?=
+ =?us-ascii?Q?7WVk/k0JLd1sexL8tFVkCL1UiHU48ShOKcvlEMtDHfOLHi/FD7R5SuMwoKA9?=
+ =?us-ascii?Q?mdHOD7wsXK0J2D+AhSuDKJMpaO/s1PHTcsqJdMfdwxNJ+7IrPa+VJQ/eOY2P?=
+ =?us-ascii?Q?w7GCzTAKUcH0J+ZOGXmMDvh4UMOGSfP7BlzzVKpwXL/J4lIrPtPSZ6kJGKeU?=
+ =?us-ascii?Q?69z3qFczAngzYrBLjicXrhP2yaDf9B8KNcIlGoU7GQ9DERL2fdFS4oguStBv?=
+ =?us-ascii?Q?DSGrJKbUYtp57ZP7XixzvN7nRNA/ZFqM4Kx4yasdEtADRzvMkagq1doTtaLd?=
+ =?us-ascii?Q?zJY6JlHUWTRsTEsqtWCg9tQfpYK+lqBO5D/9jtLp0YdAfUFA7R1bdalqMphr?=
+ =?us-ascii?Q?qw8+FGKCXWjlP5HS3qsLhVvf6YAIz0KQVwiGAassePZO4YWZvsTC9PyHJN+X?=
+ =?us-ascii?Q?0W1bGuBQ4d2pnkytcXVh8LclEHgQloFWAt7J7zTVTLASNZT1WiDQjAwFRh60?=
+ =?us-ascii?Q?LDUW1kmFInH3wOUooDycdt+ImojpP/Yhgk0/l6FoFm2bkS5Q5AkZ4KB3PGHE?=
+ =?us-ascii?Q?2zUz8IS0s7TKVzs4oT+EHrNViWREtD5PtOP8zzyZ6f7IqhTVCbWiWM/KIEhK?=
+ =?us-ascii?Q?HlhzEpp9IJPJFHxr2CU2Jaavgdjj4SwZhbWdleOBVi9he2h+nAeZGJ7op8sP?=
+ =?us-ascii?Q?XJWjwkqgvPMtOEWlLz/2QX1xbERuk+T5lkJPRPdXJkc+yhEzpzObPRpUGM89?=
+ =?us-ascii?Q?ay+CpN0K0kTEfWrasS5l7EIpMTR5vvikN8ofSnCgBzIGWjJaXT8TPwvNuFLX?=
+ =?us-ascii?Q?apfwLLfFrt45kcqNSXZ0tfaUopOuD+hE7dl5jncFCQ/xbRdZHW22UxqGYleT?=
+ =?us-ascii?Q?Hi45gMk9IgvKKFNu45+iLreVi9j2pERhrcwmqnHUzH6Z78RaoGOQKrZ4I6qz?=
+ =?us-ascii?Q?2Jicr6TGSBGTnCcy8xCYxB4CxI3mQ1xqRKxPsA=3D=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?n4A7u2DqoCKDGB4hkhlTjpuNi40I3a1VvE+vK1kLAV6mJTIBYFwcnbvrxBYe?=
+ =?us-ascii?Q?6eGzMkep6I4y05WRpShJJEz8E6CuMWYdE+LIcwPcnnlNTgir3/zGElFOpoHB?=
+ =?us-ascii?Q?3/jPoPOg9BokUP6nm2P5K+iA7SWwoI9XjRxHvGuQ7aeexBUofYMcv2YhV6M8?=
+ =?us-ascii?Q?DcD999zLy0gOL8EwdRniaqn8rjFWv/1GbmFYHIkbn3DoPrkq3OYg/5WVLFyF?=
+ =?us-ascii?Q?hg57DnlzSLoPnHfMTpxUMlPNtfgxcc6MWf1BWocXZy74rIOv6cYa+56F1sVN?=
+ =?us-ascii?Q?/+YGY97euv6pqm4XTTKCiBxOuMbRUWmvOsnzUbLTtN08U9TgW9odwYlaK8Lo?=
+ =?us-ascii?Q?qxkb+KkehOsKa1fBM9XLZFcM9jH0ywWuCSySu2BYa1wngGA2cQovg0k4fSIB?=
+ =?us-ascii?Q?p2R8nCwh2EiICgaFtmSCUSlN1kBq5Hq01Yw1CkLwWumCUS/Yo3rpSNsXFSG3?=
+ =?us-ascii?Q?e+UaoNbJgcZjbfXdfzMrj2MhTfGrXyfOcHoVSH/VJ/YBnY1H6bW6R2X6KA1d?=
+ =?us-ascii?Q?7IFiSRbnUeUl9GP9J+o7gUvPctJxFBLZmprSz5HRoSdEzAZCPgjEQWb51ush?=
+ =?us-ascii?Q?JX7SrHwGHUXcfhkBRBWdYgQECJ50YxuKlxWo2+bnxctLAbF/rQfZlFmWGw2t?=
+ =?us-ascii?Q?xaYTDdqVDD6n+cqIzp+YhvWrJ8lYJd5fSjT6TnER+7npBVmTxq0kGO53Or2W?=
+ =?us-ascii?Q?L/t6BhOWMIC3H4rar9O7sSN8jFAKQ9cwuUezp5T94Y87y6/Bjw97t3TVKDhx?=
+ =?us-ascii?Q?onzyTHpZnjeeLX85L0eov5Z39XfCliR4Q8FRexZt6JmiyNQvVIl8ztmZF/yF?=
+ =?us-ascii?Q?CTrwuTdPaX/VJxpvQscq1s6j+QltkLOOCAOi51qNIPAwDFpPyljrd82KRomr?=
+ =?us-ascii?Q?Afxz66JHb+K7BqklRU8P3E8G0FrtaI7eU/NjhjswJz39pLsakUawUXWzWBMU?=
+ =?us-ascii?Q?ni4ZtacwauUio0oEKVqw0v/rqJ2OZIPloCNyiwuCQoSHMG8yIdK9Qz435FAB?=
+ =?us-ascii?Q?aN91fZ1Vmei+IXUbVNjiTh9iDg/5Qff+bcRHby2XW21yuPWK3qDA66fHYGZh?=
+ =?us-ascii?Q?zmgiRmnyGC8U4ux1sx+Q3QHyAdqGhuB40S11KkOnFxeOCi/nTwUGjxKHaO49?=
+ =?us-ascii?Q?QKYZDjQ4JwNwIxGdEP3KdBCaVBYIEj+DIiHDFtu54O5h8ymgRa7bE13vC37E?=
+ =?us-ascii?Q?hgw2fiJtI4dYrjXufNuYE+Dj3J/DezSpKNEme9jw6siBlqTCF/onBhpKXec?=
+ =?us-ascii?Q?=3D?=
+Content-Type: multipart/alternative;
+	boundary="_000_CWLP265MB4157B79BCE40795E4402A4E1BC272CWLP265MB4157GBRP_"
+MIME-Version: 1.0
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: d66717da-fb18-4dc7-83a4-08dd0805c3fd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Nov 2024 19:18:21.2225
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO2P265MB5469
+Subject: Re: [Caml-list] [ANN] findlib-1.9.8
+Reply-To: Kate Deplaix <kit-ty-kate@outlook.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19207
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-11/CWLP265MB4157B79BCE40795E4402A4E1BC272%40CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM>
+
+--_000_CWLP265MB4157B79BCE40795E4402A4E1BC272CWLP265MB4157GBRP_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+Thanks! There is a minor typo on the website. The download link to 1.9.8 is=
+ called "findlib-1.9.7" despite correctly linking to the findlib-1.9.8 arch=
+ive.
+
+Cheers,
+Kate
+________________________________
+From: caml-list-request@inria.fr <caml-list-request@inria.fr> on behalf of =
+Gerd Stolpmann <info@gerd-stolpmann.de>
+Sent: 16 November 2024 23:20
+To: caml-list@inria.fr <caml-list@inria.fr>
+Subject: [Caml-list] [ANN] findlib-1.9.8
+
+Hi list,
+
+findlib-1.9.8 is out, fixing a few issues that slipped into 1.9.7.
+
+
+For manual, download, manuals, etc. see here:
+
+http://projects.camlcity.org/projects/findlib.html
+
+An updated OPAM package will follow soon.
+
+Gerd
+
+--
+
+------------------------------------------------------------
+Gerd Stolpmann, Darmstadt, Germany gerd@gerd-stolpmann.de
+My OCaml site: http://www.camlcity.org
+Contact details: http://www.camlcity.org/contact.html
+Company homepage: http://www.gerd-stolpmann.de
+------------------------------------------------------------
+
+
+
+--_000_CWLP265MB4157B79BCE40795E4402A4E1BC272CWLP265MB4157GBRP_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div class=3D"elementToProof" style=3D"font-family: Aptos, Aptos_EmbeddedFo=
+nt, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; c=
+olor: rgb(0, 0, 0);">
+Hi,<br>
+<br>
+Thanks! There is a minor typo on the website. The download link to 1.9.8 is=
+ called &quot;findlib-1.9.7&quot; despite correctly linking to the findlib-=
+1.9.8 archive.<br>
+<br>
+Cheers,<br>
+Kate</div>
+<div id=3D"appendonsend"></div>
+<hr style=3D"display:inline-block;width:98%" tabindex=3D"-1">
+<div id=3D"divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" st=
+yle=3D"font-size:11pt" color=3D"#000000"><b>From:</b> caml-list-request@inr=
+ia.fr &lt;caml-list-request@inria.fr&gt; on behalf of Gerd Stolpmann &lt;in=
+fo@gerd-stolpmann.de&gt;<br>
+<b>Sent:</b> 16 November 2024 23:20<br>
+<b>To:</b> caml-list@inria.fr &lt;caml-list@inria.fr&gt;<br>
+<b>Subject:</b> [Caml-list] [ANN] findlib-1.9.8</font>
+<div>&nbsp;</div>
+</div>
+<div class=3D"BodyFragment"><font size=3D"2"><span style=3D"font-size:11pt;=
+">
+<div class=3D"PlainText">Hi list,<br>
+<br>
+findlib-1.9.8 is out, fixing a few issues that slipped into 1.9.7.<br>
+<br>
+<br>
+For manual, download, manuals, etc. see here:<br>
+<br>
+<a href=3D"http://projects.camlcity.org/projects/findlib.html">http://proje=
+cts.camlcity.org/projects/findlib.html</a><br>
+<br>
+An updated OPAM package will follow soon.<br>
+<br>
+Gerd<br>
+<br>
+--<br>
+<br>
+------------------------------------------------------------<br>
+Gerd Stolpmann, Darmstadt, Germany gerd@gerd-stolpmann.de<br>
+My OCaml site: <a href=3D"http://www.camlcity.org">http://www.camlcity.org<=
+/a><br>
+Contact details: <a href=3D"http://www.camlcity.org/contact.html">http://ww=
+w.camlcity.org/contact.html</a><br>
+Company homepage: <a href=3D"http://www.gerd-stolpmann.de">http://www.gerd-=
+stolpmann.de</a><br>
+------------------------------------------------------------<br>
+<br>
+<br>
+</div>
+</span></font></div>
+</body>
+</html>
+
+--_000_CWLP265MB4157B79BCE40795E4402A4E1BC272CWLP265MB4157GBRP_--
