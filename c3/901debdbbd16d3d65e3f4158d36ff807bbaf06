@@ -1,0 +1,475 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=F4lPGYgG;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=informatik.uni-freiburg.de header.i=@informatik.uni-freiburg.de header.a=rsa-sha256 header.s=mx2401 header.b=igLjEQoN;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id CE412128CA4
+	for <caml-list@tunbury.org>; Wed, 27 Nov 2024 13:43:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=uuNYRHN8Fq5X9uoeERNXVnY8pp710W/Q8858M/G2ZSM=;
+  b=F4lPGYgGqHxfDdIdTJWc73lOR4m9Ge9+GVFTSHbJ5RPqBfsl1YKIiX/F
+   vekOx9XluQQYRK2OGnlx3RiT8rRIuT96/wUe0A/YwYdnTXde1MIraPsy7
+   d9YcPwLBoAXW4dmrFrSLk5V5f54PAvVNzW16M/CXYqKxUGsWjUqYTWI97
+   I=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@informatik.uni-freiburg.de
+X-IronPort-AV: E=Sophos;i="6.12,189,1728943200"; 
+   d="scan'208,217";a="196105728"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 27 Nov 2024 14:43:57 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 9174EE0D1F; Wed, 27 Nov 2024 14:43:56 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id D7E7BE0133
+	for <caml-list@sympa.inria.fr>; Wed, 27 Nov 2024 14:43:51 +0100 (CET)
+IronPort-SDR: 67472215_ewLPKK958WTyAPvqHRHGXnO4RilwMkjlHLofUn5yJqHSgFk
+ 3+vMHCTh7Di0KxzInBEwxkkwxGvqxuTOs+LpY5A==
+X-IPAS-Result: =?us-ascii?q?A0EvAgB+IUdnhQWW5oRaglyCRH1aMwQLSIQaPIEjgiyLf?=
+ =?us-ascii?q?oIhkU2FeIJQhAWBfg8BAwENOQsEAQEDAQOCDIE9gTeKXgIeBwEEMQgOAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABAQEBQEmFew2CWztxgSUBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBHQIUVzIGCwYdAQEmEhgNNwIjEgEFATUigl8BgmQDEZQcj?=
+ =?us-ascii?q?0CBBUKLPoEygQGCDAEBBoEI3HsDBoFIgRaHNgGBQhoCDoN8AYUeG4INgRU1Y?=
+ =?us-ascii?q?oEjgS6EcIMugmmCRIRLRCWFBn+CahGERYVPgXyEFosXJiYDBwcOK0kOASEDJ?=
+ =?us-ascii?q?jMhEQFVExcLBwWBdgECAYNFgTaBUYMRSoUMRj05ghFpSzcCDQI2giR9gk2FF?=
+ =?us-ascii?q?4Iggkk+DhkvAwMDA4M7hjAdQAMLYgs9NxQbTKEhAUaDcy1jEw9ZFgxHTcZMg?=
+ =?us-ascii?q?j+BZaFdM5dRkwCYe4oFmSEwE4UuESOBRgE3gVxNJBRsBoIwTwMZD1eNY4QUh?=
+ =?us-ascii?q?GHDQkI1OwIHAQoBAQMJkV6BSwEB?=
+IronPort-PHdr: A9a23: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
+ 90uckCJTU9pwLbDT3w0
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:iWZ2iqghIIZVdx+kqzf/S04gF3BQXvoji2hC6mlwRA09TyX4rb
+ HJoB1/73TJYVkqKRIdcLy7WJVoIkm8yXcW2/h1AV5zZniehILAFugLh+bfKlbbaknDH4BmpM
+ BdmmtFZOHYPBxVic775U2fCNYvwN6O9eSNif3Fx3lgCSFGApsQjTuRxjz1LqS+fmd7OaY=
+X-Talos-CUID: 9a23:KgaOxW4WU5gEx486ldss+2wkA+MLfX7nwVj1Hn6hOzpuaYXEYArF
+X-Talos-MUID: 9a23:rwURFQoH4IGtrXMgAHkezwF6Lpdxx4/0NB4ii5od4NSDFjUzJx7I2Q==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,189,1728943200"; 
+   d="scan'208,217";a="102780179"
+X-MGA-submission: =?us-ascii?q?MDGHtoU/D5VzuBC5ox5ccDv8Zm6r0OfrGnNEft?=
+ =?us-ascii?q?11fQrhxzeazO07pHlK9lVqXh7xxDOl8cCbuOr89y3V9sJigkk8OQqmBS?=
+ =?us-ascii?q?b7bNwBNx8I+jpJpeEHFTXpo1SbLMu4/3bUEi+CA9/xArDvCUJwWiUus3?=
+ =?us-ascii?q?+9W/xegcOVKlHzIiWaj35few=3D=3D?=
+Received: from smtp2.informatik.uni-freiburg.de ([132.230.150.5])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2024 14:43:49 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=informatik.uni-freiburg.de; s=mx2401; h=Content-Type:To:Subject:Message-ID:
+	Date:From:MIME-Version:Sender:Reply-To:Cc:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=uuNYRHN8Fq5X9uoeERNXVnY8pp710W/Q8858M/G2ZSM=; b=igLjEQoNbvfquzXeff3rcOLnMJ
+	GeUJviLeA/V3wbkyE3r+EGSFN6HAymtN/F4VSa6oxauUX/tCk6g4qSQC0wz+QYAY15fXAqcwRDZ/E
+	U1qR5p0coQHBmZYi5kZeatjNdm5dXWlT+ix2tyjmVT81wUhKc0O8Va7eqxS+NGiNsTGyUgDqBnodq
+	mQEEFIqvau/zVN2cNbRLAoxLxzw9C9Wp8GlAfZRvseyxj5gIDOlPfYItpmTXEwo0RssCc3dxrQvQd
+	Z7aLnq9jS8bB7EHhMI8FastxbW7N0DelqCnbkPTt9CeHwqsXvLZKdj0AFsWmaOULUNS50p92VRc7A
+	vKO+F0Mw==;
+Received: from mail-ej1-f43.google.com ([209.85.218.43])
+	by smtp2.informatik.uni-freiburg.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.98)
+	(envelope-from <vdheuvel@informatik.uni-freiburg.de>)
+	id 1tGIKk-000000002s4-0B82
+	for caml-list@inria.fr;
+	Wed, 27 Nov 2024 14:43:48 +0100
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a9f1d76dab1so1109779266b.0
+        for <caml-list@inria.fr>; Wed, 27 Nov 2024 05:43:48 -0800 (PST)
+X-Gm-Message-State: AOJu0Yx2Cbtb6TwajoMKW8h3lBZ5cN63nnYY3GSZB37j9YT0qaMQIJ/t
+	weZjejogFANnYQhKI0YTmjse/H/ZnQyCQUneaANwhTVNg2gLLnRF3YW+9XKv3Ob7Lc1Ym9X9cqg
+	8GnnF/RUzVK4+AgHXmsCyuhkg3kM=
+X-Google-Smtp-Source: AGHT+IHvY4EpiOKiNU+JexKiXHbF3bxnBIhJs0vIgdBMpGEvczGD/0bDudA8AQfkZBDUiQzm1kDWQ0TM8SkXyJgbons=
+X-Received: by 2002:a17:906:1daa:b0:aa5:630d:7de0 with SMTP id
+ a640c23a62f3a-aa581040c50mr278647266b.44.1732715028277; Wed, 27 Nov 2024
+ 05:43:48 -0800 (PST)
+MIME-Version: 1.0
+From: Bas van den Heuvel <vdheuvel@informatik.uni-freiburg.de>
+Date: Wed, 27 Nov 2024 14:43:37 +0100
+X-Gmail-Original-Message-ID: <CAJ3U=NS80OEGctXPi2ssUVjXv895-wPKiNvdLQ4ZOCc=5dU1FA@mail.gmail.com>
+Message-ID: <CAJ3U=NS80OEGctXPi2ssUVjXv895-wPKiNvdLQ4ZOCc=5dU1FA@mail.gmail.com>
+To: caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="000000000000c1fb550627e52774"
+Organization: Universitaet Freiburg, Institut f. Informatik
+Subject: [Caml-list] CfP: DisCoTec 2025
+Reply-To: Bas van den Heuvel <vdheuvel@informatik.uni-freiburg.de>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19219
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-11/CAJ3U%3DNS80OEGctXPi2ssUVjXv895-wPKiNvdLQ4ZOCc%3D5dU1FA%40mail.gmail.com>
+
+--000000000000c1fb550627e52774
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+[Apologies for multiple postings]
+************************************************************************
+
+ Joint Call for Papers
+
+ DisCoTec 2025
+
+ 20th International Federated Conference on Distributed Computing Technique=
+s
+
+ Lille, France, 16-20 June 2025
+
+ Submission deadline: 7 February 2025
+
+ https://www.discotec.org/2025
+
+************************************************************************
+
+DisCoTec 2025 is one of the major events sponsored by the International
+Federation for Information Processing (IFIP) and the European Association
+for Programming Languages and Systems (EAPLS). It gathers conferences and
+satellite events that cover a broad spectrum of distributed computing
+subjects =E2=80=94 from theoretical foundations and formal description tech=
+niques,
+testing and verification methods, to language design and system
+implementation approaches. The three main conferences are:
+
+* COORDINATION 2025 - International Conference on Coordination Models and
+Languages
+* DAIS 2025 - International Conference on Distributed Applications and
+Interoperable Systems
+* FORTE 2025 - International Conference on Formal Techniques for
+Distributed Objects, Components, and Systems
+
+DisCoTec 2025 is organised by Inria Lille and the University of Lille. It
+will be hosted by Polytech Lille.
+
+
+* NEW: Accommodations for parents of young children *
+
+  Subject to budget availability, we are planning to make special
+logistical arrangements for conference participants travelling with young
+children (and potentially accompanying persons). We invite interested
+persons to contact the General Chair (simon.bliudze@inria.fr), as soon as
+possible to discuss the arrangements that might be applicable.
+
+
+* Keynote Speakers *
+
+  - Alysson Bessani (Universidade de Lisboa, Portugal)
+
+  - H=C3=A9l=C3=A8ne Coullon (IMT Atlantique, France)
+
+  - Omar Inverso (GSSI, Italy)
+
+  - Burcu Ozkan (TU Delft, The Netherlands)
+
+
+* Important Dates (for all main conferences) *
+
+  All deadlines expire at 23:59 anywhere on earth.
+
+  - Abstract submission: 31 January 2025
+
+  - Paper submission: 7 February 2025
+
+  - Paper notification: 28 March 2025
+
+  - Camera-ready: 23 April 2025 (TBC)
+
+  - DisCoTec conference: 16-20 June 2025
+
+  See each conference site for topics of interest, paper categories, and
+submission instructions.
+
+
+* Main Conferences *
+
+  - COORDINATION (https://www.discotec.org/2025/coordination)
+    27rd International Conference on Coordination Models and Languages
+    PC Chairs: Cinzia Di Giusto (Universit=C3=A9 C=C3=B4te d=E2=80=99Azur, =
+FR) and Ant=C3=B3nio
+Ravara (NOVA School of Science and Technology, PT)
+
+  - DAIS (https://www.discotec.org/2025/dais)
+    25st International Conference on Distributed Applications and
+Interoperable Systems
+    PC Chairs: Daniel Balouek (INRIA, FR) and Ib=C3=A9ria Medeiros (Univers=
+ity
+of Lisbon, PT)
+
+  - FORTE (https://www.discotec.org/2025/forte)
+    45st International Conference on Formal Techniques for Distributed
+Objects, Components and Systems
+    PC Chairs: Carla Ferreira (NOVA University of Lisbon, PT) and Claudio
+A. Mezzina (University of Urbino, IT)
+
+
+* Artefact Evaluation Chairs *
+
+  - DisCoTec-wide: Roberto Casadei (University of Bologna, Italy)
+
+  - COORDINATION: Duncan Attard (University of Glasgow, UK)
+
+  - DAIS: Vinicius Cogo (Ci=C3=AAncias/ULisboa, Portugal)
+
+  - FORTE: Emilio Incerto (IMT School for Advanced Studies Lucca, Italy)
+
+
+* Proceedings *
+
+  Main conference proceedings will be published as volumes in the Springer
+LNCS-IFIP series. The volumes will be open access from the IFIP digital
+library after a 3-year embargo.
+
+
+* Journal Special Issues *
+
+  Selected papers accepted at the main conferences will be invited for
+submission to special issues in high-quality journals, such as:
+
+  - Logical Methods in Computer Science
+
+  - Science of Computer Programming (Software Track).
+
+
+* Organizing Committee *
+
+  - Simon Bliudze, General Chair (Inria Center at the University of Lille,
+France)
+  - Larisa Safina, Satellite Events Chair (Inria Center at the University
+of Lille, France)
+  - Adrien Luxey-Bitri, Young Researchers Forum Chair (University of Lille,
+France)
+  - Imen Sayar, Gender equality / Women in Science co-Chair (University of
+Lille, France)
+  - Manel Barkallah, Gender equality / Women in Science co-Chair
+(University of Namur, Belgium)
+  - Bas van den Heuvel, Publicity co-Chair (University of Freiburg, Germany=
+)
+  - Matthew Alan Le Brun, Publicity co-Chair (University of Glasgow, UK)
+  - R=C3=A9my Raes, Head of student volunters (Inria Center at the Universi=
+ty of
+Lille, France)
+
+
+* Steering Committee *
+
+  - Rocco De Nicola (IMT School for Advanced Studies Lucca, Italy)
+  - Adrian Francalanza (University of Malta, Malta; Chair)
+  - Ivan Lanese (University of Bologna/INRIA, Italy)
+  - Alberto Lluch Lafuente (Technical University of Denmark, Denmark)
+  - Mieke Massink (CNR-ISTI, Italy)
+  - Lu=C3=ADs Veiga (INESC-ID, Universidade de Lisboa, Portugal)
+  - Gianluigi Zavattaro (University of Bologna, Italy)
+  - Carla Ferreira (NOVA University of Lisbon, Portugal)
+  - Jorge A. P=C3=A9rez (University of Groningen, The Netherlands)
+
+--000000000000c1fb550627e52774
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr">[Apologies for multiple =
+postings]<br>**************************************************************=
+**********<br><br>=C2=A0Joint Call for Papers<br><br>=C2=A0DisCoTec 2025<br=
+><br>=C2=A020th International Federated Conference on Distributed Computing=
+ Techniques<br><br>=C2=A0Lille, France, 16-20 June 2025<br><br>=C2=A0Submis=
+sion deadline: 7 February 2025<br><br>=C2=A0<a href=3D"https://www.discotec=
+.org/2025" target=3D"_blank">https://www.discotec.org/2025</a><br><br>*****=
+*******************************************************************<br><br>=
+DisCoTec 2025 is one of the major events sponsored by the International Fed=
+eration for Information Processing (IFIP) and the European Association for =
+Programming Languages and Systems (EAPLS). It gathers conferences and satel=
+lite events that cover a broad spectrum of distributed computing subjects =
+=E2=80=94 from theoretical foundations and formal description techniques, t=
+esting and verification methods, to language design and system implementati=
+on approaches. The three main conferences are:<br><br>* COORDINATION 2025 -=
+ International Conference on Coordination Models and Languages<br>* DAIS 20=
+25 - International Conference on Distributed Applications and Interoperable=
+ Systems<br>* FORTE 2025 - International Conference on Formal Techniques fo=
+r Distributed Objects, Components, and Systems<br><br>DisCoTec 2025 is orga=
+nised by Inria Lille and the University of Lille. It will be hosted by Poly=
+tech Lille.<br><br><br>* NEW: Accommodations for parents of young children =
+*<br><br>=C2=A0 Subject to budget availability, we are planning to make spe=
+cial logistical arrangements for conference participants travelling with yo=
+ung children (and potentially accompanying persons). We invite interested p=
+ersons to contact the General Chair (<a href=3D"mailto:simon.bliudze@inria.=
+fr" target=3D"_blank">simon.bliudze@inria.fr</a>), as soon as possible to d=
+iscuss the arrangements that might be applicable.<br><br><br>* Keynote Spea=
+kers *<br><br>=C2=A0 - Alysson Bessani (Universidade de Lisboa, Portugal)<b=
+r><br>=C2=A0 - H=C3=A9l=C3=A8ne Coullon (IMT Atlantique, France)<br><br>=C2=
+=A0 - Omar Inverso (GSSI, Italy)<br><br>=C2=A0 - Burcu Ozkan (TU Delft, The=
+ Netherlands)<br><br><br>* Important Dates (for all main conferences) *<br>=
+<br>=C2=A0 All deadlines expire at 23:59 anywhere on earth.<br><br>=C2=A0 -=
+ Abstract submission: 31 January 2025<br><br>=C2=A0 - Paper submission: 7 F=
+ebruary 2025<br><br>=C2=A0 - Paper notification: 28 March 2025<br><br>=C2=
+=A0 - Camera-ready: 23 April 2025 (TBC)<br><br>=C2=A0 - DisCoTec conference=
+: 16-20 June 2025<br><br>=C2=A0 See each conference site for topics of inte=
+rest, paper categories, and submission instructions.<br><br><br>* Main Conf=
+erences *<br><br>=C2=A0 - COORDINATION (<a href=3D"https://www.discotec.org=
+/2025/coordination" target=3D"_blank">https://www.discotec.org/2025/coordin=
+ation</a>)<br>=C2=A0 =C2=A0 27rd International Conference on Coordination M=
+odels and Languages<br>=C2=A0 =C2=A0 PC Chairs: Cinzia Di Giusto (Universit=
+=C3=A9 C=C3=B4te d=E2=80=99Azur, FR) and Ant=C3=B3nio Ravara (NOVA School o=
+f Science and Technology, PT)<br><br>=C2=A0 - DAIS (<a href=3D"https://www.=
+discotec.org/2025/dais" target=3D"_blank">https://www.discotec.org/2025/dai=
+s</a>)<br>=C2=A0 =C2=A0 25st International Conference on Distributed Applic=
+ations and Interoperable Systems<br>=C2=A0 =C2=A0 PC Chairs: Daniel Balouek=
+ (INRIA, FR) and Ib=C3=A9ria Medeiros (University of Lisbon, PT)<br><br>=C2=
+=A0 - FORTE (<a href=3D"https://www.discotec.org/2025/forte" target=3D"_bla=
+nk">https://www.discotec.org/2025/forte</a>)<br>=C2=A0 =C2=A0 45st Internat=
+ional Conference on Formal Techniques for Distributed Objects, Components a=
+nd Systems<br>=C2=A0 =C2=A0 PC Chairs: Carla Ferreira (NOVA University of L=
+isbon, PT) and Claudio A. Mezzina (University of Urbino, IT)<br><br><br>* A=
+rtefact Evaluation Chairs *<br><br>=C2=A0 - DisCoTec-wide: Roberto Casadei =
+(University of Bologna, Italy)<br><br>=C2=A0 - COORDINATION: Duncan Attard =
+(University of Glasgow, UK)<br><br>=C2=A0 - DAIS: Vinicius Cogo (Ci=C3=AAnc=
+ias/ULisboa, Portugal)<br><br>=C2=A0 - FORTE: Emilio Incerto (IMT School fo=
+r Advanced Studies Lucca, Italy)<br><br><br>* Proceedings *<br><br>=C2=A0 M=
+ain conference proceedings will be published as volumes in the Springer LNC=
+S-IFIP series. The volumes will be open access from the IFIP digital librar=
+y after a 3-year embargo.<br><br><br>* Journal Special Issues *<br><br>=C2=
+=A0 Selected papers accepted at the main conferences will be invited for su=
+bmission to special issues in high-quality journals, such as:<br><br>=C2=A0=
+ - Logical Methods in Computer Science<br><br>=C2=A0 - Science of Computer =
+Programming (Software Track).<br><br><br>* Organizing Committee *<br><br>=
+=C2=A0 - Simon Bliudze, General Chair (Inria Center at the University of Li=
+lle, France)<br>=C2=A0 - Larisa Safina, Satellite Events Chair (Inria Cente=
+r at the University of Lille, France)<br>=C2=A0 - Adrien Luxey-Bitri, Young=
+ Researchers Forum Chair (University of Lille, France)<br>=C2=A0 - Imen Say=
+ar, Gender equality / Women in Science co-Chair (University of Lille, Franc=
+e)<br>=C2=A0 - Manel Barkallah, Gender equality / Women in Science co-Chair=
+ (University of Namur, Belgium)<br>=C2=A0 - Bas van den Heuvel, Publicity c=
+o-Chair (University of Freiburg, Germany)<br>=C2=A0 - Matthew Alan Le Brun,=
+ Publicity co-Chair (University of Glasgow, UK)<br>=C2=A0 - R=C3=A9my Raes,=
+ Head of student volunters (Inria Center at the University of Lille, France=
+)<br><br><br>* Steering Committee *<br><br>=C2=A0 - Rocco De Nicola (IMT Sc=
+hool for Advanced Studies Lucca, Italy)<br>=C2=A0 - Adrian Francalanza (Uni=
+versity of Malta, Malta; Chair)<br>=C2=A0 - Ivan Lanese (University of Bolo=
+gna/INRIA, Italy)<br>=C2=A0 - Alberto Lluch Lafuente (Technical University =
+of Denmark, Denmark)<br>=C2=A0 - Mieke Massink (CNR-ISTI, Italy)<br>=C2=A0 =
+- Lu=C3=ADs Veiga (INESC-ID, Universidade de Lisboa, Portugal)<br>=C2=A0 - =
+Gianluigi Zavattaro (University of Bologna, Italy)<br>=C2=A0 - Carla Ferrei=
+ra (NOVA University of Lisbon, Portugal)<br>=C2=A0 - Jorge A. P=C3=A9rez (U=
+niversity of Groningen, The Netherlands)<br></div></div>
+</div>
+
+--000000000000c1fb550627e52774--
