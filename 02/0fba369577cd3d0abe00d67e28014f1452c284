@@ -1,0 +1,457 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=sXAwTbdr;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=hm5ZWJBe;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 62031128CA4
+	for <caml-list@tunbury.org>; Wed, 27 Nov 2024 06:54:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:references:in-reply-to:from:date:message-id:
+   to:cc:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=E2XmjG0t/od7tVj9RShrzytj+soWIvuYDKDxBHsK0Jc=;
+  b=sXAwTbdronsdfKhFmhcUxxoZ3duIq7Vz7geMSJzErqzwVVvykdmyfQrT
+   VevEQby61ai1n2PidMm7p/NjP97T1H+TRh5N1n/LhJXRdQ+OfnVvKAKaZ
+   5s8tX6LwESibc2hEhXxujWg7j7gUYK0J5lYVS45x0RH968ZHvRQ6dRxKJ
+   c=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.12,188,1728943200"; 
+   d="scan'208,217";a="195985485"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 27 Nov 2024 07:54:47 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 91EB1E013D; Wed, 27 Nov 2024 07:54:47 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id F3943E00B6
+	for <caml-list@sympa.inria.fr>; Wed, 27 Nov 2024 07:54:40 +0100 (CET)
+IronPort-SDR: 6746c230_bAIiVV1SpWJDAIcNhZHTWo93cF+yIRG46NAwZe0lCW9wVx1
+ hZauBNyjDWxCot7yuTZZeBKLZcnblTC5LxRwtcg==
+X-IPAS-Result: =?us-ascii?q?A0FCAgAiwUZnfK+AVdFaglyCRH1ZNAQLSIRWgSOOKoIhA?=
+ =?us-ascii?q?54XgUAWKA8BAwENOQsEAQEDBIUAAopcAh4HAQQwCQ4BAgQBAQEBAwIDAQEBA?=
+ =?us-ascii?q?QEBEAEBBQEBAQIBAQIEBgECEAEBIhkHDhIphXsNgmIBgSRhAgIDAwM4AQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBBQINHxFNAQEBAQIBE?=
+ =?us-ascii?q?hEdARsdAQMBCwYDAgsNKgICIQERAQUBHAYTIoJggi8BAw4jAxGUI49AgQVCi?=
+ =?us-ascii?q?kR6gRUFAhaBAYINBtpcChkoDWwDgWECAQYUgTSEcylODgGCUwGBXAIOh3p6J?=
+ =?us-ascii?q?xuBSUSBFTWBc4ECPoJKFwICAYIKgy6CaQSCQIUPJYU2AYNJjBCPLSYIBxcDB?=
+ =?us-ascii?q?wcJBQQJEwYFBQJCCQUBDxIDBAMEBAECCwkKCQMDAg4CCAMCCAYOEQE/EgQTC?=
+ =?us-ascii?q?g0LBwUfCgcMEQooBCIEDxIcEAECATEDBAUDBQMDBAcBAgUECQgBBAMCBAMDA?=
+ =?us-ascii?q?gIDAggFBwQDCgYBAQMEAwEBBQcHAwIBAQMBAQoLCA0FAwgDBgkDBAEBAgcIA?=
+ =?us-ascii?q?gMOAgICAwIBCgYIBQEDBiEBDAMBAwMFDAQUAwQFAgIPDAECAwMHAwUCAgICA?=
+ =?us-ascii?q?gICBQQBAgQCBAEFBAkBAgICAwIBAQYEAgICAwIHDAcDBAIGAgYCAwIHCwoCA?=
+ =?us-ascii?q?wYFBQMFAh4CAwICBAMDFQEBAwECAQIDAgIDAgMEAQMDAgEBAQMHAgICBwYFA?=
+ =?us-ascii?q?gIDDAIDAwEBBgECAQIPBQUGBAEKAwIUAwUiAg8FCAEmAR4CAgMEDQgFAgIHA?=
+ =?us-ascii?q?gQMAgQPBQMDDgYWBgEECAQGBAwKAwQOBxcRAQEEBAIRBwIIAgIGBAICBxoGA?=
+ =?us-ascii?q?wUIAwIFBRACAgsCBAMVBAQbAwECCAICGAIBBwECEgEHAgIBFAIKAwIFBgcCH?=
+ =?us-ascii?q?AICAwMEBAMBBQMEEAMLAQUGBQEBBA4BAgECAQECAwMOAQICAwMCAgEJAgIBA?=
+ =?us-ascii?q?QINCAEEAwEHAgUDBQMKAQEBAgEECQQNBgMFAwMHAwQCAwIGAgQEBAICAwMCA?=
+ =?us-ascii?q?wEDAwIBAgMJAgEPDwoPAgIDBAIGAgIBBCYCARUFAgMEAgIHAgIDAQIBAgICB?=
+ =?us-ascii?q?AIEAgIGAwkIAQICBwECAgIDFQIFAQQJAwMFEgwiAwICAgIDBwoDBQIBAQIEA?=
+ =?us-ascii?q?wMDAwkNBwIDAQIBAwUDAQIBAgkDBgICAwMFEhkFAwIPAwIBBQQCCBILBwEBD?=
+ =?us-ascii?q?xYFBAkFFQMGAgMDFgsEBQMDAwEMBQwOAgILAxcFAQEHAQMOCAMEBAIDAwkCA?=
+ =?us-ascii?q?RABAwQCCQIEAQIKAgICAgIEAQEFBAIEAwIFAgIBCAQDAwMNBAMICAMFAwwSA?=
+ =?us-ascii?q?gICCQIDAQIDAwMEDQgWDQMCDRgKFRMHBwMDBAsCCQMEDQIEAgIBBgMGCgYWA?=
+ =?us-ascii?q?QIYAgIGDAQDAwgDAgMCAgECAgIBEQICCQgNBQkFBgIWAwIDCAEJAw8DAhQBB?=
+ =?us-ascii?q?gIIAwcBAQQCAgoRCgEBAgIBBigDAQECFBMHAwgCAgICBhYMAQUHAwcPBQUEA?=
+ =?us-ascii?q?gIWAwMVBAQMAgUCAgMDAgEBFAYVAQUCAwYLAQYBAgUEAgMEAhQCAw8DBAMKA?=
+ =?us-ascii?q?g8DBgMEBgMBAgwQAgQCCQoBBQQDBwUCHwMDAgIFCwIIAgIFAgUHAwkLBgECB?=
+ =?us-ascii?q?QMECQIUAhACAgICCBkCAgICBQYYAyYCBAMDAwMLAQICDgkDBDsGEwQCAwMCD?=
+ =?us-ascii?q?gECAgsBAgIEAgMBBAcJAwMJCgcBCg0HAgIKCAkQAQICDwcDAgICAgYHEAMCE?=
+ =?us-ascii?q?w8FBgYCCgcNCgMCAQICEwIDCQYDBQ0DBwQKDwIVAhYFAyACCAkLAgcOBQIFE?=
+ =?us-ascii?q?gMOBQMCAhIEAgMGBQMBBwEfAwQFAggCAg0CAgICBQIFAgUYEQENBAMDAwIIA?=
+ =?us-ascii?q?QQVBgMJCBQYCAQDCwYdAgIDAgQFAQEWAQEBBQEJAgMCAwQMHQIJAyMPAwsJC?=
+ =?us-ascii?q?BM9AQsHMgQ2ARQUByshX6BCAUaDSBeBJGgpB2AoHQstkmezIWiDPIFjDIonl?=
+ =?us-ascii?q?UczqlGYe4pYSIJgmxcRIxKBMjqBXDMaI1AxgjZPAxkPV5FEhRTDQ0QyOwIHA?=
+ =?us-ascii?q?QoBAQMJhkuLE4FLAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ tVh3pTmOHm4FQ==
+IronPort-HdrOrdr: A9a23:gvMNGKlIepZEEXbXnXo1Zl2wVHXpDfIA3DAbv31ZSRFFG/FwWf
+ re5MjztCWE8wr5PUtLpTnuAtjlfZqxz+8R3WBVB8bBYOCEgguVxeNZnOzfKlTbckWUygce79
+ YCT0EUMqyXMbEVt7eC3CCIV/glhPeImZrGuQ4c9RtQpMNRBp2IIz0WNu9TKCxLeDU=
+X-Talos-CUID: =?us-ascii?q?9a23=3A3nSdl2ji5S4S/60P4J/7wnfz0jJue1vQwEbsMm6?=
+ =?us-ascii?q?CGWN4bIanR22a8qwjnJ87?=
+X-Talos-MUID: 9a23:wlZvzwtXCDYEFuUG+c2ntmghGeUxyf6VC29KsJBdoNKmG3dgAmLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,188,1728943200"; 
+   d="scan'208,217";a="102726311"
+X-MGA-submission: =?us-ascii?q?MDFUX5g3xHHlcWnmGLWtv5QEADZo+U3pJS5c2i?=
+ =?us-ascii?q?zYd+OE7//AH4i3xfigUTWH0Jo3MBYew9yk3M5hkJbefL4tRqLI/y9GZ8?=
+ =?us-ascii?q?qehhHzaxEerLx4McfG99Iw8CeQ0yYiq92hJTrBKhKqgnn+Rkt+AoFtqm?=
+ =?us-ascii?q?a1s2grJfLOXW7F1aS5+OLNIw=3D=3D?=
+Received: from mail-yw1-f175.google.com ([209.85.128.175])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2024 07:54:40 +0100
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-6eee6874ef8so48137207b3.2
+        for <caml-list@inria.fr>; Tue, 26 Nov 2024 22:54:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1732690478; x=1733295278; darn=inria.fr;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=E2XmjG0t/od7tVj9RShrzytj+soWIvuYDKDxBHsK0Jc=;
+        b=hm5ZWJBen8fIiptk7YgAQ8d1CYq2bxv7iy4QlAS8KlTguflz5d1TC6v+KvrrBoEFzE
+         eVR6Kz9Sf7Xfg3EnZp/Y9iyLG8qAFR/SP7y8d7bEupEGsLtH/Lm/rjg/vR7lqbuWW0jH
+         11XhPk2h3Aguc6UMnpAnylmplnX/RknUX+z15PudRaqnWqu/143ei/X+9gR3sFe3A/b8
+         bYXYBXgYNeT4WrfILkeYEPj6JgnSLcpBXJ5YiKfENPVR2a2BU2P+QOIpcKHL6IeR/9Hq
+         aHoH2RaftaMuwoz85j+xezbf9V7rkgesO/vogKgMxRvhvaIGb+UN8VdjsR04JZ/Y2wQ7
+         6VZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732690478; x=1733295278;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=E2XmjG0t/od7tVj9RShrzytj+soWIvuYDKDxBHsK0Jc=;
+        b=Qql01B35EbfpUuPyhXrhSRRWdT0EAnwWfrLWv32zV4yjZhi+/QOQnUP4yGjlS4aSwM
+         5MTXpdOkk9w3xtnVYDT8G+oMbYzEl5YTYNzW8wm8KzwQqB47uq3Q106lpbc8unuLOcWf
+         MyK8+jCGTE4S2foPyya20N/6ClGzDHriEJ+VTAIhJY6OyRQJ9fftlrZ6wrQ1yjMcYR6Y
+         o1rRsZhLi8GdBeOiF8uyOiojIpQAH/bjWKUMYwnRBpfpDHm/w6GaxQAg8PMBUYCroUBU
+         rwhJ+jitNY0J9NPBdQNQyqKDy1f6uKXLCl4/Wb0OE3j4p5T9sVxGUjOZz7uL6tH71hEX
+         X/+g==
+X-Gm-Message-State: AOJu0Yw8lnPBTlN2SaUv8/IMgdnedwW+bcOt8GLz8V+mTnet9TBxdBS4
+	FLhbyZxISuGNlThOUQC+dQk3su6J9cqk4/MjDAmCgv/Lxc4c1cWbkCcthlDNzysPzVaDu1Bnu4b
+	2pNo+3NLRujT8N7eaMZBts7LDM3Gcvg==
+X-Gm-Gg: ASbGncv2bbiRa6+jFEwvSzrJjZo+VE0CJfZZj0j2WE2kmgGXTtH2i4Z88zBc1CBYJBP
+	ENBcaBnsQxlVOml6SF8EkWejHDfmx
+X-Google-Smtp-Source: AGHT+IFjfn018YQS9BfFPH4JvffaqzEQG8XtK1qPYICHvWsE2xntKNY7TWmxuubdHNHpwuiXXRQfdeHvmH0X8noUDwE=
+X-Received: by 2002:a05:690c:6c09:b0:6ec:b108:2cb8 with SMTP id
+ 00721157ae682-6ef371ea89bmr19021357b3.8.1732690478429; Tue, 26 Nov 2024
+ 22:54:38 -0800 (PST)
+MIME-Version: 1.0
+References: <7F296476-3CFC-4E74-B3F9-462A438A1BD6@mpi-sws.org> <0B3AB0A7-C413-4F1B-818A-7541B3919163@mpi-sws.org>
+In-Reply-To: <0B3AB0A7-C413-4F1B-818A-7541B3919163@mpi-sws.org>
+From: Yotam Barnoy <yotambarnoy@gmail.com>
+Date: Wed, 27 Nov 2024 08:54:29 +0200
+Message-ID: <CAN6ygOkzw6wXtzuvi6EuYb=Zz61gFLBdUMmCzz2fsWc_bqZ03g@mail.gmail.com>
+To: Andreas Rossberg <rossberg@mpi-sws.org>
+Cc: caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="00000000000078fb950627df7078"
+Subject: Re: [Caml-list] ANN: Boulder Dash in OCaml
+Reply-To: Yotam Barnoy <yotambarnoy@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19216
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-11/CAN6ygOkzw6wXtzuvi6EuYb%3DZz61gFLBdUMmCzz2fsWc_bqZ03g%40mail.gmail.com>
+
+--00000000000078fb950627df7078
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Very nice! Since you're already toying with the code, you might want to try
+and test the impact of moving towards a more functional, immutable data
+structure approach. I've found that you can separate out those parts of the
+game state that change more rapidly and those that don't, and the
+slow-changing parts can easily tolerate functional paradigms, with the
+advantage being greater safety and reduced state complexity.
+
+On Tue, Nov 26, 2024 at 7:39=E2=80=AFPM Andreas Rossberg <rossberg@mpi-sws.=
+org>
+wrote:
+
+> Couldn=E2=80=99t let it rest, so I=E2=80=99m (already) announcing version=
+ 2 of it =E2=80=94 now a
+> much improved, practically feature-complete reimplementation of both
+> Boulder Dash 1 & 2.
+>
+> Version 2 was an excuse for me to mess around with the OCaml bindings to
+> popular graphics engines, and as a result, it now comes with 3 backends t=
+o
+> choose from:
+>
+> 1. the homely bare OCaml Graphics library (
+> https://github.com/ocaml/graphics),
+> 2. the TSDL binding to the SDL2 API (https://github.com/dbuenzli/tsdl),
+> 3. the binding to the Raylib engine (
+> https://github.com/tjammer/raylib-ocaml).
+>
+> The list is in order of increasingly better user experience, for the pric=
+e
+> of a potentially harder build experience. In theory, all versions should
+> run on Windows, Mac, and Linux, though I was too lazy to test all
+> combinations, and I (or my opam) had trouble installing some of the
+> dependencies on some of the systems.
+>
+> Features:
+>
+> * Faithful original physics, graphics, animations, sound, and music
+> * Authentic scrolling mechanics combined with dynamic resizing
+> * All 40 levels and 5 difficulties of Boulder Dash 1 & 2
+> * Pause-and-go mode for relaxed playing
+>
+> Relative to the previous release, version 2 adds the following niceties:
+>
+> * Support for SDL and Raylib engines, which allow all of the following
+> * Original sound effects and music
+> * Original level color schemes
+> * Full screen mode
+> * Faster graphics
+> * Dynamic graphics scaling adjustment
+> * Gamepad/joystick support as well as more precise keyboard controls
+> * Boulder Dash 2 levels and decoder
+>
+> Almost looks like a real game now. One from the 80s anyways. :)
+>
+> Enjoy,
+> /Andreas
+>
+>
+> > On 12. Nov 2024, at 16:55, Andreas Rossberg <rossberg@mpi-sws.org>
+> wrote:
+> >
+> > Boulder Dash(*) was my favourite computer game in the 8-bit era, first
+> released on the Atari 400/800 in 1984. Though I never owned an 8-bit
+> machine myself, I had friends that I annoyed enough to let me play it on
+> theirs.
+> >
+> > As a homage to its 40th anniversary, I put together a fairly faithful
+> clone of the original game, implemented in just a few 100 lines of bare
+> OCaml, with nothing but the homely Graphics library. It should run on
+> Windows, Mac, and Linux, though I was too lazy to test the latter.
+> >
+> > Features:
+> >
+> >    =E2=80=A2 Faithful original physics, graphics, and animations
+> >    =E2=80=A2 Authentic scrolling mechanics combined with dynamic window=
+ resizing
+> >    =E2=80=A2 All 20 levels, including intermissions, and 5 difficulties
+> >    =E2=80=A2 Pause-and-go mode for relaxed playing
+> >
+> > It is open-source here:
+> >
+> >    https://github.com/rossberg/boulder-dash
+> >
+> > Enjoy!
+> >
+> > /Andreas
+> >
+> > (*) https://en.wikipedia.org/wiki/Boulder_Dash_(video_game)
+> >    "Boulder Dash" is a trademark of BBG Entertainment
+> >
+>
+>
+
+--00000000000078fb950627df7078
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Very nice! Since you&#39;re already toying with the code, =
+you might want to try and test the impact of moving towards a more function=
+al, immutable data structure approach. I&#39;ve found that you can separate=
+ out those parts of the game state that change more rapidly and those that =
+don&#39;t, and the slow-changing parts can easily tolerate functional parad=
+igms, with the advantage being greater safety and reduced=C2=A0state comple=
+xity.</div><br><div class=3D"gmail_quote"><div dir=3D"ltr" class=3D"gmail_a=
+ttr">On Tue, Nov 26, 2024 at 7:39=E2=80=AFPM Andreas Rossberg &lt;<a href=
+=3D"mailto:rossberg@mpi-sws.org">rossberg@mpi-sws.org</a>&gt; wrote:<br></d=
+iv><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
+er-left:1px solid rgb(204,204,204);padding-left:1ex">Couldn=E2=80=99t let i=
+t rest, so I=E2=80=99m (already) announcing version 2 of it =E2=80=94 now a=
+ much improved, practically feature-complete reimplementation of both Bould=
+er Dash 1 &amp; 2.<br>
+<br>
+Version 2 was an excuse for me to mess around with the OCaml bindings to po=
+pular graphics engines, and as a result, it now comes with 3 backends to ch=
+oose from:<br>
+<br>
+1. the homely bare OCaml Graphics library (<a href=3D"https://github.com/oc=
+aml/graphics" rel=3D"noreferrer" target=3D"_blank">https://github.com/ocaml=
+/graphics</a>),<br>
+2. the TSDL binding to the SDL2 API (<a href=3D"https://github.com/dbuenzli=
+/tsdl" rel=3D"noreferrer" target=3D"_blank">https://github.com/dbuenzli/tsd=
+l</a>),<br>
+3. the binding to the Raylib engine (<a href=3D"https://github.com/tjammer/=
+raylib-ocaml" rel=3D"noreferrer" target=3D"_blank">https://github.com/tjamm=
+er/raylib-ocaml</a>).<br>
+<br>
+The list is in order of increasingly better user experience, for the price =
+of a potentially harder build experience. In theory, all versions should ru=
+n on Windows, Mac, and Linux, though I was too lazy to test all combination=
+s, and I (or my opam) had trouble installing some of the dependencies on so=
+me of the systems.<br>
+<br>
+Features:<br>
+<br>
+* Faithful original physics, graphics, animations, sound, and music<br>
+* Authentic scrolling mechanics combined with dynamic resizing<br>
+* All 40 levels and 5 difficulties of Boulder Dash 1 &amp; 2<br>
+* Pause-and-go mode for relaxed playing<br>
+<br>
+Relative to the previous release, version 2 adds the following niceties:<br=
+>
+<br>
+* Support for SDL and Raylib engines, which allow all of the following<br>
+* Original sound effects and music<br>
+* Original level color schemes<br>
+* Full screen mode<br>
+* Faster graphics<br>
+* Dynamic graphics scaling adjustment<br>
+* Gamepad/joystick support as well as more precise keyboard controls<br>
+* Boulder Dash 2 levels and decoder<br>
+<br>
+Almost looks like a real game now. One from the 80s anyways. :)<br>
+<br>
+Enjoy,<br>
+/Andreas<br>
+<br>
+<br>
+&gt; On 12. Nov 2024, at 16:55, Andreas Rossberg &lt;<a href=3D"mailto:ross=
+berg@mpi-sws.org" target=3D"_blank">rossberg@mpi-sws.org</a>&gt; wrote:<br>
+&gt; <br>
+&gt; Boulder Dash(*) was my favourite computer game in the 8-bit era, first=
+ released on the Atari 400/800 in 1984. Though I never owned an 8-bit machi=
+ne myself, I had friends that I annoyed enough to let me play it on theirs.=
+<br>
+&gt; <br>
+&gt; As a homage to its 40th anniversary, I put together a fairly faithful =
+clone of the original game, implemented in just a few 100 lines of bare OCa=
+ml, with nothing but the homely Graphics library. It should run on Windows,=
+ Mac, and Linux, though I was too lazy to test the latter.<br>
+&gt; <br>
+&gt; Features:<br>
+&gt; <br>
+&gt;=C2=A0 =C2=A0 =E2=80=A2 Faithful original physics, graphics, and animat=
+ions<br>
+&gt;=C2=A0 =C2=A0 =E2=80=A2 Authentic scrolling mechanics combined with dyn=
+amic window resizing<br>
+&gt;=C2=A0 =C2=A0 =E2=80=A2 All 20 levels, including intermissions, and 5 d=
+ifficulties<br>
+&gt;=C2=A0 =C2=A0 =E2=80=A2 Pause-and-go mode for relaxed playing<br>
+&gt; <br>
+&gt; It is open-source here:<br>
+&gt; <br>
+&gt;=C2=A0 =C2=A0 <a href=3D"https://github.com/rossberg/boulder-dash" rel=
+=3D"noreferrer" target=3D"_blank">https://github.com/rossberg/boulder-dash<=
+/a><br>
+&gt; <br>
+&gt; Enjoy!<br>
+&gt; <br>
+&gt; /Andreas<br>
+&gt; <br>
+&gt; (*) <a href=3D"https://en.wikipedia.org/wiki/Boulder_Dash_(video_game)=
+" rel=3D"noreferrer" target=3D"_blank">https://en.wikipedia.org/wiki/Boulde=
+r_Dash_(video_game)</a> <br>
+&gt;=C2=A0 =C2=A0 &quot;Boulder Dash&quot; is a trademark of BBG Entertainm=
+ent<br>
+&gt; <br>
+<br>
+</blockquote></div>
+
+--00000000000078fb950627df7078--
