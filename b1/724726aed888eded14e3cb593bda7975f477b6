@@ -1,0 +1,382 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=CWqA36NL;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=mehnert.org header.i=@mehnert.org header.a=rsa-sha256 header.s=mail header.b=w0O66723;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 51A5D4AAAE
+	for <caml-list@tunbury.org>; Sun,  1 Dec 2024 19:59:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:to:from:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=NxIOD+t6wRAVGaXso5goKeIDrmq40dCbqbgMbX4pzrI=;
+  b=CWqA36NLPSwwtEEKEP3tNn2jyCfIYLBarPAbmMVg5LHUjKw4erB0k1aT
+   n1DvKGPj3KpZD/ghh3UhdfwUD52FiHaT5eJaTE9HQqgshVEHoL889VtsZ
+   BfNdF9+d1I5Rj/8F32fbuVHP1B4J6f92IyOAd5fPvU9hVcdy+kq2oDUzL
+   s=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@mehnert.org
+X-IronPort-AV: E=Sophos;i="6.12,201,1728943200"; 
+   d="scan'208";a="196707666"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 01 Dec 2024 20:59:41 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 7CAC5E0D20; Sun,  1 Dec 2024 20:59:41 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 07929E00B6
+	for <caml-list@sympa.inria.fr>; Sun,  1 Dec 2024 20:59:40 +0100 (CET)
+IronPort-SDR: 674cc02a_Z62sngEWnKPcmCJV/mbMtTkpWVM1T3iLJwua8oTwyVp9Jpq
+ iIE21lH0Nh/15Qhh9MhHJOfO/8rDxMfNhiW2qyg==
+X-IPAS-Result: =?us-ascii?q?A0H1BgBlv0xn/8hZSdVQCoEJhBcHdlozBAtIhFaDT4t+g?=
+ =?us-ascii?q?XQthD6ND4xhgWoPAQMBDTQQBAEBAwEDhDqLKwIeBwEENBMBAgQBAQEBAwIDA?=
+ =?us-ascii?q?QEBAQEBEAEBBQEBAQIBAQIEBgECgQoThXsBDIJbO3GBJQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEXAg2BJw8BBQgBATgYHAImAl4VAQEQB4JmAYJkBw0GlGScRYEyg?=
+ =?us-ascii?q?QGCDAEBBoEIUAMBDgkmT9k3gWQJgRouhWqCYgGGIYQ/Jxs/gU6BPAuCQAeDU?=
+ =?us-ascii?q?AICgSQNhAiCaYJChBx2IwJNhDmDeodDgjKFCIEPgg6JcIFNHANZIREBVRMXC?=
+ =?us-ascii?q?wcFYIEWA4F6gU2BNoFRQ4EWgThKg0qBQoEDgkppTTcCDQI2giQkWYJNgSUEB?=
+ =?us-ascii?q?YNphGmEWYEBhS1CHUACAQttPTcJCxsGPaBlaUeCUAskRgiBDQgkIAI7MwsqC?=
+ =?us-ascii?q?AgKNCoLAi2SP2ayY4QkgWOKNIgBB40qBhMvgUyCOIFXiy6GSAaSeph7IoI1i?=
+ =?us-ascii?q?EqCYZVaGYU1gX4mgVkzGggoCIMiCUYDGQ+SG4UUwRdCNQI6AgcBCgEBAwmSK?=
+ =?us-ascii?q?IFLAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ A==
+IronPort-HdrOrdr: A9a23:nYFNL6stiVjh8ZXfh8IVQObZ7skDcNV00zEX/kB9WHVpW+SFis
+ alh+QDyHbP+VMssQIb+OxoX5PwJk80lKQFhbX5WI3JYOCIggeVxe1ZnOjfKl7bdBEWlNQx6U
+ 4IScEXY+EYZmIK7/oSjjPZLz9t+re6zJw=
+X-Talos-CUID: 9a23:NE1y3mwOnXXUGcAWhrh6BgU7ENw6fVPni0vseVeAFWtATqORSGWPrfY=
+X-Talos-MUID: 9a23:VsGSOAbx8uzslOBTim/Tiy5AN5pUwqX1OXA9mK5dnu+GKnkl
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,201,1728943200"; 
+   d="scan'208";a="103106638"
+X-MGA-submission: =?us-ascii?q?MDGlZk1Nr2KQ7HmPf5gGXVmTrsVFWJ+7YS+uEQ?=
+ =?us-ascii?q?cNRvJ/OOS4N/lVo8759oJP8zlxVpOPkxTD4qCgQKq0PzzUlGnwHlCfNZ?=
+ =?us-ascii?q?bk9PZgTFv/cEU/ogtii8d0RYGRbaEkju4XdqPQ+doGHKUDg9RlQZkt33?=
+ =?us-ascii?q?7AUjvhjTJ53z82GASi1ngdOw=3D=3D?=
+Received: from mail.mehnert.org ([213.73.89.200])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2024 20:59:38 +0100
+Received: from [192.168.178.130] (pd95f56c0.dip0.t-ipconnect.de [217.95.86.192])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+	 client-signature RSA-PSS (2048 bits) client-digest SHA256)
+	(Client CN "hannes@mehnert.org", Issuer "mehnert root CA" (not verified))
+	by mail.mehnert.org (Postfix) with ESMTPS id 3D3BA19E7D
+	for <caml-list@inria.fr>; Sun,  1 Dec 2024 20:59:37 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mehnert.org; s=mail;
+	t=1733083177; bh=NxIOD+t6wRAVGaXso5goKeIDrmq40dCbqbgMbX4pzrI=;
+	h=Date:To:From:Subject;
+	b=w0O66723LZZBe2Ab4E5UjifTEKZU8Q1binofgtpW3085JtehhA5TmV06D4slfd/rR
+	 j7hGLze3w+6R9T7yovhuaOEZJxKhSb2ZMZ/r3gwaWNmCijoxafiYtmM/e3fAp17cX1
+	 m4u3gupZDdj3WiSfK5GJGY6cE3p4F/8CfY0UGDx2YmPI5pMpvcEdU7cmydfK6jOCqG
+	 n03/QUkQ0dzlSFZxaneDyvnttyJlgEzhrRe1JU3Q53EoOKLKE6G+02pFQZUu3mI6Dv
+	 K8wWNt3UVWrFCRGH8nwx6Bl4zjui85O/STkSgUFzxsFpY4Ja7PF2McMzRSy3YBFm8S
+	 YPAlMLlmTcUkQ==
+Message-ID: <e916e372-6f26-4583-9811-1ea9dab3208c@mehnert.org>
+Date: Sun, 1 Dec 2024 20:59:36 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: "caml-list@inria.fr" <caml-list@inria.fr>
+From: Hannes Mehnert <hannes@mehnert.org>
+Autocrypt: addr=hannes@mehnert.org; keydata=
+ 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
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [Caml-list] Proposed Package Archiving Policy for the opam
+ Repository
+Reply-To: Hannes Mehnert <hannes@mehnert.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19224
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-12/e916e372-6f26-4583-9811-1ea9dab3208c%40mehnert.org>
+
+Dear everyone,
+
+please find below an announcement for the archiving policy of the opam 
+repository - together with a call-to-action, and a roadmap.
+
+NB: there is an online rendered version at 
+https://discuss.ocaml.org/t/proposed-package-archiving-policy-for-the-opam-repository 
+- best to discuss this there as well.
+
+## Context
+
+The opam repository differs from nearly all other 
+programming-language-centric package repositories in that it is manually 
+curated by volunteer maintainers and protected by a robust continuous 
+integration system that (generally) ensures published packages work as 
+expected across a [large matrix of supported 
+platforms](https://github.com/ocurrent/opam-repo-ci/blob/master/doc/platforms.md).
+
+Over the past few years the repository has kept growing steadily, when 
+not accelerating, and this has started raising questions about the size, 
+weight and sustainability of the repository and its processes. Last 
+year, [Hannes Mehnert](https://github.com/hannesm) requested comments on 
+a [proposed 
+initiative](https://github.com/ocaml/opam-repository/issues/23789) to 
+improve the sustainability and quality of the opam package repository on 
+the long term.
+
+## Problem
+
+The problem, in a nutshell, is that the `opam-repository` will keep 
+steadily growing, using an increasing and substantial amount of space 
+and inodes. Every opam user needs to invest a large amount of 
+computational resources for the solver, every time they want to install 
+or update a package. Additionally, a large amount of computational 
+resources are spent in the continuous integration process and yet a lot 
+of the packages have become stale or uninstallable.
+
+## Solution
+
+[After much 
+deliberation](https://github.com/ocaml/opam-repository/issues/23789), 
+the discussion converged on a solution: introduce a package archiving 
+policy and supporting processes, to periodically identify and prune 
+unmaintained and broken packages from the repository. This will improve 
+the performance of the opam solvers, of the opam-repo CI, and most 
+importantly improve the quality of the package repository, while keeping 
+a sort of immutability of the repository content and preserving the 
+usability of historical packages for the users that want or need them.
+
+The opam repository maintainers propose a 
+[policy](https://github.com/ocaml/opam-repository/blob/master/governance/policies/archiving.md).
+
+The currently empty [repository 
+archive](https://github.com/ocaml/opam-repository-archive) has been 
+created, waiting for packages to be moved.
+
+## Call to action
+
+If you maintain packages in the opam-repository, you can help by 
+defining your maintanence intent: add a new field `x-maintenance-intent` 
+to your opam file(s) (the most recent release of your package is 
+sufficient - please also put this field in your git repository so it 
+will be part of future releases). The value is defined in [the 
+policy](https://github.com/ocaml/opam-repository/blob/master/governance/policies/archiving.md#specification-of-the-x--fields-used-in-the-archiving-process).
+
+## Roadmap
+
+All announcements will be on discuss.ocaml.org with the opam-repository 
+tag. If you like to follow these announcements, keep your eyes at [the 
+opam-repository tag](https://discuss.ocaml.org/tag/opam-repository).
+
+* December 1st 2024: announcement of this proposal
+* December 15th 2024: announcement of the packages affected by Phase 1 
+(uninstallable packages ("available: false", "flags: avoid-version" or 
+"deprecated", "opam admin check --installable", does not compile -- opam 
+health check https://check.ci.ocaml.org/)
+* January 1st 2025: Phase 1 cutting point: packages are moved to 
+opam-repository-archive
+* January 15th 2025: announcement of the packages affected by Phase 2 
+(OCaml lower bound 4.08)
+* February 1st 2025: Phase 2 cutting point: packages are moved to 
+opam-repository-archive
+* February 15th 2025: initial spring cleaning, announcement of packages 
+(based on maintenance-intent)
+* March 1st 2025: spring cleaning cutting point: packages are moved to 
+opam-repository-archive
+* Every quarter: repeat Phase 3
+* Every year: reconsider Phase 2 with an increased OCaml lower bound
+
+We now invite members of the OCaml community who may not follow the 
+ocaml-repository issues to review our plans and submit comments, 
+questions, or suggestions.
+
+Thank you in advance for your support!
+
+- - -
+
+## References
+
+* [Opam repository 
+archive](https://github.com/ocaml/opam-repository-archive)
+* [Proposed 
+policy](https://github.com/ocaml/opam-repository/blob/master/governance/policies/archiving.md)
+* [Plan of 
+action](https://github.com/ocaml/opam-repository/wiki/Package-Archiving:-Plan)
+* [Issue and 
+discussion](https://github.com/ocaml/opam-repository/issues/23789)
+* [Previous 
+announcement](https://discuss.ocaml.org/t/discussions-on-the-future-of-the-opam-repository/13898)
+
+## Acknowledgment
+
+Thanks to the following individuals for valuable input and contributions 
+to the planning process (sorry in case we forgot you):
+
+* Marcello Seri
+* Shon Feder
+* Thomas Gazagnaire
+* kit-ty-kate
+* Weng Shiwei 翁士伟
+* Marcus Rohrmoser
+* Reynir Björnsson
+* Stephen Sherratt
+* Simon Cruanes
+* Marek Kubica
+* Raphaël Proust
+* Romain Beauxis
+* Yawar Amin
+* Anil Madhavapeddy
+* Boning D.
+* Mathieu Barbin
+* Hannes Mehnert
+
+
+Best,
+
+the opam-repository maintainers team
