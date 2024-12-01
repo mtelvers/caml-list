@@ -1,0 +1,437 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=YA+2QUp4;
+	dkim=pass (2048-bit key; unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=ZT531QlJ;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 387A14AA88
+	for <caml-list@tunbury.org>; Sun,  1 Dec 2024 17:28:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:references:in-reply-to:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=FxXShsUkrS9Qi6nPVyfhMkLda6qiSODxdYG/W4wYICY=;
+  b=YA+2QUp45mmHhLvSpnDdFaY0qtJgVB/hYqBrGSKHyQxvYyVrPdL/II61
+   um2WeP4DXe46VEdMVAd2MBCb2UUAnO2J/cIRcqlrULKu1qR9OfLLjQ7lD
+   YlifQB9tVh1qru+6rPiuPPBFK64cQwmfY5a8FD52a8Ndh5/10wXzhYFsR
+   k=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@outlook.com
+X-IronPort-AV: E=Sophos;i="6.12,201,1728943200"; 
+   d="scan'208,217";a="196699447"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 01 Dec 2024 18:28:02 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 3033BE013D; Sun,  1 Dec 2024 18:28:02 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id AF437E00B6
+	for <caml-list@sympa.inria.fr>; Sun,  1 Dec 2024 18:27:56 +0100 (CET)
+IronPort-SDR: 674c9c9c_3ER3wraS7Viv5E1RSqFALWu96avZMuIAolpc+zHN+OoW3lW
+ IDaIQmYEhBZOfDBJiAgojP+Ppmo3cmDDsFFh93A==
+X-IPAS-Result: =?us-ascii?q?A0EgCQAYnExnjgslZzRaHAEBATwBAQQEAQECAQEHAQEVg?=
+ =?us-ascii?q?S4ngT8BGgIUUnsCWzIHCEiIIgOFLYh1jQWPPIMWPg8BAwELAhQBASUJBAEBA?=
+ =?us-ascii?q?wSFAAKKZCAGAQQ0EwECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQA?=
+ =?us-ascii?q?QEBAjoFSYV7DYJiAYEkYQQDBjgBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBBwINH14BAQEBAxIuATkPAgEDBQQNBAEBLzEXAQUIAgQBEggag?=
+ =?us-ascii?q?loCAQEBAYIcDQYBAzEEAg6kRwGBQAICiil4gRwYgQGCDQbaWwFLA3aBZAMGA?=
+ =?us-ascii?q?YFFAgEBhHEpgTIigVwBKoEyhCgghDyCT4FXgjcxPoJhAoFiK4Nogi8Egj6EH?=
+ =?us-ascii?q?HYjAk2EOTGDSYcxlFlSdSIDJiQPMgFVExcEBwcFOQNDKgwFDwEgBAgDNEAtA?=
+ =?us-ascii?q?hEIAQEJAgEBIQ4LDzQIAyoERhQhEwUJCwMPQwgUVxNLAQQKAjIkHjQgBgEKA?=
+ =?us-ascii?q?gIEBxEgAUElDwYMKQ8ScUgKATMiBGYIAiMMchoTAwQJBR0NDQICQwgxgQUDB?=
+ =?us-ascii?q?1sHAR8pKAQUQgsgBhECDQITIwoFUAICAgE3VTIMCw0TBQFAcw4jTEAdKwklJ?=
+ =?us-ascii?q?hQ5AwIHCz8QAgICCwMDBggWFAMpAwYXAQEvOGEXIy0CAgIBAgECGCIuHxopN?=
+ =?us-ascii?q?AUMAgMvgRMgOwIHHgMsAwMDA4EpAgoZWgk3VAIUAjcDFAMCAhYCBQEHAhRMA?=
+ =?us-ascii?q?hMCICA2EAECAQEBAg86K3wkBT0/MwEOHUADCxMIITE9NwYOGwUEEUhcny0BB?=
+ =?us-ascii?q?wOBGwFGgwmBfVBANRqyEZUPg1dNFQGMAZVjF6pRmHsijWCVcoUMAgQCBAUCD?=
+ =?us-ascii?q?wEBBjWBSSOBXDMaI1CCZ08DGQ+OOoNhxh1ENAsxAgcLAQEDCZIogUsBAQ?=
+IronPort-PHdr: A9a23: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
+ bkNkw3awvGgIYJZVHqrckE=
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:sJFgxKt8R1I88sJs2IsiUYPU7skCq4Mji2hC6mlwRA09TyXGra
+ 2TdaUgvyMc1gx7ZJh5o6H5BEDyewKmyXcV2/hkAV7GZmXbUQSTXeVfBOfZogEIXheOj9K1tp
+ 0QBJSWaueAamSS5PySiGbXLz9j+qjgzEnCv5a8854Zd3AOV0gW1XYaNu/0KC1LbTgDIaB8OI
+ uX58JBqTblU28QdN6HCn4MWPWGj8HXlbr9CCR2TiIP2U2rt3eF+bT6Gx+X0lM1SDVU24ov9m
+ DDjkjQ+rijifem0RXRvlWjp6i+2eGRgOeqSaS3+4MowwfX+0qVjbdaKvK/VQUO0aySAA5Dqq
+ iDn/5vBbUz15qbRBDOnfKk4Xic7N9p0Q6V9beV7EGT3fARaQhKe/apv7gpASfx+g4lppVxwa
+ hL12WWu95eCg7Bhj3045zNWwtxnkS5rHI+mapL5kYvJLc2eftUt8gS7UlVGJAPEGbz750mCv
+ BnCIXZ6OxNeV2XYnjFti1kwcCqXH40AhCaK3JyyPB9/wIm7UyRlXFou/D3tk1wiq4Adw==
+X-Talos-CUID: 9a23:aLzWtmxlJKhWSM7+sfLLBgUZAJ8pLlDR0E7uOle7Nl5UF5m0FFmprfY=
+X-Talos-MUID: 9a23:Cp8j7gTZsdzB5ziKRXTunQBuC9dys56yUko9scoUieSgbwp/bmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,201,1728943200"; 
+   d="scan'208,217";a="196699425"
+X-MGA-submission: =?us-ascii?q?MDHnbBwQ37NEPHBy9Fb3tCmeP9R15jNCZZcTDC?=
+ =?us-ascii?q?KHCxpnh9V7twqaERO/Ebhf2/EIxYXHHC4rlCZCCjl4NFJGw002vtbbnK?=
+ =?us-ascii?q?wy40zlFPZ/K8DjzAp6vRIN0toCU3r/gquDPk5F2G9Orx5dmiZ7n2Tfqe?=
+ =?us-ascii?q?q1RbjJzSA2o/xN2KF8giQVPQ=3D=3D?=
+Received: from mail-uksouthazolkn19010011.outbound.protection.outlook.com (HELO LO3P265CU004.outbound.protection.outlook.com) ([52.103.37.11])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2024 18:27:56 +0100
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=sCQp8CZG2d+btyI5vuTaYSOq6/2GfZ2MGj2tEdjoqRza/Bjh8ck1iPQA93A+1UBDdw/mUT2Mkn3cPDrQjwoK5z/+hRsbJT4s3SyXX9JxOGW0YVndEYb4Erkokm5e4Ezwd8DxDRStxXALFOJj1MY8Q/+IRpupHU/aHYee1V6jA3bL39pE2ncH/RWD3n2YvmU8/S0plimmJyKHEMG4EM0nj87EWmausOsYGC3PHNdpQCLM8E7dm9Ymk4o0bhAikmf/8JicsoHXlQV1NnZXaCskkZLl1dsojCkIMmleg/1RrLnrsNOQDkK2bo4PtRtPtPQdDrwrBRDxEJJhfnJH5IUrhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FxXShsUkrS9Qi6nPVyfhMkLda6qiSODxdYG/W4wYICY=;
+ b=ZMdCJvM7NrH3Zm+oqNwHdxgDdmwjlc/8oBKHwujw7Wv52YZDO/60woVpI0RPTNQ1EigIpTNmBnxQasOLyUsOx0Ub0IIokvsmrOYhtXC+4NVMr7YxqwfjeBtBhqfZ5SqZEjD/+F8ioDxV13kZM3/qfJw7nw1YzonU7zqz49EucjUEA1MJihhOJHeFdv6Gla2jsiHlmMUj/h5QOhqGLkQD8Kj5rE7D1UgSiD0TvmVIpGeQi3LJro1b5RW4H3agoT1zNu0HkHxpMNfegKipx0zwHmQYeRKSU924OU9OQ+KSFxcF/pBxnDyDCR438xp8Xb5t0GTr3609H9IgTEw13OZYKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FxXShsUkrS9Qi6nPVyfhMkLda6qiSODxdYG/W4wYICY=;
+ b=ZT531QlJkD20559Ety6bddWyFUjAH2Xp/wcVeZUgCqYGPFvc+tQuvsicCWHpofxje4Nz6ZzhXdo/vwLksU5Q6A2omKC46blxgvCjTmtYPU7f9rq/cG+zniNUtVxnPPFLKbtoyr33mATCuZuWRUaGtAo/+8rZC3pC29rOLiiNvu3FQfrespTh+evEnbCJNYDUIAyJAIz6e1S0vEUsQM2ZALNPFAMsJnGphenyrTwecul73laBvEwes9yrHKDsL4mWj42hzUsaLyrGZPyPhuuVeeEjORPnWswZ0/QM0K/XNLLDtrMwJE780/WjlzoJW9PAVgO69VMfVrZb1y2hXZXUxQ==
+Received: from CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:12c::9)
+ by LO7P265MB7522.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:41a::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8207.18; Sun, 1 Dec
+ 2024 17:27:55 +0000
+Received: from CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::4f37:8f32:e4a6:e624]) by CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::4f37:8f32:e4a6:e624%4]) with mapi id 15.20.8207.017; Sun, 1 Dec 2024
+ 17:27:55 +0000
+From: Kate Deplaix <kit-ty-kate@outlook.com>
+To: "caml-list@inria.fr" <caml-list@inria.fr>, Andreas Rossberg
+	<rossberg@mpi-sws.org>
+Thread-Topic: [Caml-list] Static linking with Mingw and dune
+Thread-Index: AQHbRBMZUqPE14jha0icQZUaNNErgbLRoDIp
+Date: Sun, 1 Dec 2024 17:27:55 +0000
+Message-ID:
+ <CWLP265MB415788DB633E5044F294FB8EBC342@CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM>
+References: <D5CAD9C8-4AD2-44FA-87FF-A04B03E04ACB@mpi-sws.org>
+In-Reply-To: <D5CAD9C8-4AD2-44FA-87FF-A04B03E04ACB@mpi-sws.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CWLP265MB4157:EE_|LO7P265MB7522:EE_
+x-ms-office365-filtering-correlation-id: 0216554e-7145-4798-4cda-08dd122d7dfb
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|9400799027|15030799003|8060799006|12050799009|461199028|15080799006|8062599003|19110799003|1602099012|10035399004|102099032|4302099013|440099028|3412199025;
+x-microsoft-antispam-message-info:
+ =?Windows-1252?Q?GV3+TDDjvYRJGf2gw+4wqMQt+51vqO2hBErlPP3ITB5SSg5RyXJ7Pgal?=
+ =?Windows-1252?Q?/pexDaDkiHJtOPnCdZtIXIFws/3NkXjyle0aeS6rtj0VNz0Q7TS7i3M0?=
+ =?Windows-1252?Q?p+bxrojttpAsrySBSmH69rg3DHhE4bbE5ff/vaHSypsrZGHA1X3NnmsM?=
+ =?Windows-1252?Q?ldXAhT2SM47NAKLf/W0X5jTmLKJUmtm2066DJOtruNULKO8rk8r8cbb3?=
+ =?Windows-1252?Q?XzS0vxtQGSezJmLUzCir0u3oCPkx5B7XoDtAnVjR6kzzVs68oECJwrSu?=
+ =?Windows-1252?Q?Q1V6Umyp8EMQcOFnY0XRsBoIM1+A/EytJir8p3TtyHQsd/ztfgZFlvwT?=
+ =?Windows-1252?Q?k3YKgYdMm5FplhFxjxqA90e3TzrUIl+6a5xgcKDeMftQwtx2u4F5H4Wy?=
+ =?Windows-1252?Q?XGZ0oJ1GdrIk2IZ5AWw6bwslRNlIQguj8jA/ITsubOOAMBAlz4mqQIbB?=
+ =?Windows-1252?Q?wtXM6xajM4yNVxPFyhYzBsvu36hlua9ViejLJ6kN/GcplOBFfRz5/T1o?=
+ =?Windows-1252?Q?DLZs5a8DgCOh4RSelCzW9NdlMZFNTBlZXRQ/OZbCfucT/b+Uvugj3JVh?=
+ =?Windows-1252?Q?1ie/nzp5hcpsX6GhIPxLR3GunG7jLn8Fh2f1NkSKKvrfMRJXyER17n3g?=
+ =?Windows-1252?Q?J/uhBAOZ4fTYFBPE3O32ikJC0taW0N5zs5Yl5aXdH1HJkHYcDIeHfzN8?=
+ =?Windows-1252?Q?Fqyeh/vO5A800qOdbv0jpCVmGCHG3vi1Ax0DkLNdOwU7pTzfONWLja7w?=
+ =?Windows-1252?Q?tuq74Zr7B96azbGagI4HDUwntSt7Z0b2BOwA5ErdF3TPzNlzJCFWxW7B?=
+ =?Windows-1252?Q?wGxPNbdgg4YWTrb7Z3vq2As8vFmjMs7pJJx016y+iNNIal2d76oNwi0G?=
+ =?Windows-1252?Q?yJ1bJw71AzV5yEnOdX7ntI+qAUegIeatbrAspGFYIAzkPAPLBHnzNgGO?=
+ =?Windows-1252?Q?4f8WVAliMczHAAJN313rXJgyiVwJ9Q3O6d1IEG5/xUhIJXJA8GOQYWdu?=
+ =?Windows-1252?Q?4KW5C7IFx0u4VaXNRWMFIu0DJYbLWH30utuvC6FFS+3XpMJnZCbt0I9k?=
+ =?Windows-1252?Q?h1Y48LRCl3UQzlTfCE6uZtKsOzXmulgMvN3f2zPKCWnZvTx5HIcz8Exh?=
+ =?Windows-1252?Q?8x3tLz3OsRchhv33hCEcoURk0cTvCvczjXuM0acatFHeZPLA8pDXECu/?=
+ =?Windows-1252?Q?q9hntwz3hC6cEJM+4coRIQaUg8qnjmoGUd95wyeDfBm5wi1+mXU4O7Fl?=
+ =?Windows-1252?Q?hirdNkg7/2pfpg32wpdizjc2HR+/b9k0RQdQOvl+0aMcVEp5eithyqNI?=
+ =?Windows-1252?Q?sNx9Bw=3D=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?Windows-1252?Q?2mlXOjGiydWzXIQCzgDY5JLlQvJy3m3gK0y/C+t0HJ0n0jtLsrCtUeUo?=
+ =?Windows-1252?Q?VoIFbAG56hudzrWFU+jIBpE9FNK879BcHnIIrzjBWC9tA0UR1eXzGNkU?=
+ =?Windows-1252?Q?FpK7ocMLSHN5vmSofoRsozQk+CJ7UglrrpiAHSBna3u0B0wJaMTRSXqg?=
+ =?Windows-1252?Q?ohweap1MApSS3+euFBx6ZGNFucDhySZhKRXplaNVUq4ICswILpfEQhUl?=
+ =?Windows-1252?Q?xrIbcKHjaOTcZtusB2c5tg0hZRdO/hcUrgaSmJesPKjkszK58R2+QKIC?=
+ =?Windows-1252?Q?wMkou3beQkXv337OMuFz4PSAq5hV+4aCXwq98GRvaeXBgRJ51NrvHT2J?=
+ =?Windows-1252?Q?1d8UwANGkLlYc6FcUKBEiCWJwqPPPVMzWJ/2fkVwrJC44rH5DzOs4nlp?=
+ =?Windows-1252?Q?wCVerXz+UaWjkXqkpN4yvBj7i4aopFTVndZj9bBkicY+2NPSPM+733ex?=
+ =?Windows-1252?Q?+BuEVmfi9h1iDmIXgufhHDQgpp4VsyGr2CtFwGpY98GYDZvdrpzWWpCJ?=
+ =?Windows-1252?Q?P73YguMGev9EV1SsrX7HTPAQiqqJzxFwQTdW1FC6582aFstCvYd0oIys?=
+ =?Windows-1252?Q?ToQ8hR2LNQuncEOQqfIPx5/QA13PEBDmS59POmPTwSylo6xLm1+A6YK7?=
+ =?Windows-1252?Q?NvRODYBPLWdHVAWZAFpedBTVCSYAIB/khQ2lfhghk4JsLqzrv9eRWwb0?=
+ =?Windows-1252?Q?b+TlYyszPNb5+h0UymQinYwQYBfLifR2txCHxC9Z69AJ1aegEeDD5//T?=
+ =?Windows-1252?Q?+dEjeft/lk+p7o9PSfXm18PirN2Vep2AatNsg/HHZMfnA4yWFBtiDTH9?=
+ =?Windows-1252?Q?Bp3C8RwPbfiyWEkGyq3BH4G9tK04HzB+tbWxQO0kVkWpkmwnlY0tYQhJ?=
+ =?Windows-1252?Q?4ASjZizFCrqMoH7cR569/9usvMA3kYEkxrV6feI/tqK7GLK5BXx1a5c4?=
+ =?Windows-1252?Q?Gd7RhhJApG/UgVcxW9R1b5ETrUQkHZ+B467JXiHip+etyCu82lG4n7jv?=
+ =?Windows-1252?Q?/E5JYncEImrygkKwjrE4P/9vUjQ5oqoQhzrbWAjpWgu9D12jOKBorhu9?=
+ =?Windows-1252?Q?ILEUB3d7AQv0dL0Vkk3Di5Ecc9jN+GL6aSiV+li5lFmXaQ5vzRjfVHG+?=
+ =?Windows-1252?Q?12dkV0ClcDi0KMb3RHcP4hM8LqJAqZp0MJYWkwq3e8TwjRcnVjRD4flQ?=
+ =?Windows-1252?Q?0evtKMbCJW9MHuloBDGUaJy0RbMealIS8EBrPEbHioe/ITu1lGVaOSmN?=
+ =?Windows-1252?Q?bkgqe6bcxnlDmYA/URfS8QfuHIj+mGKI0ZHJY+9pD/8Dkku+AcXKvdmE?=
+ =?Windows-1252?Q?klx0TshtL3QdiVkzoDAvzXvKI5s=3D?=
+Content-Type: multipart/alternative;
+	boundary="_000_CWLP265MB415788DB633E5044F294FB8EBC342CWLP265MB4157GBRP_"
+MIME-Version: 1.0
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0216554e-7145-4798-4cda-08dd122d7dfb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Dec 2024 17:27:55.2341
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO7P265MB7522
+Subject: Re: [Caml-list] Static linking with Mingw and dune
+Reply-To: Kate Deplaix <kit-ty-kate@outlook.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19223
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-12/CWLP265MB415788DB633E5044F294FB8EBC342%40CWLP265MB4157.GBRP265.PROD.OUTLOOK.COM>
+
+--_000_CWLP265MB415788DB633E5044F294FB8EBC342CWLP265MB4157GBRP_
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+I can't answer to all your questions at this moment but this commit might b=
+e of interest for you: https://github.com/ocaml/opam/commit/f0157ed232ff110=
+0aa049c922b9bdc857ac21998 (see the CLINKING_windows definition which static=
+ links everything but the windows APIs)
+
+This works with 4.14 but i haven't tried with 5.3 yet so your milage may va=
+ry.
+
+Regarding OCaml 5.3/mingw64 you shouldn't need to have to do anything with =
+libwinpthreads because it's only used for the msvc port, not the mingw one.
+
+Cheers,
+Kate
+________________________________
+From: caml-list-request@inria.fr <caml-list-request@inria.fr> on behalf of =
+Andreas Rossberg <rossberg@mpi-sws.org>
+Sent: 01 December 2024 17:02
+To: caml-list@inria.fr <caml-list@inria.fr>
+Subject: [Caml-list] Static linking with Mingw and dune
+
+I=92m banging my head against a very basic problem, namely creating a simpl=
+e standalone executable on Windows with OCaml 5.2. So here are my, possibly=
+ stupid, questions:
+
+- With OCaml 5 on Mingw64, how can I statically link libwinpthreads into an=
+ executable (using dune)?
+
+- Some answers I found from a couple of years ago suggested using `-static`=
+, but dune is (nowadays?) running through flexdll for linking, which doesn=
+=92t understand that. Is there a substitute?
+
+- Some other answers/discussions mentioned the new `-l:` option being prefe=
+rable, but I couldn=92t find a working example, and all my feeble attempts =
+to use it with dune were unsuccessful.
+
+- What exactly is the difference between dune's `link_flags` and `ocamlopt_=
+flags`, and why do some online answers use the latter for setting linking-r=
+elated options?
+
+Any help is appreciated.
+
+Thanks,
+/Andreas
+
+
+--_000_CWLP265MB415788DB633E5044F294FB8EBC342CWLP265MB4157GBRP_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
+252">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div class=3D"elementToProof" style=3D"font-family: Aptos, Aptos_EmbeddedFo=
+nt, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; c=
+olor: rgb(0, 0, 0);">
+I can't answer to all your questions at this moment but this commit might b=
+e of interest for you:
+<a href=3D"https://github.com/ocaml/opam/commit/f0157ed232ff1100aa049c922b9=
+bdc857ac21998" id=3D"OWAeb67038b-1f64-4919-7cfc-d0e381ef877f" class=3D"OWAA=
+utoLink">
+https://github.com/ocaml/opam/commit/f0157ed232ff1100aa049c922b9bdc857ac219=
+98</a>&nbsp;(see the CLINKING_windows definition which static links everyth=
+ing but the windows APIs)<br>
+<br>
+This works with 4.14 but i haven't tried with 5.3 yet so your milage may va=
+ry.<br>
+<br>
+Regarding OCaml 5.3/mingw64 you shouldn't need to have to do anything with =
+libwinpthreads because it's only used for the msvc port, not the mingw one.=
+<br>
+<br>
+Cheers,<br>
+Kate</div>
+<div id=3D"appendonsend"></div>
+<hr style=3D"display:inline-block;width:98%" tabindex=3D"-1">
+<div id=3D"divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" st=
+yle=3D"font-size:11pt" color=3D"#000000"><b>From:</b> caml-list-request@inr=
+ia.fr &lt;caml-list-request@inria.fr&gt; on behalf of Andreas Rossberg &lt;=
+rossberg@mpi-sws.org&gt;<br>
+<b>Sent:</b> 01 December 2024 17:02<br>
+<b>To:</b> caml-list@inria.fr &lt;caml-list@inria.fr&gt;<br>
+<b>Subject:</b> [Caml-list] Static linking with Mingw and dune</font>
+<div>&nbsp;</div>
+</div>
+<div class=3D"BodyFragment"><font size=3D"2"><span style=3D"font-size:11pt;=
+">
+<div class=3D"PlainText">I=92m banging my head against a very basic problem=
+, namely creating a simple standalone executable on Windows with OCaml 5.2.=
+ So here are my, possibly stupid, questions:<br>
+<br>
+- With OCaml 5 on Mingw64, how can I statically link libwinpthreads into an=
+ executable (using dune)?<br>
+<br>
+- Some answers I found from a couple of years ago suggested using `-static`=
+, but dune is (nowadays?) running through flexdll for linking, which doesn=
+=92t understand that. Is there a substitute?<br>
+<br>
+- Some other answers/discussions mentioned the new `-l:` option being prefe=
+rable, but I couldn=92t find a working example, and all my feeble attempts =
+to use it with dune were unsuccessful.<br>
+<br>
+- What exactly is the difference between dune's `link_flags` and `ocamlopt_=
+flags`, and why do some online answers use the latter for setting linking-r=
+elated options?<br>
+<br>
+Any help is appreciated.<br>
+<br>
+Thanks,<br>
+/Andreas<br>
+<br>
+</div>
+</span></font></div>
+</body>
+</html>
+
+--_000_CWLP265MB415788DB633E5044F294FB8EBC342CWLP265MB4157GBRP_--
