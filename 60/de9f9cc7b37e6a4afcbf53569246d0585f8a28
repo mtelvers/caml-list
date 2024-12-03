@@ -1,0 +1,3447 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=q+5uonQs;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=WxXL0huB;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 9EF804AA88
+	for <caml-list@tunbury.org>; Tue,  3 Dec 2024 14:44:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=CGarx75hbgssUuPT9UADYPMS/859Q3sM8GX26LE2ES8=;
+  b=q+5uonQsrhxdVoXLgMmCUwuDaGb2kwsm/NOfk+Fy07XfxcLAZuJFgOtc
+   JQui1OoBhl3tSCo8ramR+++NB6Biayqf0fmZbkWZcWubdsP4HJJqcVCjM
+   RUZDUw18Vj1ICFnJuaCyfCuheNq778mL34x48TT/GdyJnChowIj3TEme2
+   0=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.12,205,1728943200"; 
+   d="scan'208,217";a="197118357"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 03 Dec 2024 15:44:16 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 5CBF1E0D24; Tue,  3 Dec 2024 15:44:16 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id E8000E00B6
+	for <caml-list@sympa.inria.fr>; Tue,  3 Dec 2024 15:44:12 +0100 (CET)
+IronPort-SDR: 674f193a_90nbYWhroz+aYNZgo7jGjdjrRoJHMAKYTLe2iqDw0GUtStz
+ vPFGXngK2vzmNi3NXKvhjVk/z0d2v+BXH7JlPgQ==
+X-IPAS-Result: =?us-ascii?q?A0E6DgAFGE9ngSIeaIFQChaCSIE/WygZAV0GWjMHCEhhg?=
+ =?us-ascii?q?3WDT4s/gmCBFpA3ineCewMYFiMUAQMBDS4BBQ0BAgQBAQMBAgGCDIIuRgKKa?=
+ =?us-ascii?q?AIfBgEENBMBAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAEBPQVJh?=
+ =?us-ascii?q?XsNSQEBAQECAQEJAYFqUXFhBAMGNwEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQIIBAEwElwBAgYEBhMBASkCDRgjAxAEAQYDA?=
+ =?us-ascii?q?hEBNRcBCQkUBQEBgg5Zgh9FAwQBDAaUaptLen8zgQGCDAEBBoEIPgIBCwICA?=
+ =?us-ascii?q?wEOCSUB1zeCT4EaSgmBMBiFaoJIGgEFJUhqAoRGCYMUJHkCJw+BVUSBFYIoL?=
+ =?us-ascii?q?xsHb4FQLgY7CxcBAQEBAReBGQQHAQEIRQmDJYJpgicKEi1MOwIHgl92IwJNR?=
+ =?us-ascii?q?oNzLgOBXl6BDYFvgg+DNBJWgVx5gSApgRgdHTALO4EPWYExBIoAgUciAyYzM?=
+ =?us-ascii?q?gFVExcLBwVhgRYDgXqBTYE2gVFDgk5KhQyBAzmCEWlNOgINAjaCJCRZgk2DW?=
+ =?us-ascii?q?IE/hGmEW4YsYR1AAwttPTcUG6B/AQkzaQFGglILJA4KAS0GAQEVBUYaCQoIA?=
+ =?us-ascii?q?xEIBgEBIAINHgEBCQULEwoHBQcCAQICJggEBAIDBQkCAgwFBgEBDhQLCwsCL?=
+ =?us-ascii?q?QONCIU1FBAUBAUeB3eOTINUij2Tb200B4QdgV0GDIkEgSSOLYdNhASBV4suh?=
+ =?us-ascii?q?wCLBodCIphZIoI1hyVdSAmBbh5MiQmMSggZGIUdgX4jgSseDAczGjBDgjMBA?=
+ =?us-ascii?q?QExCUYcD1eNUwIBFoMwKIE+gSEFgTw5O70JLwJCNQIBAQcxAgcBCgEBAwmFR?=
+ =?us-ascii?q?R0BAYVzgRGCRQKCBQImBwVqYQEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:PmOHLawXpm84g5ouCeQcKrPwEb1zdoMgy1knxilNoH1uA6+lfq
+ WV9sjzuiWbtN98YhwdcLO7WJVoI0m8yXcd2+B4VotKNzOIhILHFu1fxLqn6wKlMSzz/OxQ2M
+ 5bAspDIey1K0N1yeLz4AzQKadF/DBrytHMudvj
+X-Talos-CUID: =?us-ascii?q?9a23=3ATDENlWuKaz4VRWahprIuMH8h6IsvW2Ts4SmPenO?=
+ =?us-ascii?q?8ADZKWoeWRxzI3aJrxp8=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3AcWlRzA4mMFSHEqFmL0V8xA5BxoxlzL21L18sya8?=
+ =?us-ascii?q?PpsKfNjR3fDKijS+eF9o=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-URL-LookUp-ScanningError: 1
+X-IronPort-AV: E=Sophos;i="6.12,205,1728943200"; 
+   d="scan'208,217";a="197118329"
+X-MGA-submission: =?us-ascii?q?MDE6LGwFfSLc8WGNudKMSup+rCrywyAK6+FwJN?=
+ =?us-ascii?q?WYmyge1MMf5ZlCNpf7a/sOWjMWGgadnSUyInyCvc/Bb8NyKVDwu0eHLe?=
+ =?us-ascii?q?/f1tavUZ2CCaCHMlnNGgfcAKq4Mm6P5EaUU9Uy7mdQtoxy7hsMf3B8Bg?=
+ =?us-ascii?q?XqDs4fVIlwvsUocWiIOcohMw=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2024 15:44:10 +0100
+Received: from TM.local (unknown [82.66.240.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 58E9F564837;
+	Tue,  3 Dec 2024 15:44:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1733237049;
+	bh=GzI9cEsVUSeCWERtQjPXW8bhhospl6MoC+Y4WeegoL4=;
+	h=From:To:Subject:Date:Message-ID;
+	b=WxXL0huBqdKjIkbIKnKfZzAzvp4m7Xh1ZWpW7QFuiIMWNmW4W9MW6cR3RYKdW+WOB
+	 GADwsRyQUKyR2DBsv6WcBxn6pKHw+/FzOQ606xMnHCPg70pkDGITR3UAO8JZbRNE/9
+	 0fR52Ul5VL7qYKgXZkOADW3JX5m1mCVraENbQZZg=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 03 Dec 2024 15:44:08 +0100
+Message-ID: <m2jzcgeshz.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Dec  3 15:44:10 2024 +0100 (CET))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.499841, queueID=D47CF564839
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19226
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-12/m2jzcgeshz.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of November 26 to
+December 03, 2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Good example of handwritten Lexer + Recursive Descent Parser?
+Boulder Dash in OCaml
+Js_of_ocaml 5.9.0
+Liquidsoap 2.3.0
+Bytesrw 0.1.0 =E2=80=93 Composable byte stream readers and writers
+dream-html and pure-html 3.5.2
+Second beta release of OCaml 5.3.0
+New release of Monolith
+Jsont 0.1.0 =E2=80=93 Declarative JSON data manipulation for OCaml
+Tiny educational concurrent I/O and promises library
+Eliom 11.1: Towards Web Assembly support
+Areas and Adversaries
+MariaDB 1.2.0
+Proposed Package Archiving Policy for the opam Repository
+capnp-rpc 2.0
+Other OCaml News
+Old CWN
+
+
+Good example of handwritten Lexer + Recursive Descent Parser?
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/good-example-of-handwritten-lexer-recursive-=
+descent-parser/15672/1>
+
+
+Axel Baudot asked
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+  I am looking for an idiomatic implementation of a Lexer + Recursive
+  Descent Parser not making use of ocamllex, ocamlyacc or menhir. The
+  kind you would write during the first chapters of Crafting
+  Interpreters [0][1] in OCaml.
+
+  This Markdown parser [2] by @dbuenzli is a great example of what I am
+  looking for. I'd be happy if you can recommend similar resources.
+
+  There are many OCaml repos for Lox interpreters but it's hard to
+  assess quality. And the readme often says "I am doing this to learn
+  OCaml", which doesn't inspire confidence.
+
+  As a broader note, it would be nice to have (community vetted) OCaml
+  translations of well-known learning material using mainstream
+  languages. But I'll raise the topic in another thread later.
+
+  Thanks in advance.
+
+  =E2=80=A2 [0] <https://craftinginterpreters.com/scanning.html>
+  =E2=80=A2 [1] <https://craftinginterpreters.com/parsing-expressions.html>
+  =E2=80=A2 [2]
+    <https://github.com/dbuenzli/cmarkit/blob/af8930c307957a546ea833bbdabda=
+94a2fa60b4b/src/cmarkit.ml#L879>
+
+
+Mikhail replied
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  You might be interested in the book [Compiling to Assembly from
+  Scratch].  There is a [port to OCaml]. It suggests the use of [parser
+  combinators].
+
+  Parser combinators is the same manual recursive descent method, but in
+  a functional way.  You can either use [an existing library] or you
+  [can write your own].
+
+
+[Compiling to Assembly from Scratch]
+<https://keleshev.com/compiling-to-assembly-from-scratch/>
+
+[port to OCaml]
+<https://github.com/keleshev/compiling-to-assembly-from-scratch/tree/main/c=
+ontrib/ocaml>
+
+[parser combinators] <https://en.wikipedia.org/wiki/Parser_combinator>
+
+[an existing library] <https://github.com/inhabitedtype/angstrom>
+
+[can write your own] <https://www.youtube.com/watch?v=3DY5IIXUBXvLs>
+
+
+Anton Bachin also replied
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  odoc's parser is half of what you're asking for. It uses ocamllex for
+  the lexical scan, because it's very simple and convenient to do it
+  that way, but the syntax is then analyzed by a hand-written [recursive
+  descent parser], in large part because /that's/ easier for the doc
+  language.
+
+  An example of a non-ocamllex and non-ocamlyacc parser is Markup.ml
+  ([tokenizer], [parser]). But this isn't a traditional recursive
+  descent parser. Rather, it's a pretty huge hand-written state machine
+  in continuation-passing style, almost completely implementing the
+  corresponding huge state machine specified in HTML5. But it's the kind
+  of code that fits well the topics of an impure FP class, especially
+  since it has mutable cells for its continuations, that it uses to
+  mimic effects.
+
+
+[recursive descent parser]
+<https://github.com/ocaml/odoc/blob/822d266232fccdffbd4922434c81c45ab6d583f=
+4/src/parser/syntax.ml>
+
+[tokenizer]
+<https://github.com/aantron/markup.ml/blob/d686cce6bac6ff46a49b28ed0d957ffa=
+1e37fda5/src/html_tokenizer.ml#L390>
+
+[parser]
+<https://github.com/aantron/markup.ml/blob/d686cce6bac6ff46a49b28ed0d957ffa=
+1e37fda5/src/html_parser.ml#L1386>
+
+
+Boulder Dash in OCaml
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://sympa.inria.fr/sympa/arc/caml-list/2024-11/msg00023.html>
+
+
+Continuing this thread, Andreas Rossberg announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Couldn=E2=80=99t let it rest, so I=E2=80=99m (already) announcing version=
+ 2 of it =E2=80=94
+  now a much improved, practically feature-complete reimplementation of
+  both Boulder Dash 1 & 2.
+
+  Version 2 was an excuse for me to mess around with the OCaml bindings
+  to popular graphics engines, and as a result, it now comes with 3
+  backends to choose from:
+
+  1. the homely bare OCaml Graphics library
+     (<https://github.com/ocaml/graphics>),
+  2. the TSDL binding to the SDL2 API
+     (<https://github.com/dbuenzli/tsdl>),
+  3. the binding to the Raylib engine
+     (<https://github.com/tjammer/raylib-ocaml>).
+
+  The list is in order of increasingly better user experience, for the
+  price of a potentially harder build experience. In theory, all
+  versions should run on Windows, Mac, and Linux, though I was too lazy
+  to test all combinations, and I (or my opam) had trouble installing
+  some of the dependencies on some of the systems.
+
+  Features:
+
+  =E2=80=A2 Faithful original physics, graphics, animations, sound, and mus=
+ic
+  =E2=80=A2 Authentic scrolling mechanics combined with dynamic resizing
+  =E2=80=A2 All 40 levels and 5 difficulties of Boulder Dash 1 & 2
+  =E2=80=A2 Pause-and-go mode for relaxed playing
+
+  Relative to the previous release, version 2 adds the following
+  niceties:
+
+  =E2=80=A2 Support for SDL and Raylib engines, which allow all of the foll=
+owing
+  =E2=80=A2 Original sound effects and music
+  =E2=80=A2 Original level color schemes
+  =E2=80=A2 Full screen mode
+  =E2=80=A2 Faster graphics
+  =E2=80=A2 Dynamic graphics scaling adjustment
+  =E2=80=A2 Gamepad/joystick support as well as more precise keyboard contr=
+ols
+  =E2=80=A2 Boulder Dash 2 levels and decoder
+
+  Almost looks like a real game now. One from the 80s anyways. :)
+
+
+Js_of_ocaml 5.9.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-js-of-ocaml-5-9-0/15674/1>
+
+
+Hhugo announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I=E2=80=99m pleased to announce the release of js_of_ocaml 5.9.0. It shou=
+ld
+  soon be available in opam.
+
+  Js_of_ocaml is a compiler from OCaml bytecode to JavaScript. It makes
+  it possible to run pure OCaml programs in JavaScript environment like
+  browsers and Node.js.
+
+  Most significant changes:
+
+  =E2=80=A2 Support for OCaml 5.3
+  =E2=80=A2 Speedup sourcemap generation and improve sourcemap accuracy.
+  =E2=80=A2 Prepare the merge of the wasm_of_ocaml fork back into the
+    js_of_ocaml repo.
+  =E2=80=A2 JS backtraces are really expansive. They now need to be explici=
+tly
+    requested with `OCAMLRUNPARM=3Db=3D1'. This speeds up programs linked
+    with libraries enabling backtraces programmatically using
+    `Printexc.record_backtrace true'.
+
+  See the [Changelog ] for other changes.
+
+
+[Changelog ]
+<https://github.com/ocsigen/js_of_ocaml/blob/master/CHANGES.md>
+
+
+Liquidsoap 2.3.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-liquidsoap-2-3-0/15677/1>
+
+
+Romain Beauxis announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We are stoked to announce the `2.3.0' release of liquidsoap, a
+  general-purpose scripting language written in OCaml with specialized
+  operators to build media streams.
+
+  The release is available on github:
+  <https://github.com/savonet/liquidsoap/releases/tag/v2.3.0>
+
+  During this release cycle, we have rewritten huge chunk of the
+  application's internal, including a new media streaming abstraction
+  and clock system.
+
+  As an OCaml application, liquidsoap's scope and complexity has greatly
+  expanded in the next years.
+
+  Some of the most challenging areas for us at this point are memory
+  usage (and, incidentally, CPU usage).
+
+  Although OCaml's garbage collection is a very powerful tool, in the
+  context of very short lived streaming cycles (typically `0.02s') with
+  potentially quite large memory allocations (typically video images),
+  controlling the timing of memory allocations and release is becoming
+  more and more critical.
+
+  We are also aware of the work done by Jane St on adding a `local' call
+  stack. This could be an avenue to explore as well but:
+  1. Some of our content has to be stored in the long-term heap
+  2. We want to work with an official OCaml compiler for obvious
+     long-term maintenance concerns.
+
+  Nonetheless, we are thrilled to be part of a community whose array of
+  tools (building, packaging, debugging, etc) and libraries has expanded
+  so well along with a vibrant compiler development team.
+
+  In the future, we wish to explore more of the new OCaml concurrency
+  features. This might require that we revisit the way we handle
+  short-term memory first.
+
+
+Bytesrw 0.1.0 =E2=80=93 Composable byte stream readers and writers
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-bytesrw-0-1-0-composable-byte-stream-rea=
+ders-and-writers/15696/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It's my pleasure to announce the first release of the `bytesrw'
+  library:
+
+        Bytesrw extends the OCaml `Bytes' module with composable,
+        memory efficient, byte stream readers and writers
+        compatible with effect-based concurrency.
+
+        Except for byte slice life-times, these abstractions
+        intentionally separate away ressource management and the
+        specifics of reading and writing bytes.
+
+        Bytesrw distributed under the ISC license. It has no
+        dependencies.
+
+        Optional support for compressed and hashed bytes depend,
+        at your wish, on the C [`zlib'], [`libzstd'], [`blake3'],
+        [`libmd'], [`xxhash'] and libraries.
+
+  The only reason I was longing for OCaml algebraic effects was so that
+  I could avoid using them: when you write codecs on byte streams it
+  should not be a concern where your bytes are coming from or headed
+  to. The `bytesrw' library provides structures to abstract
+  this. Additionally it establishes a buffer ownership discipline that
+  enables byte streams to (de)compose while remaining memory efficient.
+
+  I do not expect the library to change much and it has been used. But
+  it's new and practice may call for adjustments. Do not hesitate to get
+  in touch if you run into problems or see obvious defects or
+  improvements. I do expect the library will add more convenience
+  (e.g. for processing lines and UTF) and more optional stream formats
+  over time.
+
+  =E2=80=A2 Homepage: <https://erratique.ch/software/bytesrw>
+  =E2=80=A2 Docs: <https://erratique.ch/software/bytesrw/doc> or `odig doc
+    bytesrw'
+  =E2=80=A2 Install: `opam install bytesrw conf-zlib conf-zstd conf-libblak=
+e3
+    conf-libmd conf-xxhash' ([opam PR])
+
+  This first release was made possible thanks to a grant from the [OCaml
+  Software Foundation]. I also thank my [donors] for their support.
+
+
+[`zlib'] <https://zlib.net>
+
+[`libzstd'] <http://zstd.net>
+
+[`blake3'] <https://blake3.io>
+
+[`libmd'] <https://www.hadrons.org/software/libmd/>
+
+[`xxhash'] <https://xxhash.com/>
+
+[opam PR] <https://github.com/ocaml/opam-repository/pull/26990>
+
+[OCaml Software Foundation] <https://ocaml-sf.org/>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+
+dream-html and pure-html 3.5.2
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-dream-html-pure-html-3-5-2/14808/5>
+
+
+Yawar Amin announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80
+
+  [ANN] dream-html 3.7.0
+
+  Happy to announce the addition of a helper module for typed form
+  decoding functionality. See the docs here:
+  <https://yawaramin.github.io/dream-html/dream-html/Dream_html/Form/index.=
+html>
+
+  An example:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 type user =3D { name : string; age : int option }
+  =E2=94=82=20
+  =E2=94=82 open Dream_html.Form
+  =E2=94=82=20
+  =E2=94=82 let user_form =3D
+  =E2=94=82   let+ name =3D required string "name"
+  =E2=94=82   and+ age =3D optional int "age" in
+  =E2=94=82   { name; age }
+  =E2=94=82=20
+  =E2=94=82 let dream_form =3D ["age", "42"; "name", "Bob"]
+  =E2=94=82 let user_result =3D validate user_form dream_form
+  =E2=94=82 (* =3D> Ok { name =3D "Bob"; age =3D Some 42 } *)
+  =E2=94=82=20
+  =E2=94=82 let error_result =3D validate user_form ["age", "none"]
+  =E2=94=82 (* =3D> Error [("age", "error.expected.int"); ("name", "error.r=
+equired")] *)
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Astute readers may observe that this provides some convenience
+  functionality beyond what Dream itself offers; to validate the above
+  form and get a _complete_ set of field validation errors using only
+  Dream you would do something like:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 let user_result =3D match dream_form with
+  =E2=94=82   | ["age", age; "name", name] ->
+  =E2=94=82     (match int_of_string age with
+  =E2=94=82     | age -> Ok { name; age =3D Some age }
+  =E2=94=82     | exception Failure _ -> Error ["age", "error.expected.int"=
+])
+  =E2=94=82   | ["name", name] -> Ok { name; age =3D None }
+  =E2=94=82   | ["age", age] ->
+  =E2=94=82     (match int_of_string age with
+  =E2=94=82     | age -> Error ["name", "error.required"]
+  =E2=94=82     | exception Failure _ -> Error ["age", "error.expected.int"=
+; "name", "error.required"])
+  =E2=94=82   | _ -> Error ["name", "error.required"]
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  And this is a form with only two fields. You can imagine how
+  convoluted the logic would be for more complex forms. Of course, you
+  might just decide to use `List.assoc_opt' and build up the validation
+  errors, but even that can get tricky. So if you are making heavy use
+  of HTML forms, a helper module that takes care of all these validation
+  details can be very useful. Enjoy!
+
+
+Second beta release of OCaml 5.3.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/second-beta-release-of-ocaml-5-3-0/15700/1>
+
+
+octachron announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  One month after the release of the first beta for OCaml 5.3.0, we are
+  releasing a second and hopefully last beta release for OCaml 5.3.0 .
+
+  The most notable changes for this second beta are probably a handful
+  of type system bugfixes. In particular, those fixes revert a change of
+  behaviour in the first beta when pattern matching GADTs with
+  non-injective type parameters.
+
+  We also have a C++ header compatibility fix and the restoration of
+  some configuration variable in Makefiles for the sake of backward
+  compatibility.
+
+  Overall, the release is converging and we are expecting to have a
+  first release candidate around the middle of December. The progresses
+  on stabilising the ecosystem are tracked on the [opam readiness for
+  5.3.0 meta-issue].
+
+  Meanwhile, the second beta release of OCaml 5.3.0 is here to help you
+  update your software and libraries ahead of the release (see below for
+  the installation instructions).
+
+  The full release is expected before the end of December.
+
+  If you find any bugs, please report them on [OCaml's issue tracker].
+
+  If you are interested in full list of features and bug fixes of the
+  new OCaml version, the updated change log for OCaml 5.3.0 is available
+  [on GitHub].
+
+  Happy hacking, Florian Angeletti for the OCaml team.
+
+
+[opam readiness for 5.3.0 meta-issue]
+<https://github.com/ocaml/opam-repository/issues/26596>
+
+[OCaml's issue tracker] <https://github.com/ocaml/ocaml/issues>
+
+[on GitHub] <https://github.com/ocaml/ocaml/blob/5.3/Changes>
+
+Installation Instructions
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The base compiler can be installed as an opam switch with the
+  following commands on opam 2.1 and later:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create 5.3.0~beta2
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The source code for the beta is also available at these addresses:
+
+  =E2=80=A2 [GitHub]
+  =E2=80=A2 [OCaml archives at Inria]
+
+
+[GitHub] <https://github.com/ocaml/ocaml/archive/5.3.0-beta2.tar.gz>
+
+[OCaml archives at Inria]
+<https://caml.inria.fr/pub/distrib/ocaml-5.3/ocaml-5.3.0~beta2.tar.gz>
+
+=E2=97=8A Fine-Tuned Compiler Configuration
+
+  If you want to tweak the configuration of the compiler, you can switch
+  to the option variant with:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create <switch_name> ocaml-variants.5.3.0~beta2+opt=
+ions <option_list>
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  where `option_list' is a space separated list of `ocaml-option-*'
+  packages. For instance, for a flambda and no-flat-float-array switch:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam switch create 5.3.0~beta2+flambda+nffa ocaml-variants.5.3.=
+0~beta2+options ocaml-option-flambda ocaml-option-no-flat-float-array
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  All available options can be listed with `opam search ocaml-option'.
+
+
+Changes Since The First Beta
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A Type system fixes
+
+  =E2=80=A2 [#13501]: Regression on mutually recursive types caused by [#12=
+180].
+    Resuscitate Typedecl.update_type.  (Jacques Garrigue and Takafumi
+    Saikawa, review by Florian Angeletti, Richard Eisenberg and Gabriel
+    Scherer)
+
+  =E2=80=A2 [#13495], [#13514]: Fix typechecker crash while typing objects
+    (Jacques Garrigue, report by Nicol=C3=A1s Ojeda B=C3=A4r, review by Nic=
+olas
+    Ojeda B=C3=A4r, Gabriel Scherer, Stephen Dolan, Florian Angeletti)
+
+  =E2=80=A2 [#13598]: Falsely triggered warning 56 [unreachable-case] This =
+was
+    caused by unproper protection of the retyping function.  (Jacques
+    Garrigue, report by T=C3=B5ivo Leedj=C3=A4rv, review by Florian Angelet=
+ti)
+
+
+  [#13501] <https://github.com/ocaml/ocaml/issues/13501>
+
+  [#12180] <https://github.com/ocaml/ocaml/issues/12180>
+
+  [#13495] <https://github.com/ocaml/ocaml/issues/13495>
+
+  [#13514] <https://github.com/ocaml/ocaml/issues/13514>
+
+  [#13598] <https://github.com/ocaml/ocaml/issues/13598>
+
+
+=E2=97=8A Configuration fixes
+
+  =E2=80=A2 (*breaking change*) [#12578], [#12589], [#13322], +[#13519]: Use
+    configured CFLAGS and CPPFLAGS /only/ during the build of the
+    compiler itself. Do not use them when compiling third-party C
+    sources through the compiler. Flags for compiling third-party C
+    sources can still be specified at configure time in the
+    COMPILER_{BYTECODE,NATIVE}_{CFLAGS,CPPFLAGS} configuration
+    variables.  (S=C3=A9bastien Hinderer, report by William Hu, review by
+    David Allsopp)
+
+
+  [#12578] <https://github.com/ocaml/ocaml/issues/12578>
+
+  [#12589] <https://github.com/ocaml/ocaml/issues/12589>
+
+  [#13322] <https://github.com/ocaml/ocaml/issues/13322>
+
+  [#13519] <https://github.com/ocaml/ocaml/issues/13519>
+
+
+=E2=97=8A C++ header compatibility
+
+  =E2=80=A2 [#13541], [#13591]: Fix headers for C++ inclusion.  (Antonin D=
+=C3=A9cimo,
+    review by Nick Barnes, report by Kate Deplaix)
+
+
+  [#13541] <https://github.com/ocaml/ocaml/issues/13541>
+
+  [#13591] <https://github.com/ocaml/ocaml/issues/13591>
+
+
+=E2=97=8A Compiler library bug fix
+
+  =E2=80=A2 [#13603], [#13604]: fix source printing in the presence of the
+    escaped raw identifier `\#mod'.  (Florian Angeletti, report by Chris
+    Casinghino, review by Gabriel Scherer)
+
+
+  [#13603] <https://github.com/ocaml/ocaml/issues/13603>
+
+  [#13604] <https://github.com/ocaml/ocaml/issues/13604>
+
+
+New release of Monolith
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-new-release-of-monolith/15701/1>
+
+
+Fran=C3=A7ois Pottier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  I am pleased to announce a new release of [Monolith], a library that
+  helps perform strong automated testing of OCaml libraries.
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam install monolith.20241126
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The changes are as follows:
+
+  =E2=80=A2 The documentation of the specification combinators has been
+    re-organized in sections and subsections. Finding the desired
+    combinator should now be easier.
+
+  =E2=80=A2 The new combinator `naive_array' offers limited support for arr=
+ays.
+
+  =E2=80=A2 The new combinator `naive_seq' offers limited support for seque=
+nces
+    (that is, for the type constructor `Seq.t').
+
+  =E2=80=A2 The new combinator `pair' is a synonym for `( *** )'.
+
+  =E2=80=A2 The new combinator `triple' offers support for triples.
+
+  =E2=80=A2 The new combinator `either' offers support for the type constru=
+ctor
+    `Either.t'.
+
+  =E2=80=A2 The new combinators `iter', `foldr', `foldl', `iteri', `foldri',
+    `foldli' offer support for iteration functions.
+
+  =E2=80=A2 An unintentional and undocumented limitation has been fixed: so=
+ far,
+    uses of the combinator `map_into' would work only at the root of the
+    specification or in the right-hand side of an arrow `^>'. It should
+    now be possible to use `map_into' under other combinators that
+    expect a deconstructible specification, such as `^!>' (in the
+    right-hand side), `( *** )', `option', `result', `list', etc. This
+    improvement affects not only `map_into', but also a number of other
+    combinators that are defined in terms of `map_into'.
+
+  =E2=80=A2 Monolith now requires OCaml 4.12 or later.
+
+  =E2=80=A2 In `Makefile.monolith',
+    =E2=81=83 the default switch is changed from 4.11.1 to 4.14.2; this can=
+ be
+      overridden by defining `SWITCH';
+    =E2=81=83 `make test' automatically disables the MacOS crash reporter;
+    =E2=81=83 the use of `ulimit -s' is abandoned.
+
+
+[Monolith]
+<https://cambium.inria.fr/~fpottier/monolith/doc/monolith/Monolith/>
+
+
+Jsont 0.1.0 =E2=80=93 Declarative JSON data manipulation for OCaml
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-jsont-0-1-0-declarative-json-data-manipu=
+lation-for-ocaml/15702/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It's my pleasure to announce the first release of the jsont libary:
+
+        Jsont is an OCaml library for declarative JSON data
+        manipulation. It provides:
+
+        =E2=80=A2 Combinators for describing JSON data using the OCaml
+          values of your choice. The descriptions can be used by
+          generic functions to decode, encode, query and update
+          JSON data without having to construct a generic JSON
+          representation.
+        =E2=80=A2 A JSON codec with optional text location tracking and
+          layout preservation. The codec is compatible with
+          effect-based concurrency.
+
+        The descriptions are independent from the codec and can be
+        used by third-party processors or codecs.
+
+        Jsont is distributed under the ISC license. It has no
+        dependencies. The codec is optional and depends on the
+        [`bytesrw'] library. The JavaScript support is optional
+        and depends on the [`brr'] library.
+
+  The library has been used in practice but it's new so a few
+  adjustments may be needed and more convenience combinators added.
+
+  The library also enables quite a few things that I did not have the
+  time to explore like schema description generation from descriptions,
+  quasi-streaming JSON transformations, description generation from
+  dynamic type representations, etc. Lots of this can be done outside
+  the core library, do not hesitate to get in touch if you use the
+  library and find interesting applications or pesking limitations.
+
+  =E2=80=A2 Homepage: <https://erratique.ch/software/jsont>
+  =E2=80=A2 Docs: <https://erratique.ch/software/jsont/doc> (or `odig doc
+    jsont')
+  =E2=80=A2 Install: `opam install jsont bytesrw'
+
+  This first release was made possible thanks to a grant from the [OCaml
+  Software Foundation]. I also thank my [donors] for their support.
+
+  Best,
+
+  Daniel
+
+  P.S. I think that the technique used by the library, which I dubbed
+  /finally tagged/ is interesting in itself. You can read a paper about
+  it [here] along with a smaller, self-contained, implementation of what
+  the library does.
+
+
+[`bytesrw'] <https://erratique.ch/software/bytesrw>
+
+[`brr'] <https://erratique.ch/software/brr>
+
+[OCaml Software Foundation] <https://ocaml-sf.org/>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+[here] <https://github.com/dbuenzli/jsont/tree/main/paper>
+
+
+Tiny educational concurrent I/O and promises library
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/tiny-educational-concurrent-i-o-and-promises=
+-library/15703/1>
+
+
+Mikhail announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+  I like [Lwt]. It's a fantastic library, but how does it work? I spent
+  a few days studying its source code.
+
+  Finally, inspired by the implementation of [Lwt] and [the CS3110
+  chapter, 8.7. Promises]. I wrote a maximally stupid [*tiny-async-lib*]
+  library.
+
+  Maybe you may be interested in this naive implementation.
+
+
+[Lwt] <https://github.com/ocsigen/lwt>
+
+[the CS3110 chapter, 8.7. Promises]
+<https://cs3110.github.io/textbook/chapters/ds/promises.html>
+
+[*tiny-async-lib*] <https://github.com/dx3mod/tiny-async-lib>
+
+Examples of use
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 let () =3D=20
+  =E2=94=82   Engine.run main begin
+  =E2=94=82     let* () =3D Io.(write_all stdout) "Hi! What's your name? " =
+in
+  =E2=94=82     let* name =3D Io.(read_line stdin) in
+  =E2=94=82     Io.(write_all stdout) ("Hello, " ^ name ^ "!\n")
+  =E2=94=82   end
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 let read_and_print_file filename =3D=20
+  =E2=94=82   Io.(read_file filename >>=3D write_all stdout)
+  =E2=94=82=20
+  =E2=94=82 let _ =3D
+  =E2=94=82   Engine.run begin
+  =E2=94=82     let filenames =3D [ (* ... *) ] in=20=20
+  =E2=94=82=20
+  =E2=94=82     filenames
+  =E2=94=82     |> List.map read_and_print_file
+  =E2=94=82     |> Promise.join
+  =E2=94=82   end
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+
+Implementation details
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The first key abstraction of the whole library is, of course,
+  Promise. [Promise] is an abstraction for synchronizing program
+  execution in concurrent evaluations. In simple terms, it's an
+  abstraction over callbacks. Promises allows us to build (monadic)
+  sequence evaluations inside of non-sequence evaluations.
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 (* promise.ml *)
+  =E2=94=82=20
+  =E2=94=82 type 'a t =3D { mutable state: 'a state }=20=20
+  =E2=94=82=20
+  =E2=94=82 and 'a state =3D=20
+  =E2=94=82   | Fulfilled of 'a=20
+  =E2=94=82   | Rejected of exn
+  =E2=94=82   | Pending of 'a callback list=20
+  =E2=94=82=20
+  =E2=94=82 and 'a callback =3D 'a state -> unit=20
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Promises are represented as a mutable record with three possible
+  states: fulfilled (contains a value), rejected (contains an
+  exception), and pending (contains callbacks).
+
+  Callbacks are functions that are called when a promise is resolved.
+  So when we `bind', if the promise is in pending state, we add a
+  callback that calls the following monadic sequence when the promise is
+  resolved.
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 (* io.ml *)
+  =E2=94=82=20
+  =E2=94=82 let sleep delay =3D
+  =E2=94=82   let p, r =3D Promise.make () in
+  =E2=94=82=20
+  =E2=94=82   Engine.(on_timer instance) delay (fun handler ->
+  =E2=94=82       Engine.stop_handler handler;
+  =E2=94=82       Promise.fulfill r ());
+  =E2=94=82=20
+  =E2=94=82   p
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The second key abstraction is an [asynchronous I/O] engine that polls
+  I/O events and dispatches them to handlers. Original Lwt has few
+  engines (like based libev, select, poll), but I hardcoded a
+  [select](<https://en.wikipedia.org/wiki/Select_(Unix)>)-based engine
+  inspired by `Lwt_engine.select_based'.
+
+  The typical async engine in internals has an event loop. At each
+  iteration of the event loop, the engine polls for new events and calls
+  handlers to handle them.
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 (* engine.ml *)
+  =E2=94=82=20
+  =E2=94=82 let iter engine =3D
+  =E2=94=82   (* ... *)
+  =E2=94=82=20
+  =E2=94=82   let readable_fds, writable_fds, _ =3D
+  =E2=94=82     Unix.select readable_fds writable_fds [] timeout
+  =E2=94=82   in
+  =E2=94=82=20
+  =E2=94=82   engine.sleepers <- restart_sleepers now engine.sleepers;
+  =E2=94=82=20
+  =E2=94=82   invoke_io_handlers engine.wait_readable readable_fds;
+  =E2=94=82   invoke_io_handlers engine.wait_writable writable_fds
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  How to execute I/O promise? It's not a big deal.
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 (* engine.ml *)
+  =E2=94=82=20
+  =E2=94=82 let rec run promise =3D
+  =E2=94=82   match Promise.state promise with
+  =E2=94=82   | Fulfilled value -> value
+  =E2=94=82   | Rejected exc -> raise exc
+  =E2=94=82   | Pending _ ->
+  =E2=94=82       iter instance;
+  =E2=94=82       run promise
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We just need to loop the event loop until the promis is resolved.
+
+  It's just a toy! I'm not an expert in such things, so the library is
+  very naive and tries to mimic Lwt. But I think it's a good
+  demonstration.
+
+  Repository <https://github.com/dx3mod/tiny-async-lib>
+
+  Thank you for your attention!
+
+
+[Promise] <https://en.wikipedia.org/wiki/Futures_and_promises>
+
+[asynchronous I/O] <https://en.wikipedia.org/wiki/Asynchronous_I/O>
+
+
+Eliom 11.1: Towards Web Assembly support
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/eliom-11-1-towards-web-assembly-support/1570=
+4/1>
+
+
+Vincent Balat announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Eliom 11.1 has been released recently.  This minor release brings
+  compatibility with Web Assembly and the upcoming version of
+  js_of_ocaml.  Ocsigen Toolkit and Ocsigen Start have been updated as
+  well.
+
+  Stay tuned for further announcements concerning client-server Web and
+  mobile apps in Ocaml with Web Assembly!
+
+  Links:
+
+  =E2=80=A2 [Ocsigen]
+  =E2=80=A2 [Eliom]
+  =E2=80=A2 [Documentation]
+  =E2=80=A2 [Github]
+
+
+[Ocsigen] <https://ocsigen.org>
+
+[Eliom] <https://ocsigen.org/eliom>
+
+[Documentation] <https://ocsigen.org/tuto/latest/manual/basics>
+
+[Github] <https://github.com/ocsigen/eliom>
+
+
+Areas and Adversaries
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-areas-and-adversaries/15706/1>
+
+
+Rapha=C3=ABl Proust announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I figured people might be bored of [British pub names] by now so I did
+  another thing: [a generator for titles of table-top role-playing
+  games].
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ opam install areas-and-adversaries
+  =E2=94=82 ...
+  =E2=94=82 $ areas-and-adversaries
+  =E2=94=82 Woods & Wizards
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The code is on Gitlab:
+  <https://gitlab.com/raphael-proust/areas-and-adversaries>
+
+  It was a good excuse to experiment with non-dune build systems (to
+  scope things out). I went for a plain Makefile in the end which works
+  well.
+
+  I also wanted to figure out a better way to embed data in an
+  executable. I ended up wondering about moving as much of the
+  processing as possible into the build phase. What I ended up with is a
+  small program which prints a compilation unit (`.ml') which has mostly
+  array literals. Still have some open questions on that, any input
+  welcome:
+  =E2=80=A2 Should I have used meta-ocaml to print the code? The `data/munc=
+h.ml'
+    would probably be more readable, but the build probably less.
+  =E2=80=A2 How could I generate this kind of processed-data code for
+    data-structures which don't have a literal (maps, sets, hash tables,
+    etc.)? How can I minimise the initialisation cost of the program for
+    such situations?
+
+
+[British pub names]
+<https://discuss.ocaml.org/t/ann-queenshead-a-british-pub-name-generator/13=
+124>
+
+[a generator for titles of table-top role-playing games]
+<https://raphael-proust.gitlab.io/code/areas-and-adversaries.html>
+
+
+MariaDB 1.2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-mariadb-1-2-0/15709/1>
+
+
+Petter A. Urkedal announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80
+
+  I'm please to announce a new release of the [mariadb] package, which
+  provides client bindings for MariaDB and MySQL. See the full release
+  notes below.
+
+  This is also to announce that I have taken over maintenance of the
+  project.  Currently I am the sole maintainer (and I usually use
+  PostgreSQL for my own deployments), so if someone has the time en
+  interest to contribute, let me know.  The main focus from my side is
+  to keep the project up to date and stable, rather than making major
+  changes.
+
+  Release notes:
+
+  =E2=80=A2 Added `Stmt.start_txn' (#59 by Corentin Leruth).
+  =E2=80=A2 Added `Res.insert_id' as binding for `mysql_stmt_insert_id' (#5=
+8 by
+    Corentin Leruth).
+  =E2=80=A2 Updated to support recent OCaml versions (#45 by @kit-ty-kate).
+  =E2=80=A2 Fixed too-early retrieval of statement metadata (#41 by Albert
+    Peschar).
+  =E2=80=A2 Fixed decoding bug for the integer type (#54 by Raman Varabets,
+    tested by #61 by Corentin Leruth).
+  =E2=80=A2 Fixed a memory leaks related to result metadata (#39 by Albert
+    Peschar).
+  =E2=80=A2 The build system is now dune and dune-configurator (#52 by Pett=
+er A.
+    Urkedal) and some of the examples have been converted to a test
+    suite (#60 by Petter A. Urkedal).
+  =E2=80=A2 The project has been transferred to ocaml-community with Petter=
+ A.
+    Urkedal as the new maintainer.
+
+
+[mariadb] <https://github.com/ocaml-community/ocaml-mariadb>
+
+
+Proposed Package Archiving Policy for the opam Repository
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/proposed-package-archiving-policy-for-the-op=
+am-repository/15713/1>
+
+
+Hannes Mehnert announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It is my please to announce the proposed package archiving policy in
+  the name of the opam-repository maintainers.
+
+
+Context
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The opam repository differs from nearly all other
+  programming-language-centric package repositories in that it is
+  manually curated by volunteer maintainers and protected by a robust
+  continuous integration system that (generally) ensures published
+  packages work as expected across a [large matrix of supported
+  platforms].
+
+  Over the past few years the repository has kept growing steadily, when
+  not accelerating, and this has started raising questions about the
+  size, weight and sustainability of the repository and its
+  processes. Last year, [Hannes Mehnert] requested comments on a
+  [proposed initiative] to improve the sustainability and quality of the
+  opam package repository on the long term.
+
+
+[large matrix of supported platforms]
+<https://github.com/ocurrent/opam-repo-ci/blob/master/doc/platforms.md>
+
+[Hannes Mehnert] <https://github.com/hannesm>
+
+[proposed initiative]
+<https://github.com/ocaml/opam-repository/issues/23789>
+
+
+Problem
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The problem, in a nutshell, is that the `opam-repository' will keep
+  steadily growing, using an increasing and substantial amount of space
+  and inodes. Every opam user needs to invest a large amount of
+  computational resources for the solver, every time they want to
+  install or update a package. Additionally, a large amount of
+  computational resources are spent in the continuous integration
+  process and yet a lot of the packages have become stale or
+  uninstallable.
+
+
+Solution
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  [After much deliberation], the discussion converged on a solution:
+  introduce a package archiving policy and supporting processes, to
+  periodically identify and prune unmaintained and broken packages from
+  the repository. This will improve the performance of the opam solvers,
+  of the opam-repo CI, and most importantly improve the quality of the
+  package repository, while keeping a sort of immutability of the
+  repository content and preserving the usability of historical packages
+  for the users that want or need them.
+
+  The opam repository maintainers propose a [policy].
+
+  The currently empty [repository archive] has been created, waiting for
+  packages to be moved.
+
+
+[After much deliberation]
+<https://github.com/ocaml/opam-repository/issues/23789>
+
+[policy]
+<https://github.com/ocaml/opam-repository/blob/master/governance/policies/a=
+rchiving.md>
+
+[repository archive] <https://github.com/ocaml/opam-repository-archive>
+
+
+Call to action
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  If you maintain packages in the opam-repository, you can help by
+  defining your maintanence intent: add a new field
+  `x-maintenance-intent' to your opam file(s) (the most recent release
+  of your package is sufficient - please also put this field in your git
+  repository so it will be part of future releases). The value is
+  defined in [the policy].
+
+
+[the policy]
+<https://github.com/ocaml/opam-repository/blob/master/governance/policies/a=
+rchiving.md#specification-of-the-x--fields-used-in-the-archiving-process>
+
+
+Roadmap
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  All announcements will be on discuss.ocaml.org with the
+  opam-repository tag. If you like to follow these announcements, keep
+  your eyes at [the opam-repository tag].
+
+  =E2=80=A2 December 1st 2024: announcement of this proposal
+  =E2=80=A2 December 15th 2024: announcement of the packages affected by Ph=
+ase 1
+    (uninstallable packages ("available: false", "flags: avoid-version"
+    or "deprecated", "opam admin check =E2=80=93installable", does not comp=
+ile =E2=80=93
+    opam health check <https://check.ci.ocaml.org/>)
+  =E2=80=A2 January 1st 2025: Phase 1 cutting point: packages are moved to
+    opam-repository-archive
+  =E2=80=A2 January 15th 2025: announcement of the packages affected by Pha=
+se 2
+    (OCaml lower bound 4.08)
+  =E2=80=A2 February 1st 2025: Phase 2 cutting point: packages are moved to
+    opam-repository-archive
+  =E2=80=A2 February 15th 2025: initial spring cleaning, announcement of
+    packages (based on maintenance-intent)
+  =E2=80=A2 March 1st 2025: spring cleaning cutting point: packages are mov=
+ed to
+    opam-repository-archive
+  =E2=80=A2 Every quarter: repeat Phase 3
+  =E2=80=A2 Every year: reconsider Phase 2 with an increased OCaml lower bo=
+und
+
+  We now invite members of the OCaml community who may not follow the
+  ocaml-repository issues to review our plans and submit comments,
+  questions, or suggestions.
+
+  Thank you in advance for your support!
+
+
+[the opam-repository tag]
+<https://discuss.ocaml.org/tag/opam-repository>
+
+
+References
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C
+
+  =E2=80=A2 [Opam repository archive]
+  =E2=80=A2 [Proposed policy]
+  =E2=80=A2 [Plan of action]
+  =E2=80=A2 [Issue and discussion]
+  =E2=80=A2 [Previous announcement]
+
+
+[Opam repository archive]
+<https://github.com/ocaml/opam-repository-archive>
+
+[Proposed policy]
+<https://github.com/ocaml/opam-repository/blob/master/governance/policies/a=
+rchiving.md>
+
+[Plan of action]
+<https://github.com/ocaml/opam-repository/wiki/Package-Archiving:-Plan>
+
+[Issue and discussion]
+<https://github.com/ocaml/opam-repository/issues/23789>
+
+[Previous announcement]
+<https://discuss.ocaml.org/t/discussions-on-the-future-of-the-opam-reposito=
+ry/13898>
+
+
+Acknowledgment
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Thanks to the following individuals for valuable input and
+  contributions to the planning process (sorry in case we forgot you):
+
+  =E2=80=A2 Marcello Seri
+  =E2=80=A2 Shon Feder
+  =E2=80=A2 Thomas Gazagnaire
+  =E2=80=A2 kit-ty-kate
+  =E2=80=A2 Weng Shiwei =E7=BF=81=E5=A3=AB=E4=BC=9F
+  =E2=80=A2 Marcus Rohrmoser
+  =E2=80=A2 Reynir Bj=C3=B6rnsson
+  =E2=80=A2 Stephen Sherratt
+  =E2=80=A2 Simon Cruanes
+  =E2=80=A2 Marek Kubica
+  =E2=80=A2 Rapha=C3=ABl Proust
+  =E2=80=A2 Romain Beauxis
+  =E2=80=A2 Yawar Amin
+  =E2=80=A2 Anil Madhavapeddy
+  =E2=80=A2 Boning D.
+  =E2=80=A2 Mathieu Barbin
+  =E2=80=A2 Hannes Mehnert
+
+
+capnp-rpc 2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-capnp-rpc-2-0/15739/1>
+
+
+Thomas Leonard announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I'm pleased to announce the release of [capnp-rpc 2.0], an OCaml
+  implementation of the Cap'n Proto RPC specification.
+
+  If you haven't used the library before, please see the [documentation
+  and tutorial]. Cap'n Proto RPC aims to provide secure, efficient,
+  typed communications between multiple parties.
+
+  The main change in this version is the switch from Lwt to Eio for
+  concurrency. The echo benchmark is about 40% faster than before. This
+  isn't because Eio is actually that much faster than Lwt, but more
+  because it has better profiling support so spotting problems was
+  easier. See <https://roscidus.com/blog/blog/2024/07/22/performance/>
+  for an example:
+
+  <https://roscidus.com/blog/images/perf/capnp-eio-slow-zoom1-debug.png>
+
+  There is a `capnp-rpc-lwt' compatibility package that provides the old
+  Lwt API using the new Eio version, allowing libraries using the old
+  API to be used in applications using the new code, without having to
+  update everything at once.
+
+  To migrate to the new version (checking everything still works after
+  each step):
+
+  1. First, update to capnp-rpc 1.2.4 (this ensures you are using the
+     newer mirage-crypto API, to get that migration out of the way
+     first).
+  2. Switch your application (that sets up the networking) to
+     capnp-rpc-unix 2.0.
+  3. Migrate client and server code away from capnp-rpc-lwt when
+     convenient.
+
+  For more detailed instructions, see [the changelog].
+
+  Here's an example of the changes needed in the solver-service project:
+  =E2=80=A2 [Update to capnp-rpc-unix 2.0]
+  =E2=80=A2 [Remove Capnp_rpc_lwt]
+
+
+[capnp-rpc 2.0] <https://github.com/mirage/capnp-rpc/releases/tag/v2.0>
+
+[documentation and tutorial]
+<https://github.com/mirage/capnp-rpc/blob/master/README.md>
+
+[the changelog]
+<https://github.com/mirage/capnp-rpc/blob/master/CHANGES.md#v20>
+
+[Update to capnp-rpc-unix 2.0]
+<https://github.com/talex5/solver-service/commit/a4af17b5ea44e94579fc0ca01f=
+d0c618a5182df4>
+
+[Remove Capnp_rpc_lwt]
+<https://github.com/talex5/solver-service/commit/74431efd36f4474236401f0556=
+fad80de22b1b42>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Irmin on MirageOS: Introducing the Notafs File System]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Irmin on MirageOS: Introducing the Notafs File System]
+<https://tarides.com/blog/2024-11-27-irmin-on-mirageos-introducing-the-nota=
+fs-file-system>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-12-03 Tue 15:42 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.11.26.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.12.10.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of November 26 to Decemb=
+er 03, 2024.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Good example of handwritten Lexer + Recursive Descent Pa=
+rser?</a></li>
+<li><a href=3D"#2">Boulder Dash in OCaml</a></li>
+<li><a href=3D"#3">Js_of_ocaml 5.9.0</a></li>
+<li><a href=3D"#4">Liquidsoap 2.3.0</a></li>
+<li><a href=3D"#5">Bytesrw 0.1.0 =E2=80=93 Composable byte stream readers a=
+nd writers</a></li>
+<li><a href=3D"#6">dream-html and pure-html 3.5.2</a></li>
+<li><a href=3D"#7">Second beta release of OCaml 5.3.0</a></li>
+<li><a href=3D"#8">New release of Monolith</a></li>
+<li><a href=3D"#9">Jsont 0.1.0 =E2=80=93 Declarative JSON data manipulation=
+ for OCaml</a></li>
+<li><a href=3D"#10">Tiny educational concurrent I/O and promises library</a=
+></li>
+<li><a href=3D"#11">Eliom 11.1: Towards Web Assembly support</a></li>
+<li><a href=3D"#12">Areas and Adversaries</a></li>
+<li><a href=3D"#13">MariaDB 1.2.0</a></li>
+<li><a href=3D"#14">Proposed Package Archiving Policy for the opam Reposito=
+ry</a></li>
+<li><a href=3D"#15">capnp-rpc 2.0</a></li>
+<li><a href=3D"#16">Other OCaml News</a></li>
+<li><a href=3D"#org9cd4b78">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Good example of handwritten Lexer + Recursive Descent Parser?<=
+/h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/good-example-of-handwritten=
+-lexer-recursive-descent-parser/15672/1">https://discuss.ocaml.org/t/good-e=
+xample-of-handwritten-lexer-recursive-descent-parser/15672/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org22bb946" class=3D"outline-3">
+<h3 id=3D"org22bb946">Axel Baudot asked</h3>
+<div class=3D"outline-text-3" id=3D"text-org22bb946">
+<p>
+I am looking for an idiomatic implementation of a Lexer + Recursive Descent=
+ Parser not making use of ocamllex, ocamlyacc or menhir. The kind you would=
+ write during the first chapters of Crafting Interpreters [0][1] in OCaml.
+</p>
+
+<p>
+This Markdown parser [2] by @dbuenzli is a great example of what I am looki=
+ng for. I'd be happy if you can recommend similar resources.
+</p>
+
+<p>
+There are many OCaml repos for Lox interpreters but it's hard to assess qua=
+lity. And the readme often says "I am doing this to learn OCaml", which doe=
+sn't inspire confidence.
+</p>
+
+<p>
+As a broader note, it would be nice to have (community vetted) OCaml transl=
+ations of well-known learning material using mainstream languages. But I'll=
+ raise the topic in another thread later.
+</p>
+
+<p>
+Thanks in advance.
+</p>
+
+<ul class=3D"org-ul">
+<li>[0] <a href=3D"https://craftinginterpreters.com/scanning.html">https://=
+craftinginterpreters.com/scanning.html</a></li>
+<li>[1] <a href=3D"https://craftinginterpreters.com/parsing-expressions.htm=
+l">https://craftinginterpreters.com/parsing-expressions.html</a></li>
+<li>[2] <a href=3D"https://github.com/dbuenzli/cmarkit/blob/af8930c307957a5=
+46ea833bbdabda94a2fa60b4b/src/cmarkit.ml#L879">https://github.com/dbuenzli/=
+cmarkit/blob/af8930c307957a546ea833bbdabda94a2fa60b4b/src/cmarkit.ml#L879</=
+a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org69ed476" class=3D"outline-3">
+<h3 id=3D"org69ed476">Mikhail replied</h3>
+<div class=3D"outline-text-3" id=3D"text-org69ed476">
+<p>
+You might be interested in the book <a href=3D"https://keleshev.com/compili=
+ng-to-assembly-from-scratch/">Compiling to Assembly from Scratch</a>.
+There is a <a href=3D"https://github.com/keleshev/compiling-to-assembly-fro=
+m-scratch/tree/main/contrib/ocaml">port to OCaml</a>. It suggests the
+use of <a href=3D"https://en.wikipedia.org/wiki/Parser_combinator">parser c=
+ombinators</a>.=20
+</p>
+
+<p>
+Parser combinators is the same manual recursive descent method, but in a fu=
+nctional way.   You can either use <a href=3D"https://github.com/inhabitedt=
+ype/angstrom">an existing
+library</a> or you <a href=3D"https://www.youtube.com/watch?v=3DY5IIXUBXvLs=
+">can write your own</a>.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org84a1d3e" class=3D"outline-3">
+<h3 id=3D"org84a1d3e">Anton Bachin also replied</h3>
+<div class=3D"outline-text-3" id=3D"text-org84a1d3e">
+<p>
+odoc's parser is half of what you're asking for. It uses ocamllex for the l=
+exical scan, because it's very simple and convenient to
+do it that way, but the syntax is then analyzed by a hand-written <a href=
+=3D"https://github.com/ocaml/odoc/blob/822d266232fccdffbd4922434c81c45ab6d5=
+83f4/src/parser/syntax.ml">recursive descent
+parser</a>, in large part because
+<i>that's</i> easier for the doc language.
+</p>
+
+<p>
+An example of a non-ocamllex and non-ocamlyacc parser is Markup.ml
+(<a href=3D"https://github.com/aantron/markup.ml/blob/d686cce6bac6ff46a49b2=
+8ed0d957ffa1e37fda5/src/html_tokenizer.ml#L390">tokenizer</a>,
+<a href=3D"https://github.com/aantron/markup.ml/blob/d686cce6bac6ff46a49b28=
+ed0d957ffa1e37fda5/src/html_parser.ml#L1386">parser</a>). But this
+isn't a traditional recursive descent parser. Rather, it's a pretty huge ha=
+nd-written state machine in continuation-passing style,
+almost completely implementing the corresponding huge state machine specifi=
+ed in HTML5. But it's the kind of code that fits well the
+topics of an impure FP class, especially since it has mutable cells for its=
+ continuations, that it uses to mimic effects.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Boulder Dash in OCaml</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://sympa.inria.fr/sympa/arc/caml-list/2024-11/msg0=
+0023.html">https://sympa.inria.fr/sympa/arc/caml-list/2024-11/msg00023.html=
+</a>
+</p>
+</div>
+<div id=3D"outline-container-orgd16abac" class=3D"outline-3">
+<h3 id=3D"orgd16abac">Continuing this thread, Andreas Rossberg announced</h=
+3>
+<div class=3D"outline-text-3" id=3D"text-orgd16abac">
+<p>
+Couldn=E2=80=99t let it rest, so I=E2=80=99m (already) announcing version 2=
+ of it =E2=80=94 now a much improved, practically feature-complete
+reimplementation of both Boulder Dash 1 &amp; 2.
+</p>
+
+<p>
+Version 2 was an excuse for me to mess around with the OCaml bindings to po=
+pular graphics engines, and as a result, it now comes
+with 3 backends to choose from:
+</p>
+
+<ol class=3D"org-ol">
+<li>the homely bare OCaml Graphics library (<a href=3D"https://github.com/o=
+caml/graphics">https://github.com/ocaml/graphics</a>),</li>
+<li>the TSDL binding to the SDL2 API (<a href=3D"https://github.com/dbuenzl=
+i/tsdl">https://github.com/dbuenzli/tsdl</a>),</li>
+<li>the binding to the Raylib engine (<a href=3D"https://github.com/tjammer=
+/raylib-ocaml">https://github.com/tjammer/raylib-ocaml</a>).</li>
+</ol>
+
+<p>
+The list is in order of increasingly better user experience, for the price =
+of a potentially harder build experience. In theory, all
+versions should run on Windows, Mac, and Linux, though I was too lazy to te=
+st all combinations, and I (or my opam) had trouble
+installing some of the dependencies on some of the systems.
+</p>
+
+<p>
+Features:
+</p>
+
+<ul class=3D"org-ul">
+<li>Faithful original physics, graphics, animations, sound, and music</li>
+<li>Authentic scrolling mechanics combined with dynamic resizing</li>
+<li>All 40 levels and 5 difficulties of Boulder Dash 1 &amp; 2</li>
+<li>Pause-and-go mode for relaxed playing</li>
+</ul>
+
+<p>
+Relative to the previous release, version 2 adds the following niceties:
+</p>
+
+<ul class=3D"org-ul">
+<li>Support for SDL and Raylib engines, which allow all of the following</l=
+i>
+<li>Original sound effects and music</li>
+<li>Original level color schemes</li>
+<li>Full screen mode</li>
+<li>Faster graphics</li>
+<li>Dynamic graphics scaling adjustment</li>
+<li>Gamepad/joystick support as well as more precise keyboard controls</li>
+<li>Boulder Dash 2 levels and decoder</li>
+</ul>
+
+<p>
+Almost looks like a real game now. One from the 80s anyways. :)
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Js_of_ocaml 5.9.0</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-js-of-ocaml-5-9-0/15674=
+/1">https://discuss.ocaml.org/t/ann-js-of-ocaml-5-9-0/15674/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgd73d6c6" class=3D"outline-3">
+<h3 id=3D"orgd73d6c6">Hhugo announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd73d6c6">
+<p>
+I=E2=80=99m pleased to announce the release of js_of_ocaml 5.9.0. It should=
+ soon be available in opam.
+</p>
+
+<p>
+Js_of_ocaml is a compiler from OCaml bytecode to JavaScript. It makes it
+possible to run pure OCaml programs in JavaScript environment like browsers=
+ and
+Node.js.
+</p>
+
+<p>
+Most significant changes:
+</p>
+
+<ul class=3D"org-ul">
+<li>Support for OCaml 5.3</li>
+<li>Speedup sourcemap generation and improve sourcemap accuracy.</li>
+<li>Prepare the merge of the wasm_of_ocaml fork back into the js_of_ocaml r=
+epo.</li>
+<li>JS backtraces are really expansive. They now need to be explicitly requ=
+ested with <code>OCAMLRUNPARM=3Db=3D1</code>. This speeds up programs linke=
+d with libraries enabling backtraces programmatically using <code>Printexc.=
+record_backtrace true</code>.</li>
+</ul>
+
+<p>
+See the <a href=3D"https://github.com/ocsigen/js_of_ocaml/blob/master/CHANG=
+ES.md">Changelog </a> for other changes.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Liquidsoap 2.3.0</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-liquidsoap-2-3-0/15677/=
+1">https://discuss.ocaml.org/t/ann-liquidsoap-2-3-0/15677/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgdb38999" class=3D"outline-3">
+<h3 id=3D"orgdb38999">Romain Beauxis announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgdb38999">
+<p>
+We are stoked to announce the <code>2.3.0</code> release of liquidsoap, a g=
+eneral-purpose scripting language written in OCaml with specialized operato=
+rs to build media streams.
+</p>
+
+<p>
+The release is available on github: <a href=3D"https://github.com/savonet/l=
+iquidsoap/releases/tag/v2.3.0">https://github.com/savonet/liquidsoap/releas=
+es/tag/v2.3.0</a>
+</p>
+
+<p>
+During this release cycle, we have rewritten huge chunk of the application'=
+s internal, including a new media streaming abstraction and clock system.
+</p>
+
+<p>
+As an OCaml application, liquidsoap's scope and complexity has greatly expa=
+nded in the next years.
+</p>
+
+<p>
+Some of the most challenging areas for us at this point are memory usage (a=
+nd, incidentally, CPU usage).
+</p>
+
+<p>
+Although OCaml's garbage collection is a very powerful tool, in the context=
+ of very short lived streaming cycles (typically <code>0.02s</code>) with p=
+otentially quite large memory allocations (typically video images), control=
+ling the timing of memory allocations and release is becoming more and more=
+ critical.
+</p>
+
+<p>
+We are also aware of the work done by Jane St on adding a <code>local</code=
+> call stack. This could be an avenue to explore as well but:
+</p>
+<ol class=3D"org-ol">
+<li>Some of our content has to be stored in the long-term heap</li>
+<li>We want to work with an official OCaml compiler for obvious long-term m=
+aintenance concerns.</li>
+</ol>
+
+<p>
+Nonetheless, we are thrilled to be part of a community whose array of tools=
+ (building, packaging, debugging, etc) and libraries has expanded so well a=
+long with a vibrant compiler development team.
+</p>
+
+<p>
+In the future, we wish to explore more of the new OCaml concurrency feature=
+s. This might require that we revisit the way we handle short-term memory f=
+irst.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Bytesrw 0.1.0 =E2=80=93 Composable byte stream readers and wri=
+ters</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-bytesrw-0-1-0-composabl=
+e-byte-stream-readers-and-writers/15696/1">https://discuss.ocaml.org/t/ann-=
+bytesrw-0-1-0-composable-byte-stream-readers-and-writers/15696/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgacbfc50" class=3D"outline-3">
+<h3 id=3D"orgacbfc50">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgacbfc50">
+<p>
+It's my pleasure to announce the first release of the <code>bytesrw</code> =
+library:
+</p>
+
+<blockquote>
+<p>
+Bytesrw extends the OCaml <code>Bytes</code> module with composable, memory=
+ efficient, byte stream readers and writers compatible with effect-based co=
+ncurrency.
+</p>
+
+<p>
+Except for byte slice life-times, these abstractions intentionally  separat=
+e away ressource management and the specifics of reading and writing bytes.
+</p>
+
+<p>
+Bytesrw distributed under the ISC license. It has no dependencies.
+</p>
+
+<p>
+Optional support for compressed and hashed bytes depend, at your wish, on  =
+the C <a href=3D"https://zlib.net"><code>zlib</code></a>, <a href=3D"http:/=
+/zstd.net"><code>libzstd</code></a>, <a href=3D"https://blake3.io"><code>bl=
+ake3</code></a>, <a href=3D"https://www.hadrons.org/software/libmd/"><code>=
+libmd</code></a>, <a href=3D"https://xxhash.com/"><code>xxhash</code></a> a=
+nd libraries.
+</p>
+</blockquote>
+
+<p>
+The only reason I was longing for OCaml algebraic effects was so that I cou=
+ld avoid using them: when you write codecs on byte streams it should not be=
+ a concern where your bytes are coming from or headed to. The <code>bytesrw=
+</code> library provides structures to abstract this. Additionally it estab=
+lishes a buffer ownership discipline that enables byte streams to (de)compo=
+se while remaining memory efficient.
+</p>
+
+<p>
+I do not expect the library to change much and it has been used. But it's n=
+ew and practice may call for adjustments. Do not hesitate to get in touch i=
+f you run into problems or see obvious defects or improvements. I do expect=
+ the library will add more convenience (e.g. for processing lines and UTF) =
+and more optional stream formats over time.
+</p>
+
+<ul class=3D"org-ul">
+<li>Homepage: <a href=3D"https://erratique.ch/software/bytesrw">https://err=
+atique.ch/software/bytesrw</a></li>
+<li>Docs: <a href=3D"https://erratique.ch/software/bytesrw/doc">https://err=
+atique.ch/software/bytesrw/doc</a> or <code>odig doc bytesrw</code></li>
+<li>Install: <code>opam install bytesrw conf-zlib conf-zstd conf-libblake3 =
+conf-libmd conf-xxhash</code> (<a href=3D"https://github.com/ocaml/opam-rep=
+ository/pull/26990">opam PR</a>)</li>
+</ul>
+
+<p>
+This first release was made possible thanks to a grant from the <a href=3D"=
+https://ocaml-sf.org/">OCaml Software Foundation</a>. I also thank my <a hr=
+ef=3D"https://github.com/sponsors/dbuenzli">donors</a> for their support.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">dream-html and pure-html 3.5.2</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dream-html-pure-html-3-=
+5-2/14808/5">https://discuss.ocaml.org/t/ann-dream-html-pure-html-3-5-2/148=
+08/5</a>
+</p>
+</div>
+<div id=3D"outline-container-orga86adff" class=3D"outline-3">
+<h3 id=3D"orga86adff">Yawar Amin announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga86adff">
+<p>
+[ANN] dream-html 3.7.0
+</p>
+
+<p>
+Happy to announce the addition of a helper module for typed form decoding f=
+unctionality. See the docs here: <a href=3D"https://yawaramin.github.io/dre=
+am-html/dream-html/Dream_html/Form/index.html">https://yawaramin.github.io/=
+dream-html/dream-html/Dream_html/Form/index.html</a>
+</p>
+
+<p>
+An example:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">type</span> <span style=3D"color: #444fcf;">user</span> =3D { name : s=
+tring; age : int option }
+
+<span style=3D"color: #000000; font-weight: bold;">open </span><span style=
+=3D"color: #444fcf;">Dream_html.Form</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">user_form</span> =3D
+  <span style=3D"color: #000000; font-weight: bold;">let+</span> <span styl=
+e=3D"color: #007a9f;">name</span> =3D required string <span style=3D"color:=
+ #ca3400;">"name"</span>
+  <span style=3D"color: #000000; font-weight: bold;">and+</span> <span styl=
+e=3D"color: #007a9f;">age</span> =3D optional int <span style=3D"color: #ca=
+3400;">"age"</span> <span style=3D"color: #000000; font-weight: bold;">in</=
+span>
+  { name; age }
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">dream_form</span> =3D [<span style=3D"color: #ca3400;"=
+>"age"</span>, <span style=3D"color: #ca3400;">"42"</span>; <span style=3D"=
+color: #ca3400;">"name"</span>, <span style=3D"color: #ca3400;">"Bob"</span=
+>]
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">user_result</span> =3D validate user_form dream_form
+<span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">=3D&gt; Ok { name =3D "Bob"; age =
+=3D Some 42 }</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)=
+</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">error_result</span> =3D validate user_form [<span styl=
+e=3D"color: #ca3400;">"age"</span>, <span style=3D"color: #ca3400;">"none"<=
+/span>]
+<span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">=3D&gt; Error [("age", "error.expe=
+cted.int"); ("name", "error.required")]</span><span style=3D"color: #8f6f4a=
+; font-style: italic;"> *)</span>
+</pre>
+</div>
+
+<p>
+Astute readers may observe that this provides some convenience functionalit=
+y beyond what Dream itself offers; to validate the above form and get a <sp=
+an class=3D"underline">complete</span> set of field validation errors using=
+ only Dream you would do something like:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">let</span> <span style=3D"color: #007a9f;">user_result</span> =3D <spa=
+n style=3D"color: #006f00; font-weight: bold;">match</span> dream_form <spa=
+n style=3D"color: #006f00; font-weight: bold;">with</span>
+  | [<span style=3D"color: #ca3400;">"age"</span>, age; <span style=3D"colo=
+r: #ca3400;">"name"</span>, name] -&gt;
+    (<span style=3D"color: #006f00; font-weight: bold;">match</span> int_of=
+_string age <span style=3D"color: #006f00; font-weight: bold;">with</span>
+    | age -&gt; <span style=3D"color: #242521; background-color: #fcf7ef;">=
+Ok</span> { name; age =3D <span style=3D"color: #242521; background-color: =
+#fcf7ef;">Some</span> age }
+    | <span style=3D"color: #006f00; font-weight: bold;">exception</span> <=
+span style=3D"color: #242521; background-color: #fcf7ef;">Failure</span> _ =
+-&gt; <span style=3D"color: #242521; background-color: #fcf7ef;">Error</spa=
+n> [<span style=3D"color: #ca3400;">"age"</span>, <span style=3D"color: #ca=
+3400;">"error.expected.int"</span>])
+  | [<span style=3D"color: #ca3400;">"name"</span>, name] -&gt; <span style=
+=3D"color: #242521; background-color: #fcf7ef;">Ok</span> { name; age =3D <=
+span style=3D"color: #242521; background-color: #fcf7ef;">None</span> }
+  | [<span style=3D"color: #ca3400;">"age"</span>, age] -&gt;
+    (<span style=3D"color: #006f00; font-weight: bold;">match</span> int_of=
+_string age <span style=3D"color: #006f00; font-weight: bold;">with</span>
+    | age -&gt; <span style=3D"color: #242521; background-color: #fcf7ef;">=
+Error</span> [<span style=3D"color: #ca3400;">"name"</span>, <span style=3D=
+"color: #ca3400;">"error.required"</span>]
+    | <span style=3D"color: #006f00; font-weight: bold;">exception</span> <=
+span style=3D"color: #242521; background-color: #fcf7ef;">Failure</span> _ =
+-&gt; <span style=3D"color: #242521; background-color: #fcf7ef;">Error</spa=
+n> [<span style=3D"color: #ca3400;">"age"</span>, <span style=3D"color: #ca=
+3400;">"error.expected.int"</span>; <span style=3D"color: #ca3400;">"name"<=
+/span>, <span style=3D"color: #ca3400;">"error.required"</span>])
+  | _ -&gt; <span style=3D"color: #242521; background-color: #fcf7ef;">Erro=
+r</span> [<span style=3D"color: #ca3400;">"name"</span>, <span style=3D"col=
+or: #ca3400;">"error.required"</span>]
+</pre>
+</div>
+
+<p>
+And this is a form with only two fields. You can imagine how convoluted the=
+ logic would be for more complex forms. Of course, you might just decide to=
+ use <code>List.assoc_opt</code> and build up the validation errors, but ev=
+en that can get tricky. So if you are making heavy use of HTML forms, a hel=
+per module that takes care of all these validation details can be very usef=
+ul. Enjoy!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Second beta release of OCaml 5.3.0</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/second-beta-release-of-ocam=
+l-5-3-0/15700/1">https://discuss.ocaml.org/t/second-beta-release-of-ocaml-5=
+-3-0/15700/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org3a12c35" class=3D"outline-3">
+<h3 id=3D"org3a12c35">octachron announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3a12c35">
+<p>
+One month after the release of the first beta for OCaml 5.3.0,  we are rele=
+asing a second and hopefully last beta release for OCaml 5.3.0 .
+</p>
+
+<p>
+The most notable changes for this second beta are probably a handful of typ=
+e system bugfixes. In particular, those fixes revert a change of behaviour =
+in the first beta when pattern matching GADTs with non-injective type param=
+eters.
+</p>
+
+<p>
+We also have a C++ header compatibility fix and the restoration of some con=
+figuration variable in Makefiles for the sake of backward compatibility.
+</p>
+
+<p>
+Overall, the release is converging and we are expecting to have a first rel=
+ease candidate around the middle of December. The progresses on stabilising=
+ the ecosystem are tracked on the
+<a href=3D"https://github.com/ocaml/opam-repository/issues/26596">opam read=
+iness for 5.3.0 meta-issue</a>.
+</p>
+
+<p>
+Meanwhile, the second beta release of OCaml 5.3.0 is here to help you update
+your software and libraries ahead of the release (see below for the install=
+ation
+instructions).
+</p>
+
+<p>
+The full release is expected before the end of December.
+</p>
+
+<p>
+If you find any bugs, please report them on <a href=3D"https://github.com/o=
+caml/ocaml/issues">OCaml's issue tracker</a>.
+</p>
+
+<p>
+If you are interested in full list of features and bug fixes of the new OCa=
+ml version, the updated change log for OCaml 5.3.0 is available <a href=3D"=
+https://github.com/ocaml/ocaml/blob/5.3/Changes">on GitHub</a>.
+</p>
+
+<p>
+Happy hacking,
+Florian Angeletti for the OCaml team.
+</p>
+</div>
+<div id=3D"outline-container-org75755e1" class=3D"outline-4">
+<h4 id=3D"org75755e1">Installation Instructions</h4>
+<div class=3D"outline-text-4" id=3D"text-org75755e1">
+<p>
+The base compiler can be installed as an opam switch with the following com=
+mands
+on opam 2.1 and later:
+</p>
+
+<pre class=3D"example" id=3D"orgd5c226f">
+opam update
+opam switch create 5.3.0~beta2
+</pre>
+
+<p>
+The source code for the beta is also available at these addresses:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/archive/5.3.0-beta2.tar.gz">G=
+itHub</a></li>
+<li><a href=3D"https://caml.inria.fr/pub/distrib/ocaml-5.3/ocaml-5.3.0~beta=
+2.tar.gz">OCaml archives at Inria</a></li>
+</ul>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org12c6846"></a>Fine-Tuned Compiler Configuration<br />
+<div class=3D"outline-text-5" id=3D"text-org12c6846">
+<p>
+If you want to tweak the configuration of the compiler, you can switch to t=
+he option variant with:
+</p>
+
+<pre class=3D"example" id=3D"orgc4c2724">
+opam update
+opam switch create &lt;switch_name&gt; ocaml-variants.5.3.0~beta2+options &=
+lt;option_list&gt;
+</pre>
+
+<p>
+where <code>option_list</code> is a space separated list of <code>ocaml-opt=
+ion-*</code> packages. For instance, for a flambda and no-flat-float-array =
+switch:
+</p>
+
+<pre class=3D"example" id=3D"orgce428b3">
+opam switch create 5.3.0~beta2+flambda+nffa ocaml-variants.5.3.0~beta2+opti=
+ons ocaml-option-flambda ocaml-option-no-flat-float-array
+</pre>
+
+<p>
+All available options can be listed with <code>opam search ocaml-option</co=
+de>.
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-org59be94f" class=3D"outline-4">
+<h4 id=3D"org59be94f">Changes Since The First Beta</h4>
+<div class=3D"outline-text-4" id=3D"text-org59be94f">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org1c97905"></a>Type system fixes<br />
+<div class=3D"outline-text-5" id=3D"text-org1c97905">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13501">#13501</a>: Reg=
+ression on mutually recursive types caused by <a href=3D"https://github.com=
+/ocaml/ocaml/issues/12180">#12180</a>.
+Resuscitate Typedecl.update_type.
+(Jacques Garrigue and Takafumi Saikawa, review by Florian Angeletti, Richard
+Eisenberg and Gabriel Scherer)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13495">#13495</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13514">#13514</a>: Fix typech=
+ecker crash while typing objects
+(Jacques Garrigue, report by Nicol=C3=A1s Ojeda B=C3=A4r, review by
+ Nicolas Ojeda B=C3=A4r, Gabriel Scherer, Stephen Dolan, Florian Angeletti)=
+</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13598">#13598</a>: Fal=
+sely triggered warning 56 [unreachable-case]
+This was caused by unproper protection of the retyping function.
+(Jacques Garrigue, report by T=C3=B5ivo Leedj=C3=A4rv, review by Florian An=
+geletti)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org4b37038"></a>Configuration fixes<br />
+<div class=3D"outline-text-5" id=3D"text-org4b37038">
+<ul class=3D"org-ul">
+<li>(<b>breaking change</b>) <a href=3D"https://github.com/ocaml/ocaml/issu=
+es/12578">#12578</a>, <a href=3D"https://github.com/ocaml/ocaml/issues/1258=
+9">#12589</a>, <a href=3D"https://github.com/ocaml/ocaml/issues/13322">#133=
+22</a>, +<a href=3D"https://github.com/ocaml/ocaml/issues/13519">#13519</a>=
+: Use configured CFLAGS and CPPFLAGS <i>only</i>
+during the build of the compiler itself. Do not use them when
+compiling third-party C sources through the compiler. Flags for
+compiling third-party C sources can still be specified at configure
+time in the COMPILER_{BYTECODE,NATIVE}_{CFLAGS,CPPFLAGS}
+configuration variables.
+ (S=C3=A9bastien Hinderer, report by William Hu, review by David Allsopp)</=
+li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org969e483"></a>C++ header compatibility<br />
+<div class=3D"outline-text-5" id=3D"text-org969e483">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13541">#13541</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13591">#13591</a>: Fix header=
+s for C++ inclusion.
+(Antonin D=C3=A9cimo, review by Nick Barnes, report by Kate Deplaix)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgb4ea645"></a>Compiler library bug fix<br />
+<div class=3D"outline-text-5" id=3D"text-orgb4ea645">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13603">#13603</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13604">#13604</a>: fix source=
+ printing in the presence of the escaped raw
+identifier <code>\#mod</code>.
+(Florian Angeletti, report by Chris Casinghino, review by Gabriel Scherer)<=
+/li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">New release of Monolith</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-new-release-of-monolith=
+/15701/1">https://discuss.ocaml.org/t/ann-new-release-of-monolith/15701/1</=
+a>
+</p>
+</div>
+<div id=3D"outline-container-org1fa9576" class=3D"outline-3">
+<h3 id=3D"org1fa9576">Fran=C3=A7ois Pottier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org1fa9576">
+<p>
+I am pleased to announce a new release of <a href=3D"https://cambium.inria.=
+fr/~fpottier/monolith/doc/monolith/Monolith/">Monolith</a>, a library that =
+helps perform strong automated testing of OCaml libraries.
+</p>
+<pre class=3D"example" id=3D"org71e5155">
+opam update
+opam install monolith.20241126
+</pre>
+
+<p>
+The changes are as follows:
+</p>
+
+<ul class=3D"org-ul">
+<li>The documentation of the specification combinators has been re-organized
+in sections and subsections. Finding the desired combinator should now be
+easier.</li>
+
+<li>The new combinator <code>naive_array</code> offers limited support for =
+arrays.</li>
+
+<li>The new combinator <code>naive_seq</code> offers limited support for se=
+quences
+(that is, for the type constructor <code>Seq.t</code>).</li>
+
+<li>The new combinator <code>pair</code> is a synonym for <code>( *** )</co=
+de>.</li>
+
+<li>The new combinator <code>triple</code> offers support for triples.</li>
+
+<li>The new combinator <code>either</code> offers support for the type cons=
+tructor
+<code>Either.t</code>.</li>
+
+<li>The new combinators <code>iter</code>, <code>foldr</code>, <code>foldl<=
+/code>, <code>iteri</code>, <code>foldri</code>, <code>foldli</code>
+offer support for iteration functions.</li>
+
+<li>An unintentional and undocumented limitation has been fixed: so far, us=
+es of
+the combinator <code>map_into</code> would work only at the root of the spe=
+cification
+or in the right-hand side of an arrow <code>^&gt;</code>. It should now be =
+possible to use
+<code>map_into</code> under other combinators that expect a deconstructible
+specification, such as <code>^!&gt;</code> (in the right-hand side), <code>=
+( *** )</code>, <code>option</code>,
+<code>result</code>, <code>list</code>, etc. This improvement affects not o=
+nly <code>map_into</code>, but
+also a number of other combinators that are defined in terms of <code>map_i=
+nto</code>.</li>
+
+<li>Monolith now requires OCaml 4.12 or later.</li>
+
+<li>In <code>Makefile.monolith</code>,
+<ul class=3D"org-ul">
+<li>the default switch is changed from 4.11.1 to 4.14.2;
+this can be overridden by defining <code>SWITCH</code>;</li>
+<li><code>make test</code> automatically disables the MacOS crash reporter;=
+</li>
+<li>the use of <code>ulimit -s</code> is abandoned.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">Jsont 0.1.0 =E2=80=93 Declarative JSON data manipulation for O=
+Caml</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-jsont-0-1-0-declarative=
+-json-data-manipulation-for-ocaml/15702/1">https://discuss.ocaml.org/t/ann-=
+jsont-0-1-0-declarative-json-data-manipulation-for-ocaml/15702/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org18df70e" class=3D"outline-3">
+<h3 id=3D"org18df70e">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org18df70e">
+<p>
+It's my pleasure to announce the first release of the jsont libary:=20
+</p>
+
+<blockquote>
+<p>
+Jsont is an OCaml library for declarative JSON data manipulation. It provid=
+es:
+</p>
+
+<ul class=3D"org-ul">
+<li>Combinators for describing JSON data using the OCaml values of your cho=
+ice. The descriptions can be used by generic functions to decode, encode, q=
+uery and update JSON data without having to construct a generic JSON repres=
+entation.</li>
+<li>A JSON codec with optional text location tracking and layout preservati=
+on. The codec is compatible with effect-based concurrency.</li>
+</ul>
+
+<p>
+The descriptions are independent from the codec and can be used by third-pa=
+rty processors or codecs.
+</p>
+
+<p>
+Jsont is distributed under the ISC license. It has no dependencies. The cod=
+ec is optional and depends on the <a href=3D"https://erratique.ch/software/=
+bytesrw"><code>bytesrw</code></a> library. The JavaScript support is option=
+al and depends on the <a href=3D"https://erratique.ch/software/brr"><code>b=
+rr</code></a> library.
+</p>
+</blockquote>
+
+<p>
+The library has been used in practice but it's new so a few adjustments may=
+ be needed and more convenience combinators added.
+</p>
+
+<p>
+The library also enables quite a few things that I did not have the time to=
+ explore like schema description generation from descriptions, quasi-stream=
+ing JSON transformations, description generation from dynamic type represen=
+tations, etc. Lots of this can be done outside the core library, do not hes=
+itate to get in touch if you use the library and find interesting applicati=
+ons or pesking limitations.
+</p>
+
+<ul class=3D"org-ul">
+<li>Homepage: <a href=3D"https://erratique.ch/software/jsont">https://errat=
+ique.ch/software/jsont</a></li>
+<li>Docs: <a href=3D"https://erratique.ch/software/jsont/doc">https://errat=
+ique.ch/software/jsont/doc</a> (or <code>odig doc jsont</code>)</li>
+<li>Install: <code>opam install jsont bytesrw</code></li>
+</ul>
+
+<p>
+This first release was made possible thanks to a grant from the <a href=3D"=
+https://ocaml-sf.org/">OCaml Software Foundation</a>. I also thank my <a hr=
+ef=3D"https://github.com/sponsors/dbuenzli">donors</a> for their support.
+</p>
+
+<p>
+Best,
+</p>
+
+<p>
+Daniel
+</p>
+
+<p>
+P.S. I think that the technique used by the library, which I dubbed <i>fina=
+lly tagged</i> is interesting in itself. You can read a paper about it <a h=
+ref=3D"https://github.com/dbuenzli/jsont/tree/main/paper">here</a> along wi=
+th a smaller, self-contained, implementation of what the library does.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-10" class=3D"outline-2">
+<h2 id=3D"10">Tiny educational concurrent I/O and promises library</h2>
+<div class=3D"outline-text-2" id=3D"text-10">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/tiny-educational-concurrent=
+-i-o-and-promises-library/15703/1">https://discuss.ocaml.org/t/tiny-educati=
+onal-concurrent-i-o-and-promises-library/15703/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org1d974d4" class=3D"outline-3">
+<h3 id=3D"org1d974d4">Mikhail announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org1d974d4">
+<p>
+I like <a href=3D"https://github.com/ocsigen/lwt">Lwt</a>. It's a fantastic=
+ library, but how does it work? I spent a few days studying its source code=
+.=20
+</p>
+
+<p>
+Finally, inspired by the implementation of <a href=3D"https://github.com/oc=
+sigen/lwt">Lwt</a> and <a href=3D"https://cs3110.github.io/textbook/chapter=
+s/ds/promises.html">the CS3110 chapter, 8.7. Promises</a>. I wrote a maxima=
+lly stupid <a href=3D"https://github.com/dx3mod/tiny-async-lib"><b>tiny-asy=
+nc-lib</b></a> library.=20
+</p>
+
+<p>
+Maybe you may be interested in this naive implementation.=20
+</p>
+</div>
+<div id=3D"outline-container-org27a2532" class=3D"outline-4">
+<h4 id=3D"org27a2532">Examples of use</h4>
+<div class=3D"outline-text-4" id=3D"text-org27a2532">
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">let</span> () =3D=20
+  <span style=3D"color: #444fcf;">Engine.</span>run main <span style=3D"col=
+or: #000000; font-weight: bold;">begin</span>
+    <span style=3D"color: #000000; font-weight: bold;">let*</span> () =3D <=
+span style=3D"color: #444fcf;">Io.</span>(write_all stdout) <span style=3D"=
+color: #ca3400;">"Hi! What's your name? "</span> <span style=3D"color: #000=
+000; font-weight: bold;">in</span>
+    <span style=3D"color: #000000; font-weight: bold;">let*</span> <span st=
+yle=3D"color: #007a9f;">name</span> =3D <span style=3D"color: #444fcf;">Io.=
+</span>(read_line stdin) <span style=3D"color: #000000; font-weight: bold;"=
+>in</span>
+    <span style=3D"color: #444fcf;">Io.</span>(write_all stdout) (<span sty=
+le=3D"color: #ca3400;">"Hello, "</span> <span style=3D"color: #a52a2a;">^</=
+span> name <span style=3D"color: #a52a2a;">^</span> <span style=3D"color: #=
+ca3400;">"!\n"</span>)
+  <span style=3D"color: #000000; font-weight: bold;">end</span>
+</pre>
+</div>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">let</span> <span style=3D"color: #a7601f;">read_and_print_file</span> =
+<span style=3D"color: #007a9f;">filename</span> =3D=20
+  <span style=3D"color: #444fcf;">Io.</span>(read_file filename &gt;&gt;=3D=
+ write_all stdout)
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">_</span> =3D
+  <span style=3D"color: #444fcf;">Engine.</span>run <span style=3D"color: #=
+000000; font-weight: bold;">begin</span>
+    <span style=3D"color: #000000; font-weight: bold;">let</span> <span sty=
+le=3D"color: #007a9f;">filenames</span> =3D [ <span style=3D"color: #8f6f4a=
+; font-style: italic;">(* </span><span style=3D"color: #8f6f4a; font-style:=
+ italic;">...</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)=
+</span> ] <span style=3D"color: #000000; font-weight: bold;">in</span>=20=20
+
+    filenames
+    <span style=3D"color: #a52a2a;">|&gt;</span> <span style=3D"color: #444=
+fcf;">List.</span>map read_and_print_file
+    <span style=3D"color: #a52a2a;">|&gt;</span> <span style=3D"color: #444=
+fcf;">Promise.</span>join
+  <span style=3D"color: #000000; font-weight: bold;">end</span>
+</pre>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org79689c3" class=3D"outline-4">
+<h4 id=3D"org79689c3">Implementation details</h4>
+<div class=3D"outline-text-4" id=3D"text-org79689c3">
+<p>
+The first key abstraction of the whole library is, of course, Promise. <a h=
+ref=3D"https://en.wikipedia.org/wiki/Futures_and_promises">Promise</a> is a=
+n abstraction for synchronizing program execution in concurrent evaluations=
+. In simple terms, it's an abstraction over callbacks. Promises allows us t=
+o build (monadic) sequence evaluations inside of non-sequence evaluations.
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #8f6f4a; font-style: ita=
+lic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">promise=
+.ml</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+
+<span style=3D"color: #000000; font-weight: bold;">type</span> <span style=
+=3D"color: #444fcf;">'a t</span> =3D { <span style=3D"color: #006f00; font-=
+weight: bold;">mutable</span> state: 'a state }=20=20
+
+<span style=3D"color: #000000; font-weight: bold;">and</span> 'a <span styl=
+e=3D"color: #007a9f;">state</span> =3D=20
+  | <span style=3D"color: #242521; background-color: #fcf7ef;">Fulfilled</s=
+pan> <span style=3D"color: #006f00; font-weight: bold;">of</span> 'a=20
+  | <span style=3D"color: #242521; background-color: #fcf7ef;">Rejected</sp=
+an> <span style=3D"color: #006f00; font-weight: bold;">of</span> exn
+  | <span style=3D"color: #242521; background-color: #fcf7ef;">Pending</spa=
+n> <span style=3D"color: #006f00; font-weight: bold;">of</span> 'a callback=
+ list=20
+
+<span style=3D"color: #000000; font-weight: bold;">and</span> 'a <span styl=
+e=3D"color: #007a9f;">callback</span> =3D 'a state -&gt; unit=20
+</pre>
+</div>
+
+<p>
+Promises are represented as a mutable record with three possible states: fu=
+lfilled (contains a value), rejected (contains an exception), and pending (=
+contains callbacks).=20
+</p>
+
+<p>
+Callbacks are functions that are called when a promise is resolved.
+So when we <code>bind</code>, if the promise is in pending state, we add a =
+callback that calls the following monadic sequence when the promise is reso=
+lved.
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #8f6f4a; font-style: ita=
+lic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">io.ml</=
+span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">sleep</span> <span style=3D"color: #007a9f;">delay</sp=
+an> =3D
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">p</span>, <span style=3D"color: #007a9f;">r</span> =3D=
+ <span style=3D"color: #444fcf;">Promise.</span>make () <span style=3D"colo=
+r: #000000; font-weight: bold;">in</span>
+
+  <span style=3D"color: #444fcf;">Engine.</span>(on_timer instance) delay (=
+<span style=3D"color: #006f00; font-weight: bold;">fun</span> <span style=
+=3D"color: #007a9f;">handler</span> -&gt;
+      <span style=3D"color: #444fcf;">Engine.</span>stop_handler handler;
+      <span style=3D"color: #444fcf;">Promise.</span>fulfill r ());
+
+  p
+</pre>
+</div>
+
+<p>
+The second key abstraction is an <a href=3D"https://en.wikipedia.org/wiki/A=
+synchronous_I/O">asynchronous I/O</a> engine that polls I/O events and disp=
+atches them to handlers. Original Lwt has few engines (like based libev, se=
+lect, poll), but I hardcoded a [select](<a href=3D"https://en.wikipedia.org=
+/wiki/Select_(Unix)">https://en.wikipedia.org/wiki/Select_(Unix)</a>)-based=
+ engine inspired by <code>Lwt_engine.select_based</code>.=20
+</p>
+
+<p>
+The typical async engine in internals has an event loop. At each iteration =
+of the event loop, the engine polls for new events and calls handlers to ha=
+ndle them.=20
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #8f6f4a; font-style: ita=
+lic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">engine.=
+ml</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">iter</span> <span style=3D"color: #007a9f;">engine</sp=
+an> =3D
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">...</span><span style=3D"color: #8=
+f6f4a; font-style: italic;"> *)</span>
+
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">readable_fds</span>, <span style=3D"color: #007a9f;">w=
+ritable_fds</span>, <span style=3D"color: #007a9f;">_</span> =3D
+    <span style=3D"color: #444fcf;">Unix.</span>select readable_fds writabl=
+e_fds <span style=3D"color: #242521; background-color: #fcf7ef;">[]</span> =
+timeout
+  <span style=3D"color: #000000; font-weight: bold;">in</span>
+
+  engine.sleepers &lt;- restart_sleepers now engine.sleepers;
+
+  invoke_io_handlers engine.wait_readable readable_fds;
+  invoke_io_handlers engine.wait_writable writable_fds
+</pre>
+</div>
+
+<p>
+How to execute I/O promise? It's not a big deal.=20
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #8f6f4a; font-style: ita=
+lic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">engine.=
+ml</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #000000; font-weight: bold;">rec</span> <span style=3D"color: #a=
+7601f;">run</span> <span style=3D"color: #007a9f;">promise</span> =3D
+  <span style=3D"color: #006f00; font-weight: bold;">match</span> <span sty=
+le=3D"color: #444fcf;">Promise.</span>state promise <span style=3D"color: #=
+006f00; font-weight: bold;">with</span>
+  | <span style=3D"color: #242521; background-color: #fcf7ef;">Fulfilled</s=
+pan> value -&gt; value
+  | <span style=3D"color: #242521; background-color: #fcf7ef;">Rejected</sp=
+an> exc -&gt; <span style=3D"color: #557400; font-weight: bold;">raise</spa=
+n> exc
+  | <span style=3D"color: #242521; background-color: #fcf7ef;">Pending</spa=
+n> _ -&gt;
+      iter instance;
+      run promise
+</pre>
+</div>
+
+<p>
+We just need to loop the event loop until the promis is resolved.
+</p>
+
+<p>
+It's just a toy! I'm not an expert in such things, so the library is very n=
+aive and tries to mimic Lwt. But I think it's a good demonstration.=20
+</p>
+
+<p>
+Repository
+<a href=3D"https://github.com/dx3mod/tiny-async-lib">https://github.com/dx3=
+mod/tiny-async-lib</a>
+</p>
+
+<p>
+Thank you for your attention!
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-11" class=3D"outline-2">
+<h2 id=3D"11">Eliom 11.1: Towards Web Assembly support</h2>
+<div class=3D"outline-text-2" id=3D"text-11">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/eliom-11-1-towards-web-asse=
+mbly-support/15704/1">https://discuss.ocaml.org/t/eliom-11-1-towards-web-as=
+sembly-support/15704/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgaa21888" class=3D"outline-3">
+<h3 id=3D"orgaa21888">Vincent Balat announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgaa21888">
+<p>
+Eliom 11.1 has been released recently.
+This minor release brings compatibility with Web Assembly and the upcoming =
+version of js_of_ocaml.
+Ocsigen Toolkit and Ocsigen Start have been updated as well.
+</p>
+
+<p>
+Stay tuned for further announcements concerning client-server Web and mobil=
+e apps in Ocaml with Web Assembly!
+</p>
+
+<p>
+Links:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocsigen.org">Ocsigen</a></li>
+<li><a href=3D"https://ocsigen.org/eliom">Eliom</a></li>
+<li><a href=3D"https://ocsigen.org/tuto/latest/manual/basics">Documentation=
+</a></li>
+<li><a href=3D"https://github.com/ocsigen/eliom">Github</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-12" class=3D"outline-2">
+<h2 id=3D"12">Areas and Adversaries</h2>
+<div class=3D"outline-text-2" id=3D"text-12">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-areas-and-adversaries/1=
+5706/1">https://discuss.ocaml.org/t/ann-areas-and-adversaries/15706/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org0aa7a0c" class=3D"outline-3">
+<h3 id=3D"org0aa7a0c">Rapha=C3=ABl Proust announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org0aa7a0c">
+<p>
+I figured people might be bored of <a href=3D"https://discuss.ocaml.org/t/a=
+nn-queenshead-a-british-pub-name-generator/13124">British pub names</a> by =
+now so I did another thing: <a href=3D"https://raphael-proust.gitlab.io/cod=
+e/areas-and-adversaries.html">a generator for titles of table-top role-play=
+ing games</a>.
+</p>
+
+<pre class=3D"example" id=3D"orgd80d08d">
+$ opam install areas-and-adversaries
+...
+$ areas-and-adversaries
+Woods &amp; Wizards
+</pre>
+
+<p>
+The code is on Gitlab: <a href=3D"https://gitlab.com/raphael-proust/areas-a=
+nd-adversaries">https://gitlab.com/raphael-proust/areas-and-adversaries</a>
+</p>
+
+<p>
+It was a good excuse to experiment with non-dune build systems (to scope th=
+ings out). I went for a plain Makefile in the end which works well.
+</p>
+
+<p>
+I also wanted to figure out a better way to embed data in an executable. I =
+ended up wondering about moving as much of the processing as possible into =
+the build phase. What I ended up with is a small program which prints a com=
+pilation unit (<code>.ml</code>) which has mostly array literals. Still hav=
+e some open questions on that, any input welcome:
+</p>
+<ul class=3D"org-ul">
+<li>Should I have used meta-ocaml to print the code? The <code>data/munch.m=
+l</code> would probably be more readable, but the build probably less.</li>
+<li>How could I generate this kind of processed-data code for data-structur=
+es which don't have a literal (maps, sets, hash tables, etc.)? How can I mi=
+nimise the initialisation cost of the program for such situations?</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-13" class=3D"outline-2">
+<h2 id=3D"13">MariaDB 1.2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-13">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-mariadb-1-2-0/15709/1">=
+https://discuss.ocaml.org/t/ann-mariadb-1-2-0/15709/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org967f885" class=3D"outline-3">
+<h3 id=3D"org967f885">Petter A. Urkedal announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org967f885">
+<p>
+I'm please to announce a new release of the <a href=3D"https://github.com/o=
+caml-community/ocaml-mariadb">mariadb</a> package, which provides client bi=
+ndings for MariaDB and MySQL. See the full release notes below.
+</p>
+
+<p>
+This is also to announce that I have taken over maintenance of the project.=
+  Currently I am the sole maintainer (and I usually use PostgreSQL for my o=
+wn deployments), so if someone has the time en interest to contribute, let =
+me know.  The main focus from my side is to keep the project up to date and=
+ stable, rather than making major changes.
+</p>
+
+<p>
+Release notes:
+</p>
+
+<ul class=3D"org-ul">
+<li>Added <code>Stmt.start_txn</code> (#59 by Corentin Leruth).</li>
+<li>Added <code>Res.insert_id</code> as binding for <code>mysql_stmt_insert=
+_id</code> (#58 by=20=20=20=20=20=20=20=20=20=20=20=20
+Corentin Leruth).</li>
+<li>Updated to support recent OCaml versions (#45 by @kit-ty-kate).</li>
+<li>Fixed too-early retrieval of statement metadata (#41 by Albert Peschar)=
+.</li>
+<li>Fixed decoding bug for the integer type (#54 by Raman Varabets, tested=
+=20=20=20=20=20=20=20=20=20
+by #61 by Corentin Leruth).</li>
+<li>Fixed a memory leaks related to result metadata (#39 by Albert Peschar)=
+.</li>
+<li>The build system is now dune and dune-configurator (#52 by Petter A.=20=
+=20=20=20=20=20=20=20=20=20=20
+Urkedal) and some of the examples have been converted to a test suite=20=20=
+=20=20=20=20=20=20=20=20
+(#60 by Petter A. Urkedal).</li>
+<li>The project has been transferred to ocaml-community with Petter A.=20=
+=20=20=20=20=20=20=20=20=20=20=20=20
+Urkedal as the new maintainer.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-14" class=3D"outline-2">
+<h2 id=3D"14">Proposed Package Archiving Policy for the opam Repository</h2>
+<div class=3D"outline-text-2" id=3D"text-14">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/proposed-package-archiving-=
+policy-for-the-opam-repository/15713/1">https://discuss.ocaml.org/t/propose=
+d-package-archiving-policy-for-the-opam-repository/15713/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgfd53f1e" class=3D"outline-3">
+<h3 id=3D"orgfd53f1e">Hannes Mehnert announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgfd53f1e">
+<p>
+It is my please to announce the proposed package archiving policy in the na=
+me of the opam-repository maintainers.
+</p>
+</div>
+<div id=3D"outline-container-org27a4f77" class=3D"outline-4">
+<h4 id=3D"org27a4f77">Context</h4>
+<div class=3D"outline-text-4" id=3D"text-org27a4f77">
+<p>
+The opam repository differs from nearly all other programming-language-cent=
+ric package repositories in that it is manually curated by volunteer mainta=
+iners and protected by a robust continuous integration system that (general=
+ly) ensures published packages work as expected across a <a href=3D"https:/=
+/github.com/ocurrent/opam-repo-ci/blob/master/doc/platforms.md">large matri=
+x of supported platforms</a>.
+</p>
+
+<p>
+Over the past few years the repository has kept growing steadily, when not =
+accelerating, and this has started raising questions about the size, weight=
+ and sustainability of the repository and its processes. Last year, <a href=
+=3D"https://github.com/hannesm">Hannes Mehnert</a> requested comments on a =
+<a href=3D"https://github.com/ocaml/opam-repository/issues/23789">proposed =
+initiative</a> to improve the sustainability and quality of the opam packag=
+e repository on the long term.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org64a8c4e" class=3D"outline-4">
+<h4 id=3D"org64a8c4e">Problem</h4>
+<div class=3D"outline-text-4" id=3D"text-org64a8c4e">
+<p>
+The problem, in a nutshell, is that the <code>opam-repository</code> will k=
+eep steadily growing, using an increasing and substantial amount of space a=
+nd inodes. Every opam user needs to invest a large amount of computational =
+resources for the solver, every time they want to install or update a packa=
+ge. Additionally, a large amount of computational resources are spent in th=
+e continuous integration process and yet a lot of the packages have become =
+stale or uninstallable.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orgff75d3f" class=3D"outline-4">
+<h4 id=3D"orgff75d3f">Solution</h4>
+<div class=3D"outline-text-4" id=3D"text-orgff75d3f">
+<p>
+<a href=3D"https://github.com/ocaml/opam-repository/issues/23789">After muc=
+h deliberation</a>, the discussion converged on a solution: introduce a pac=
+kage archiving policy and supporting processes, to periodically identify an=
+d prune unmaintained and broken packages from the repository. This will imp=
+rove the performance of the opam solvers, of the opam-repo CI, and most imp=
+ortantly improve the quality of the package repository, while keeping a sor=
+t of immutability of the repository content and preserving the usability of=
+ historical packages for the users that want or need them.
+</p>
+
+<p>
+The opam repository maintainers propose a <a href=3D"https://github.com/oca=
+ml/opam-repository/blob/master/governance/policies/archiving.md">policy</a>.
+</p>
+
+<p>
+The currently empty <a href=3D"https://github.com/ocaml/opam-repository-arc=
+hive">repository archive</a> has been created, waiting for packages to be m=
+oved.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orgca012b2" class=3D"outline-4">
+<h4 id=3D"orgca012b2">Call to action</h4>
+<div class=3D"outline-text-4" id=3D"text-orgca012b2">
+<p>
+If you maintain packages in the opam-repository, you can help by defining y=
+our maintanence intent: add a new field <code>x-maintenance-intent</code> t=
+o your opam file(s) (the most recent release of your package is sufficient =
+- please also put this field in your git repository so it will be part of f=
+uture releases). The value is defined in <a href=3D"https://github.com/ocam=
+l/opam-repository/blob/master/governance/policies/archiving.md#specificatio=
+n-of-the-x--fields-used-in-the-archiving-process">the policy</a>.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org23d93f1" class=3D"outline-4">
+<h4 id=3D"org23d93f1">Roadmap</h4>
+<div class=3D"outline-text-4" id=3D"text-org23d93f1">
+<p>
+All announcements will be on discuss.ocaml.org with the opam-repository tag=
+. If you like to follow these announcements, keep your eyes at <a href=3D"h=
+ttps://discuss.ocaml.org/tag/opam-repository">the opam-repository tag</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li>December 1st 2024: announcement of this proposal</li>
+<li>December 15th 2024: announcement of the packages affected by Phase 1 (u=
+ninstallable packages ("available: false", "flags: avoid-version" or "depre=
+cated", "opam admin check &#x2013;installable", does not compile &#x2013; o=
+pam health check <a href=3D"https://check.ci.ocaml.org/">https://check.ci.o=
+caml.org/</a>)</li>
+<li>January 1st 2025: Phase 1 cutting point: packages are moved to opam-rep=
+ository-archive</li>
+<li>January 15th 2025: announcement of the packages affected by Phase 2 (OC=
+aml lower bound 4.08)</li>
+<li>February 1st 2025: Phase 2 cutting point: packages are moved to opam-re=
+pository-archive</li>
+<li>February 15th 2025: initial spring cleaning, announcement of packages (=
+based on maintenance-intent)</li>
+<li>March 1st 2025: spring cleaning cutting point: packages are moved to op=
+am-repository-archive</li>
+<li>Every quarter: repeat Phase 3</li>
+<li>Every year: reconsider Phase 2 with an increased OCaml lower bound</li>
+</ul>
+
+<p>
+We now invite members of the OCaml community who may not follow the ocaml-r=
+epository issues to review our plans and submit comments, questions, or sug=
+gestions.
+</p>
+
+<p>
+Thank you in advance for your support!
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org8f58479" class=3D"outline-4">
+<h4 id=3D"org8f58479">References</h4>
+<div class=3D"outline-text-4" id=3D"text-org8f58479">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/opam-repository-archive">Opam repos=
+itory archive</a></li>
+<li><a href=3D"https://github.com/ocaml/opam-repository/blob/master/governa=
+nce/policies/archiving.md">Proposed policy</a></li>
+<li><a href=3D"https://github.com/ocaml/opam-repository/wiki/Package-Archiv=
+ing:-Plan">Plan of action</a></li>
+<li><a href=3D"https://github.com/ocaml/opam-repository/issues/23789">Issue=
+ and discussion</a></li>
+<li><a href=3D"https://discuss.ocaml.org/t/discussions-on-the-future-of-the=
+-opam-repository/13898">Previous announcement</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-orgb77cb49" class=3D"outline-4">
+<h4 id=3D"orgb77cb49">Acknowledgment</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb77cb49">
+<p>
+Thanks to the following individuals for valuable input and contributions to=
+ the planning process (sorry in case we forgot you):
+</p>
+
+<ul class=3D"org-ul">
+<li>Marcello Seri</li>
+<li>Shon Feder</li>
+<li>Thomas Gazagnaire</li>
+<li>kit-ty-kate</li>
+<li>Weng Shiwei =E7=BF=81=E5=A3=AB=E4=BC=9F</li>
+<li>Marcus Rohrmoser</li>
+<li>Reynir Bj=C3=B6rnsson</li>
+<li>Stephen Sherratt</li>
+<li>Simon Cruanes</li>
+<li>Marek Kubica</li>
+<li>Rapha=C3=ABl Proust</li>
+<li>Romain Beauxis</li>
+<li>Yawar Amin</li>
+<li>Anil Madhavapeddy</li>
+<li>Boning D.</li>
+<li>Mathieu Barbin</li>
+<li>Hannes Mehnert</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-15" class=3D"outline-2">
+<h2 id=3D"15">capnp-rpc 2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-15">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-capnp-rpc-2-0/15739/1">=
+https://discuss.ocaml.org/t/ann-capnp-rpc-2-0/15739/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org0da49ee" class=3D"outline-3">
+<h3 id=3D"org0da49ee">Thomas Leonard announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org0da49ee">
+<p>
+I'm pleased to announce the release of <a href=3D"https://github.com/mirage=
+/capnp-rpc/releases/tag/v2.0">capnp-rpc 2.0</a>, an OCaml implementation of=
+ the Cap'n Proto RPC specification.
+</p>
+
+<p>
+If you haven't used the library before, please see the <a href=3D"https://g=
+ithub.com/mirage/capnp-rpc/blob/master/README.md">documentation and tutoria=
+l</a>. Cap'n Proto RPC aims to provide secure, efficient, typed communicati=
+ons between multiple parties.
+</p>
+
+<p>
+The main change in this version is the switch from Lwt to Eio for concurren=
+cy. The echo benchmark is about 40% faster than before. This isn't because =
+Eio is actually that much faster than Lwt, but more because it has better p=
+rofiling support so spotting problems was easier. See <a href=3D"https://ro=
+scidus.com/blog/blog/2024/07/22/performance/">https://roscidus.com/blog/blo=
+g/2024/07/22/performance/</a> for an example:
+</p>
+
+
+<div id=3D"org5178cc8" class=3D"figure">
+<p><img src=3D"https://roscidus.com/blog/images/perf/capnp-eio-slow-zoom1-d=
+ebug.png" alt=3D"capnp-eio-slow-zoom1-debug.png" />
+</p>
+</div>
+
+<p>
+There is a <code>capnp-rpc-lwt</code> compatibility package that provides t=
+he old Lwt API using the new Eio version, allowing libraries using the old =
+API to be used in applications using the new code, without having to update=
+ everything at once.
+</p>
+
+<p>
+To migrate to the new version (checking everything still works after each s=
+tep):
+</p>
+
+<ol class=3D"org-ol">
+<li>First, update to capnp-rpc 1.2.4 (this ensures you are using the newer =
+mirage-crypto API, to get that migration out of the way first).</li>
+<li>Switch your application (that sets up the networking) to capnp-rpc-unix=
+ 2.0.</li>
+<li>Migrate client and server code away from capnp-rpc-lwt when convenient.=
+</li>
+</ol>
+
+<p>
+For more detailed instructions, see <a href=3D"https://github.com/mirage/ca=
+pnp-rpc/blob/master/CHANGES.md#v20">the changelog</a>.
+</p>
+
+<p>
+Here's an example of the changes needed in the solver-service project:
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/talex5/solver-service/commit/a4af17b5ea44=
+e94579fc0ca01fd0c618a5182df4">Update to capnp-rpc-unix 2.0</a></li>
+<li><a href=3D"https://github.com/talex5/solver-service/commit/74431efd36f4=
+474236401f0556fad80de22b1b42">Remove Capnp_rpc_lwt</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-16" class=3D"outline-2">
+<h2 id=3D"16">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-16">
+</div>
+<div id=3D"outline-container-org28ad7a9" class=3D"outline-3">
+<h3 id=3D"org28ad7a9">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org28ad7a9">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2024-11-27-irmin-on-mirageos-introd=
+ucing-the-notafs-file-system">Irmin on MirageOS: Introducing the Notafs Fil=
+e System</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org9cd4b78" class=3D"outline-2">
+<h2 id=3D"org9cd4b78">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org9cd4b78">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgf915cdc">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
