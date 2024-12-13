@@ -1,0 +1,444 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=WuV93vSq;
+	dkim=pass (2048-bit key; secure) header.d=mpi-sws.org header.i=@mpi-sws.org header.a=rsa-sha256 header.s=mail202309 header.b=Vjry9DZ5;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id B21E23F998
+	for <caml-list@tunbury.org>; Fri, 13 Dec 2024 14:43:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:mime-version:date:references:to:message-id:subject:
+   reply-to:sender:list-id:list-help:list-subscribe:
+   list-unsubscribe:list-post:list-owner:list-archive;
+  bh=68uJYpEX1DJZMR3JTfNnXn/EbUEYeDr6e9Zhtgv/Moo=;
+  b=WuV93vSq7GkjMJkzBLdCUverrdxjHjUSab29PMRz3mHYUUk7Ao7O0y+d
+   sAWBowjkSLFNFaE3/sFnB/3CrwKTq7/rJ2MPWzD7EvhCqP8UhObVypym0
+   Q4x9yzvvM2faF6y3JRiEZrBj8PNacIwy/AizmQLx2DH6ciy38RghuTu8M
+   w=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@mpi-sws.org
+X-IronPort-AV: E=Sophos;i="6.12,231,1728943200"; 
+   d="scan'208,217";a="199073024"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 13 Dec 2024 15:43:47 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id B3120E0D1E; Fri, 13 Dec 2024 15:43:46 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id DE52CE0077
+	for <caml-list@sympa.inria.fr>; Fri, 13 Dec 2024 15:43:44 +0100 (CET)
+IronPort-SDR: 675c481f_GzFhliIdgE6Fkm4eamaGM37nhdkwjYc2FjFEJS4PgQ+ZWcv
+ aosJTbYFvt228xj/F+daFVma5aiM1M61Xv6BuKw==
+X-IPAS-Result: =?us-ascii?q?A0FAAgAdR1xnhShWE4taHgEBCxIMgggLgUFoG31bMgQLS?=
+ =?us-ascii?q?IRWj02CIQOLY5BfgVaBfg8BAwENOwYBAgQBAQMBA4UAim4CHgcBBDAJDgECB?=
+ =?us-ascii?q?AEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEBAUBJhXsNgls7cYElA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBARcCDX0BAQICASMdAQE4BAsXDBwLAwICICURG?=
+ =?us-ascii?q?RuCZgGCMAMOIwMEDQavV3qBMoEBggwBAQaCZ9g/DYJQAwaBSIgwHgEqgTICg?=
+ =?us-ascii?q?gSHACcbgg2BFScbgjeDDkIBAQKCC4MuOoIvgicZgxYBgzgRnR5IbxBLMyERA?=
+ =?us-ascii?q?VUTDQoLBwVhgRMDOQwLMBWDYIEDOYIQaUk6Ag0CNoIkfIJNgSUEBYNrhGWEV?=
+ =?us-ascii?q?YYdghmBfB1AAwsYDUgRLDcUGwY+bgeaUwEKeAFGg2FfPwsQUHU9AUvEeE1xh?=
+ =?us-ascii?q?CSEb4cpjzeGQ5dRBpJ6mHuOAoQFkWlUAYRlgWc6gVxNMAg7KgGCPD8QAxkPj?=
+ =?us-ascii?q?iEZg2GFFLxaQzQLMQIHAQoBAQMJhUUBAQGKWoFLAQE?=
+IronPort-PHdr: A9a23:5LihNxXQNsh7CrYXDKmUryC+CuvV8KxYXzF92vMcY1JmTK2v8tzYM
+ VDF4r011RmVBtydu60P1bee8/i5HzBbudDZ6DFKWacPfiFGoP1VpTBoONSCB0z/IayiRA0BN
+ +MGamVY+WqmO1NeAsf0ag6aiHSz6TkPBke3blItdaz6FYHIksu4yf259YHNbAVUnjq9Zq55I
+ AmroQnLucQbj5ZuJrwyxxbLrXdFeuRbzn5sKV6Pghrw/Mi98ZB//yhKp/4t68tMWrjmcqolS
+ rBVEDspP2cp6cPxshXNURWB7WYGXGUMlRpIDQnF7BXkUZr0ryD3qOlz1jSEMMPvVbw7Viis4
+ KltSB/zlScILCU5/33Nisxxl61UvhSsrAFizoHOYYGVMP1+fr7Bfd4fWGFMUNpdWzBHD4iha
+ YYEEugPMvtCr4Tlp1UBsRSxCwexCuPh1DFGhXj40LYg3Og9FAHLxgwgE84MvXnSsd77NL0SU
+ eewzKTQ0TjDae5Z2S3j54fSaRAqvO2CXbVrccrK0kYgCRnFjlqNooHiJTOV0f8Ns3OA4OV+T
+ +KvhHUqqwRpojiu38sskYfIhpkPxlDD7yV5z584KNulQ0F0fdCqCoFftz2GN4RoWMMiRXllt
+ iYkx7EYpJO2cywHxIgoyRLDZfGKbZSE7w/9WOieITl2im5pdbGjixuy/kat1/DxW9S13VtFs
+ yZIndnCuHAT2hHV98OJRPx9/kK71jaO0QDe8u5EIUEolarbNp4u2aQ8mYYUsUTGBiP5hEL2j
+ KmYdkUl9eio9v7nbav8qpCGK4B5jBz1PKc2msGnHOg1PAwDU3KG9em4zrHu/kz0TK9Fg/Eqi
+ qXVro3WKdoBqqO3HwNZyIgu5helAzu70tkVm2QMIUxBeBKalIjpJ0/BIOrlA/e+glWjji9my
+ +zAM7b8GJvCNGLDn63kfbtl605T1g4zzddH6pJWF7EBJvXzVlX0tNzADx81Kg+0w+L8CNpmz
+ I8eXHqPAqCDPKzPr1CE/uMvI++Sa48JoDvxNvYo6vr0gXMknVIRZ6qk0JoNZH23AvhqO0CZb
+ mDtgtcFH2cKpA0+TOnyhV2YVj5TfG2yULki6TEhB4KrFoLDRpisgLCYxye6EIZWanpBClCWH
+ nfkb4OEVOwUZyKIPsBhiiAEVaSmS4I5yB2irBX6xKZ/LurI5i0Ysoru28Rv6O3WkRE+7Dh0D
+ 8WG02GRVGx0hWMJRzou3K9lu0B9y1GD0bJ5g/NCD9BT6elJAU8GMsvXxul+TtTzQR7pf9GTS
+ V/gTM/1Lys2S4cYxdMUbk9mU++llQvJ0jClS+sPkKeQDpEu/YrZx3m0PNlmjXHc2/9y3BEdX
+ sJTODj+1eZE/A/JCtuR+634v6OjdKBHmTXI6H/G1m2W+kdRTA93V6zBG3EZfErf69rjtQvZV
+ 7H7L7MhP0NazNKabLNQY4jzik5dTvr5N/zbe2P0gHirQxGSyeDEd5LkLl0Uxz6VE00Yi0YW9
+ HeCOxI5A3K7pHnFBjF0Gnrqe0Kp6vZl7nShQRx81BmEOmtm0bf94RsJnbqcRvcUi6oDozsko
+ i5oEUyV3c/QDJyFvwskf6FHa5U4+FgB2W+xWxVVGJumIugig1cfd18ypEbyz1BsDZ0Gl8E2r
+ XQsxQ40KKSC0VoHeSnKlZb3cqbaLGX/5nXNI+bfx03e3dCK+6wO9OVwqlPtuxusH1Yj9HMv2
+ sdc0n+V7JHHRAQIVpe5XkEy/hl877bUB0t1r5nTzmZmPLO7mjra2pcyG/BjzQyvPp9ePK6CC
+ A7uApgCHcH9YOcumlWvclcFJLULr/9yZpLgJ6XAhPb4WYQo1CirhmlG/o1nh0eF9i4nD/XNw
+ 45A2PaAmA2OSzb7il6l9MHxg4FNIz8ITQ/dgWDpApBcYqpqcMMFE2Crdoetwc5ljZP3VFZd7
+ F/mHEwdnsizdlDBCj61lR0VzkkRrXG9zGGiyCdvmTwzoYKaxC2L2Pv5Mh0dNSQYIQsqxUepK
+ o+ygdcAWUGuZAV8jxqp63HxwK1Drbh+JW3eKatRVxD/NHoqEq65t77ZJtVK9IttqiJPFuK1f
+ VGdTLf55RocySLqWWVElng3cDSju5OxmBIf6irVNnFot3DUY85YwA/eocfDXrhWxDVOSCRji
+ DbRD0SxJJHwpoTSzsaF4r74CzrpX4YbaSTxyIKcqCa3gA8iSQaymfy+gJyvEAQ31zP6y8g/U
+ CzJqBjmZYy4n6++MO9hYgxpHAqlsJs8Q9A4wtV22MlDvBpSzo+Y9ncGj2rpZNBS2KalKWEIW
+ SZO2NnNpg7sxExkKHuNgYP/THSUhMV7NLzYKisb3Dww68dSBeKa9rtByGFvpUGjpw/LbtB4h
+ jZY0uQ1rnkAjKta3WhlhjXYGb0UEURCaGb2kA+T5d2ko41SfGfqaqerkk1kkpryadPK6hEZU
+ 3H/dJA4GCZ25cgqK1PA3kr47YT8ccXRZ9Ye5VWE1g3NhO9PJNcth+IH0GB5bHnlsyRvmItZx
+ VR+mIu3t4+dJyBx8bKlV1RGYybtaZpb82PtgLxX2MOO3sWsGo5rXDATU93kQJfKWHob5/b6M
+ QHIFSU973SfArCZGBeQrktr53udC5S2K3bRIWEYiNZmXxPbIVRQxgwZOVdy1pdrHxitwMjmN
+ kJh53US4kXy7B5UxaRkOlH2AGXCvAa0Zy1yTYCeaRlS9QsE4l/ad8CTi4A7VygK5pq6oQ2BL
+ WrdYhxJSGINQUbCAkjseLWjrdCS+vKVHay7N/qLYrGVo6pbT/jOyZ/KsMMu9mSMO9+KM2IkC
+ uU6n0lHRno/HtzW3TkCA3sekyaHByKCjDG7/CA/7sW28fCwHRnq+ZPKELxKd9Nm5xGxh66Hc
+ e+WnidwbzhChNsKwjfTxb4T0UR36WkmfiSxEbkGqS/GTb7B0q5RARkBbipvNcxOp6si1whJM
+ MTfh5v7zLl9xvIyDl5EUxTmlKTLLYQSJHqhMVrcGEuRHLabIzqNxtn2JKC4UrcWif1b8RG9+
+ H6aH0LlIjWfhmzpWhSoYoQuxGmQOB1Tvp34cw44UDOyCou3LE3ldoMv3lhUifUui3jHNHARK
+ 215ekJJ9fiL6D9Ax+54AypH52ZkKu+Nn2CY6fPZI9AYq6gOYGw8muRE7XA907YQ4jtDQak/g
+ izJtdRjuV6Ol/GOjyF4S1xJsDkB1+fp9Q1yfL7U8JVNQyOO5BUW8WCZEAgHvfNnF9vo/aVIy
+ 53MkLn5bjJa/JTY8IFPYqqcYNLCO30nPx3zHTfSBwZQVj+nO1bUgElFme2T/HmYxnDVgp30m
+ d8VVaQdU0Y6RKpy4qFNGcQDZYxoRXUji7HJ1KbgBFK8sR/WAsBCv9XEUumYR/D3J3CVgOscD
+ yY=
+IronPort-Data: A9a23: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
+ J83q6awD7iq50Eu
+IronPort-HdrOrdr: A9a23:Ra9nKqzJDHiqeVwAoTmcKrPwK71zdoMgy1knxilNoH1uHfBw8v
+ rEoB11737JYVoqNE3I5+rwXZVoMEmzyXcd2+B4V9qftUvdyQiVxepZjbcKrQeQeREWjtQtsZ
+ tIYux7EpnqAVBxkMb95xPQKadG/OW6
+X-Talos-CUID: =?us-ascii?q?9a23=3AHYHty2n2Sd8bzgWwBNwm+KGCXkTXOVrf7VrpEm2?=
+ =?us-ascii?q?UMCF4SqKYE3qc1fw0n/M7zg=3D=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3AN3H5RA6b7fS5tVF9+lM4qzK+xoxz+7SJVW0yv68?=
+ =?us-ascii?q?j5ZCWFAlvMWqvqzqeF9o=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,231,1728943200"; 
+   d="scan'208,217";a="104287948"
+X-MGA-submission: =?us-ascii?q?MDGAnTX8hOVhgWM8bKb9FwUIAghaVsPXQVXKlN?=
+ =?us-ascii?q?mujI0J5ZQLUVpHsw7vLBJJMIt9xbc1ZA693dwXKNbYoVgxw/NK1D1KZI?=
+ =?us-ascii?q?kUEW/CUcmoLRp0HZfPHX9+dH1NIhA/70meqHhWOeTjJQmQPA2nu9oVPl?=
+ =?us-ascii?q?aDXQK90Ggw4GkhIRngj6vucw=3D=3D?=
+Received: from juno.mpi-klsb.mpg.de ([139.19.86.40])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Dec 2024 15:43:43 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mpi-sws.org
+	; s=mail202309; h=Message-Id:To:References:Date:Mime-Version:Content-Type:
+	From:cc:content-transfer-encoding:content-id:content-description:in-reply-to;
+	bh=68uJYpEX1DJZMR3JTfNnXn/EbUEYeDr6e9Zhtgv/Moo=; b=Vjry9DZ5SBDE/akzt1f8hAHtF2
+	ytdNjik+fSfxgqXEkvtXOdpKjNCbdrOWHUCrSQg7ar4fWiT1a+1kdyohNSYelOapnulqm6XHhnxJ2
+	6tgdFt53Rjw3Vr53xVclvDpfNr9/i6Wla5CRLKeN3UBWocoB509WuZf1jd7Ik3kl/E1GTh0NPt8Dp
+	DsnfiVcY1bGkzMwR6eVCoxSbZ26QyIvtI0U73+Vjs2AldKpKwzMhdo/RTkYk/LW7HQkiCxBtcRP7G
+	FyXhBVewlag3CIuN4HHV7FBQFG6+X6kVQ42+Yu3SDjL5TvPyustlmTBJfbE4ZHbtZlMSlGEh+b+FG
+	bRT8ouHg==;
+Received: from maniac.mpi-klsb.mpg.de ([139.19.205.26]:47380)
+	by juno.mpi-klsb.mpg.de (envelope-from <rossberg@mpi-sws.org>) 
+	with esmtps (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.98) id 1tM6tF-0000000BUdP-2MyB;
+	Fri, 13 Dec 2024 15:43:42 +0100
+Received: from [212.30.36.17] (port=65122 helo=smtpclient.apple)
+	by maniac.mpi-klsb.mpg.de (envelope-from <rossberg@mpi-sws.org>) 
+	with esmtpsa (TLS1.2:ECDHE_SECP256R1__RSA_SHA256__AES_256_GCM:256)
+	(Exim 4.96) id 1tM6tF-00Fef0-0C;
+	Fri, 13 Dec 2024 15:43:37 +0100
+From: Andreas Rossberg <rossberg@mpi-sws.org>
+Content-Type: multipart/alternative;
+	boundary="Apple-Mail=_0F2DDF27-A2E7-4D6E-8488-88C567538510"
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
+Date: Fri, 13 Dec 2024 15:42:05 +0100
+References: <EEEA5F26-2982-429E-A4B8-05E3776ED532@mpi-sws.org>
+To: caml-list@inria.fr
+Message-Id: <35BC2556-A54B-4E10-8B76-F667D3F2F719@mpi-sws.org>
+X-Mailer: Apple Mail (2.3774.600.62)
+x-ms-reactions: disallow
+Subject: [Caml-list]  Static linking with Mingw and dune
+Reply-To: Andreas Rossberg <rossberg@mpi-sws.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19231
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-12/35BC2556-A54B-4E10-8B76-F667D3F2F719%40mpi-sws.org>
+
+
+--Apple-Mail=_0F2DDF27-A2E7-4D6E-8488-88C567538510
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
+
+[Oops, forgot to check Reply-all.]
+
+
+> Begin forwarded message:
+>=20
+>> On 12. Dec 2024, at 18:31, Xavier Leroy =
+<xavier.leroy@college-de-france.fr> wrote:
+>>=20
+>> On Thu, Dec 12, 2024 at 8:46=E2=80=AFAM Andreas Rossberg =
+<rossberg@mpi-sws.org <mailto:rossberg@mpi-sws.org>> wrote:
+>>> Good to know, thank you for the suggestions!
+>>>=20
+>>> However, I=E2=80=99m afraid that hacking the compiler and tool chain =
+for this purpose is not an option =E2=80=94 that would require everybody =
+else who wants to build the project to do the same, which is infeasible.
+>>>=20
+>>> It=E2=80=99s a bit disappointing that there seems to be no easy =
+solution for this problem. I would expect it to be a common pain point =
+for folks using OCaml 5 to develop and publish application binaries for =
+Windows. Or am I just alien?
+>>=20
+>> OCaml's dependency on winpthreads will probably go away in the near =
+future, see https://github.com/ocaml/ocaml/pull/13416 .
+>=20
+> Ah, that=E2=80=99s good to know!
+>=20
+>> But, more generally, static linking of C libraries is getting more =
+and more difficult -- even from C, not just OCaml.  For example, under =
+Linux, it's essentially impossible to statically link with the glibc C =
+standard library; a musl-based distribution must be used if static =
+linking is desired.  It looks as if the consensus was that static =
+linking of libraries is a bad idea and must be prevented.  I don't think =
+it is, but that's something way beyond OCaml's control.
+>=20
+> Yeah, acknowledged. It=E2=80=99s sad IMO, as both static and dynamic =
+linking have valid use cases, and ideally should be interchangeable =
+mostly transparently. But maybe I=E2=80=99m having my ML modules hat on.
+>=20
+> Cheers,
+> /Andreas
+>=20
+>=20
+>> Best,
+>>=20
+>> - Xavier Leroy
+>>=20
+>>=20
+>> =20
+>>>=20
+>>> Cheers,
+>>> /Andreas
+>>>=20
+>>>=20
+>>> > On 2. Dec 2024, at 09:25, Antonin D=C3=A9cimo =
+<antonin.decimo@gmail.com <mailto:antonin.decimo@gmail.com>> wrote:
+>>> >=20
+>>> >> Regarding OCaml 5.3/mingw64 you shouldn't need to have to do =
+anything with libwinpthreads because it's only used for the msvc port, =
+not the mingw one.
+>>> >=20
+>>> > That is not quite exact, winpthreads is used with mingw-w64, but =
+found
+>>> > in the system installation, and linked to. It is vendored for the =
+MSVC
+>>> > port and we *statically* link into the runtime only the parts =
+we're
+>>> > interested in.
+>>> >=20
+>>> > To statically link with winpthreads, I suggest you do all of it =
+manually:
+>>> > - clone winpthreads sources at =
+https://github.com/mingw-w64/mingw-w64,
+>>> > go to mingw-w64-libraries/winpthreads, and build a static version =
+of
+>>> > the library with your preferred toolchain;
+>>> >=20
+>>> > - hack the OCaml compiler / Makefile to *not* use `-lpthreads`:
+>>> >  =
+https://github.com/ocaml/ocaml/blob/5a5eb481c7a9d0f039e3169aa8ed19c9b926e9=
+82/configure.ac#L2372-L2373
+>>> >  Maybe it's just sufficient to set PTHREAD_LIBS when invoking
+>>> > configure; however seeing this line makes me think that =
+winpthreads is
+>>> > already statically linked with the runtime.
+>>> >=20
+>>> >     PTHREAD_LIBS=3D"-l:libpthread.a $link_gcc_eh"]
+>>> >=20
+>>> >  Haven't dug further.
+>>> >=20
+>>> > -- Antonin
+
+
+--Apple-Mail=_0F2DDF27-A2E7-4D6E-8488-88C567538510
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html;
+	charset=utf-8
+
+<html><head><meta http-equiv=3D"content-type" content=3D"text/html; =
+charset=3Dutf-8"></head><body style=3D"overflow-wrap: break-word; =
+-webkit-nbsp-mode: space; line-break: after-white-space;">[Oops, forgot =
+to check Reply-all.]<br =
+id=3D"lineBreakAtBeginningOfMessage"><div><br></div><div><br><blockquote =
+type=3D"cite"><div>Begin forwarded message:</div><div><div =
+style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
+16px; font-style: normal; font-variant-caps: normal; font-weight: 400; =
+letter-spacing: normal; text-align: start; text-indent: 0px; =
+text-transform: none; white-space: normal; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; text-decoration: none;"><br><blockquote =
+type=3D"cite"><div>On 12. Dec 2024, at 18:31, Xavier Leroy =
+&lt;xavier.leroy@college-de-france.fr&gt; wrote:</div><br =
+class=3D"Apple-interchange-newline"><div><div dir=3D"ltr"><div =
+class=3D"gmail_quote gmail_quote_container"><div dir=3D"ltr" =
+class=3D"gmail_attr">On Thu, Dec 12, 2024 at 8:46=E2=80=AFAM Andreas =
+Rossberg &lt;<a =
+href=3D"mailto:rossberg@mpi-sws.org">rossberg@mpi-sws.org</a>&gt; =
+wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin: 0px =
+0px 0px 0.8ex; border-left-width: 1px; border-left-style: solid; =
+border-left-color: rgb(204, 204, 204); padding-left: 1ex;">Good to know, =
+thank you for the suggestions!<br><br>However, I=E2=80=99m afraid that =
+hacking the compiler and tool chain for this purpose is not an option =
+=E2=80=94 that would require everybody else who wants to build the =
+project to do the same, which is infeasible.<br><br>It=E2=80=99s a bit =
+disappointing that there seems to be no easy solution for this problem. =
+I would expect it to be a common pain point for folks using OCaml 5 to =
+develop and publish application binaries for Windows. Or am I just =
+alien?<br></blockquote><div><br></div><div><div class=3D"gmail_default" =
+style=3D"font-family: arial, sans-serif; font-size: large;">OCaml's =
+dependency on winpthreads will probably go away in the near future, =
+see<span class=3D"Apple-converted-space">&nbsp;</span><a =
+href=3D"https://github.com/ocaml/ocaml/pull/13416">https://github.com/ocam=
+l/ocaml/pull/13416</a><span =
+class=3D"Apple-converted-space">&nbsp;</span>.</div></div></div></div></di=
+v></blockquote><div><br></div>Ah, that=E2=80=99s good to know!</div><div =
+style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
+16px; font-style: normal; font-variant-caps: normal; font-weight: 400; =
+letter-spacing: normal; text-align: start; text-indent: 0px; =
+text-transform: none; white-space: normal; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; text-decoration: none;"><br><blockquote =
+type=3D"cite"><div dir=3D"ltr"><div class=3D"gmail_quote =
+gmail_quote_container"><div><div class=3D"gmail_default" =
+style=3D"font-family: arial, sans-serif; font-size: large;">But, more =
+generally, static linking of C libraries is getting more and more =
+difficult -- even from C, not just OCaml.&nbsp; For example, under =
+Linux, it's essentially impossible to statically link with the glibc C =
+standard library; a musl-based distribution must be used if static =
+linking is desired.&nbsp; It looks as if the consensus was that static =
+linking of libraries is a bad idea and must be prevented.&nbsp; I don't =
+think it is, but that's something way beyond OCaml's =
+control.</div></div></div></div></blockquote><div><br></div>Yeah, =
+acknowledged. It=E2=80=99s sad IMO, as both static and dynamic linking =
+have valid use cases, and ideally should be interchangeable mostly =
+transparently. But maybe I=E2=80=99m having my ML modules hat =
+on.</div><div style=3D"caret-color: rgb(0, 0, 0); font-family: =
+Helvetica; font-size: 16px; font-style: normal; font-variant-caps: =
+normal; font-weight: 400; letter-spacing: normal; text-align: start; =
+text-indent: 0px; text-transform: none; white-space: normal; =
+word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: =
+none;"><br></div><div style=3D"caret-color: rgb(0, 0, 0); font-family: =
+Helvetica; font-size: 16px; font-style: normal; font-variant-caps: =
+normal; font-weight: 400; letter-spacing: normal; text-align: start; =
+text-indent: 0px; text-transform: none; white-space: normal; =
+word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: =
+none;">Cheers,</div><div style=3D"caret-color: rgb(0, 0, 0); =
+font-family: Helvetica; font-size: 16px; font-style: normal; =
+font-variant-caps: normal; font-weight: 400; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;">/Andreas</div><div style=3D"caret-color: rgb(0, =
+0, 0); font-family: Helvetica; font-size: 16px; font-style: normal; =
+font-variant-caps: normal; font-weight: 400; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;"><br></div><div style=3D"caret-color: rgb(0, 0, =
+0); font-family: Helvetica; font-size: 16px; font-style: normal; =
+font-variant-caps: normal; font-weight: 400; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;"><br><blockquote type=3D"cite"><div =
+dir=3D"ltr"><div class=3D"gmail_quote gmail_quote_container"><div><div =
+class=3D"gmail_default" style=3D"font-family: arial, sans-serif; =
+font-size: large;">Best,</div><div class=3D"gmail_default" =
+style=3D"font-family: arial, sans-serif; font-size: =
+large;"><br></div><div class=3D"gmail_default" style=3D"font-family: =
+arial, sans-serif; font-size: large;">- Xavier Leroy</div><div =
+class=3D"gmail_default" style=3D"font-family: arial, sans-serif; =
+font-size: large;"><br></div><br></div><div>&nbsp;</div><blockquote =
+class=3D"gmail_quote" style=3D"margin: 0px 0px 0px 0.8ex; =
+border-left-width: 1px; border-left-style: solid; border-left-color: =
+rgb(204, 204, 204); padding-left: =
+1ex;"><br>Cheers,<br>/Andreas<br><br><br>&gt; On 2. Dec 2024, at 09:25, =
+Antonin D=C3=A9cimo &lt;<a href=3D"mailto:antonin.decimo@gmail.com" =
+target=3D"_blank">antonin.decimo@gmail.com</a>&gt; wrote:<br>&gt;<span =
+class=3D"Apple-converted-space">&nbsp;</span><br>&gt;&gt; Regarding =
+OCaml 5.3/mingw64 you shouldn't need to have to do anything with =
+libwinpthreads because it's only used for the msvc port, not the mingw =
+one.<br>&gt;<span class=3D"Apple-converted-space">&nbsp;</span><br>&gt; =
+That is not quite exact, winpthreads is used with mingw-w64, but =
+found<br>&gt; in the system installation, and linked to. It is vendored =
+for the MSVC<br>&gt; port and we *statically* link into the runtime only =
+the parts we're<br>&gt; interested in.<br>&gt;<span =
+class=3D"Apple-converted-space">&nbsp;</span><br>&gt; To statically link =
+with winpthreads, I suggest you do all of it manually:<br>&gt; - clone =
+winpthreads sources at<span =
+class=3D"Apple-converted-space">&nbsp;</span><a =
+href=3D"https://github.com/mingw-w64/mingw-w64" rel=3D"noreferrer" =
+target=3D"_blank">https://github.com/mingw-w64/mingw-w64</a>,<br>&gt; go =
+to mingw-w64-libraries/winpthreads, and build a static version =
+of<br>&gt; the library with your preferred toolchain;<br>&gt;<span =
+class=3D"Apple-converted-space">&nbsp;</span><br>&gt; - hack the OCaml =
+compiler / Makefile to *not* use `-lpthreads`:<br>&gt;&nbsp;<span =
+class=3D"Apple-converted-space">&nbsp;</span><a =
+href=3D"https://github.com/ocaml/ocaml/blob/5a5eb481c7a9d0f039e3169aa8ed19=
+c9b926e982/configure.ac#L2372-L2373" rel=3D"noreferrer" =
+target=3D"_blank">https://github.com/ocaml/ocaml/blob/5a5eb481c7a9d0f039e3=
+169aa8ed19c9b926e982/configure.ac#L2372-L2373</a><br>&gt;&nbsp; Maybe =
+it's just sufficient to set PTHREAD_LIBS when invoking<br>&gt; =
+configure; however seeing this line makes me think that winpthreads =
+is<br>&gt; already statically linked with the runtime.<br>&gt;<span =
+class=3D"Apple-converted-space">&nbsp;</span><br>&gt;&nbsp; &nbsp; =
+&nbsp;PTHREAD_LIBS=3D"-l:libpthread.a $link_gcc_eh"]<br>&gt;<span =
+class=3D"Apple-converted-space">&nbsp;</span><br>&gt;&nbsp; Haven't dug =
+further.<br>&gt;<span =
+class=3D"Apple-converted-space">&nbsp;</span><br>&gt; -- =
+Antonin</blockquote></div></div></blockquote></div></div></blockquote></di=
+v><br></body></html>=
+
+--Apple-Mail=_0F2DDF27-A2E7-4D6E-8488-88C567538510--
