@@ -1,0 +1,444 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=uTIeE1aJ;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=FkXB4WNR;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 698504AC97
+	for <caml-list@tunbury.org>; Sun, 15 Dec 2024 13:47:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=4YYyydzp+pSBYJR/3cVrZcj9JcSWIEGyZ51cXLlCyb4=;
+  b=uTIeE1aJfcr0V9W+b37wRAg20+hwyUfazGeN9Ht3lalttGZDWhtr1/Kw
+   Xg/RCXehS9AN9TTeFR+7GHutYxMz2/ylJnh42kYQ1lSwQu/QUCa4BDqno
+   x3AY33OptuSznr0FsQmReNiWMN480NEhO9PQZ9x9kvAdIxAohj4dHwGc5
+   A=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.12,236,1728943200"; 
+   d="scan'208,217";a="199236561"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 15 Dec 2024 14:47:55 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 31735E0D1D; Sun, 15 Dec 2024 14:47:55 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id BA9CFE007A
+	for <caml-list@sympa.inria.fr>; Sun, 15 Dec 2024 14:47:49 +0100 (CET)
+IronPort-SDR: 675ede05_AyDWrnL9NUxne5T0IhHmsCbc6eDjIOUGP3Kp9elQm4jk0j2
+ ODiSMF7IRoTUfI5uaj2/vG0akpx96Cn2STJdqkQ==
+X-IPAS-Result: =?us-ascii?q?A0GHFwBu3V5nfLDQVdFaHAEBATwBAQQEAQECAQEHAQGBa?=
+ =?us-ascii?q?oE/ARoCPih9EUg0BAtIhFaBI4Isi36CIYEWnRmBEQMYFigPAQMBDRQBAQECI?=
+ =?us-ascii?q?gkEAQEDAQOCDIE9cUaKbwIeBwEENBMBAgQBAQEBAwIDAQEBAQEBEAEBBQEBA?=
+ =?us-ascii?q?QIBAQIEBgECEAEBIhkHDhIphXsNgkVRcV4DAgIDAwM3AQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQUCDQcYBBEqOAsGHQEbBAgDAg0DE?=
+ =?us-ascii?q?hAHMAIjAREBBQEOMBmCB1mCLwEDMQMRBqFegiSBBUKLPoEVBQIWgQGCDQaBC?=
+ =?us-ascii?q?dlTChkoDW+BYQIHFIEyAgEBhHIpXAGCVAGBXAIOg3+DfXonG4INgRU1gj2Be?=
+ =?us-ascii?q?34/FAsCAYEhFVaDLoJpBII6gmeDeYgYlRomCAcXAwcHCQUEHAYFBQJCCQUBD?=
+ =?us-ascii?q?xIDBAMEBAECCwkKCQMDAg4CCAMCCAYOEQE/EgQTCg0LBwUfCAMHDBEKKAMiE?=
+ =?us-ascii?q?i0PAQIBWwU0AQsDBwIIAgIGAwICBBQGAwUIAwIFBQ0CAgoCBAMVBAQPAQECH?=
+ =?us-ascii?q?gIGAQIQAQcEARQCCgMCBQYHAhwCAgMDBAQDAQUDEgMLAQUGBQEBBA4BAgECA?=
+ =?us-ascii?q?QECAwMOAgIGAgIBCQICAQECDQgBBAMIAgEEAwUDCgEBAQIBBAkEDQYDBQMDB?=
+ =?us-ascii?q?wMEAgMCBgIEBAUCAgMDAgMBAwMCAQIDCQIBDw8JDwICAwQCBgICAQQmAgEVB?=
+ =?us-ascii?q?QIDBAICBwICAwECAQICAgQCBAICBgMJCAECAgcBAgICAxUCBQEECQMDBRIMI?=
+ =?us-ascii?q?AMCAgICAwcKAwUCAQECBAMDAwMMDQcCAwECAQMFAwECAQIJAwYCAgMDBRIZB?=
+ =?us-ascii?q?QMCDwMCAQUEAggSCwcBAQ8UBQQJBRUDBgIDAxYLBAUDAwMBDAUMDgICCwMXB?=
+ =?us-ascii?q?QEBBwEDDQgDBAQCAwMJAgEQAQMEAgkCBAECCgICAgICBAEBBQQCBAMCBQICA?=
+ =?us-ascii?q?QgEAwMDDQQDCAgDBQMMEgICAgkCAwECAwMDBA0IFg0DAg0YChUTBwcDAwQLA?=
+ =?us-ascii?q?gkDBA0CBAICAQYDBgoGFgECGAICBgwEAwMIAwIDAgIBAgICARECAgkIDQUJB?=
+ =?us-ascii?q?QYCFwMCAwgBCQMPAwIUAQYCCAMHAQEEAgIKEwoBAQICAQYoAwEBAhQTBwMIA?=
+ =?us-ascii?q?gICAgYWDAEFBwMHDwUFBAICFgMDEgQEEAICAwMCAQEUBhUBBQIDBgsBBgECB?=
+ =?us-ascii?q?QQCAwQCEgIDDwMEAwoCDwMGAwQGAwECDBACBAIJCgEFBAMHBQIfAwMCAgULA?=
+ =?us-ascii?q?ggCAgUCBQcDCQsGAQIFAwQJAhQCEAICAgIIFwICAgUGGAECJgIEAQIBAgECA?=
+ =?us-ascii?q?QIBCgECAg4JAwQ+BhMEAgMDAg4BAgILAQICBAIDAQQHCQMDCQoHAQoNBwICC?=
+ =?us-ascii?q?ggJEAECAg8HAwICAgIGBw4DAhMPBQYGAgoHDQoDAgECAhUCAwkGAwUNAwcEC?=
+ =?us-ascii?q?g8CFQIWBQMgAggJCwIHDgUCBRIDDgUDAgISBAIDBgUDAQcBFwMHCAICDAICA?=
+ =?us-ascii?q?gIFAgUCBRgRAQ0EAwMDAggBBBUGAwkIKggEAwsGHQICAwIEBQEBEwEBAQUBC?=
+ =?us-ascii?q?QIDAgMECAMDAwMCAwQMCwIBBwgDAwYLCAkGAwIHCBkDBQQDBwULIQIGAwIEB?=
+ =?us-ascii?q?QQBBQIVDQIDGQIGAwYUCwwCBg4ICQMHAQEBAgICCAEFBQwJAgMEAgUEBAEBE?=
+ =?us-ascii?q?gYCAQMCAgMEAgoBAgIKAggKAQsdAgkDIw8DCwkIEz0BCwcyBDYBFBQHKyFfn?=
+ =?us-ascii?q?AxHg0YvR2EBAQUODS8sCBUFKAwOBS8eRpJKLpIPn2WBIWiDPIRvhymVSDOEB?=
+ =?us-ascii?q?IFXiy6ZSJh7hBWJbYdXjWUaE4UuESMSgRwtI4FcTSOBAYI2CUYDGQ9XjSg5g?=
+ =?us-ascii?q?2OCZIIwvEg5MgI6AgcBCgEBAwmPQzSBSwEB?=
+IronPort-PHdr: A9a23:wSiHqxLn7ZrHLWXp2tmcuDRvWUAX0o4c3iYr45Yqw4hDbr6kt8y7e
+ hCEvLM81RSUBs2bs6sC17GO9fi4GCQp2tWojjMrSN92a1c9k8IYnggtUoauKHbQC7rUVRE8B
+ 9lIT1R//nu2YgB/Ecf6YEDO8DXptWZBUhrwOhBoKevrB4Xck9q41/yo+53Ufg5EmCexbal9I
+ Ri4sAndrM0bjZZtJqsxxBbCv39Ed/hLyW9yKl+ekQrw6t2s8JJ/9ihbpu4s+dNHXajmcKs0S
+ qBVAi4hP24p+sPgqAPNTRGI5nsSU2UWlgRHDg3Y5xzkXZn/rzX3uPNl1CaVIcP5Q7Y0WS+/7
+ 6hwUx/nlD0HNz8i/27JjMF7kb9Wrwigpxx7xI7UfZ2VOf9jda7TYd8WWWxMVdtWWCJcH4O8d
+ JMPAPQdMuZEoYf9oF4OogG/BQmqGejjzjBFi3vz0aA8zu8vExzJ3BY4Et0BsHraotb7OroMX
+ ++p16TH1ynPYulM1Dvh9ITFcBYsquyMU7JqdsrRzFEiGAHYjlqOtIfrISma1uICs2OG6OdgS
+ figi2goqwBxvzig2MEshZfUho8OxVDE8D92wIcxJdGiVEF7ZtukHYJWuiqHOIR4XtksTHt0u
+ CYm1LIGo5i7cTAOxZk62RPSZfKJfpSM7x/sSOqcPDZ1iXxqdbyxmhq/9UatxvDyWMe63lhEr
+ jRIn9bOu34C2BHd5MeJR/lz80u/3zuEyg7d6uZBIU8ulKrbLYYswrExlpoPsUTDAzT5lF/3j
+ K+Rbkkk+/an5Pr5bbn8oZ+cLYB0hhn+MqQphsywHf44MhAUU2eH/uS80aXv/VblT7VLkPI2l
+ LXWv47HKsQavK62HRNa0po55xmjCDem1cwUkmUALFJAYBKHkpTpO1DIIPD3F/uwmVWsnTF2z
+ P7FJr3sGovBImTHnbv7frtw61RQxBQvwd1c/Z5YF7MMLfP1V0TsqtHYCgI5Mxeow+n5EtVzy
+ 4IeWGORDaKBLK/ft0KD6Pg1LOmWfoAVvS7wK/g76P7qin80gVodcrOo3ZsTcXy4GvZmL1iAb
+ Xrin9sME2YHshAxTOztj12CXjpTaGioU60g4TE7DZqqDYbFRo+znLyMxDm3EoFSa2xcCV2BE
+ W3ke5uYV/oPci6eP81snz0cWbikUYAh1BWutAHgy7pgK+rZ4jEYuojl1Nh65+zTiA899TpqA
+ MSAyGyNQGR0kXkJRz8yxqxwvUt9ylKb3ah+mPNXDcZT6O9RUgcmKZ7cyPR3B83qVgLbYtiJU
+ EqmQsmhATwpUt0+2doOY0JkF9WmjxDDxDaqDqQOl72LAZw06rjT02LwJ8Z70XbG1bMug0MoQ
+ stVZiWagft0/g3XQorIiFmxlqCwdK1a0jSe2n2EyD+/oUwQbAd2Xu2RQXkZaVrLoNL0+2vNS
+ ravDfIsNQ4Xmp3KEbdDdtC81QYOf/zkItmLPzPZcwaYAB+JwunJd4/2YyAH2y6bDkEYkgcV9
+ HLANA4kBy7nrXiNRCd2GwfJZEXhufJ7tGv9VlU9mh2DaUJwyrez9wM9ivmVSvdV1bUB6286s
+ zshJF+mxJrNDsaY4Q9ofaFSe9Q4tUtO023IqgF7M4GIIKVrh1pYeANy7Av1zxsiLIJGnIAxq
+ W8yigp/LaXNyFRaazaRxoz9IJXSI2j2uRStMuvYgw6AltmR/agL5bIzrFCLUBiBME0k/j0n1
+ tBU1yHZ/ZDWFE8IVpm3VE8r9h98rrWcYy8n5oqS22c+ea+z+iTP3d4kHo5Hgl6pYstfPaWYF
+ QTzD9xSBs6gL/YvkkSoaRRMNf5b9ao9NcerP/Wc36vjMOFllTOgxWNJheI1ml6F8SVtV+PO0
+ ostzPSR3w/BXDD5zR+gvs3xhYFYdGQKBGPsgSPgBYNXeuhzZdNRUTboc5DxnI0uwceyBS09l
+ hbrHV4N1c63dADHalX82VcVzkELuTm9niD+yTVokjYvp67Z3SrUwu2kegBUXwwDDGRkk1roJ
+ pC5yt4AW039JRQgkhS0+Ev8yrVzq6F2Lm2VSkBNNXuTTSkqQu6ru7yObtQaoo8htypGTem6b
+ E2yRbv0oh9c2CTmVTg7pnhzZ3ShvZP3mAZ/gWSWISNorXbXTsp3wA/W+N3WQfM5MiMufCBjk
+ nGXA1G9O4Ps5tCIj9LZtev4UWu9V5pVeC2tzIWatSL963c4SRG4mvmynJXgH21YmWfn3t9lR
+ DjFqhvhSobu3qW+d+lgewFkCUT95MxzBoxl2tFo1ddAhD5A3sXTpCVZ2W7oec1Ww6f/cGYAS
+ Vtpi5bO7Q7p1VciZnOFyoTlV2mMl85oZt20eGQTiWo268FHDrvR7aQRx3Mk5Arl61iJMb4kw
+ WlOrJlmoGQXiOwIpgc3myCUA7RIWFJdITSpjRODqda3sKRQYm+rN7m2zkt32967X9Tg6klRX
+ mj0fpA6EGp+9MJ6ZRjQ2Xv8+5zpftTNRd0WvxyQ1RzHiqIGTfB53upPnidhNW/n6Dc5wug0n
+ AFj25ynlIeCImRpuqm+B1QLU1+9L9NW8Tbrg6FEm8+Q1I36BZRtFAIAW57wRO6pGjYf5rz3c
+ hyDGzompjKHCKLSSEWBvVx+oSuFQPXJfzmHYWMUxtJ4SFyBKVxD1UoKCS4ikMdxFxj2lpe8N
+ h4ovnZLugG+8lwWlqppL0WtDDuZ/lzzLG5qEN7Ha0MHi2MKr0bNbZ7AsKQqR3septv561bVY
+ m2DO1YWUydTBh3CVwilZv70vZHB67TKWbD4dqeIOOTU77QZDqftp9rn05M6rWnQcJzVYz86S
+ aV8gxQLXGglSZ2By3NWFHNRx2SVKJTC7Bakpn8u8Zv5qaW3HlqpvczWVd4weZ1u40zk2//Sc
+ b7Nwn8jeXAAkcpTjX7QlOpFhQBU1nEoLmj3V+xH7H+FTbqMyPUOUVhBMHI1b5EOt+Vlj2wvc
+ YbNg9fxnNaUl9YTDFFIHRzkk8CtP4kRJn2lcUnADwCNPaiHIjvCx4f2Z7m9QPtelrccsRr4o
+ judH0L5W1bL3zD0SxCiN/1NhyCHLVRfvo+6aBNkFWnkSprvdBS6NNZ9iTB+z6czgzvGMmsVM
+ D40dE0ozPXY9SRDnvB2AHBM9FJgJOiA3iKbtqzWc8lI9/RsBStwmqRR53F7g7pZ4SdYReBkz
+ Svfqtk9xjPu2uKLyzdhTF9PsmMR3NPN7RgkY/2JsMAfByWhnlpF92ibBhUUqsEwD9Tuv/oV0
+ d3TjOfpLzwE9dvI/MwaDsySKcSdMXNnPwC6fVycRAYDUzOvMnnSwkJHl/THvGGcqJcrt5Xql
+ YcmRbpSVVhzHfQfQBcAfpRKMNJsUzUonKTOxtYP/ma7pQLNSd9yu5nGUreWA6yqJm/G0/9LY
+ BwHxb6+JoMWfN6euQQqehxxm4LEHFDVVNZGr3h6bwM6l05K9WB3Umw530+NguKF5XYSEbuwn
+ EdzhFIhP6Ii8zDj51pxLV3P9nNYeKYZltDsgDTXezn0fv7YtWR+BC/9tkx3OZT+EV4dUA==
+IronPort-Data: A9a23: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
+ uGQ3kUD
+IronPort-HdrOrdr: A9a23:bUvZDq44IcFyeCGX7APXwPLXdLJyesId70hD6qkRc20yTiX8ra
+ qTdZsgpH3JYVoqKRIdcLO7WJVoI0mskKKdiLN5VdyftWLdyQ+Vxe9ZnOzf6gylNSm72OA178
+ hdmmtFZOEYz2IWsS832meF+h8boeW6zA==
+X-Talos-CUID: 9a23:Nv4NAWEAdevO9+KoqmIgyWIqPdB8KUTezW/ZDAymOEYqdqOaHAo=
+X-Talos-MUID: 9a23:npaIYQR8fp80taLLRXTl1Ro6N+1i0p6IEUE9oZdYuZOEZQdvbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,236,1728943200"; 
+   d="scan'208,217";a="199236547"
+X-MGA-submission: =?us-ascii?q?MDEL89i/xOyb1aLTsUIf1uNl+HHml2IBJFhcto?=
+ =?us-ascii?q?s+aThJsQOs5xkquJl/aP/Y5CptWhfZhHk4JqY2dicQy/yE7oRCr7V/oH?=
+ =?us-ascii?q?ORZ+58sgj1tqNg8Ta0B74QvxRjKswgyoHHmIi9GGWHi8+FXJLSAPAgI+?=
+ =?us-ascii?q?IND6RNUVnObBNoZi81eU11Vg=3D=3D?=
+Received: from mail-lj1-f176.google.com ([209.85.208.176])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Dec 2024 14:47:49 +0100
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-3003943288bso30458301fa.0
+        for <caml-list@inria.fr>; Sun, 15 Dec 2024 05:47:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1734270467; x=1734875267; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=4YYyydzp+pSBYJR/3cVrZcj9JcSWIEGyZ51cXLlCyb4=;
+        b=FkXB4WNRj+fwGJ6FlX7PjV95NJa8Yilidz0+npQg2bHzRPOQgu+IazOqNRM+C4dcHC
+         IH/Efl6UFkAUyeW9SXFsKYxftt5mG9a15caFuClv+E4ZXO7bbQRoSJHb4JQBTBTs/5iB
+         mFrVbpyfnJYKnlNTKiIYSvuC5GFf3eDeCOGezPVLxA+7YNz92pKIkCmCMxb2/pk+AqiB
+         pMK1jv6I67QlRA6T8UMh79fvGXnC4/mBv0oklhURMCzb5avhBwUhEX4tsvjSE7IsfAuQ
+         FHtr+tLZyUxXOIK5hmw9kK/oBuxjsg8rru59P+EJF0DsclUnkvO/8C2GwKcLW3cE1mT7
+         waQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1734270467; x=1734875267;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4YYyydzp+pSBYJR/3cVrZcj9JcSWIEGyZ51cXLlCyb4=;
+        b=IlP45IQUfjzNrVw8rsXSxSG6JK4QZjwcTo9OvbF2jbNm/rZWX33w7+/hLTZRooaCJ0
+         tiMHr/omX+m905w0vyc85Nf0dOaLx+2uAStWzPa8x6WjiXSL3NXO26thdz/lA+GQX2Dq
+         lpQo+DMdiqt6GRr8+V4/agVnV/MqnTxknm2ettgeAABnc5MXY6Ts7Wcena0dzBNDMQMt
+         YAJWt2FVScM6p8uP5wCLyHxL+26G6gdlPHRHaQYbk2fd8XSDywNC5fDBSNxV7UckJUgL
+         gM51UoGdVUCeA6uE2bxZIXJZ268VDROYho2MQAYF5yeusmUco8gYrKqD+gtQp8kzC5Y/
+         N7nA==
+X-Gm-Message-State: AOJu0Yw9VuwOGyKuIR0m4Pz4UWpw4pNkA5LTRzyfmI9R+nl120G0F9jr
+	1skf69cL/GngMBgLUmDY/NNYuCziOzOvA2CFwQNjALYJ7j1H/1N88mDX7lKj5vmeyX8NcwjXNhG
+	CRzU2da+WjJOQ8lpXzESjjGUf9pA76zjm
+X-Gm-Gg: ASbGnctXbz8h28vDO5prNXQtqvyIV4A+ZW0Def4aM0ibevAbF47oki+VYwbePEWJCAE
+	TEmei5VzcRUCkyBVp2V6PJhNXQJd0Vr546uLQJA==
+X-Google-Smtp-Source: AGHT+IF2G8bBm6GhO1MTtTM5bIt4m9myx5a6on6+Q8p/rBKSx7ZtKSCfjPRST3azqqlIop4DBhrzKFOLVqUuhZMK7eM=
+X-Received: by 2002:a05:651c:4cb:b0:302:1b18:2c09 with SMTP id
+ 38308e7fff4ca-3025459d284mr33282491fa.27.1734270467138; Sun, 15 Dec 2024
+ 05:47:47 -0800 (PST)
+MIME-Version: 1.0
+From: Yue Tang <tangyueneu@gmail.com>
+Date: Sun, 15 Dec 2024 21:47:35 +0800
+Message-ID: <CAKtz34xu3GF=9+UacKKQOPc9CYvqnDY=ZV5_bkuO=qhKbEVk8A@mail.gmail.com>
+To: caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="000000000000236aa006294f4f3f"
+Subject: [Caml-list] ISORC 2025-Call for Paper
+Reply-To: Yue Tang <tangyueneu@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19232
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-12/CAKtz34xu3GF%3D9%2BUacKKQOPc9CYvqnDY%3DZV5_bkuO%3DqhKbEVk8A%40mail.gmail.com>
+
+--000000000000236aa006294f4f3f
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+(Apologies for the multiple postings. Appreciate it if you could distribute
+this CFP in your network)
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+*28th IEEE International Symposium on Object/Component/Service-Oriented
+Real-Time Distributed Computing*
+*Toulouse, France.May 26-28, 2025*
+
+isorc.github.io/2025/
+ISORC has been established as the leading event devoted to state-of-the-art
+research and state-of-the-practice applications in the field of real-time
+distributed computing. Celebrating the 28th anniversary since its
+foundation in 1998, ISORC continues the trend of providing an international
+forum for researchers and industry experts to exchange and share their
+experiences, ideas, latest research results on all aspects of IEEE
+Conference Proceeding templates technology.
+
+*Topics and Scope*
+IEEE ISORC 2025 invites high-quality papers on all aspects of IEEE
+Conference Proceeding templates technology, including, but not limited to:
+=C2=B7 Software Architectures for Distributed and/or Real-Time Computing.
+=C2=B7 Distributed and/or Real-Time Image, Video, and Stream Processing.
+=C2=B7 Distributed and/or Real-Time Communication for Emerging and Future
+Networks.
+=C2=B7 Blockchain and Distributed Ledger for Distributed and/or Real-time
+Computing.
+=C2=B7 DevOps and CI/CD for Distributed and/or Real Time Computing.
+=C2=B7 AI/ML, LLM, ML on the Edge, Federated Learning for Distributed and/o=
+r
+Real-time Computing.
+=C2=B7 Digital Twin for Distributed and/or Real-time Computing.
+=C2=B7 Cybersecurity, and Trust for Distributed and/or Real-Time IoT System=
+s.
+=C2=B7 Optimization Approaches for Distributed and Real-Time Computing.
+=C2=B7 Sustainable and Green Computing Transformation for Distributed and
+Real-Time Computing.
+=C2=B7 Formal Verification and Model Checking for Distributed and Real-Time
+Computing.
+=C2=B7 Ontology-Based Knowledge Modelling for Distributed and Real-Time
+Computing.
+=C2=B7 Dependability, Fault Tolerance, and Resilience.
+=C2=B7 Big Data, Algorithms, Models, and Techniques for Real-Time Analytics=
+.
+=C2=B7 Operating Systems, Middleware, and System Software.
+=C2=B7 Distributed Management, Monitoring, Performance Evaluation.
+=C2=B7 Distributed and/or Real-time Computing Applications in IoT, CPS,
+Edge-Cloud, etc.
+
+*Important Dates*
+=C2=B7 Submission deadline: *January 08, 2025*
+=C2=B7 Acceptance notification: *March 05, 2025*
+=C2=B7 Author registration deadline: *March 16, 2025*
+=C2=B7 Camera-ready papers: *March 20, 2025*
+
+*Guidelines for Manuscripts*
+IEEE ISORC 2025 invites papers in the following categories:
+=C2=B7 Regular Research Papers: Papers should describe original work and sh=
+ould
+be 10 pages maximum, plus two extra purchased pages for appendix and
+references.
+=C2=B7 Industrial Papers and Practitioner Reports: Papers should be of 10 p=
+ages,
+plus 2 extra purchased pages for appendix and references. Papers describing
+experiences of using ORC technology in application or tool development
+projects, are an integral part of the technical program of ISORC.
+=C2=B7 Short Papers: Short research papers, maximum 6 pages are also invite=
+d,
+and should contain enough information for the program committee to
+understand the scope of the project and evaluate the novelty of the problem
+or approach.
+All papers should be formatted in the standard IEEE double-column format
+using the published IEEE Conference Proceeding templates
+<http://www.ieee.org/conferences_events/conferences/publishing/templates.ht=
+ml>,
+and submitted through the HotCRP system:  https://isorc25.hotcrp.com/
+
+*For More Information*
+More information about IEEE ISORC 2025, including submission guidelines,
+can be found at:  isorc.github.io/2025/
+
+*Journal Publication Opportunity*
+The authors of selected papers from this symposium will be invited to
+submit an extended version of their work for the *Special Issue on
+AI-Driven Real-Time Distributed Computing for the Edge-Cloud Continuum* rev=
+iew
+and possible publication in the  *Elsevier Journal of Systems Architecture:
+Embedded Software Design (JSA)*.
+<https://www.sciencedirect.com/journal/journal-of-systems-architecture>
+
+*FURTHER INFORMATION:*
+If you have questions or encounter any problems, please notify the PC
+co-chairs:
+=C2=B7 Daniel Casini, Scuola Superiore Sant'Anna - Pisa, Italy
+=C2=B7 Pascal Berthou, University of Toulouse III, UPS, CNRS-LAAS, France
+=C2=B7 Mustafa Al Lail, Texas A&M International University, USA
+
+--000000000000236aa006294f4f3f
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div style=3D"text-align:center"><span style=3D"color:rgb(=
+0,0,0);font-family:&quot;times new roman&quot;,serif">(Apologies for the mu=
+ltiple postings. Appreciate it if you could distribute this CFP in your net=
+work)</span></div><font face=3D"times new roman, serif"><div style=3D"text-=
+align:center"><span style=3D"font-size:large;color:rgb(0,0,0)">=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</span></div><d=
+iv style=3D"font-size:large;text-align:center"><span style=3D"color:rgb(255=
+,0,0)"><b>28th IEEE International Symposium on Object/Component/Service-Ori=
+ented Real-Time Distributed Computing</b></span></div><b style=3D"font-size=
+:large"><font color=3D"#ff0000"><div style=3D"text-align:center">Toulouse, =
+France.</div></font><font color=3D"#ff0000"><div style=3D"text-align:center=
+">May 26-28, 2025</div></font></b></font><p class=3D"MsoNormal" align=3D"ce=
+nter" style=3D"margin:0cm 0cm 0cm 5.65pt;text-align:center;line-height:18.4=
+px;font-size:12pt;font-family:&quot;Liberation Serif&quot;,serif"><span lan=
+g=3D"EN-GB"><a href=3D"http://isorc.github.io/2025/" target=3D"_blank" styl=
+e=3D"color:rgb(5,99,193)"><span style=3D"font-family:&quot;Times New Roman&=
+quot;,serif;color:rgb(0,112,192)">isorc.github.io/2025/</span></a></span><b=
+><span lang=3D"EN-GB" style=3D"font-size:14pt;line-height:21.4667px"></span=
+></b></p><font face=3D"times new roman, serif">ISORC has been established a=
+s the leading event devoted to state-of-the-art research and state-of-the-p=
+ractice applications in the field of real-time distributed computing. Celeb=
+rating the 28th anniversary since its foundation in 1998, ISORC continues t=
+he trend of providing an international forum for researchers and industry e=
+xperts to exchange and share their experiences, ideas, latest research resu=
+lts on all aspects of IEEE Conference Proceeding templates technology.</fon=
+t><br><br><font face=3D"times new roman, serif" size=3D"4"><b>Topics and Sc=
+ope</b></font><br><font face=3D"times new roman, serif">IEEE ISORC 2025 inv=
+ites high-quality papers on all aspects of IEEE Conference Proceeding templ=
+ates technology, including, but not limited to:<br>=C2=B7 Software Architec=
+tures for Distributed and/or Real-Time Computing.<br>=C2=B7 Distributed and=
+/or Real-Time Image, Video, and Stream Processing.<br>=C2=B7 Distributed an=
+d/or Real-Time Communication for Emerging and Future Networks.<br>=C2=B7 Bl=
+ockchain and Distributed Ledger for Distributed and/or Real-time Computing.=
+<br>=C2=B7 DevOps and CI/CD for Distributed and/or Real Time Computing.<br>=
+=C2=B7 AI/ML, LLM, ML on the Edge, Federated Learning for Distributed and/o=
+r Real-time Computing.<br>=C2=B7 Digital Twin for Distributed and/or Real-t=
+ime Computing.<br>=C2=B7 Cybersecurity, and Trust for Distributed and/or Re=
+al-Time IoT Systems.<br>=C2=B7 Optimization Approaches for Distributed and =
+Real-Time Computing.<br>=C2=B7 Sustainable and Green Computing Transformati=
+on for Distributed and Real-Time Computing.<br>=C2=B7 Formal Verification a=
+nd Model Checking for Distributed and Real-Time Computing.<br>=C2=B7 Ontolo=
+gy-Based Knowledge Modelling for Distributed and Real-Time Computing.<br>=
+=C2=B7 Dependability, Fault Tolerance, and Resilience.<br>=C2=B7 Big Data, =
+Algorithms, Models, and Techniques for Real-Time Analytics.<br>=C2=B7 Opera=
+ting Systems, Middleware, and System Software.<br>=C2=B7 Distributed Manage=
+ment, Monitoring, Performance Evaluation.<br>=C2=B7 Distributed and/or Real=
+-time Computing Applications in IoT, CPS, Edge-Cloud, etc.</font><br><br><f=
+ont face=3D"times new roman, serif" size=3D"4"><b>Important Dates</b></font=
+><br><font face=3D"times new roman, serif">=C2=B7 Submission deadline:=C2=
+=A0<font color=3D"#ff0000"><b>January 08, 2025</b></font><br>=C2=B7 Accepta=
+nce notification:=C2=A0<font color=3D"#ff0000"><b>March 05, 2025</b></font>=
+<br>=C2=B7 Author registration deadline:=C2=A0<font color=3D"#ff0000"><b>Ma=
+rch 16, 2025</b></font><br>=C2=B7 Camera-ready papers:=C2=A0<font color=3D"=
+#ff0000"><b>March 20, 2025</b></font></font><br><br><font face=3D"times new=
+ roman, serif" size=3D"4"><b>Guidelines for Manuscripts</b></font><br><font=
+ face=3D"times new roman, serif">IEEE ISORC 2025 invites papers in the foll=
+owing categories:<br>=C2=B7 Regular Research Papers: Papers should describe=
+ original work and should be 10 pages maximum, plus two extra purchased pag=
+es for appendix and references.<br>=C2=B7 Industrial Papers and Practitione=
+r Reports: Papers should be of 10 pages, plus 2 extra purchased pages for a=
+ppendix and references. Papers describing experiences of using ORC technolo=
+gy in application or tool development projects, are an integral part of the=
+ technical program of ISORC.<br>=C2=B7 Short Papers: Short research papers,=
+ maximum 6 pages are also invited, and should contain enough information fo=
+r the program committee to understand the scope of the project and evaluate=
+ the novelty of the problem or approach.<br>All papers should be formatted =
+in the standard IEEE double-column format using the published=C2=A0<span la=
+ng=3D"EN-GB"><a href=3D"http://www.ieee.org/conferences_events/conferences/=
+publishing/templates.html" target=3D"_blank" style=3D"color:rgb(5,99,193)">=
+IEEE Conference Proceeding templates</a></span>, and submitted through the =
+HotCRP system:=C2=A0=C2=A0<span lang=3D"EN-GB"><a href=3D"https://isorc25.h=
+otcrp.com/" target=3D"_blank" style=3D"color:rgb(5,99,193)">https://isorc25=
+.hotcrp.com/</a></span></font><br><br><font face=3D"times new roman, serif"=
+ size=3D"4"><b>For More Information</b></font><br><font face=3D"times new r=
+oman, serif">More information about IEEE ISORC 2025, including submission g=
+uidelines, can be found at:=C2=A0=C2=A0<span lang=3D"EN-GB"><a href=3D"http=
+://isorc.github.io/2025/" target=3D"_blank"><span style=3D"color:rgb(0,112,=
+192)">isorc.github.io/2025/</span></a></span></font><br><br><b><font face=
+=3D"times new roman, serif" size=3D"4">Journal Publication Opportunity</fon=
+t></b><br><font face=3D"times new roman, serif">The authors of selected pap=
+ers from this symposium will be invited to submit an extended version of th=
+eir work for the=C2=A0<i>Special Issue on AI-Driven Real-Time Distributed C=
+omputing for the Edge-Cloud Continuum</i>=C2=A0review and possible publicat=
+ion in the=C2=A0=C2=A0<span lang=3D"EN-GB"><a href=3D"https://www.sciencedi=
+rect.com/journal/journal-of-systems-architecture" target=3D"_blank" style=
+=3D"color:rgb(5,99,193)"><b><i>Elsevier Journal of Systems Architecture: Em=
+bedded Software Design (JSA)</i></b>.</a></span><br></font><br><font face=
+=3D"times new roman, serif" size=3D"4"><b>FURTHER INFORMATION:</b></font><b=
+r><font face=3D"times new roman, serif">If you have questions or encounter =
+any problems, please notify the PC co-chairs:<br>=C2=B7 Daniel Casini, Scuo=
+la Superiore Sant&#39;Anna - Pisa, Italy<br>=C2=B7 Pascal Berthou, Universi=
+ty of Toulouse III, UPS, CNRS-LAAS, France<br>=C2=B7 Mustafa Al Lail, Texas=
+ A&amp;M International University, USA</font></div>
+
+--000000000000236aa006294f4f3f--
