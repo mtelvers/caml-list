@@ -1,0 +1,1200 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=e7WPI9Nq;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=qtridYDg;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id DD3FA417D2
+	for <caml-list@tunbury.org>; Tue, 17 Dec 2024 13:05:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=KY3GiDy1vbKyyxmTGqEx66HcQeN9lVl7g+/ustauWB8=;
+  b=e7WPI9NqgXsiR8KCunleeaiSw+hesP8gsC6jPc1eVscKjs+Q0o2ZrgzS
+   DsuO0ENDFdmcgtKbS+uocmOsXoiqZXhC6jBa76odc5q9wenc9x/xHOt38
+   jSxhJccGAvTW9muy/fjxHEJ+sG7cU9PDUeOa9itZUyOJj9maizyRNn6YF
+   I=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.12,241,1728943200"; 
+   d="scan'208,217";a="199639628"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Dec 2024 14:05:45 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 9BE56E0D20; Tue, 17 Dec 2024 14:05:45 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id CBD8CE0077
+	for <caml-list@sympa.inria.fr>; Tue, 17 Dec 2024 14:05:42 +0100 (CET)
+IronPort-SDR: 67617725_P8zcluHnyyvvmNe+9Pb02Cds6GVou2SXEyEl1t/EjlbOpQQ
+ scsCJYule35iyXkQjsjsAlLXlc/dCWQalnsMc+A==
+X-IPAS-Result: =?us-ascii?q?A0EnPgAldmFngSIeaIFaHAEBATwBAQQEAQECAQEHAQGBa?=
+ =?us-ascii?q?AIBgT5bKBkBY1oQAQEhBwhIhFaDT44fkU2KeIFWFIERAxgWIxQBAwENFAIBA?=
+ =?us-ascii?q?g4HAQUNAQIEAQEDAQIBggyCLkaKbwIfBgEEMgcOAQIEAQEBAQMCAwEBAQEBA?=
+ =?us-ascii?q?RABAQUBAQECAQECBAYBAhABAT0FSYVBBjQNSQEBBAsBgWpRcWUJNwEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQILAQFDWwkKE?=
+ =?us-ascii?q?wEBLAwYIwMJCwEGAwIRATUXARIUBoI0NIIfRQMFDAaVH5tLeoEygQGCDAEBB?=
+ =?us-ascii?q?oEIPgITAQ4J2iyBZAmBSAGFaoJJGgEqSGoChEgJhDMnD4FVRIFKgXNKB2+CS?=
+ =?us-ascii?q?hcCAQEYfwkcAQEGRxKDHIJpgj5MgVtAgWMsXnsRg36DNBJPg3eBQV9QgQ85K?=
+ =?us-ascii?q?Hssi1SBR0szMgFVExcLBwVhgRIDLjYxg2CBAzmCEWlJOgINAjaCIiRYgk2DW?=
+ =?us-ascii?q?YE/hGGEV4YagheCFlUdQAMLbT03FBucPgEJNEYBRoJpCyQOCzMCcxUFAQUWD?=
+ =?us-ascii?q?gIgDyk5ChkZDQUBBQMFEAYBKAYWkm8KMgMnijuFCaICbTQHhB2BXQYMiQWBJ?=
+ =?us-ascii?q?I1BiDqEBIFXiy4DmUUimFkigjWBPoVngSUJggxMlVIICw0DFoILgxKBbgopg?=
+ =?us-ascii?q?UkMBzMaMEOCZwlGHA+Mb4E7AxaBDAEIgkOBPoEmgXU7gkG2akI1AgEBOAIHA?=
+ =?us-ascii?q?QoBAQMJhWIBAYMEgheFH2tgAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ vSRD6ACOXm4
+IronPort-HdrOrdr: A9a23:U4fUyK9c+M45KJa0VV5uk+B7I+orL9Y04lQ7vn2ZhyY1TiX+rb
+ HJoB17726StN91YhsdcL+7VZVoLUmxyXcx2/hzAV9NNDOWxFdAb7sSkLcL+lXbalLDH5dmpN
+ ldmvFFeazN5DpB7foSkTPId+rIm+P3iZxA7N22pxxQpENRGsNdBmFCZTpzeXcGITWua6BWKH
+ O03Ls2mxOQPVoWc+WmDT0/U+DYodqjruOdXTc2QzAm9SiThneS5LT7ChiV2Qp2aUI1/Z4StU
+ bEji3k7eGZv/u60x/R0HKWx5lag9f60LJ4db6xo/lQBDXwqxqiIL5sXLCPp1kO0ZmSwVsnis
+ TNpB88P8J18RrqDxKInSc=
+X-Talos-CUID: 9a23:WsD/2WE2VnPmx/KUqmJb/V4tR+UCe0HsjzTteB+nFn9qWuO8HAo=
+X-Talos-MUID: 9a23:x4d2mAWXoOnALE7q/BXSnWhPOcg02I+/Ln8jg5EYt9SWaTMlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,241,1728943200"; 
+   d="scan'208,217";a="199639585"
+X-MGA-submission: =?us-ascii?q?MDFPJ/SoBVz3hl50nAuo7SOh/t8TY/ISkTyqvv?=
+ =?us-ascii?q?oTexqFtWddv7zgO7Xon04bubnqGBu8CT+4IRwO7ub+AhPKHuF6K3mL0Y?=
+ =?us-ascii?q?amr81Bc6ihACAyx541oAMFxMXyMHWRzCvVe9Gjq+ufwp8ZwQhILouTic?=
+ =?us-ascii?q?pAZiXrbksFXmZnLGTwCPlybQ=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Dec 2024 14:05:42 +0100
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 5AE44564BD5;
+	Tue, 17 Dec 2024 14:05:40 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1734440740;
+	bh=R0BK5WnV5MX/c2onOAwautR/xsHrpgMWN4/sR3G+1mk=;
+	h=From:To:Subject:Date:Message-ID;
+	b=qtridYDgvFeKauw0xB0fN/nm3iaUoqHcl5wa/Mxt5dgHEchePDNFg35gK7WhOzy4/
+	 CKXhRcaV1WOQxSHfqM8jd9iPFiMZHF/oS7quH1ute33dEBIFJOjwsNqP3qtAbTGYdx
+	 VsdcsB0F7VHuYSUJaubwcMR1g/lcxPebxSa6XHLc=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 17 Dec 2024 14:05:39 +0100
+Message-ID: <m2ttb2lasc.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Dec 17 14:05:40 2024 +0100 (CET))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.492883, queueID=8C2DB564BD6
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19234
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2024-12/m2ttb2lasc.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of December 10 to 17,
+2024.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Opam repository archival, Phase 1: unavailable packages
+Proposed Package Archiving Policy for the opam Repository
+QCheck 0.23
+OCaml's Code of Conduct team - rotation of one team member
+qcheck-lin and qcheck-stm 0.2
+Old CWN
+
+
+Opam repository archival, Phase 1: unavailable packages
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/opam-repository-archival-phase-1-unavailable=
+-packages/15797/1>
+
+
+Hannes Mehnert announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It is my pleasure to announce below the list of opam packages that
+  will move to the opam-repository-archive on January 1st 2025. In total
+  there are 4170 opam files scheduled for being moved within 561 unique
+  packages. This decreases the size of the opam-repository by roughly
+  12.7%.
+
+  This list contains all packages (a) marked as "available: false"
+  (which may have various reasons: security issue, source unavailable, =E2=
+=80=A6
+  - best to look into the "git log" for the specific package for the
+  reason), and (b) packages which cannot be installed due to missing
+  dependencies (with the packages mentioned in (a) being removed).
+
+  The second list of packages (b) has been automatically generated by
+  the [archive-opam] utility - developed purely for the opam-repository
+  archival project, and this utility may have bugs.
+
+  So, if you find a package in the list and you'd like to retain it in
+  the opam-repository, there are some options:
+
+  =E2=80=A2 (a) you can install it on your system (opam install <pkg>): this
+    means there's a bug in the archive-opam utility, please provide the
+    package name and version in the [opam-repository-archive Phase 1
+    PR], together with your opam version, OCaml version, and operating
+    system;
+  =E2=80=A2 (b) it is not installable: please figure out the reasoning (the
+    "Reasoning" may help you to find the root issue), and try to fix it
+    yourself - if you're unable to fix the root cause, please also
+    comment in the [opam-repository-archive Phase 1 PR] with the package
+    name and version.
+
+  If you've any questions, please don't hesitate to ask here or on
+  GitHub or via another communication channel.
+
+  You can help further on the archiving process:
+  =E2=80=A2 as mentioned in the [last announcement] please add the
+    [`x-maintenance-intent'] to your packages (a good choice for a lot
+    of packages is `x-maintenance-intent: [("latest")]' if you're
+    maintaining the latest version only) - this will be considered in
+    Phase 3 (March 1st 2025);
+  =E2=80=A2 if you are the author or maintainer of a package that is no lon=
+ger
+    useful or maintained, you can as well mark your opam files in the
+    opam-repository with `flags: deprecated' (this will be taken into
+    account in Phase 3 - March 1st 2025);
+  =E2=80=A2 if you flagged your preliminary releases with `flags:
+    avoid-version', and they can now be removed (e.g. since a stable
+    version has been released), please open a pull request to replace
+    the `avoid-version' with `deprecated'.
+
+  Please note that the next Phase will be announced on January 15th with
+  all packages that are only installable with OCaml < 4.08 - archiving
+  is scheduled for February 1st.
+
+  To keep track of the announcements, please look at the
+  [opam-repository] tag.
+
+  You can reproduce these lists by running `opam-archive --unavailable
+  --dry-run --later-installable --pkg-all' using opam-archive at
+  666a3b3886acfbcf82a7d73134247ccaa605510a and opam-repository at
+  de786e28dbea73843ad5e5f0290a4e81fba39370.
+
+  A big thanks to the [OCaml Software Foundation] for funding the
+  opam-repository archival project.
+
+
+[archive-opam] <https://github.com/hannesm/archive-opam>
+
+[opam-repository-archive Phase 1 PR]
+<https://github.com/ocaml/opam-repository-archive/pull/3>
+
+[last announcement]
+<https://discuss.ocaml.org/t/proposed-package-archiving-policy-for-the-opam=
+-repository/15713#p-67031-call-to-action-4>
+
+[`x-maintenance-intent']
+<https://github.com/ocaml/opam-repository/blob/master/governance/policies/a=
+rchiving.md#specification-of-the-x--fields-used-in-the-archiving-process>
+
+[opam-repository] <https://discuss.ocaml.org/tag/opam-repository>
+
+[OCaml Software Foundation] <https://ocaml-sf.org>
+
+Packages scheduled for archiving (pkg-name: pkg-version[, pkg-version]*)
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  /editor note/ Please find this long list in the post itself:
+  <https://discuss.ocaml.org/t/opam-repository-archival-phase-1-unavailable=
+-packages/15797>
+
+
+Proposed Package Archiving Policy for the opam Repository
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/proposed-package-archiving-policy-for-the-op=
+am-repository/15713/6>
+
+
+Continuing this thread, Hannes Mehnert announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hey,
+
+  just a quick update on the proposed roadmap. The changes are we don't
+  do `avoid-version' / `deprecated' flag cleanups in Phase 1. Instead,
+  we plan to remove packages with `deprecated' flag in Phase 3. Packages
+  with flag `avoid-version' will stay in opam-repository, but we reach
+  out to maintainers and authors whether their intention is to mark
+  these packages as deprecated (e.g. for alpha / beta releases and
+  release candidates).
+
+  Please find the updated roadmap below:
+
+  =E2=80=A2 December 1st 2024: announcement of this proposal
+  =E2=80=A2 December 15th 2024: announcement of the packages affected by Ph=
+ase 1
+    (uninstallable packages (=E2=80=9Cavailable: false=E2=80=9D, =E2=80=9Co=
+pam admin check
+    =E2=80=93installability -i=E2=80=9D)
+  =E2=80=A2 January 1st 2025: Phase 1 cutting point: packages are moved to
+    opam-repository-archive
+  =E2=80=A2 January 15th 2025: announcement of the packages affected by Pha=
+se 2
+    (OCaml lower bound 4.08)
+  =E2=80=A2 February 1st 2025: Phase 2 cutting point: packages are moved to
+    opam-repository-archive
+  =E2=80=A2 February 15th 2025: initial spring cleaning, announcement of
+    packages (based on maintenance-intent), and `flags: deprecated'
+  =E2=80=A2 March 1st 2025: spring cleaning cutting point: packages are mov=
+ed to
+    opam-repository-archive
+  =E2=80=A2 Every quarter: repeat Phase 3
+  =E2=80=A2 Every year: reconsider Phase 2 with an increased OCaml lower bo=
+und
+
+
+QCheck 0.23
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-qcheck-0-23/15790/1>
+
+
+Jan Midtgaard announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I'm happy to announce the 0.23 release of `qcheck-core', `qcheck',
+  `qcheck-alcotest', and `qcheck-ounit', along with a 0.5 release of
+  `ppx_deriving_qcheck' :tada:
+
+  The biggest user-visible change is the addition of a [qcheck-core
+  overview documentation page] as well as clean-ups to the two module
+  pages to provide a better overview of the different available
+  features:
+  =E2=80=A2 [QCheck]
+  =E2=80=A2 [QCheck2]
+
+  In more detail the 0.23 release has made the following changes:
+  =E2=80=A2 Quote and escape in `Print.string' and `Print.char' in the `QCh=
+eck'
+    module, mirroring the `QCheck2.Print' module's behaviour. Also quote
+    and escape `Print.bytes' in both `QCheck' and `QCheck2'.
+  =E2=80=A2 Clean-up `QCheck' and `QCheck2' documentation pages
+  =E2=80=A2 Add `exponential' generator to `QCheck', `QCheck.Gen', and
+    `QCheck2.Gen'
+  =E2=80=A2 Add `Shrink.bool' and use it in `QCheck.bool'
+  =E2=80=A2 Remove unread `fun_gen' field from `QCheck2''s `fun_repr_tbl' t=
+ype
+    thereby silencing a compiler warning
+
+  The `ppx_deriving_qcheck' 0.5 release contains a fix to derive
+  generators for mutually recursive data types involving records, thanks
+  to a contribution from @Kakadu
+
+  Happy testing! :smiley:
+
+
+[qcheck-core overview documentation page]
+<https://c-cube.github.io/qcheck/0.23/qcheck-core/index.html>
+
+[QCheck]
+<https://c-cube.github.io/qcheck/0.23/qcheck-core/QCheck/index.html>
+
+[QCheck2]
+<https://c-cube.github.io/qcheck/0.23/qcheck-core/QCheck2/index.html>
+
+
+OCaml's Code of Conduct team - rotation of one team member
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ocamls-code-of-conduct-team-rotation-of-one-=
+team-member/15791/1>
+
+
+Sonja Heinze announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  A bit over two years ago, the OCaml community wrote and adopted a
+  [code of conduct] and put together a code of conduct team. The code of
+  conduct team is there for anyone in the community whenever they have
+  concerns about behavior that falls within the scope of the code of
+  conduct. It's currently made up of @c-cube, @Khady, @mseri, @rjbou
+  myself.
+
+  When putting together the code of conduct team, we mentioned that we'd
+  rotate the team from time to time to keep it dynamic. We're now
+  rotating one team member: I'm leaving the team and @shonfeder is
+  joining. Thanks a lot, @shonfeder, for taking on this responsibility!
+
+  Let's also use this opportunity to explain how the Code of Conduct
+  team operates: We generally do not step in on our own initiative, but
+  only when asked. That's to avoid having five community members acting
+  as a kind of "overarching community police". That said, we will step
+  in without being asked in extreme cases, but this has not happened so
+  far. We do moderate and/or act when people reach out to us. That does
+  happen from time to time.
+
+  By the way, you can adopt the Code of Conduct yourself on your OCaml
+  GitHub/GitLab repos by creating a `CODE_OF_CONDUCT.md`, containing the
+  [CODE_OF_CONDUCT_TEMPLATE] - full instructions [here]. So far, it is
+  already adopted on this discuss forum, the caml-list@inria.fr mailing
+  list, the OCaml IRC, [OCaml discord], physical events like OCaml
+  Workshop, and [these repositories]. Absolutely everyone is welcome to
+  adopt it on their OCaml repository as well. Adopting it doesn't have a
+  practical effect in a big majority of cases, but it always makes
+  contributors, particularly newcomers, feel more welcome.
+
+  Have a nice weekend everyone!  Best, @pitag on behalf of the whole
+  Code of Conduct team
+
+
+[code of conduct]
+<https://github.com/ocaml/code-of-conduct/blob/main/CODE_OF_CONDUCT.md>
+
+[CODE_OF_CONDUCT_TEMPLATE]
+<https://github.com/ocaml/code-of-conduct/blob/main/CODE_OF_CONDUCT_TEMPLAT=
+E.md>
+
+[here]
+<https://github.com/ocaml/code-of-conduct?tab=3Dreadme-ov-file#adopting-thi=
+s-code-of-conduct>
+
+[OCaml discord] <https://discord.com/invite/cCYQbqN>
+
+[these repositories]
+<https://github.com/ocaml/code-of-conduct/blob/main/list-of-adopters.md>
+
+
+qcheck-lin and qcheck-stm 0.2
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-qcheck-lin-and-qcheck-stm-0-2/12301/4>
+
+
+Jan Midtgaard announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I just rolled a 0.5 release of `qcheck-lin', `qcheck-stm', and
+  `qcheck-multicoretests-util':
+  <https://github.com/ocaml-multicore/multicoretests/releases/tag/0.5>
+
+  The biggest news in the 0.5 release is the addition of
+  `Util.Pp.pp_fun_' for printing function values generated with
+  QCheck.To ensure quoted and escaped output for chars and strings, this
+  required bumping the `qcheck-core' lower bound to the freshly released
+  `qcheck-core.0.23'. This in turn, enabled a couple of other clean-ups:
+
+  =E2=80=A2 #492: Also use the new, upstreamed `Gen.exponential' combinator=
+ in
+     STM
+  =E2=80=A2 #491: Require `qcheck.0.23', simplify show functions by utilizi=
+ng
+     it, and update expect outputs accordingly
+  =E2=80=A2 #486: Add `Util.Pp.pp_fun_' printer for generated `QCheck.fun_'
+     functions
+
+  Happy testing and happy holidays! :smiley: :christmas_tree:
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2024-12-17 Tue 14:04 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2024.12.10.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2024.12.24.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of December 10 to 17, 20=
+24.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Opam repository archival, Phase 1: unavailable packages<=
+/a></li>
+<li><a href=3D"#2">Proposed Package Archiving Policy for the opam Repositor=
+y</a></li>
+<li><a href=3D"#3">QCheck 0.23</a></li>
+<li><a href=3D"#4">OCaml's Code of Conduct team - rotation of one team memb=
+er</a></li>
+<li><a href=3D"#5">qcheck-lin and qcheck-stm 0.2</a></li>
+<li><a href=3D"#org5527793">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Opam repository archival, Phase 1: unavailable packages</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/opam-repository-archival-ph=
+ase-1-unavailable-packages/15797/1">https://discuss.ocaml.org/t/opam-reposi=
+tory-archival-phase-1-unavailable-packages/15797/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org8a8f65f" class=3D"outline-3">
+<h3 id=3D"org8a8f65f">Hannes Mehnert announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8a8f65f">
+<p>
+It is my pleasure to announce below the list of opam packages that will mov=
+e to the opam-repository-archive on January 1st 2025. In total there are 41=
+70 opam files scheduled for being moved within 561 unique packages. This de=
+creases the size of the opam-repository by roughly 12.7%.
+</p>
+
+<p>
+This list contains all packages (a) marked as "available: false" (which may=
+ have various reasons: security issue, source unavailable, &#x2026; - best =
+to look into the "git log" for the specific package for the reason), and (b=
+) packages which cannot be installed due to missing dependencies (with the =
+packages mentioned in (a) being removed).
+</p>
+
+<p>
+The second list of packages (b) has been automatically generated by the <a =
+href=3D"https://github.com/hannesm/archive-opam">archive-opam</a> utility -=
+ developed purely for the opam-repository archival project, and this utilit=
+y may have bugs.
+</p>
+
+<p>
+So, if you find a package in the list and you'd like to retain it in the op=
+am-repository, there are some options:
+</p>
+
+<ul class=3D"org-ul">
+<li>(a) you can install it on your system (opam install &lt;pkg&gt;): this =
+means there's a bug in the archive-opam utility, please provide the package=
+ name and version in the <a href=3D"https://github.com/ocaml/opam-repositor=
+y-archive/pull/3">opam-repository-archive Phase 1 PR</a>, together with you=
+r opam version, OCaml version, and operating system;</li>
+<li>(b) it is not installable: please figure out the reasoning (the "Reason=
+ing" may help you to find the root issue), and try to fix it yourself - if =
+you're unable to fix the root cause, please also comment in the <a href=3D"=
+https://github.com/ocaml/opam-repository-archive/pull/3">opam-repository-ar=
+chive Phase 1 PR</a> with the package name and version.</li>
+</ul>
+
+<p>
+If you've any questions, please don't hesitate to ask here or on GitHub or =
+via another communication channel.
+</p>
+
+<p>
+You can help further on the archiving process:
+</p>
+<ul class=3D"org-ul">
+<li>as mentioned in the <a href=3D"https://discuss.ocaml.org/t/proposed-pac=
+kage-archiving-policy-for-the-opam-repository/15713#p-67031-call-to-action-=
+4">last announcement</a> please add the <a href=3D"https://github.com/ocaml=
+/opam-repository/blob/master/governance/policies/archiving.md#specification=
+-of-the-x--fields-used-in-the-archiving-process"><code>x-maintenance-intent=
+</code></a> to your packages (a good choice for a lot of packages is <code>=
+x-maintenance-intent: [("latest")]</code> if you're maintaining the latest =
+version only) - this will be considered in Phase 3 (March 1st 2025);</li>
+<li>if you are the author or maintainer of a package that is no longer usef=
+ul or maintained, you can as well mark your opam files in the opam-reposito=
+ry with <code>flags: deprecated</code> (this will be taken into account in =
+Phase 3 - March 1st 2025);</li>
+<li>if you flagged your preliminary releases with <code>flags: avoid-versio=
+n</code>, and they can now be removed (e.g. since a stable version has been=
+ released), please open a pull request to replace the <code>avoid-version</=
+code> with <code>deprecated</code>.</li>
+</ul>
+
+<p>
+Please note that the next Phase will be announced on January 15th with all =
+packages that are only installable with OCaml &lt; 4.08 - archiving is sche=
+duled for February 1st.
+</p>
+
+<p>
+To keep track of the announcements, please look at the <a href=3D"https://d=
+iscuss.ocaml.org/tag/opam-repository">opam-repository</a> tag.
+</p>
+
+<p>
+You can reproduce these lists by running <code>opam-archive --unavailable -=
+-dry-run --later-installable --pkg-all</code> using opam-archive at 666a3b3=
+886acfbcf82a7d73134247ccaa605510a and opam-repository at de786e28dbea73843a=
+d5e5f0290a4e81fba39370.
+</p>
+
+<p>
+A big thanks to the <a href=3D"https://ocaml-sf.org">OCaml Software Foundat=
+ion</a> for funding the opam-repository archival project.
+</p>
+</div>
+<div id=3D"outline-container-org9414c0a" class=3D"outline-4">
+<h4 id=3D"org9414c0a">Packages scheduled for archiving (pkg-name: pkg-versi=
+on[, pkg-version]*)</h4>
+<div class=3D"outline-text-4" id=3D"text-org9414c0a">
+<p>
+<i>editor note</i> Please find this long list in the post itself: <a href=
+=3D"https://discuss.ocaml.org/t/opam-repository-archival-phase-1-unavailabl=
+e-packages/15797">https://discuss.ocaml.org/t/opam-repository-archival-phas=
+e-1-unavailable-packages/15797</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Proposed Package Archiving Policy for the opam Repository</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/proposed-package-archiving-=
+policy-for-the-opam-repository/15713/6">https://discuss.ocaml.org/t/propose=
+d-package-archiving-policy-for-the-opam-repository/15713/6</a>
+</p>
+</div>
+<div id=3D"outline-container-org42f44a4" class=3D"outline-3">
+<h3 id=3D"org42f44a4">Continuing this thread, Hannes Mehnert announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org42f44a4">
+<p>
+Hey,
+</p>
+
+<p>
+just a quick update on the proposed roadmap. The changes are we don't do <c=
+ode>avoid-version</code> / <code>deprecated</code> flag cleanups in Phase 1=
+. Instead, we plan to remove packages with <code>deprecated</code> flag in =
+Phase 3. Packages with flag <code>avoid-version</code> will stay in opam-re=
+pository, but we reach out to maintainers and authors whether their intenti=
+on is to mark these packages as deprecated (e.g. for alpha / beta releases =
+and release candidates).
+</p>
+
+<p>
+Please find the updated roadmap below:
+</p>
+
+<ul class=3D"org-ul">
+<li>December 1st 2024: announcement of this proposal</li>
+<li>December 15th 2024: announcement of the packages affected by Phase 1 (u=
+ninstallable packages (=E2=80=9Cavailable: false=E2=80=9D, =E2=80=9Copam ad=
+min check &#x2013;installability -i=E2=80=9D)</li>
+<li>January 1st 2025: Phase 1 cutting point: packages are moved to opam-rep=
+ository-archive</li>
+<li>January 15th 2025: announcement of the packages affected by Phase 2 (OC=
+aml lower bound 4.08)</li>
+<li>February 1st 2025: Phase 2 cutting point: packages are moved to opam-re=
+pository-archive</li>
+<li>February 15th 2025: initial spring cleaning, announcement of packages (=
+based on maintenance-intent), and <code>flags: deprecated</code></li>
+<li>March 1st 2025: spring cleaning cutting point: packages are moved to op=
+am-repository-archive</li>
+<li>Every quarter: repeat Phase 3</li>
+<li>Every year: reconsider Phase 2 with an increased OCaml lower bound</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">QCheck 0.23</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-qcheck-0-23/15790/1">ht=
+tps://discuss.ocaml.org/t/ann-qcheck-0-23/15790/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org98281e9" class=3D"outline-3">
+<h3 id=3D"org98281e9">Jan Midtgaard announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org98281e9">
+<p>
+I'm happy to announce the 0.23 release of <code>qcheck-core</code>, <code>q=
+check</code>, <code>qcheck-alcotest</code>, and <code>qcheck-ounit</code>, =
+along with a 0.5 release of <code>ppx_deriving_qcheck</code> :tada:=20
+</p>
+
+<p>
+The biggest user-visible change is the addition of a <a href=3D"https://c-c=
+ube.github.io/qcheck/0.23/qcheck-core/index.html">qcheck-core overview docu=
+mentation page</a> as well as clean-ups to the two module pages to provide =
+a better overview of the different available features:
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://c-cube.github.io/qcheck/0.23/qcheck-core/QCheck/inde=
+x.html">QCheck</a></li>
+<li><a href=3D"https://c-cube.github.io/qcheck/0.23/qcheck-core/QCheck2/ind=
+ex.html">QCheck2</a></li>
+</ul>
+
+<p>
+In more detail the 0.23 release has made the following changes:
+</p>
+<ul class=3D"org-ul">
+<li>Quote and escape in <code>Print.string</code> and <code>Print.char</cod=
+e> in the <code>QCheck</code> module, mirroring the <code>QCheck2.Print</co=
+de> module's behaviour. Also quote and escape <code>Print.bytes</code> in b=
+oth <code>QCheck</code> and <code>QCheck2</code>.</li>
+<li>Clean-up <code>QCheck</code> and <code>QCheck2</code> documentation pag=
+es</li>
+<li>Add <code>exponential</code> generator to <code>QCheck</code>, <code>QC=
+heck.Gen</code>, and <code>QCheck2.Gen</code></li>
+<li>Add <code>Shrink.bool</code> and use it in <code>QCheck.bool</code></li>
+<li>Remove unread <code>fun_gen</code> field from <code>QCheck2</code>'s <c=
+ode>fun_repr_tbl</code> type thereby silencing a compiler warning</li>
+</ul>
+
+<p>
+The <code>ppx_deriving_qcheck</code> 0.5 release contains a fix to derive g=
+enerators for mutually recursive data types involving records, thanks to a =
+contribution from @Kakadu=20
+</p>
+
+<p>
+Happy testing! :smiley:
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">OCaml's Code of Conduct team - rotation of one team member</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocamls-code-of-conduct-team=
+-rotation-of-one-team-member/15791/1">https://discuss.ocaml.org/t/ocamls-co=
+de-of-conduct-team-rotation-of-one-team-member/15791/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org54ee8ca" class=3D"outline-3">
+<h3 id=3D"org54ee8ca">Sonja Heinze announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org54ee8ca">
+<p>
+A bit over two years ago, the OCaml community wrote and adopted a <a href=
+=3D"https://github.com/ocaml/code-of-conduct/blob/main/CODE_OF_CONDUCT.md">=
+code of conduct</a> and put together a code of conduct team. The code of co=
+nduct team is there for anyone in the community whenever they have concerns=
+ about behavior that falls within the scope of the code of conduct. It's cu=
+rrently made up of @c-cube, @Khady, @mseri, @rjbou myself.
+</p>
+
+<p>
+When putting together the code of conduct team, we mentioned that we'd rota=
+te the team from time to time to keep it dynamic. We're now rotating one te=
+am member: I'm leaving the team and @shonfeder is joining. Thanks a lot, @s=
+honfeder, for taking on this responsibility!
+</p>
+
+<p>
+Let's also use this opportunity to explain how the Code of Conduct team ope=
+rates: We generally do not step in on our own initiative, but only when ask=
+ed. That's to avoid having five community members acting as a kind of "over=
+arching community police". That said, we will step in without being asked i=
+n extreme cases, but this has not happened so far. We do moderate and/or ac=
+t when people reach out to us. That does happen from time to time.
+</p>
+
+<p>
+By the way, you can adopt the Code of Conduct yourself on your OCaml GitHub=
+/GitLab repos by creating a `CODE_OF_CONDUCT.md`, containing the <a href=3D=
+"https://github.com/ocaml/code-of-conduct/blob/main/CODE_OF_CONDUCT_TEMPLAT=
+E.md">CODE_OF_CONDUCT_TEMPLATE</a> - full instructions <a href=3D"https://g=
+ithub.com/ocaml/code-of-conduct?tab=3Dreadme-ov-file#adopting-this-code-of-=
+conduct">here</a>. So far, it is already adopted on this discuss forum, the=
+ caml-list@inria.fr mailing list, the OCaml IRC, <a href=3D"https://discord=
+.com/invite/cCYQbqN">OCaml discord</a>, physical events like OCaml Workshop=
+, and <a href=3D"https://github.com/ocaml/code-of-conduct/blob/main/list-of=
+-adopters.md">these repositories</a>. Absolutely everyone is welcome to ado=
+pt it on their OCaml repository as well. Adopting it doesn't have a practic=
+al effect in a big majority of cases, but it always makes contributors, par=
+ticularly newcomers, feel more welcome.
+</p>
+
+<p>
+Have a nice weekend everyone!
+Best,
+@pitag on behalf of the whole Code of Conduct team
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">qcheck-lin and qcheck-stm 0.2</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-qcheck-lin-and-qcheck-s=
+tm-0-2/12301/4">https://discuss.ocaml.org/t/ann-qcheck-lin-and-qcheck-stm-0=
+-2/12301/4</a>
+</p>
+</div>
+<div id=3D"outline-container-org55269fb" class=3D"outline-3">
+<h3 id=3D"org55269fb">Jan Midtgaard announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org55269fb">
+<p>
+I just rolled a 0.5 release of <code>qcheck-lin</code>, <code>qcheck-stm</c=
+ode>, and <code>qcheck-multicoretests-util</code>: <a href=3D"https://githu=
+b.com/ocaml-multicore/multicoretests/releases/tag/0.5">https://github.com/o=
+caml-multicore/multicoretests/releases/tag/0.5</a>
+</p>
+
+<p>
+The biggest news in the 0.5 release is the addition of <code>Util.Pp.pp_fun=
+_</code> for printing function values generated with QCheck.To ensure quote=
+d and escaped output for chars and strings, this required bumping the <code=
+>qcheck-core</code> lower bound to the freshly released <code>qcheck-core.0=
+.23</code>. This in turn, enabled a couple of other clean-ups:
+</p>
+
+<ul class=3D"org-ul">
+<li>#492: Also use the new, upstreamed <code>Gen.exponential</code> combina=
+tor in STM</li>
+<li>#491: Require <code>qcheck.0.23</code>, simplify show functions by util=
+izing it, and update expect outputs accordingly</li>
+<li>#486: Add <code>Util.Pp.pp_fun_</code> printer for generated <code>QChe=
+ck.fun_</code> functions</li>
+</ul>
+
+<p>
+Happy testing and happy holidays! :smiley: :christmas_tree:
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org5527793" class=3D"outline-2">
+<h2 id=3D"org5527793">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org5527793">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgd3a0c5f">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
