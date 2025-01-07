@@ -1,0 +1,467 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=eudDsg0+;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=cam.ac.uk header.i=@cam.ac.uk header.a=rsa-sha256 header.s=selector2 header.b=l/R9qgGM;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 6C27A48E3C
+	for <caml-list@tunbury.org>; Tue,  7 Jan 2025 07:55:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=O+enLMbe+ikQ+3pCcJE3KsqP5BeYthX6zJcxtx8Q2E8=;
+  b=eudDsg0+ooY8m5yvvUc4tpN8t6ONh/oFLg0jaTTxLeNxcswpGP/ErABb
+   g5f6nDWPqeLpwPwmeJthHgQxCRQ46Fg60H8hiyewre4pHz1DXrFsnbh/F
+   c4uRi++ITrXGdnOT6RypRgwH9D2pzHLHFUziW8Pxnj4YjI/6J/K23xfal
+   Y=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@cam.ac.uk
+X-IronPort-AV: E=Sophos;i="6.12,294,1728943200"; 
+   d="scan'208,217";a="201740853"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 07 Jan 2025 08:55:03 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 83C15E0D23; Tue,  7 Jan 2025 08:55:03 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 0EFEDE0077
+	for <caml-list@sympa.inria.fr>; Tue,  7 Jan 2025 08:55:00 +0100 (CET)
+IronPort-SDR: 677cddd3_PwVdjSRHtHTZc/v9d4JOJowBWDgXWs5RGnL3u/DmncmIVgF
+ Et/qS6mjWW24XdrjQLocTynTLtsQWdhWxXUDlyQ==
+X-IPAS-Result: =?us-ascii?q?A0FaBABp3HxngY9kZTRaHQEBAQEJARIBBQUBQIFTgUEBM?=
+ =?us-ascii?q?FJ9WzIEC0iIIgOFLYhyi3aIEQKGUoNUgV8LBgkBAwELAi4BCgsEAQEDAQOCD?=
+ =?us-ascii?q?IJ0ingfBwEENBMBAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAEBO?=
+ =?us-ascii?q?wdJhXsNgls7cYElAQEBAQEBAQEBAQEBAR0CCAxXAQEgBQEQLgEBEhQSEQFOM?=
+ =?us-ascii?q?ScEASYOgl8BghxIBAIOpFYBgUACiit4gTSBAYIMAQEGBASBANpWKxaBZAMGg?=
+ =?us-ascii?q?UiDDoVAASqBMoQPhHeBP4EQgTwODYIwBYJDgjdng2iCL4I3gUuBHIF6WIZUh?=
+ =?us-ascii?q?EKEFYJ3i1KBRyIDJjMsAVUTFwsHBSyBDToDIgs2FRwCFR4BEgYVBHREOTmCD?=
+ =?us-ascii?q?WlJNwINAjWCHiRYgitrBAWDaIRHYS8DAwMDgzqCSVWCSIIXfIEaglEdQAMLb?=
+ =?us-ascii?q?T03Bg4bmygBChAjOD2FKBMPbweBJYERAQEBoUyjaQEGAoQdgWSKNItiiWovh?=
+ =?us-ascii?q?ASNBplJiAKQeiKNYpp/AgQCBAUCDwEBBoF+I4FcTTRpAXOBSU8DGQ9XjUqJD?=
+ =?us-ascii?q?oJmh0QBpQJENDwCBwsBAQMJkAyBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ Zs=
+IronPort-HdrOrdr: A9a23:x0ETRalcjqMz/Cddgro7Ua91AqvpDfJC3DAbv31ZSRFFG/Fw8P
+ rOoB1773HJYVkqNE3I9errBEDiexjhHPdOiOEs1NyZMzUO1lHEEL1f
+X-Talos-CUID: =?us-ascii?q?9a23=3AaLBpempuxlK/nz46uhkqywvmUc91Y3/l6i/3GhW?=
+ =?us-ascii?q?lVmljWq20ZQ7IqYoxxg=3D=3D?=
+X-Talos-MUID: 9a23:+sKW1grPj48/5q8cHCgezxxHZOJ62o6nNHhXkM48tvGNbXIqADjI2Q==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.12,294,1728943200"; 
+   d="scan'208,217";a="105639728"
+X-MGA-submission: =?us-ascii?q?MDFIdoGD5XFxm0pAByznIiGhNOMI8lRZoAoUWT?=
+ =?us-ascii?q?xntiNCEpakXEpGKKhvN1sGz0/Lmeg8iAN0TJM8FND44nluP5Eawqr3Xz?=
+ =?us-ascii?q?LcfT8gnqW5xEUGahgKkoiNSUUPRQcU65D6dJpvBmLaXUgzxlsYVfzQHN?=
+ =?us-ascii?q?xQze7QxGLHCCvT/MmkmJ52wA=3D=3D?=
+Received: from mail-ukwestazon11021143.outbound.protection.outlook.com (HELO CWXP265CU009.outbound.protection.outlook.com) ([52.101.100.143])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2025 08:54:59 +0100
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vDjW86y7djtuxaKvPqtqxbl8MPr5V7siwcx1lWAJO+LM9zpcpS8vUBk2bsjpstNJZpzxnjc9fFWHROEBgbVVFzYf++jgq4ARd4B2RJie2hc/WFtDJ5o6bFYs84EQseLH5dPoDT3ihv9qIGsHICvB1NjQemDlwDVnRUMENs1poglAXkCk5/6ufKeOe6wY/6KZ6L/6RgUh8uf4Vl3EJVzy8KIKFW9/XvIbhtxkZXRzdW+QN8nCgtrJHqENrnHLGsPPFmKQPHAA/joMUmHc78EqDmH1tlYLd37mTEY/GosvydRErIYnVxWYbC8+y7O+mCKilVOo5MUQUT0nlFmyaYdxcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=O+enLMbe+ikQ+3pCcJE3KsqP5BeYthX6zJcxtx8Q2E8=;
+ b=i7FZgIqMwMHKdUX5fIxCVKEuVCl8Y32xlTZhEvvz5d4hpj89BSjmsez6Rh2Bj3En1F3grrNTZanJtMM5Dix77nYW5EPctBMJ6BJHE3xynGP/wXMeY5K/pqDBFEqxKb43Xeo3M04RbMos3gbJP0K2sRMoHKaxYGw8JW9kYh21Tudf8BWXQ2xEvTZu6DZJl1QhKd1ORtkJa9YNe2EfQg6nblan/0biyDWDMWIU7a/UQBxvvtTXqSpQSKp+Sur9BJADajowYYlSdSxIkqjf7NSRWgKA2QRRso4S1WddbBi8uSCOG2XkJ5C8GfoYWLwMfKibbm/Z2peMheb3uQRIX2LysA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=cam.ac.uk; dmarc=pass action=none header.from=cam.ac.uk;
+ dkim=pass header.d=cam.ac.uk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cam.ac.uk;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=O+enLMbe+ikQ+3pCcJE3KsqP5BeYthX6zJcxtx8Q2E8=;
+ b=l/R9qgGM+hyjl7HLx9FXtCvWVLLLDnl4aIR5YkFs78CLe5ae/sBBDbSOAuqPLT5ohht/LxRXKL6iKdI5K51udJQXMOPoGlwdRfZBKVQuKTij3OK3MUFZeKBzYf8VUwKFs/pISpAoVoEp5Q+d4yh7DU4tGt3UUingtrCOduQAFLyJu2R4U8OG6KAVIe91Jhjdi5cbA7LwBcMrvU+dlEurSETp1PnxGUFtmr2s6MOl17A0kFvENU1TqNUb8l4/sE2Z7wopp/LnZBGkxuWCViRs1rWK6JzttDo+V9ifn/CyVRfrCifvOVhj7LxM7CW0NBiXfX1N5wqQa3xbWNee4NaEkA==
+Received: from CWXP265MB1605.GBRP265.PROD.OUTLOOK.COM (2603:10a6:401:47::20)
+ by CWLP265MB3345.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:d4::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8314.18; Tue, 7 Jan
+ 2025 07:54:57 +0000
+Received: from CWXP265MB1605.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::3e3a:2674:cbda:d6b6]) by CWXP265MB1605.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::3e3a:2674:cbda:d6b6%4]) with mapi id 15.20.8314.018; Tue, 7 Jan 2025
+ 07:54:57 +0000
+From: Luisa Cicolini <lc985@cam.ac.uk>
+To: "compilation-news@lists.gforge.inria.fr"
+	<compilation-news@lists.gforge.inria.fr>, "prog-lang@diku.dk"
+	<prog-lang@diku.dk>, "haskell-cafe@haskell.org" <haskell-cafe@haskell.org>,
+	"announcements@lists.artist-embedded.org"
+	<announcements@lists.artist-embedded.org>, "caml-list@inria.fr"
+	<caml-list@inria.fr>, "users@racket-lang.org" <users@racket-lang.org>,
+	"seworld@sigsoft.org" <seworld@sigsoft.org>, "infodir_sigplan@acm.org"
+	<infodir_sigplan@acm.org>, "hipeac-publicity@hipeac.org"
+	<hipeac-publicity@hipeac.org>, "hpc-announce@mcs.anl.gov"
+	<hpc-announce@mcs.anl.gov>, "CGO-NEWS@listserv.acm.org"
+	<CGO-NEWS@LISTSERV.ACM.ORG>
+Thread-Topic: CGO'25 - early bird registration and student research
+ competition
+Thread-Index: AQHbYNlwzBLhNonxokanrOrphVs+Uw==
+Date: Tue, 7 Jan 2025 07:54:55 +0000
+Message-ID: <0F77AC86-FDBE-44CE-823B-DB0D614F0FC7@cam.ac.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CWXP265MB1605:EE_|CWLP265MB3345:EE_
+x-ms-office365-filtering-correlation-id: da0ea0e4-d139-4ad0-5719-08dd2ef0933c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|366016|1800799024|7416014|376014|38070700018|921020|8096899003;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?kV+xKvqFUMDHUuzW9Vuc/N8gm+PGgYbsOU1xG/mRe/+4IiLkHwnjzIpFU30X?=
+ =?us-ascii?Q?jUXOAkCFy3FOza+aKd0C/b7PJlPfQqm5ZDNwtnvP5+nO/tLPtz5X/de/iH4C?=
+ =?us-ascii?Q?I/IFATN79T7rRXmJ0aQI+6yPObuV4yeAs5siOasMh22HXeflQ6dAdMXD79mp?=
+ =?us-ascii?Q?ZFf4d4h7vUDXVVbISmkEgoJG/5w4GmvmzB9d8H8gfToKnZ97C3BzyrcC6C+l?=
+ =?us-ascii?Q?D3sK5m7tECtJesqzEXMPxh6uUN3hl8JALB5CVsKe+nE0ZlJaTaHVU24yzso0?=
+ =?us-ascii?Q?ZAz4OluY95aeLmymAS00FdfZfn5B9AQx3yW4ysr1dgZhVdM5ip0DT5yo0y/k?=
+ =?us-ascii?Q?l1PUkdCv+WcsrGCrh9kIbVHyb6eyLb/vXVhYw/Og9SNFp3J7lAGfnyCDQsdn?=
+ =?us-ascii?Q?itlAniVKYM9S9tqA3+ZameW6kJIN8DiUNbn/hKtlphlIFdDqvlrZ+TvzYYKj?=
+ =?us-ascii?Q?i08LKzY9vcwy24EljaRRIUawa3hDPCD2eZidSPhPj61QwxNnrRaS48kH83Vd?=
+ =?us-ascii?Q?o0apUZa8NKQtEkWhI4t9JVDdIn++4/K2hyvJibID3GxYQl+mz4Fjy4DG4Isn?=
+ =?us-ascii?Q?hiDvN7BxOXiXA2VmkxIEqpMkYXYVETc6eaikL6WaMMZOm/dQJ+GUpoVVuoAQ?=
+ =?us-ascii?Q?ImdlJT9wbnsZunBu1vbPrmrW01TLYENEthwLKctHzk1zQO0Va6iTHE3bkEM6?=
+ =?us-ascii?Q?MH3dEIk9q1cPqy/ej0DId7mlZr/xifGPSerfYj4i409B1z51la9T85i0E1O+?=
+ =?us-ascii?Q?31E+VvEQqZkRjapc8l855CJb1gzF/+nAKNyw3bs+iCuWRXp2uXYRxdd0zad8?=
+ =?us-ascii?Q?eqCB2Xna6WR00JfgG+VBB+1Z7LVTVJhPA8zGQsGL5N6KXcajWVN+sHlCj3pf?=
+ =?us-ascii?Q?CsBP6diU4Ms5I1VejbXz8zD+lesHHENM37yU7jN9K2gTs0FgsoDXOuoZOpQE?=
+ =?us-ascii?Q?1mhoDA4pH5WP1OLqq3j0BMHsw/bcnko4roey5gnekBw+ObMC16EwUgF6Gw6s?=
+ =?us-ascii?Q?zH/E0x9SRSuJutRi9BItO9B8jlKwlEkMvmfGehreghKi+b86UzTP5uBI4DI/?=
+ =?us-ascii?Q?xjr3tlxEzi/O3Ijr/V7upJmyvwJva4KAVRy+Plo6OSg4iulnbadkXvpUSl+D?=
+ =?us-ascii?Q?Q0u3J6giWQJnlRVZ+80sntrL0XgzX/GQEznTDgFkjvLPFNoJGRW9ySP9TZqN?=
+ =?us-ascii?Q?XDHvbrwaqs9HTnc/7iTKaUM1ElKLxy1gaipmW+beSsS5Bma7Gz85IvYuvlIT?=
+ =?us-ascii?Q?NtyKeDQZiUPJR1yC5AiTKA+p8u+/876lVKL23TvrlC1Q/+fzZYbSznoSTp6o?=
+ =?us-ascii?Q?YOpnP9Urk+L7MQp3pYSvC18L1a6nTbDfVjd6rBYDbBLenQJ7CVDArELHAWvG?=
+ =?us-ascii?Q?zrVkcpk5DKptU61gdISnWvAxl4P/N/hL1I0CY060KO+4c+/ylw=3D=3D?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP265MB1605.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(38070700018)(921020)(8096899003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?O9VmWBVeVJIvlKdG9m0KDLGWFkqVDsxHnvKBCd0MvnRomgFJeGhag3jK5UFO?=
+ =?us-ascii?Q?1V0lY9HtX0Vp5rLFJyJfXlNwZNiWx+6d6vKr+2Pb6ZQPpSQYVvRBnTArSyCl?=
+ =?us-ascii?Q?8CYjVvidNjMCtI6qvnezosv++KUrantfRCv55dNhblZehZWEmaMcHy8Zt0rK?=
+ =?us-ascii?Q?vfYgOJcf8IwZLv1SRKTUFouf7CVCbstzCovmIKyrPzcpifFQFvRYSsh0jms3?=
+ =?us-ascii?Q?gW0M7D+XcEg+Eb4j10OiObN2beMSnqYKFEQaHA9Zg5jKN8xbAO4oeDVNZaDF?=
+ =?us-ascii?Q?qcEgWEVGAcDyoSq2qrfcqUbLA4bGIGjtZsMfU3INJE5cCW0YyBq/hZSGL0Xo?=
+ =?us-ascii?Q?Si7J/Vj/44BkGVOJhoX4t5rrsBLmY/scpLI+6wNl+HoZVx5Y5u1ko2Fj42XO?=
+ =?us-ascii?Q?6xsUy1Rvkpv1pZD5TvXSkx2NHYvWLGlOPirnhGqhnwILQCEOmj7/h6pjCrqB?=
+ =?us-ascii?Q?rvzcmib4722QES+LbImeYuaE0njurYNy7Vu9K5lCtbSOognjqrOwWU4F+l0m?=
+ =?us-ascii?Q?5i07YfSpBS8VKdeu3KLMAIoVFqUiWA+k3KFwQ4o0yfxITRx/sRs2j8rSKK6j?=
+ =?us-ascii?Q?OkaiwzjLmNjIgluXaiHqMsrXFKEIjMNAU5n6iZiLdzwGo13Ko77HaAf8+P/d?=
+ =?us-ascii?Q?GKnyK0oV+8TGtvNXgs6qzhfb5Fze0fbenWZIJZVzohbiTBLdrPSB3cJdvULg?=
+ =?us-ascii?Q?yyWKdaqPXh3XqkyWwziOEHnAC4D2DeYiKk5V9xseT5PYnjX29NtDlPkgjqbF?=
+ =?us-ascii?Q?9UFCjL9hqtCRBCCeL9+Ep9+JKDOUMUxlu0LoidaDq4RjGOJStOn0gWmnnKMa?=
+ =?us-ascii?Q?PLw1XmGlo+atf2aOA8Cn4GisWnXPorz+mQQPv8+05W8x4WmK7hlerjlvPzQM?=
+ =?us-ascii?Q?G3fQkmX1dofKAkQxwXkXgEvNE+ByUs8bVbk1OoA2nuUeP87anX7Zp0V3Hipe?=
+ =?us-ascii?Q?0oYPkl+p920smlXbcaz53f/lYWmaJ6Fa6iLXEiw16w+lr2Ne4EXoLB14yPHt?=
+ =?us-ascii?Q?L+5e8EQ2v+fZjBXqvxHnrul2v/4Zs5Mbj672RrY0Drj+tcsrN3h9tym9IYiC?=
+ =?us-ascii?Q?dAqrjQp6GEwc23YQq9vKSizpcFXOalLvl2XJgZ/byJk++RmbiEiE9fBuQtWL?=
+ =?us-ascii?Q?SyCpfIXKWx/YRcSOEOGaeokSnPS3pRdaVg70bIKfZtuDdF0bFWDJL4IaaDK4?=
+ =?us-ascii?Q?VwrnKkGagJwCFgofR4XTOt4w4weUwy33lBss6FeSr2uaUncGit1z6xgihcuf?=
+ =?us-ascii?Q?U8JQ3fMIIBMFHFUu0V1UrBivdD0EnjPxPyPAv19LXMHhhQ/fQMmEjNonVBEt?=
+ =?us-ascii?Q?YCyCE1E6m1vLGum/V6ZYAHjjmwYBVB+clr7smyBPF5oCvzhxjJbDv8LDH74h?=
+ =?us-ascii?Q?xLR2nMIJBx/bD6u07R4NtFuxwpr3HoF7odO0OSC/7i8roN6a1K0az7UeVdaQ?=
+ =?us-ascii?Q?mUFRORtv4KMFG+hFi2uWBbaCUzYhs1ZYoEKoIOg6uhFG1zxo6b01zfFW4URp?=
+ =?us-ascii?Q?hLHfEjnSXBAegqCas7EkM+2+RE80HgrQ1ifMfePFPSvJCJgjKCwHbJSClXQ4?=
+ =?us-ascii?Q?Fm/aoWbPnZTTOu96M2UwIiT+B5XfDZ0ABK2XeVIU?=
+Content-Type: multipart/alternative;
+	boundary="_000_0F77AC86FDBE44CE823BDB0D614F0FC7camacuk_"
+MIME-Version: 1.0
+X-OriginatorOrg: cam.ac.uk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWXP265MB1605.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: da0ea0e4-d139-4ad0-5719-08dd2ef0933c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jan 2025 07:54:55.3407
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 49a50445-bdfa-4b79-ade3-547b4f3986e9
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zoHN+X1Wdn2VwIvplk8+j62l+n5GxnnrKJggsogt2sRFm5hWS/unDPy3QrErBfTo
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP265MB3345
+Subject: [Caml-list] CGO'25 - early bird registration and student research
+ competition
+Reply-To: Luisa Cicolini <lc985@cam.ac.uk>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19245
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-01/0F77AC86-FDBE-44CE-823B-DB0D614F0FC7%40cam.ac.uk>
+
+--_000_0F77AC86FDBE44CE823BDB0D614F0FC7camacuk_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Dear all,
+
+
+Registrations for the International Symposium on Code Generation and Optimi=
+zation (CGO) 2025<https://2025.cgo.org/>, taking place in Las Vegas<https:/=
+/2025.cgo.org/attending/Venue>, from 1st-5th March are now open.
+
+
+The International Symposium on Code Generation and Optimization (CGO) is a =
+premier venue bringing together researchers and practitioners working at th=
+e interface of hardware and software on a wide range of optimization and co=
+de generation techniques and related issues. The conference spans from pure=
+ly static to fully dynamic approaches, from pure software-based methods to =
+specific architectural features and support for code generation and optimiz=
+ation.
+
+
+Early registration<https://2025.cgo.org/attending/registration> deadline is=
+ on 31st January!
+
+We are also hosting a Student Research Competition (SRC)<https://2025.cgo.o=
+rg/track/cgo-2025-student-research-competition>: a unique opportunity for u=
+ndergraduate and graduate students to present their original research befor=
+e a panel of judges and attendees at CGO'25. The winner will be awarded and=
+ invited to the 2025 ACM SRC competition. If you know any undergraduate or =
+postgraduate students doing research in compiler-related topics, please inv=
+ite them to apply - we are excited to welcome young researchers to the comm=
+unity!
+
+
+Best,
+
+
+Luisa Cicolini
+
+--_000_0F77AC86FDBE44CE823BDB0D614F0FC7camacuk_
+Content-Type: text/html; charset="us-ascii"
+Content-ID: <B5C6462975AA8941B46D031C8D07E53D@GBRP265.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+</head>
+<body style=3D"overflow-wrap: break-word; -webkit-nbsp-mode: space; line-br=
+eak: after-white-space;">
+<p dir=3D"ltr" id=3D"docs-internal-guid-40aa0a72-7fff-604a-971f-af11b46f14a=
+7" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); line-height: 1.=
+38; margin-top: 0pt; margin-bottom: 0pt;">
+<span style=3D"font-family: Amiko, sans-serif; font-variant-ligatures: norm=
+al; font-variant-alternates: normal; font-variant-numeric: normal; font-var=
+iant-east-asian: normal; font-variant-position: normal; vertical-align: bas=
+eline; white-space: pre-wrap;"><font size=3D"2">Dear
+ all,&nbsp;</font></span></p>
+<font size=3D"2"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0=
+);">
+</font>
+<p dir=3D"ltr" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); lin=
+e-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
+<font size=3D"2"><span style=3D"font-family: Amiko, sans-serif; font-varian=
+t-ligatures: normal; font-variant-alternates: normal; font-variant-numeric:=
+ normal; font-variant-east-asian: normal; font-variant-position: normal; ve=
+rtical-align: baseline; white-space: pre-wrap;">Registrations
+ for the <a href=3D"https://2025.cgo.org/">International Symposium on Code =
+Generation and Optimization (CGO) 2025</a>,
+</span><span style=3D"font-family: Amiko, sans-serif; white-space: pre-wrap=
+;">taking place in
+</span><a href=3D"https://2025.cgo.org/attending/Venue" style=3D"font-famil=
+y: Amiko, sans-serif; white-space: pre-wrap;">Las Vegas</a><span style=3D"f=
+ont-family: Amiko, sans-serif; white-space: pre-wrap;">, from 1st-5th March
+</span><span style=3D"font-family: Amiko, sans-serif; white-space: pre-wrap=
+;">are now open.</span></font></p>
+<p dir=3D"ltr" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); lin=
+e-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
+<span style=3D"font-family: Amiko, sans-serif; font-variant-ligatures: norm=
+al; font-variant-alternates: normal; font-variant-numeric: normal; font-var=
+iant-east-asian: normal; font-variant-position: normal; vertical-align: bas=
+eline; white-space: pre-wrap;"><font size=3D"2"><br>
+</font></span></p>
+<p dir=3D"ltr" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); lin=
+e-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
+<span style=3D"font-family: Amiko, sans-serif; white-space: pre-wrap;"><i><=
+font size=3D"2">The International Symposium on Code Generation and Optimiza=
+tion (CGO) is a premier venue bringing together researchers and practitione=
+rs working at the interface of hardware
+ and software on a wide range of optimization and code generation technique=
+s and related issues. The conference spans from purely static to fully dyna=
+mic approaches, from pure software-based methods to specific architectural =
+features and support for code generation
+ and optimization.</font></i></span></p>
+<p dir=3D"ltr" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); lin=
+e-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
+<font size=3D"2"><br>
+</font></p>
+<p dir=3D"ltr" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); lin=
+e-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
+<span style=3D"font-family: Amiko, sans-serif; font-variant-ligatures: norm=
+al; font-variant-alternates: normal; font-variant-numeric: normal; font-var=
+iant-east-asian: normal; font-variant-position: normal; vertical-align: bas=
+eline; white-space: pre-wrap;"><font size=3D"4"><a href=3D"https://2025.cgo=
+.org/attending/registration"><b>Early
+ registration</b></a><b> deadline is on 31st January!</b></font></span></p>
+<font size=3D"2"><br>
+<font color=3D"#000000" face=3D"Amiko, sans-serif"><span style=3D"caret-col=
+or: rgb(0, 0, 0); white-space-collapse: preserve;">We are also hosting a
+</span></font><a href=3D"https://2025.cgo.org/track/cgo-2025-student-resear=
+ch-competition">Student Research Competition (SRC)</a><font color=3D"#00000=
+0" face=3D"Amiko, sans-serif"><span style=3D"caret-color: rgb(0, 0, 0); whi=
+te-space-collapse: preserve;">:
+</span></font><span style=3D"font-family: Arial, sans-serif; white-space: p=
+re-wrap; caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">a unique opportun=
+ity for undergraduate and graduate students to present their original resea=
+rch before a panel of judges and attendees
+ at CGO'25. The winner will be awarded and invited to the 2025 ACM SRC comp=
+etition. If you know any undergraduate or postgraduate students doing resea=
+rch in compiler-related topics, please invite them to apply -
+<b>we are excited to welcome young researchers to the community</b>!</span>=
+<br>
+<br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);">
+</font>
+<p dir=3D"ltr" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); lin=
+e-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
+<span style=3D"font-family: Arial, sans-serif; font-variant-ligatures: norm=
+al; font-variant-alternates: normal; font-variant-numeric: normal; font-var=
+iant-east-asian: normal; font-variant-position: normal; vertical-align: bas=
+eline; white-space: pre-wrap;"><font size=3D"2">Best,</font></span></p>
+<font size=3D"2"><br style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0=
+);">
+</font>
+<p dir=3D"ltr" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); lin=
+e-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
+<span style=3D"font-family: Arial, sans-serif; font-variant-ligatures: norm=
+al; font-variant-alternates: normal; font-variant-numeric: normal; font-var=
+iant-east-asian: normal; font-variant-position: normal; vertical-align: bas=
+eline; white-space: pre-wrap;"><font size=3D"2">Luisa
+ Cicolini</font></span></p>
+<p dir=3D"ltr" style=3D"caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0); lin=
+e-height: 1.38; margin-top: 0pt; margin-bottom: 0pt;">
+</p>
+</body>
+</html>
+
+--_000_0F77AC86FDBE44CE823BDB0D614F0FC7camacuk_--
