@@ -1,0 +1,500 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=b0/Uvtyo;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=unical.it header.i=@unical.it header.a=rsa-sha256 header.s=google header.b=ijRR866A;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 375F4401BB
+	for <caml-list@tunbury.org>; Sat,  8 Feb 2025 11:53:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=9dgtyR40Wy5bSAn/6f5PZ26kH1ylEZFbWOnxDLJ19BQ=;
+  b=b0/Uvtyo8A82mctzdOt4zduYApBeWxiscjn6o/HhYoMTdBSrFHEwOavd
+   r9NxQw9rQf6N5DWN7ypooR1+Hr0+ScGETAyVzXAVc7qLJ+NX8GoIxJ0en
+   7/nd4b20TJM4Cq48POcWp5sWuIK1ibw7VNLwwnpVVX6PuURa+saNe6Kqh
+   U=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@unical.it
+X-IronPort-AV: E=Sophos;i="6.13,269,1732575600"; 
+   d="scan'208,217";a="207283553"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 08 Feb 2025 12:53:42 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 7E9B9E0260; Sat,  8 Feb 2025 12:53:42 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 2BEA2E0260
+	for <caml-list@sympa.inria.fr>; Sat,  8 Feb 2025 12:53:38 +0100 (CET)
+IronPort-SDR: 67a745c1_JY465kWquGvqDdJ5PibNzJpl/NUCdTdSj3ta34suN4VijZr
+ RrzsNabnqTrNTdk0v6/Aku5/kyHHCn8TFTdppfQ==
+X-IPAS-Result: =?us-ascii?q?A0HaBAD+RKdnfDWnVdFahB2BA31ZNAQLGS+EVoEjjiyBf?=
+ =?us-ascii?q?wUdl0KGaYERAxg+DwEDAQ05CwQBAQMEggyCdIsGAh4HAQQ0EwECBAEBAQEDA?=
+ =?us-ascii?q?gMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEiGQcOEimFew2CRQwDgTNjAgYDO?=
+ =?us-ascii?q?AEBAQEBAQEBAQEBAQEBAQEBAQEBAQETAg0HVzgGBQYdAQEmDAYlMAcCIxIBB?=
+ =?us-ascii?q?QEiGxEJgmGCZAMRBqM+gQVCiz6BMoEBggwBAQbcIIFlCRSBNIhPAYFcAg6Df?=
+ =?us-ascii?q?gGDfXongWREgRU1gkSBdE2BDwIBAQEXgQkIAQsBBgFOgy6CaYIzgUB+gnGHM?=
+ =?us-ascii?q?YFfWoEag3aDXIQpMoFCim0mJgMHBw4rSQ4BIQMmMywBVRMXCwcFgXEBAgEKg?=
+ =?us-ascii?q?QaBRkQ3OYIOaUk6Ag0CNYIefIIrhFmCGIIrRhgvAwMDA4M0gk+DC4ISg3yFf?=
+ =?us-ascii?q?YEXHUADC2ILPTcUG0yeCgFoPYMpbB0RAwc8IgofAQETDy0BFhUWBwUlCwQOB?=
+ =?us-ascii?q?QYaKAVGknqzGgeCZoE4jBiVSDOEA4FXiy+HAJJJiAKQeol9gS6Bb2qVVgITh?=
+ =?us-ascii?q?S4RI4EuLSNscE1SUgaCMAlGAxkPjjghg0IzSIFpCoIlwFtFMgI6AgcBCgEBA?=
+ =?us-ascii?q?wmQDAEnDIFLAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ J8ve1aw3g==
+IronPort-HdrOrdr: A9a23:P5zdQ6ghk2um2w/RFyYAbjTKZ3BQXnkji2hC6mlwRA09TyVXra
+ GTdZMgpHnJYVcqKRYdcLW7UpVoLkmwyXcY2+Us1PKZLWrbUIXBFvAf0WKg+UycJ8XGntQtqp
+ uICpIOduEYVGIK/PoSgjPZLz9Q+qjizEnyv5am854Fd2gDAJ2IrT0JaDpzdHcYeOAsP+tdKH
+ Pz3KR6ThObCAQqR/X+KHkZfvTJ4+bGnIjhZnc9dmQawTjLozO0yaLwVyOV1BcGUz9J3N4ZgB
+ P4uj28yKW/ku2xjiTR3W/L75hQhZ/Ix9ZZCNaX4/JlWAnEu0KHZJlBR7bHhjwzre21gWxa6O
+ Xkrhs7IsR1427QeGauyCGdqDXd7A==
+X-Talos-CUID: 9a23:7IaKUWxTxHdvhAZmT3T3BgVNOOxmaSGD1UvsKmGmIHd5ROWyZAKprfY=
+X-Talos-MUID: 9a23:IUuYzwvqKLvdpcsvGc2nnTNyGuBH7K+SNU0Gi5YWu8K0MhxrJGLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.13,269,1732575600"; 
+   d="scan'208,217";a="108555790"
+X-MGA-submission: =?us-ascii?q?MDFFEWNn5I3vCp2RyLS31vrbXcSlBNpm0Gvn6m?=
+ =?us-ascii?q?uN8a2AkcV0lGP7/yC+NKY+FecxbZk2mtP+Rlaxb7CmnFsd/0Wx0jRTuJ?=
+ =?us-ascii?q?OZNjaDYRoQZKHXQw9aLhP90PN7P7e+3DzXoExxjfBjcbpojTOfXBwfgB?=
+ =?us-ascii?q?vCnqznTKharaHUmdAB+fZcPQ=3D=3D?=
+Received: from mail-lf1-f53.google.com ([209.85.167.53])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2025 12:53:37 +0100
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5440d5b30a8so3438629e87.2
+        for <caml-list@inria.fr>; Sat, 08 Feb 2025 03:53:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unical.it; s=google; t=1739015616; x=1739620416; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=9dgtyR40Wy5bSAn/6f5PZ26kH1ylEZFbWOnxDLJ19BQ=;
+        b=ijRR866AgMdXTV79hT18I+wWzAk5QUA5iT9BXfSGWQ+cj2WFOp7PjVW30i7iBXHH63
+         DIzi4ixgLRreZVI+FJsgX3fIzTfeCyrIqce2t4XBF2pMRtFQrQVdXW7s2EwLz7BexxVe
+         06w1h6PCPaTNa9doa4tN+S+ZV4zz4hBNDGoNya5cx3vTDL4HVwTQvXHSqtQqZAXESYt3
+         5KnVlcMQiF5tsX5nUy8R/Rd7pbyxtVw3UxezMowcA2upwxXqR+EbPPItvuHxW0H+9S6d
+         uQw9+jl2nzwUuCJJ4iJ8lilRjLEz4p/riTB5zx08ivn4uO0ePrJViC9fgVYJ5lxeuNXP
+         03aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739015616; x=1739620416;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=9dgtyR40Wy5bSAn/6f5PZ26kH1ylEZFbWOnxDLJ19BQ=;
+        b=vTGlamCBcYd0iA8KEIeRzWUdaMhzeU0pdjCV4JTlhyDbXSsHEComZKMcZXHWb8mplY
+         357GnIhTjb93aOVeCmD6vIQ4l8m36FDUytDldDjw7nLhpy0Y24A0XyCFPlhNxb+mHbY4
+         58I8EUvHretAR17yBGlq3qmIVqvpLDF/lliP0JJ/7cYHX49+T8Mhn+QLXCTXhLrGQTnR
+         8P4uNqPs1USpPefov8tpLvZNv/1EqOoCL8Nvh6hNcdtmFTJa6VaGr3l0UyRaX1Hf1z8P
+         VKtn8UIT9RSXg5BaLCvA0pwoH4dI00PEnK9s4NvCJgt40qOLGTMMhsV9SOXVQfcGMNW+
+         IdsQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU9n1CvkNJ6Vl76x8nZEOFfVe00J6muPskIginUK26XqhxHcb4P+BIA85TX1+DEPRU1FCqD2kS26KU=@inria.fr
+X-Gm-Message-State: AOJu0YyIET3jSRqTv8i70dg12zYc4Cab1xtKuM/LxjOeQWQmtxWpMWyo
+	wHkTb7CKv4ViSfpRhz42ZSoaBhXPuu8Q7kF9m0ObtK1hwE/FAU9XR7XMd/IX+twi5kdAgGGRBJA
+	Dlps0TtDwIqdnfCYmQkYs7Ci9ebe7NBS3Pizr4Q==
+X-Gm-Gg: ASbGnctR/aKIpqK4HMLyW3hBnaAtOE5ZbiDYFFOqPZ2BQqZeh181zere/+7TSYzw1wL
+	fxYWFp/5aH4FwJFYvxy2WkC9DqIdN+yhtLNJc63D0SUEk9DA+gd2t0qX5EquRTur6GnHJtd/9dw
+	==
+X-Google-Smtp-Source: AGHT+IEu2m9UDkOFa/ilmqotbifvNjd6KR0+qX615BUFfJeanMuPNqVCjxG0LzjtUFBkwJw9a8GPG1DltBQJVbJWFb4=
+X-Received: by 2002:a05:6512:401a:b0:545:58d:9dda with SMTP id
+ 2adb3069b0e04-545058d9e3bmr641299e87.48.1739015615714; Sat, 08 Feb 2025
+ 03:53:35 -0800 (PST)
+MIME-Version: 1.0
+From: Manuel Alejandro Borroto Santana <manuel.borroto@unical.it>
+Date: Sat, 8 Feb 2025 12:53:24 +0100
+X-Gm-Features: AWEUYZkxqxbAgVP02IvFe-gOpq1WiIvuzfKqQpg94Mwe7woEomOqgwATYvnNQc0
+Message-ID: <CAF4PLRA03mYSUHP3ReUenLUvKPRvmNr5zQ2cgsD5Gt37iVkUMg@mail.gmail.com>
+To: Manuel Alejandro Borroto Santana <manuel.borroto@unical.it>
+Content-Type: multipart/alternative; boundary="00000000000008acf2062da02080"
+Subject: [Caml-list] [Call for Papers - LOPSTR 2025] 35th International
+ Symposium on Logic-Based Program Synthesis and Transformation (LOPSTR
+ 2025), Rende, Italy | September 9-10, 2025
+Reply-To: Manuel Alejandro Borroto Santana <manuel.borroto@unical.it>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19265
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-02/CAF4PLRA03mYSUHP3ReUenLUvKPRvmNr5zQ2cgsD5Gt37iVkUMg%40mail.gmail.com>
+
+--00000000000008acf2062da02080
+Content-Type: text/plain; charset="UTF-8"
+
+*[apologize for multiple postings]*
+
+
+
+35th International Symposium on Logic-Based Program Synthesis
+and Transformation (LOPSTR 2025).
+
+September 9-10, 2025 - University of Calabria, Rende, Italy
+https://lopstr.github.io/2025/
+
+Part of ICLP 2025 and co-located with PPDP 2025
+https://iclp25.demacs.unical.it/
+
+
+# IMPORTANT DATES
+
+ - Abstract submission: May 9, 2025 (AoE)
+ - Paper submission: May 16, 2025 (AoE)
+ - Author notification: June 27, 2025 (AoE)
+ - Camera-ready: July 17, 2025 (AoE)
+ - Symposium: September 9-10, 2025
+
+# OVERVIEW
+
+The aim of the LOPSTR series is to stimulate and promote international
+research and collaboration on logic-based program development. LOPSTR
+is open to contributions to logic-based program development in any
+programming language paradigm. LOPSTR has a reputation for being a
+lively, friendly forum for presenting and discussing work in progress.
+
+LOPSTR 2025 will be held at the University of Calabria, Rende, Italy.
+It will be co-located with ICLP 2025 and PPDP 2025.
+At least one of the authors of an accepted
+paper is expected to attend the conference and present the paper.
+Information about venue and travel will be available on the ICLP 2025
+website.
+
+Topics of interest include all aspects of logic-based program
+development, all stages of the software life cycle, and issues of both
+programming-in-the-small and programming-in-the-large, including, but
+not limited to:
+
+ - synthesis
+ - transformation
+ - specialization
+ - inversion
+ - composition
+ - optimisation
+ - specification
+ - analysis and verification
+ - testing and certification
+ - program and model manipulation
+ - AI methods for program development
+ - verification and testing of AI-based systems
+ - transformational techniques in software engineering
+ - logic-based methods for security
+ - logic-based methods for cyber-physical and distributed systems
+ - applications, tools, and industrial practice
+
+Survey papers that present some aspects of the above topics from a new
+perspective and papers that describe experience with industrial
+applications and case studies are also welcome.
+
+# PAPER SUBMISSION
+
+Submissions can be made in two categories:
+
+ - Regular Papers (15 pages max.)
+ - Short Papers (8 pages max.)
+
+References will NOT count towards the page limit. Additional pages may
+be used for appendices not intended for publication. Reviewers are not
+required to read the appendices, and thus papers should be intelligible
+without them. All submissions must be written in English.
+
+Submissions must not substantially overlap with papers/tools that have
+been published or that are simultaneously submitted to a journal,
+conference, or workshop with refereed proceedings.
+
+Submissions of Regular Papers must describe original work. Work that
+already appeared in unpublished or informally published workshop
+proceedings may be submitted (please contact the PC Chairs in case of
+questions).
+
+Submissions of Short Papers may include presentations of exciting if
+not fully polished research or tool demonstrations that are of
+academic and industrial interest. Tool demonstrations should describe
+the relevant system, usability, and implementation aspects of a tool.
+
+All accepted papers will be included in the conference proceedings and
+published by Springer as a Lecture Notes in Computer Science (LNCS)
+volume.
+
+After the symposium, a selection of a few best papers will be invited
+for submission to rapid publication in the Journal of Theory and
+Practice of Logic Programming (TPLP). Authors of selected papers will
+be invited to revise and/or extend their submissions to be considered
+for publication. The papers submitted to TPLP will be subject to the
+journal's standard reviewing process.
+
+# SUBMISSION GUIDELINES
+
+Authors should submit an electronic copy of the paper (written in
+English) in PDF, formatted in the Lecture Notes in Computer Science
+style. Each submission must include on its first page the paper title;
+authors and their affiliations; contact author's email; abstract; and
+three to four keywords which will be used to assist the PC in
+selecting appropriate reviewers for the paper. Authors should consult
+Springer's authors' instructions on the author's page, and use their
+proceedings templates, either for LaTeX (available also in Overleaf)
+or for Word, for the preparation of their papers. Springer encourages
+authors to include their ORCIDs in their papers. In addition, upon
+acceptance, the corresponding author of each paper, acting on behalf
+of all of the authors of that paper, must complete and sign a
+Consent-to-Publish form. The corresponding author signing the
+copyright form should match the corresponding author marked on the
+paper. Once the files have been sent to Springer, changes relating to
+the authorship of the papers cannot be made.
+
+Page numbers (and, if possible, line numbers) should appear on the
+manuscript to help the reviewers in writing their report. So, for
+LaTeX, we recommend that authors use:
+
+\pagestyle{plain}
+\usepackage{lineno}
+\linenumbers
+
+Papers should be submitted via EasyChair:
+https://easychair.org/conferences/?conf=lopstr2025
+
+
+# PROGRAM CHAIRS
+
+Santiago Escobar, Univesitat Politecnica de Valencia, Spain
+Laura Titolo, Code Metal, USA
+
+# PUBLICITY CHAIR
+
+Manuel Borroto, University of Calabria, Italy
+
+
+# HISTORY
+
+LOPSTR is a renowned symposium that has been held for more than
+30 years. The first meeting was held in Manchester, UK in 1991.
+Information about previous symposia: http://lopstr.webs.upv.es/.
+You can find the contents of past LOPSTR symposia at DBLP
+(https://dblp.uni-trier.de/db/conf/lopstr/index.html) and past LNCS
+proceedings at Springer (https://link.springer.com/conference/lopstr).
+
+--00000000000008acf2062da02080
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><div dir=3D"ltr"><div>
+<span id=3D"m_2026237860196108228m_1790574151468469427gmail-docs-internal-g=
+uid-0d7b01de-7fff-1e64-6ca1-5eb3f61bced6"><p style=3D"line-height:1.2;margi=
+n-top:0pt;margin-bottom:0pt"><span style=3D"font-size:11pt;font-family:Apto=
+s;color:rgb(0,0,0);background-color:transparent;font-variant-numeric:normal=
+;font-variant-east-asian:normal;font-variant-alternates:normal;vertical-ali=
+gn:baseline"><i>[apologize for multiple postings]</i></span></p><p dir=3D"l=
+tr" style=3D"line-height:1.2;margin-top:0pt;margin-bottom:0pt"><span style=
+=3D"font-size:11pt;font-family:Aptos;color:rgb(0,0,0);background-color:tran=
+sparent;font-weight:700;font-variant-numeric:normal;font-variant-east-asian=
+:normal;font-variant-alternates:normal;vertical-align:baseline"><br></span>=
+</p></span></div><div><br></div><div>35th International Symposium on Logic-=
+Based Program Synthesis </div><div>and Transformation (LOPSTR 2025).</div><=
+div><br></div>September 9-10, 2025 - University of Calabria, Rende, Italy<b=
+r><div><a href=3D"https://lopstr.github.io/2025/" target=3D"_blank">https:/=
+/lopstr.github.io/2025/</a></div><div><br></div><div>
+Part of ICLP 2025 and co-located with PPDP 2025
+
+<br></div><div><a href=3D"https://iclp25.demacs.unical.it/" target=3D"_blan=
+k">https://iclp25.demacs.unical.it/</a></div><br><div><br></div><div># IMPO=
+RTANT DATES</div><div><br></div>=C2=A0- Abstract submission: May 9, 2025 (A=
+oE)<br>=C2=A0- Paper submission: May 16, 2025 (AoE)<br>=C2=A0- Author notif=
+ication: June 27, 2025 (AoE)<br>=C2=A0- Camera-ready: July 17, 2025 (AoE)<b=
+r>=C2=A0- Symposium: September 9-10, 2025<br><br># OVERVIEW<br><br>The aim =
+of the LOPSTR series is to stimulate and promote international<br>research =
+and collaboration on logic-based program development. LOPSTR<br>is open to =
+contributions to logic-based program development in any<br>programming lang=
+uage paradigm. LOPSTR has a reputation for being a <br>lively, friendly for=
+um for presenting and discussing work in progress.<br><br>LOPSTR 2025 will =
+be held at the University of Calabria, Rende, Italy. <br>It will be co-loca=
+ted with ICLP 2025 and PPDP 2025. <br>At least one of the authors of an acc=
+epted <br>paper is expected to attend the conference and present the paper.=
+ <br>Information about venue and travel will be available on the ICLP 2025 =
+<br>website.<br><br>Topics of interest include all aspects of logic-based p=
+rogram <br>development, all stages of the software life cycle, and issues o=
+f both <br>programming-in-the-small and programming-in-the-large, including=
+, but<br>not limited to:<br><br>=C2=A0- synthesis<br>=C2=A0- transformation=
+<br>=C2=A0- specialization<br>=C2=A0- inversion<br>=C2=A0- composition<br>=
+=C2=A0- optimisation<br>=C2=A0- specification<br>=C2=A0- analysis and verif=
+ication<br>=C2=A0- testing and certification<br>=C2=A0- program and model m=
+anipulation<br>=C2=A0- AI methods for program development<br>=C2=A0- verifi=
+cation and testing of AI-based systems<br>=C2=A0- transformational techniqu=
+es in software engineering<br>=C2=A0- logic-based methods for security <br>=
+=C2=A0- logic-based methods for cyber-physical and distributed systems<br>=
+=C2=A0- applications, tools, and industrial practice<br><br>Survey papers t=
+hat present some aspects of the above topics from a new<br>perspective and =
+papers that describe experience with industrial<br>applications and case st=
+udies are also welcome.<br><br># PAPER SUBMISSION<br><br>Submissions can be=
+ made in two categories:<br><br>=C2=A0- Regular Papers (15 pages max.)<br>=
+=C2=A0- Short Papers (8 pages max.)<br><br>References will NOT count toward=
+s the page limit. Additional pages may<br>be used for appendices not intend=
+ed for publication. Reviewers are not<br>required to read the appendices, a=
+nd thus papers should be intelligible<br>without them. All submissions must=
+ be written in English.<br><br>Submissions must not substantially overlap w=
+ith papers/tools that have<br>been published or that are simultaneously sub=
+mitted to a journal,<br>conference, or workshop with refereed proceedings.<=
+br><br>Submissions of Regular Papers must describe original work. Work that=
+ <br>already appeared in unpublished or informally published workshop<br>pr=
+oceedings may be submitted (please contact the PC Chairs in case of<br>ques=
+tions). <br><br>Submissions of Short Papers may include presentations of ex=
+citing if<br>not fully polished research or tool demonstrations that are of=
+<br>academic and industrial interest. Tool demonstrations should describe<b=
+r>the relevant system, usability, and implementation aspects of a tool.<br>=
+<br>All accepted papers will be included in the conference proceedings and<=
+br>published by Springer as a Lecture Notes in Computer Science (LNCS)<br>v=
+olume.<br><br>After the symposium, a selection of a few best papers will be=
+ invited<br>for submission to rapid publication in the Journal of Theory an=
+d<br>Practice of Logic Programming (TPLP). Authors of selected papers will<=
+br>be invited to revise and/or extend their submissions to be considered<br=
+>for publication. The papers submitted to TPLP will be subject to the<br>jo=
+urnal&#39;s standard reviewing process.<br><br># SUBMISSION GUIDELINES<br><=
+br>Authors should submit an electronic copy of the paper (written in<br>Eng=
+lish) in PDF, formatted in the Lecture Notes in Computer Science<br>style. =
+Each submission must include on its first page the paper title;<br>authors =
+and their affiliations; contact author&#39;s email; abstract; and<br>three =
+to four keywords which will be used to assist the PC in<br>selecting approp=
+riate reviewers for the paper. Authors should consult<br>Springer&#39;s aut=
+hors&#39; instructions on the author&#39;s page, and use their<br>proceedin=
+gs templates, either for LaTeX (available also in Overleaf)<br>or for Word,=
+ for the preparation of their papers. Springer encourages<br>authors to inc=
+lude their ORCIDs in their papers. In addition, upon<br>acceptance, the cor=
+responding author of each paper, acting on behalf<br>of all of the authors =
+of that paper, must complete and sign a<br>Consent-to-Publish form. The cor=
+responding author signing the<br>copyright form should match the correspond=
+ing author marked on the<br>paper. Once the files have been sent to Springe=
+r, changes relating to<br>the authorship of the papers cannot be made.<br><=
+br>Page numbers (and, if possible, line numbers) should appear on the<br>ma=
+nuscript to help the reviewers in writing their report. So, for<br>LaTeX, w=
+e recommend that authors use:<br><br>\pagestyle{plain}<br>\usepackage{linen=
+o}<br>\linenumbers<br><br>Papers should be submitted via EasyChair:<br><a h=
+ref=3D"https://easychair.org/conferences/?conf=3Dlopstr2025" target=3D"_bla=
+nk">https://easychair.org/conferences/?conf=3Dlopstr2025</a><br><br></div><=
+div dir=3D"ltr"><br></div><div dir=3D"ltr"># PROGRAM CHAIRS<br><br>Santiago=
+ Escobar, Univesitat Politecnica de Valencia, Spain<br>Laura Titolo, Code M=
+etal, USA<br><br># PUBLICITY CHAIR<br><br>Manuel Borroto, University of Cal=
+abria, Italy<br><br><br># HISTORY<br><br>LOPSTR is a renowned symposium tha=
+t has been held for more than <br>30 years. The first meeting was held in M=
+anchester, UK in 1991. <br>Information about previous symposia: <a href=3D"=
+http://lopstr.webs.upv.es/" target=3D"_blank">http://lopstr.webs.upv.es/</a=
+>. <br>You can find the contents of past LOPSTR symposia at DBLP<br>(<a hre=
+f=3D"https://dblp.uni-trier.de/db/conf/lopstr/index.html" target=3D"_blank"=
+>https://dblp.uni-trier.de/db/conf/lopstr/index.html</a>) and past LNCS <br=
+>proceedings at Springer (<a href=3D"https://link.springer.com/conference/l=
+opstr" target=3D"_blank">https://link.springer.com/conference/lopstr</a>).<=
+br><br><br></div>
+</div>
+</div>
+
+--00000000000008acf2062da02080--
