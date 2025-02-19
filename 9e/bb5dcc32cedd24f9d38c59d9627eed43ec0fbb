@@ -1,0 +1,455 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=b4Urvo+5;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=math.cnrs.fr header.i=@math.cnrs.fr header.a=rsa-sha256 header.s=mail header.b=VggqqC9X;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=math.cnrs.fr header.i=@math.cnrs.fr header.a=rsa-sha256 header.s=mail header.b=V7fezuOn;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 7F73D49109
+	for <caml-list@tunbury.org>; Wed, 19 Feb 2025 14:35:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:from:to:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=v5G+Zju7JmvTQL3B97O0rgNwQEmnDVB9zEkMISuAoF8=;
+  b=b4Urvo+5C7Bz3GsPSdfJeMo0g2QbnWxw68B4YaVrAZxvL8gbqAcbLrwC
+   aV2i7vhMYT+uR30HHSUBcwu1ZSOsr4wfIRn4o+tbckQvzuLyTZ4hpL5sB
+   DJg5WYbLlsjjrKuLaV9AoKhipk4XaYTwLYujtl+REo8nAGdK/Z2Dc4Q/J
+   8=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@math.cnrs.fr
+X-IronPort-AV: E=Sophos;i="6.13,299,1732575600"; 
+   d="scan'208";a="209028529"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 19 Feb 2025 15:35:18 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id AFD7DE0D21; Wed, 19 Feb 2025 15:35:18 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 471D8E0260
+	for <caml-list@sympa.inria.fr>; Wed, 19 Feb 2025 15:35:17 +0100 (CET)
+IronPort-SDR: 67b5ec24_e7qU8hOroqGrcTxcfkNNbLQkhGauvTKi3r3QkISfzG7hZau
+ qpR0YcTrb9ClOueYDOSnOpw1s9UlFG6zrF4WJAw==
+X-IPAS-Result: =?us-ascii?q?A0GYAAAq67VnhZb/1oZRCR0BAQEBCQESAQUFAUCBQQYBC?=
+ =?us-ascii?q?wGCQ31aMwQLSIRWg0+FLYhHLZFKjE0UgREDGD4PAQMBDTkIAQIEAQEDAQOFA?=
+ =?us-ascii?q?IsQHwcBBDIHDgECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEBA?=
+ =?us-ascii?q?UBJhXsBDIJFUXFlCTcBAQEBAQEBAQEBAQEBAQEBAQEYAg0HVwFCBg8BBQgBA?=
+ =?us-ascii?q?SMDEhgcAhEVAl4TAgEBEIJuAYJkAxGTX5xFgRYcgQGCDAEBBlI2gWHZfIEgA?=
+ =?us-ascii?q?waBGi4BhQGDTQGFaziFQYFNgRUnDoIFgS6BBYFcAgKBFxIBCAMBBgE2KoMcg?=
+ =?us-ascii?q?mmCM4ENM31bLIFqhykFgV+EC4IWInuFQwQRVwNsgQSNVIFNHANZLAFVExcLB?=
+ =?us-ascii?q?wWBcQMqNBUcgUZDN4JHaUk6Ag0CNYIeJFiCK2oEBYNlhENeLwMDAwODNIVYg?=
+ =?us-ascii?q?hKJdIFWgWkdQAIBC209NwkLG0OgJgE8gycVBiBoBAgDQxwZGBMNAg0gAUAIB?=
+ =?us-ascii?q?RMEFwIEDgUvAQEcRpJBJRSSF59GgT4Hgh6CAIwYlTQGDwQvhAOHEoV0hkYIk?=
+ =?us-ascii?q?VaBJZh9Io1jkR2EDDAThT+BQisBM2xwTScrIYJnTwMZD1eNShcCg2FqVIEmg?=
+ =?us-ascii?q?i+/SiU1AgE5AgcBCgEBAwmCOYMNAQGKMgEnDIFLAQE?=
+IronPort-PHdr: A9a23:MKaFjhdTAol33/3GV7ZXegfwlGM+w9fLVj580XLHo4xHfqnrxZn+J
+ kuXvawr0ASTG92DoKwY17qempujcFJDyK7CikxKSIZLWR4BhJdetC0bK+nBN3fGKuX3ZTcxB
+ sVIWQwt1Xi6NU9IBJS2PAWK8TW94jEIBxrwKxd+KPjrFY7OlcS30P2594HObwlSizewb61+I
+ A+qoQnNucUbgIRvJ6kyxxDUvnZGZuNayH9nKl6Ugxvy/MC88oJ9/S9Nofwh7clAUav7f6Q8U
+ 7NVCSktPn426sP2qxTNVBOD6XQAXGoYlBpIGBXF4wrhXpjtqCv6t/Fy1zecMMbrUL07QzWi7
+ 6NsSB/1lCcKMiMy/W/LhsBsiq9QvRWuqQFiw47PeIGaKuZxfr/Tc9MdQGpORMdRVypcCY+4Y
+ IYCC+8NMOBFpIf/ulQOtwOzCwqiCuzgxDBGhmH407Am3OouCgzGwA8tEsgSvHjIstn4NqEfW
+ v21wqnSyjXDautb1Cn56I/SdxAuv/eMXa5tesfN1EkgDB3Kjk+MqYf4OD6ayuANvHae7+V+U
+ +Kvl3QrpBtsoje02MgskJXJi5kQyl/e6SV5wJw5KsG+SE5het6oCpVQtzuDOoZwX8gtTH1mt
+ jwgxb0apZ60YjIKyJI/yhDfZfGKbouF7xH9WOuSITl1hHxrda+/ihuw8EWuxO3yWte03ltEo
+ CdLktvBu34Q2hHc5caKTudx80Og1DuT1A3e7PxPL04zlareMZEhw7gwm4IOvkTCBS/5hEL2j
+ LOIeUo44OSo7P7nYrr+qp+TNo90lgH+Mrk1lcClAOQ4NRACX2ic+eSgyLLj51X5TK9Wgf0xl
+ 6nVqIrVJdkUpq6kGA9Vzpws5wyhADi7zdQVm2QMIlFdeB+fkoTkNV7DLOrmAfuijFmgiilny
+ vDGM7H7H5nALmTPnK//cbty8UJQ1gQ+wNFF655JFr0MIOj/VlH/udHeExQ0LQi0w/v8CNVhy
+ IweQ3+BAq6YMazMqVKE+uQiKPSWaoAPojbyMf0l6ubujXAnnV8derGk3Z4NZ3CiEfRpOViZY
+ HX2jtcEC2gKogo+QPb2h12ESz5TfGy+X6wm5j0jCYKmC5nMRpy1jbCc0iq2EYdaan5bBl2DC
+ 3vkaYWJVvcWZC6PIsJtjiQIVb27RI8g0RGuuhX6y71iLufM5iIYsYzs1N1r6O3ViRE+7yZ7D
+ 9mG3G6TVWF0gngFRzos06BjoUxx0EuM0a5ig/xDD9BT6elJXh88NZHH1+N6Ecz9WhrdfteVT
+ 1arWsiqDSkrTt0t298Of1p9G9K6gx/fxSWqBrsVm6WPBJw16aLcw2P8J919ynbDzKkulUMqQ
+ spJNW28h65w7RLfB4DTkxbRq6H/P6UX0QbD7m6GxG6Pp11VS0h3S6qPFSQebUb+o87w40rGT
+ qSyBK9hNRFOn52sMKxPP/btDFBLQuurEcnUbnit0zO7ARuNy7WQKoP3cWgHwA3YAVQE1QsV5
+ 23AOxJoVXTpmH7XEDE7TQGnWEjr6+Qr9CLTpi4cygiLaxckzL+p4lsPgvfaTfoP37UCsSNnq
+ jNuHV/70ciFQ8GYqV9He6NRKcg4/E8BzXjQ4gd5M5mtKbwkj0MUfh5rl0bnyxUxAYNaio4kt
+ iBi1xJ8fJqRy0gJbDaExdb1M7zTJHP1+UWkb6PT11fClt+L8KoV9Nw9oknj+gqvDFFk/W80m
+ 8JN3S664ZPHRBEXTYq3Uksz8E1ioKrGZyAm+47O/XhlK6a9ry+E3ts1BK0uzAy7OdlFWE+dP
+ Cn1FcBSR82nKehw3kOscgpBJudZsqg9I8KhcfKCnq+tJudp2jy83yxB58hm30SA+jAZKKaA1
+ osZw/yewgqMVivtxFanvMftnIlYZDYUVmOhwCngDYRVa+V8Z4EOQWupJsS2wJ15ifuPEzZT8
+ FOmClUansa0cxeIc3T41BFQk08Ru2fhlzH5hz14njc1r7aOiTTUyreHFlJPMWpKSW9+yFb0d
+ NHv05ZABRTuNVV00kL4vRWfpeATvql0ImjNTF0deiH3KzsnSa6srv+YZMUJ7po0sCJRWeD6Y
+ FaAS7e7rQFJtkGrV2ZY2j0/cCmn/5vjmBkvwmmZIXN+qmafcNx6yA3DzNnVWf4X1TwcX292k
+ 3OEYzr0d8ns5tiSm5rZ56q1U2+kW5tPNyD2x46aqAO+7HFqRxa5hev1lMetQm1YmWfrktJtU
+ yvPthP1ZILmgr+7PexQdU5tHFbg6sB+F+mSi6MIjYoLkTgfj5SRpz8clHvrdM9c0uT4ZWYMQ
+ jgCx5jU5hLk0QttNCDBy4X8X3SbisxvArvyKmgS1ycw6dwMAbqe4aZYtS58vlr+pgTLer5zh
+ H8RxOAv53gTn+wS8FN2kmPHW+xURxQFe3Wxz1yB9LXc5O1PaXyqcKSs2UY2ht2nALyY40ldV
+ Hv/ZpY+DHp158R7PkjL1S6WiMmsc93RYNQP8xyMxk6b064Pcc53zKdXw3M6YTGY3zVt0eMwg
+ B1w0IvvuYGGLz8o56elGltCMTazYcoP+zbrhKIYn8CM3onpEI8yf1dDFJbuU/+sFyof8Pr9M
+ APbWjY4p3KWH6aZFBKV5V16h3fGD5DtPHeNPz8X158xIXvVbFwamw0SUDggy9QyEg2vycr9N
+ k5k7D0L+nb9owdMjOluLQK5XH2V92LKIn8kDZOYKhRR9ARL4UzYZNef4uxEFCZd5pS9rQaJJ
+ z/Td0FSAGoOQEDBG0H7M+zk+4zb6+bBTLnbTbOGcfCUpOdZTfvN2Z+/zt4s4WOXLsvWdnxyR
+ /wjhhgaBiw/QZ2F3W9SFmpOynqoDYbTpQ/gqHQs8oblqaitAl+yo9LSV/NTKYk9okzpx/3ab
+ 6jJ2mAjc35Z0JgI2HPFmqVa01dUhTsmIDCpFf5oWTflaqXWl+cXChcab3k2L85U9+cm2QILP
+ 8fHi9Tz37o+j/gvCl4DW0az0seuLdcHJW2wLjalTA6CKaiGKDvXwsr2fbL0SLtei/9RvgGxv
+ jDTGlHqPzCKnT3kHx61NuQEgCaeNR1Y8IazF3QlQXDkV87jYwanPcVfiDQszrQpljXPPHIcd
+ zN6aVgLoKfRpSJUj/NjGnBQu3poKe7X/kTRp+LcK5sQrb5qGnEtzL4cui1mjeEIsWcdGaQm/
+ Uma5sRjqFynjOSVnz9uUR4U7y1OmJrOp0Jpf6PQ6phHX3/AuhML92SZTRoQ9L4HQpXivb5dz
+ t/Xmef9MjBHppjf+cYZCs7IbsuaOnc7LTLsESLUSgADVyXtO3uV1Ck/2LmCs2aYqJQ3sM2mg
+ J0VVrpST0A4DNsfA15qFcESZpJ+QjNimriBl4gG/zDtyXuZDNUftZfBWPWIBPzpIzvMlrhIa
+ SwDxrbgJJgSPIn2s6SNQlxzgISMEEzKRpZDuH84BufRiEBE7Hg4RWspwATrcFH1iJfyPfu9h
+ BE/lxs4ZO0x9HHn5U0sYFTQ9nNYrQ==
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:fgsXx6wKn8mKWNrSxA3rKrPwL71zdoMgy1knxilNoG9uA6mlfq
+ eV7YwmPH7P+U8ssRQb87690ca7IU80maQFhbX5Xo3SPzUO2lHIEGgK1+KLqFGOJ8SUzJ866U
+ 4PSdkYNDS9NykZsS8k2mSFL+o=
+X-Talos-CUID: =?us-ascii?q?9a23=3Anh06C2gke3Yo14zw5kfrTm98ATJuWUz64HGXOkO?=
+ =?us-ascii?q?BMjxqZaetbmC/+L57jJ87?=
+X-Talos-MUID: =?us-ascii?q?9a23=3AKe1m1gwf4ypx6gUXIhL+YOoBUNGaqPv1FHIzwJo?=
+ =?us-ascii?q?9gMuNOitsayekshbrGJByfw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.13,299,1732575600"; 
+   d="scan'208";a="209028515"
+X-MGA-submission: =?us-ascii?q?MDHDT6Y+b2leurWn+oLWpygv/lx5eVYJUJugpm?=
+ =?us-ascii?q?fIcegOioDQGP/0Ia8T9HGAoBwJ4rcRtGhohGO4jNRWmPTJkkFbts1L1b?=
+ =?us-ascii?q?OMbMhyX7bG3hMqa9XLaaL2FYmpcSp45Up4W07KDVMRwmOmnNGpZyxQPS?=
+ =?us-ascii?q?U2xYiIxnk+R+L5ZF8epHeERA=3D=3D?=
+Received: from margaux.mathrice.fr (HELO margaux.math.cnrs.fr) ([134.214.255.150])
+  by mail2-smtp-roc.national.inria.fr with ESMTP; 19 Feb 2025 15:35:16 +0100
+Received: from localhost (localhost [127.0.0.1])
+	by margaux.math.cnrs.fr (Postfix) with ESMTP id 3A1F61614;
+	Wed, 19 Feb 2025 15:35:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=math.cnrs.fr;
+	s=mail; t=1739975716;
+	bh=v5G+Zju7JmvTQL3B97O0rgNwQEmnDVB9zEkMISuAoF8=;
+	h=Date:From:To:Subject:From;
+	b=VggqqC9XjeEGniBoJLKzqdpEPR1WL8CD7RCHvjJyQhaXN5sJJ55gCorQGcNiHqZJg
+	 vPMN87dK/ReXudqqwn52bb2z0G5jYh1V5wguKpcUj0TwG8p2QLQIWEepb0sRHz/Kod
+	 Ol4QI+rq41inrLVMrKNW6UF8RFc1wsOaHVf+gAVTlrGa7710X97YTGnHhE/xwvBZNn
+	 AXiMcUjtVwKTyMxKllQdTPDuiRXQaKqrk0qVK7XjMj8KW4F44hesrxwk/VJQnzMOnD
+	 Hg80956fJ/rBsMW4qCGW7MCqCID94b57BFr8C7Oy42m1SGjwSImsmvDnvO9+6Vsluq
+	 4qHXioYB/SqNA==
+X-Virus-Scanned: Debian amavisd-new at math.cnrs.fr
+Received: from margaux.math.cnrs.fr ([127.0.0.1])
+	by localhost (margaux.math.cnrs.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pstBVK5JNbLX; Wed, 19 Feb 2025 15:35:13 +0100 (CET)
+Received: from [192.168.8.41] (user-24-236-105-23.knology.net [24.236.105.23])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by margaux.math.cnrs.fr (Postfix) with ESMTPSA id 75520452;
+	Wed, 19 Feb 2025 15:35:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=math.cnrs.fr;
+	s=mail; t=1739975713;
+	bh=v5G+Zju7JmvTQL3B97O0rgNwQEmnDVB9zEkMISuAoF8=;
+	h=Date:From:To:Subject:From;
+	b=V7fezuOnDRXxRTx1fl4L88E6xZpZht5GcMpLddeAr50vQYkbxtdFzt49/gjByz937
+	 TX8D9zBCbZsrdlbPXhk/p7bxi2xIELAObk39nt53/9JkFW4HOOZDunMvij9L0eSqjM
+	 W7IIq8FvH90ShloymX7q12ndKyAYrj45u9+VZ6CJ/qqnc9puKUSdUJFv3XO6xFLWgv
+	 e9gh2xGMO0/N+g6g29bElWnU+WoBdL2yzTvvVb2GxFDtJIgm9IXhiTZSGDls1SLD7H
+	 /+e080Gfdco3nOqMlhzx87DrwRZLr3fkeMsekKJsgz5Wf+6HTMWXw8IKvGZVxSTTm1
+	 eQwk6LEyhJuLw==
+Message-ID: <28c90ce6-79bc-4cea-90f2-4b97b346ae4e@math.cnrs.fr>
+Date: Wed, 19 Feb 2025 09:35:08 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+From: =?UTF-8?Q?Cl=C3=A9ment_Aubert?= <clement.aubert@math.cnrs.fr>
+To: "ice@framalistes.org" <ice@framalistes.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Subject: [Caml-list] ICE 2025: First Call for Papers
+Reply-To: =?UTF-8?Q?Cl=C3=A9ment_Aubert?= <clement.aubert@math.cnrs.fr>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19271
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-02/28c90ce6-79bc-4cea-90f2-4b97b346ae4e%40math.cnrs.fr>
+
+                             ICE 2025
+            18th Interaction and Concurrency Experience
+                   June 20, 2025, Lille, France
+                Satellite workshop of DisCoTec 2025
+
+            https://www.discotec.org/2025/satellite/ice
+                  https://ice-workshop.github.io/
+
+                         Submission link:
+                     https://ice25.hotcrp.com/
+
+The Interaction and Concurrency Experience (ICE) series of
+international scientific meetings are a forum for computer science
+researchers with research interests in models, verification, tools,
+and programming primitives for complex interactions.
+
+=== HIGHLIGHTS ===
+
+     * Distinctive selection procedure
+     * ICE welcomes full papers to be included in the proceedings
+     * ICE also welcomes oral communications of already published or
+       preliminary work
+     * Invited speaker: Kirstin Peters
+     * Publication in EPTCS
+     * Special issue in the Journal of Logical and Algebraic Methods in
+       Programming (Elsevier) (to be confirmed)
+
+=== IMPORTANT DATES ===
+
+     - April 9th, 2025            : Paper submission deadline
+     - April 10th -- April 28th   : Forum interaction, reviews, and PC 
+discussion
+     - May 5th                    : Notification to authors
+     - June 20th                  : Workshop in Lille, France
+     - July 20th (tentative)      : Camera-ready for post-proceedings
+     - October 2025 (tentative)   : Invitation to special issue
+
+All dates are in the anywhere on Earth time zone.
+
+
+=== SCOPE ===
+
+The general scope of the workshop is interaction and concurrency,
+broadly construed. The workshop welcomes contributions spanning the
+spectrum from theoretical models to practical implementations and
+empirical studies. Topics of interest include (but are not limited
+to):
+
+     * Formal semantics
+     * Process algebras and calculi
+     * Models and languages
+     * Protocols
+     * Logics and types
+     * Expressiveness
+     * Model transformations
+     * Tools, implementations, and experiments
+     * Specification and verification
+     * Coinductive techniques
+     * Tools and techniques for automation
+     * Synthesis techniques
+
+Prospective authors are welcome to contact the chairs for advice on
+whether their proposed submission is in scope.
+
+=== SELECTION PROCEDURE ===
+
+Since its first edition in 2008, the distinguishing feature of ICE has
+been an innovative paper selection mechanism based on an interactive,
+friendly, and constructive discussion amongst authors and PC members
+in an online forum.
+
+During the review phase, each submission is published in a dedicated
+discussion forum. The discussion forum can be accessed by the authors
+of the submission and by all PC members not in conflict with the
+submission (the forum preserves anonymity). The forum is used by
+reviewers to ask questions, clarifications, and modifications from the
+authors, allowing them better to explain and to improve all aspects of
+their submission. The evaluation of the submission will take into
+account not only the reviews, but also the outcome of the discussion.
+
+As witnessed by the past editions of ICE, this procedure considerably
+improves the accuracy of the reviews, the fairness of the selection,
+the quality of camera-ready papers, and the discussion during the
+workshop.
+
+ICE adopts a light double-anonymous reviewing process, detailed below.
+
+
+=== SUBMISSION GUIDELINES ===
+
+Submissions must be made electronically in PDF format via hotcrp:
+
+     https://ice25.hotcrp.com/
+
+We invite two types of submissions:
+
+     * Research papers: original contributions that will be published
+       in the workshop post-proceedings. Research papers must not be
+       simultaneously submitted to other conferences or workshops with
+       refereed proceedings. Research papers should be 3-16 pages
+       (references not included). Short research papers are
+       welcome; for example a 5 page short paper fits this category
+       perfectly. The submitted PDF can use any LaTeX style (but the
+       post-proceedings will use the EPTCS style).
+
+     * Oral communications: will be presented at the workshop, but will
+       not appear in the post-proceedings. This type of contribution
+       includes e.g., previously published contributions, preliminary
+       work, and position papers. There is no strict page limit for
+       this kind of submission but papers of 1-5 pages would be
+       appreciated. For example, a one page summary of previously
+       published work is welcome in this category.
+
+Authors of research papers must omit their names and institutions from
+the title page, they should refer to their other work in the third
+person and omit acknowledgements that could reveal their identity or
+affiliation. The purpose is to avoid any bias based on authors’
+identity characteristics, such as gender, seniority, or nationality,
+in the review process. Our goal is to facilitate an unbiased approach
+to reviewing by supporting reviewers’ access to works that do not
+carry obvious references to the authors’ identities. As mentioned
+above, this is a lightweight double-anonymous process. Anonymization
+should not be a heavy burden for authors, and should not make papers
+weaker or more difficult to review. Advertising the paper on alternate
+forums (e.g., on a personal web-page, pre-print archive, email, talks,
+discussions with colleagues) is permitted.
+
+Papers in the “Oral communications” category need not be
+anonymized. For any questions concerning the double anonymous process,
+feel free to consult the ICEcreamers.
+
+We are keen to enhance the balanced, inclusive and diverse nature of
+the ICE community, and would particularly encourage female colleagues
+and members of other underrepresented groups to submit their work.
+
+Submission by PC members (apart from the ICEcreamers) is allowed and 
+encouraged.
+
+=== PUBLICATIONS ===
+
+Accepted research papers and communications must be presented at the
+workshop by one of the authors.
+
+Accepted research papers will be published after the workshop in
+Electronic Proceedings in Theoretical Computer Science.
+
+We plan to invite authors of selected papers and brief announcements
+to submit their work in a special issue in the Journal of Logical and
+Algebraic Methods in Programming (Elsevier). Such contributions will
+be peer-reviewed according to the standard journal policy, but they
+will be handled in a shorter time than regular submissions. A list of
+published and in preparation special issues of previous ICE editions
+is reported on the ICE website.
+
+=== INVITED SPEAKER ===
+
+Kirstin Peters (Augsburg University, Germany)
+
+=== ICECREAMERS (PC co-chairs) ===
+
+     * Clément Aubert (Augusta University, 🇺🇸) - aubert@math.cnrs.fr
+     * Cinzia Di Giusto (Université Côte d’Azur, CNRS, 🇫🇷) -
+cinzia.di-giusto@unice.fr
+     * Simon Fowler (University of Glasgow, 🇬🇧) - simon.fowler@glasgow.ac.uk
+     * Violet Ka I Pun (Western Norway University of Applied Sciences, 
+🇳🇴) -
+Violet.Ka.I.Pun@hvl.no
+
+Use ice@framalistes.org to reach all the ICEcreamers at once.
+
+
+=== PROGRAM COMMITTEE ===
+
+     * Franco Barbanera (Dept. of Mathematics and Computer Science - 
+University of Catania, 🇮🇹)
+     * Manel Barkallah (University of Namur, 🇧🇪)
+     * Matteo Cimini (University of Massachusetts Lowell, 🇺🇸)
+     * Farzaneh Derakhshan (Illinois Tech, 🇺🇸)
+     * Emanuele D’Osualdo (University of Konstanz, 🇩🇪)
+     * Luc Edixhoven (University of Southern Denmark, 🇩🇰)
+     * Lorenzo Gheri (University of Liverpool, 🇬🇧)
+     * Lucie Guillou (IRIF, Université Paris Cité, 🇫🇷)
+     * Ping Hou (University of Oxford, 🇬🇧)
+     * Andrew K. Hirsch (University at Buffalo, SUNY, 🇺🇸)
+     * Jonas Kastberg Hinrichsen (IT University of Copenhagen, 🇩🇰)
+     * Matthew Alan Le Brun (University of Glasgow, 🇬🇧)
+     * Andreia Mordido (LASIGE, University of Lisbon, 🇵🇹)
+     * Maurizio Murgia (Gran Sasso Science Institute, 🇮🇹)
+     * Jonah Pears (University of Kent, 🇬🇧)
+     * Felix Stutz (University of Luxembourg, 🇱🇺)
+     * Petra van den Bos (Formal Methods and Tools group (FMT), 
+University of Twente, 🇳🇱)
+     * Bas van den Heuvel (HKA Karlsruhe and University of Freiburg, 🇩🇪)
+
+=== STEERING COMMITTEE ===
+
+     * Massimo Bartoletti (University of Cagliari, 🇮🇹)
+     * Ludovic Henrio (ENS Lyon, 🇫🇷)
+     * Sophia Knight (University of Minnesota Duluth, 🇺🇸)
+     * Ivan Lanese (University of Bologna, 🇮🇹)
+     * Larisa Safina (INRIA Lille, 🇫🇷)
+     * Alceste Scalas (Technical University of Denmark, 🇩🇰)
+
+=== PREVIOUS EDITIONS ===
+
+Please refer to https://ice-workshop.github.io/#previous-editions
+
+=== MORE INFORMATION ===
+
+For additional information, please contact the ICEcreamers at
+
+     ice@framalistes.org
+
+or visit our series website
+
+     https://ice-workshop.github.io/
+
+or the 2025 ICE website
+
+     https://www.discotec.org/2025/satellite/ice
+
+-- 
+Clément Aubert, Associate Professor of Computer Science,
+School of Computer and Cyber Sciences, Augusta University,
+https://spots.augusta.edu/caubert/
+
