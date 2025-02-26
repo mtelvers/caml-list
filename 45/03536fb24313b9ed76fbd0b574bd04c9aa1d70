@@ -1,0 +1,916 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=O1rZp0sP;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=unical.it header.i=@unical.it header.a=rsa-sha256 header.s=google header.b=YErDmeCm;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 9D611400A1
+	for <caml-list@tunbury.org>; Wed, 26 Feb 2025 10:23:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=zRMmEfxNH2vr+vvhQNgIxwQKqyz9c1S1hI/gPqBshis=;
+  b=O1rZp0sP94sGU9/3H6CS31zKSkO8JvwyqkpX8Hnsw0/IQ1dih5NSgMtV
+   EFMsLFR6S2JsDl6BePWWkhGYlDTtOgO4xkCVEykLL5ogZkp2ZcMzRFrH7
+   ASSxbzC+KF2bQU+gFFvtGvEvPrXPdTNnaBcd86sDUe0AOzge68KqZzUHz
+   w=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@unical.it
+X-IronPort-AV: E=Sophos;i="6.13,316,1732575600"; 
+   d="scan'208,217";a="210136767"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 26 Feb 2025 11:23:37 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id D4F3BE0260; Wed, 26 Feb 2025 11:23:36 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id B4509E0260
+	for <caml-list@sympa.inria.fr>; Wed, 26 Feb 2025 11:23:30 +0100 (CET)
+IronPort-SDR: 67beeba0_s/NhAtbyX2MtCxc/IbfLvYkB8k9eZznqVkXCPXC2oG4yu5r
+ l98bP6R3lU3sRhMdIraomWW5D7366KbhmNBkRMQ==
+X-IPAS-Result: =?us-ascii?q?A0FNBQDg6b5nfC2nVdFaDoJOgUGBA30RSDQEC0iEVoEjj?=
+ =?us-ascii?q?iyCIYEWnRWBZAEFDwEDAQ0uAQYPBAEBAwSFAIsUAh4HAQQzBg4BAgQBAQEBA?=
+ =?us-ascii?q?wIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAEBIhkHDhIphXsNgluBLIEmAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBHQIUeAEFARALBh0BASYSGA0tAQIHAgIhEgEFASECEggagmGCZ?=
+ =?us-ascii?q?AOTN49AgQVCikR6gTKBAYIMAQEG3CCBZQMGFIE0iE8BgVwCDoNvDwE7g0J6J?=
+ =?us-ascii?q?4FkRIEVNYI9B4F0TYI8ARIBToMugmmCM4FAfYJvhj9mgV+BcYtfkRcmJgMHB?=
+ =?us-ascii?q?w4rSQ4BIQMmMywBVRMXCwcFgTk4AQIBChUKNBQEGQIUHAEPBhAEakM3OYIMa?=
+ =?us-ascii?q?Uk6Ag0CNYIeJFiCK4RUghiCK0QYLwMDAwODKoI/CkeCQoIRcYMJQoU2gUuEB?=
+ =?us-ascii?q?R1AAwtiCz03Bg4bTKEsATyEZ4EQEwEORBUKDAwwBAk6HUaSVbNAB4JmgTiMG?=
+ =?us-ascii?q?JVKM4QDjQeSCIdDiAOQeiKjOgIThS4RIxKBSCRscE1SITEGgjBPAxkPV41hI?=
+ =?us-ascii?q?YYwjEYJuzFFMgI6AgcBCgEBAwkBgVWORoFLAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ J83q6awD7iq50Eu
+IronPort-HdrOrdr: A9a23:srb2d6GAf5MYgCexpLqEIMeALOsnbusQ8zAXPiFKOGRom6mj/f
+ xG885rsCMc5AxhOk3I+urwW5VoI0mskqKdiLN5VdyftWLdyQ2Vxe9ZnPLf6gylNCvk6OZH2K
+ tsN4R4AsbhFEV3gK/BjDWQIpIPxJ2p/Ki0mfzT1R5WPGVXQpAlwQM8JAjzKCNLrcp9aqbR1q
+ Dw2iOKnVudkL0sDviGOg==
+X-Talos-CUID: 9a23:acCF4GFzQp8RoQ78qmJqyRU7EMA4eUT/wWeMGUH7DnlJS+G8HAo=
+X-Talos-MUID: 9a23:JjDmKAUDRJTPaIvq/Bv11QxiOf9y2PyjBh8LqqUpkdncKQUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.13,316,1732575600"; 
+   d="scan'208,217";a="110098246"
+X-MGA-submission: =?us-ascii?q?MDGRKTZlPTOVWgoOL7hv/pTERkIMQtoRz+KqjV?=
+ =?us-ascii?q?3hw7BAbuNgSGnVIlaRCJ9dfG2FHILta6c10+1TTYXsgU5OPxHFDxSNoi?=
+ =?us-ascii?q?EX7vuaBI7XTfNFwjO2ujc4ni3xUYxnb/NNVLElnNQaI9UJOLRIXOy8Hs?=
+ =?us-ascii?q?6/M3viRN9X4Q5XtOIs/5BKrQ=3D=3D?=
+Received: from mail-lf1-f45.google.com ([209.85.167.45])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2025 11:23:29 +0100
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-548878c6a5aso1665150e87.3
+        for <caml-list@inria.fr>; Wed, 26 Feb 2025 02:23:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unical.it; s=google; t=1740565408; x=1741170208; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=zRMmEfxNH2vr+vvhQNgIxwQKqyz9c1S1hI/gPqBshis=;
+        b=YErDmeCm1bpTuM2WA+jimRfE6rj7HzpqPXiXqPfeygIXFX7MPQv1ZdoBxhUeyUkf32
+         eeeKf+dVChXn3pAuFJ5IC0ydb2OnfQ8MsxHRPL77jCLJjOA+PXC2M50dEz+NiWSkADj+
+         6nZDpL53b4UvwhfT9MGhlH+tNRLzRCbSi5+tl0fsZTxx35hSVq0heMOW2wcusEto0YNc
+         HNaupgPyIA/S11GVDGabL4UXPF5+WJ9Y1zJZ3KR0akqgpCOqMHhBQeWAYzSjgG/vo38W
+         GLG/qjuW5lPiSyOJVg3u8EA/yhYkDNWz9orWzmqsD0ByEy+VkdYmuaW211mGlzIwSPLW
+         Y2eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740565408; x=1741170208;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zRMmEfxNH2vr+vvhQNgIxwQKqyz9c1S1hI/gPqBshis=;
+        b=mg6jOTkbgZJ3IZ8o76WN7UWVlwoqRZ0ZIZNYch5wFJ4awL0leoXUQKcI4qn0T6hw1B
+         OmbFpu622fviqsvxCrGvmMTB/h2LiGvelZEWhbsnD/DbT/W/f8lldIIO7QHIbxVQthIV
+         313EO3Jmy/ljNnJ/QyB1UMLnoZ1kIPtBYn5ltmtA+9zU7qCupUQBrFBlfefojLfmcTEh
+         TVAPf6f9yM/9vA3NgUzzNUT4qnXZdcQoZbkayYcSGg+4kW8knxUSNptPpGgafEiiedac
+         VFd6YOYk7nAVLQ3gHkATSJdcFJbhlhQuW5rScVarti40GMydHaEH3J0vw1AvPu0SqUuP
+         ckLg==
+X-Forwarded-Encrypted: i=1; AJvYcCULz9qFCAXfIkRPHBZtQoEPMfqdi60VfpZbWKcm47wB2QCBCI/b12haztEkhD4Ajc0NDJgLBaoJpPE=@inria.fr
+X-Gm-Message-State: AOJu0Yxvovm51ZXwepfo5uxUaAuc1R0bc8BdbVXnhFpIjlrdGo0nxdyz
+	4KPgJD18reZDoXRZgAf+8qeYLZcrYMTJXzA1fMhQqAMzJsCQNaOhls8P08DNUDqsZTf+3Oyfi2U
+	/ybQNVp3N4nxGC4F2VkwgP3qJDxuFKMbEP1pDaA==
+X-Gm-Gg: ASbGncsPh54bzilzIxvyHGLto9I6KG59Zii5amcl0ZiGbwQ4SRSSMthNKPJ9yzzklEg
+	3eEs5YQskRPjotxDRReSRS3be+uLT9j259nqzGrR7m74xLezRj8/XymjaofR2JWTyor50S0rZ79
+	XMO1McCOg=
+X-Google-Smtp-Source: AGHT+IG1NBc6KwYlPeLsrbwUltuNVIqxwerzMNHxzBhsyOcuHJ7BJ5GclGhpulrJLztd/m49LeAt8FWoiVIh/NZh/o4=
+X-Received: by 2002:a05:6512:3f0d:b0:545:2544:6ae2 with SMTP id
+ 2adb3069b0e04-5483913f60cmr10944556e87.16.1740565407410; Wed, 26 Feb 2025
+ 02:23:27 -0800 (PST)
+MIME-Version: 1.0
+From: Manuel Alejandro Borroto Santana <manuel.borroto@unical.it>
+Date: Wed, 26 Feb 2025 11:23:16 +0100
+X-Gm-Features: AQ5f1JqQ1fUBK-VL3q5HKguUXlojLVuig8veufAhv8mNEC48v_nQZ9-Jbqo-YYo
+Message-ID: <CAF4PLRBObJjLYfMj7cneVC1g6aOJH8CxF_4HpQgt1D7gNpXCYA@mail.gmail.com>
+To: agents@cs.umbc.edu, arw-committee@csc.liv.ac.uk, 
+	babel-group@babel.ls.fi.upm.es, clean-list@science.ru.nl, 
+	cl-theory@lists.cam.ac.uk, comm-theory@ieee.org, dl@dl.kr.org, 
+	dmanet@zpr.uni-koeln.de, event@in.tu-clausthal.de, 
+	hol-info@lists.sourceforge.net, las-lics@lists.tu-berlin.de, 
+	maude-users@cs.uiuc.edu, relmics-l@mcmaster.ca, 
+	yap-users@lists.sourceforge.net, liste-egc@polytech.univ-nantes.fr, 
+	planetkr@kr.org, ontology@buffalo.edu, staff@forsyte.tuwien.ac.at, 
+	users@mozart-oz.org, inductive-request@listserv.unb.ca, kdml@cs.uni-kassel.de, 
+	calendar@computer.org, cipher-cfp@ieee-security.org, conferences@computer.org, 
+	cs@ics.forth.gr, dlv-status@dlvsystem.com, elsnet-list@elsnet.org, 
+	events_calendar@acm.org, fm-announcements@lists.nasa.gov, caml-list@inria.fr, 
+	formal-methods@cs.toronto.edu, formal-methods@cs.utoronto.ca, 
+	haskell@haskell.org, krlab.admin@gmail.com, learningrobots@det.ua.pt, 
+	lfcs-interest@dcs.ed.ac.uk, lics@research.bell-labs.com, 
+	linear@cs.stanford.edu, logic@cs.stanford.edu, logic-list@helsinki.fi, 
+	mizar-forum@mizar.uwb.edu.pl, nqthm-users@cs.utexas.edu, nvti-list@cwi.nl, 
+	oegai@ifs.tuwien.ac.at, om-announce@openmath.org, pvs@csl.sri.com, 
+	seworld@sigsoft.org, sicstus-users@sics.se, sigplan-announce@listserv.acm.org, 
+	sml-list@cs.cmu.edu, staff@dbai.tuwien.ac.at, theorem-provers@ai.mit.edu, 
+	theory@cl.cam.ac.uk, types-announce@lists.seas.upenn.edu, 
+	users-prolog@gnu.org, vki-list@dfki.de, wi@lists.kit.edu, 
+	dl@groups.tu-dresden.de
+Content-Type: multipart/alternative; boundary="000000000000d13cb7062f08f63a"
+Subject: [Caml-list] [ICLP 2025 - Call for Workshop Proposals] 41st
+ International Conference on Logic Programming =?UTF-8?Q?=28ICLP=E2=80=99?=
+ =?UTF-8?Q?25=29?= University of Calabria, Rende, Italy | September 12-19,
+ 2025
+Reply-To: Manuel Alejandro Borroto Santana <manuel.borroto@unical.it>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19275
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-02/CAF4PLRBObJjLYfMj7cneVC1g6aOJH8CxF_4HpQgt1D7gNpXCYA%40mail.gmail.com>
+
+--000000000000d13cb7062f08f63a
+Content-Type: text/plain; charset="UTF-8"
+
+*[apologize for multiple postings]*
+
+
+
+*** CALL FOR WORKSHOP PROPOSALS ***
+
+
+
+ICLP 2025
+
+
+41st International Conference on Logic Programming
+
+
+
+September 12 - September 19, 2025
+
+University of Calabria, Rende, Italy
+
+https://iclp25.demacs.unical.it
+
+
+
+ICLP 2025, the 41st International Conference on Logic Programming, will be
+held at the University of Calabria, Rende, Italy, from September 12 to
+September 19, 2025.
+
+
+
+The ICLP conference series has a long standing tradition of hosting a rich
+set of co-located workshops. ICLP workshops provide a unique opportunity
+for the presentation and discussion of work that can be preliminary in
+nature, novel ideas, and new open problems to a wide and interested
+audience.
+
+
+
+Co-located workshops also provide an opportunity for presenting specialized
+topics and opportunities for intensive discussions and project
+collaboration. The topics of the workshops co-located with ICLP 2025 can
+cover any areas related to logic programming (e.g., theory, implementation,
+environments, language issues, alternative paradigms, applications),
+including cross-disciplinary areas. However, any relevant workshop proposal
+will be considered.
+
+
+
+The format of the workshop will be decided by the workshop organizers, but
+ample time should be allowed for general discussion. Workshops can vary in
+length, but the optimal duration will be half a day or a full day.
+
+
+
+Workshop Proposal:
+
+==================
+
+Those interested in organizing a workshop at ICLP 2025 are invited to submit
+a workshop proposal. Proposals should be in English and about two pages in
+length. They should contain:
+
+
+
+ * The title of the workshop.
+
+ * A brief technical description of the topics covered by the workshop.
+
+ * A discussion of the timeliness and relevance of the workshop.
+
+ * A list of some related workshops held in the last years.
+
+ * The estimated length of the workshop and an estimate of the number of
+expected attendees.
+
+ * The names, affiliation and contact details (email, web page, phone) of
+the workshop organizers together with a designated contact person.
+
+ * Previous experience of the workshop organizers in workshop/conference
+organization.
+
+
+
+Proposals are expected in text or PDF format. All proposals should be submitted
+to the Workshop Chairs by email (see below) by April 1, 2025.
+
+
+
+Reviewing Process:
+
+==================
+
+Each submitted proposal will be reviewed by the Workshop, Program and General
+Chairs. Proposals that appear well-organized and that fit the goals and
+scope of ICLP will be selected. The decision will be notified by email to
+the responsible organizer by April 13, 2025.
+
+
+
+The definitive length of the workshop will be planned according to the number
+of submissions received by the different workshops. For every accepted
+workshop, the ICLP local organizers will prepare a meeting room. The
+workshops and the conference organizers will collaborate in
+
+establishing a uniform approach to produce proficient and accessible
+proceedings
+for the workshops.
+
+
+
+Workshop Organizers' Tasks:
+
+===========================
+
+ * Producing a "Call for Papers" for the workshop and posting it on the
+Internet and other means. A web page URL should be provided by April 27,
+2025, and will be published on the ICLP 2025 home page.
+
+ * Providing a brief description of the workshop for the conference program.
+
+ * Reviewing/accepting submitted papers.
+
+ * Scheduling workshop activities in collaboration with the local organizers
+and the Workshop Chair.
+
+ * Providing a workshop program in a format specified by the conference
+organizers for posting by August 15, 2025.
+
+ * Coordinating the preparation of the workshop proceedings according to
+the specifications provided by the Workshop Chair.
+
+
+
+Location:
+
+=========
+
+Workshops will be collocated with ICLP 2025 at the University of Calabria,
+Rende, Italy. See the ICLP 2025 web site (https://iclp25.demacs.unical.it)
+for location details.
+
+
+
+Important Dates (Tentative):
+
+============================
+
+April 1, 2025:  Proposal submission deadline
+
+April 13, 2025:  Notification
+
+April 27, 2025: Deadline for receipt of CfP and workshop web page URL
+
+June 1, 2025: Tentative paper submission deadline
+
+July 13, 2025: Latest Deadline for acceptance notification of paper authors
+
+August 15, 2025: Deadline for workshop program
+
+
+
+Submissions:
+
+============
+
+Please submit your workshop proposals by email to the Workshop Chair.
+
+
+
+Workshop Chair:
+
+===============
+
+Pierangela Bruno    pierangela.bruno@unical.it
+
+Jorge Fandinno       jfandinno@unomaha.edu
+
+--000000000000d13cb7062f08f63a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif;text-al=
+ign:left">
+<span id=3D"m_3208070572628481779m_2026237860196108228m_1790574151468469427=
+gmail-docs-internal-guid-0d7b01de-7fff-1e64-6ca1-5eb3f61bced6"><span style=
+=3D"font-size:11pt;font-family:Aptos;color:rgb(0,0,0);background-color:tran=
+sparent;font-variant-numeric:normal;font-variant-east-asian:normal;font-var=
+iant-alternates:normal;vertical-align:baseline"><i>[apologize for multiple =
+postings]</i></span></span> <br></p><p class=3D"MsoNormal" style=3D"border:=
+medium;margin:0in 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:=
+&quot;Arial&quot;,sans-serif;text-align:left"><br></p><p class=3D"MsoNormal=
+" align=3D"center" style=3D"text-align:center;border:medium;margin:0in 0in =
+0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans=
+-serif"><span style=3D"color:black"><br></span></p><p class=3D"MsoNormal" a=
+lign=3D"center" style=3D"text-align:center;border:medium;margin:0in 0in 0.0=
+001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-se=
+rif"><span style=3D"color:black">*** CALL FOR WORKSHOP PROPOSALS ***<span><=
+/span></span></p>
+
+<p class=3D"MsoNormal" align=3D"center" style=3D"text-align:center;border:m=
+edium;margin:0in 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&=
+quot;Arial&quot;,sans-serif"><span style=3D"color:black"><span>=C2=A0</span=
+></span></p>
+
+<p class=3D"MsoNormal" align=3D"center" style=3D"text-align:center;border:m=
+edium;margin:0in 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&=
+quot;Arial&quot;,sans-serif"><span style=3D"color:black">ICLP 2025<span></s=
+pan></span></p>
+
+<p class=3D"MsoNormal" align=3D"center" style=3D"text-align:center;border:m=
+edium;margin:0in 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&=
+quot;Arial&quot;,sans-serif"><br>
+<span style=3D"color:black">41st International Conference on Logic Programm=
+ing<span></span></span></p>
+
+<p class=3D"MsoNormal" align=3D"center" style=3D"text-align:center;border:m=
+edium;margin:0in 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&=
+quot;Arial&quot;,sans-serif"><span style=3D"color:black"><span>=C2=A0</span=
+></span></p>
+
+<p class=3D"MsoNormal" align=3D"center" style=3D"text-align:center;border:m=
+edium;margin:0in 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&=
+quot;Arial&quot;,sans-serif"><span style=3D"color:black">September 12 - Sep=
+tember 19, 2025<span></span></span></p>
+
+<p class=3D"MsoNormal" align=3D"center" style=3D"text-align:center;border:m=
+edium;margin:0in 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&=
+quot;Arial&quot;,sans-serif"><span style=3D"color:black">University of Cala=
+bria, Rende, Italy<span></span></span></p>
+
+<p class=3D"MsoNormal" align=3D"center" style=3D"text-align:center;border:m=
+edium;margin:0in 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&=
+quot;Arial&quot;,sans-serif"><a href=3D"https://iclp25.demacs.unical.it"><s=
+pan style=3D"color:rgb(17,85,204)">https://iclp25.demacs.unical.it</span></=
+a><span style=3D"color:black"><br>
+<br>
+<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">ICLP 2025, the 41st International =
+Conference on Logic
+Programming,</span> <span style=3D"color:black">will be held at the Univers=
+ity of
+Calabria, Rende, Italy, from</span> <span style=3D"color:black">September 1=
+2 to
+September 19, 2025.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">The ICLP conference series has a l=
+ong standing tradition of
+hosting</span> <span style=3D"color:black">a rich set of co-located worksho=
+ps.
+ICLP workshops provide a unique</span> <span style=3D"color:black">opportun=
+ity
+for the presentation and discussion of work that can be</span> <span style=
+=3D"color:black">preliminary in nature, novel ideas, and new open problems
+to a wide</span> <span style=3D"color:black">and interested audience.<span>=
+</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">Co-located workshops also provide =
+an opportunity for
+presenting</span> <span style=3D"color:black">specialized topics and
+opportunities for intensive discussions and</span> <span style=3D"color:bla=
+ck">project
+collaboration. The topics of the workshops co-located with</span> <span sty=
+le=3D"color:black">ICLP 2025 can cover any areas related to logic programmi=
+ng
+(e.g.,</span> <span style=3D"color:black">theory, implementation, environme=
+nts,
+language issues, alternative</span> <span style=3D"color:black">paradigms,
+applications), including cross-disciplinary areas. However,</span> <span st=
+yle=3D"color:black">any relevant workshop proposal will be considered.<span=
+></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">The format of the workshop will be=
+ decided by the workshop
+organizers,</span> <span style=3D"color:black">but ample time should be all=
+owed
+for general discussion. Workshops can</span> <span style=3D"color:black">va=
+ry in
+length, but the optimal duration will be half a day or a full</span> <span =
+style=3D"color:black">day.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Workshop Proposal:<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">Those interested in organizing a w=
+orkshop at ICLP 2025 are
+invited to</span> <span style=3D"color:black">submit a workshop proposal.
+Proposals should be in English and about</span> <span style=3D"color:black"=
+>two
+pages in length. They should contain:<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* The title of the workshop.<span>=
+</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* A brief technical description of=
+ the topics
+covered by the workshop.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* A discussion of the timeliness a=
+nd relevance
+of the workshop.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* A list of some related workshops=
+ held in the
+last years.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* The estimated length of the work=
+shop and an
+estimate of the number</span> <span style=3D"color:black">of expected atten=
+dees.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* The names, affiliation and conta=
+ct details
+(email, web page, phone) of the workshop</span> <span style=3D"color:black"=
+>organizers
+together with a designated</span> <span style=3D"color:black">contact perso=
+n.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* Previous experience of the works=
+hop
+organizers in</span> <span style=3D"color:black">workshop/conference
+organization.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">Proposals are expected in text or =
+PDF format. All proposals
+should be</span> <span style=3D"color:black">submitted to the Workshop Chai=
+rs by
+email (see below) by April 1, 2025.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Reviewing Process:<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">Each submitted proposal will be re=
+viewed by the Workshop,
+Program and</span> <span style=3D"color:black">General Chairs. Proposals th=
+at
+appear well-organized and that fit the</span> <span style=3D"color:black">g=
+oals
+and scope of ICLP will be selected. The decision will be</span> <span style=
+=3D"color:black">notified by email to the responsible organizer by April </=
+span>13<span style=3D"color:black">, 2025.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">The definitive length of the works=
+hop will be planned
+according to the</span> <span style=3D"color:black">number of submissions
+received by the different workshops. For every</span> <span style=3D"color:=
+black">accepted
+workshop, the ICLP local organizers will prepare a meeting</span> <span sty=
+le=3D"color:black">room. The workshops and the conference organizers will
+collaborate in<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"text-align:justify;border:medium;margin:0in=
+ 0in 0.0001pt;line-height:115%;font-size:11pt;font-family:&quot;Arial&quot;=
+,sans-serif"><span style=3D"color:black">establishing a uniform approach to=
+ produce proficient and
+accessible</span> <span style=3D"color:black">proceedings for the workshops=
+.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Workshop Organizers&#39; Tasks:<span></span></span></=
+p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* Producing a &quot;Call for Paper=
+s&quot; for
+the workshop and posting it</span> <span style=3D"color:black">on the Inter=
+net
+and other</span> <span style=3D"color:black">means. A web page URL should b=
+e
+provided by </span>April<span style=3D"color:black"> 2</span>7<span style=
+=3D"color:black">, 2025, and will be published on the</span> <span style=3D=
+"color:black">ICLP 2025 home page.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* Providing a brief description of=
+ the
+workshop for the conference</span> <span style=3D"color:black">program.<spa=
+n></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* Reviewing/accepting submitted pa=
+pers.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* Scheduling workshop activities i=
+n
+collaboration with the local</span> <span style=3D"color:black">organizers =
+and
+the Workshop Chair.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* Providing a workshop program in =
+a format
+specified by the conference organizers for posting</span> <span style=3D"co=
+lor:black">by August </span>15<span style=3D"color:black">, 2025.<span></sp=
+an></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span>* Coordinating the preparation of =
+the workshop
+proceedings according</span> <span style=3D"color:black">to the specificati=
+ons
+provided by the Workshop Chair.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Location:<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">=3D=3D=3D=3D=3D=3D=3D=3D=3D<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Workshops will be collocated
+with ICLP 2025 at the University of</span> <span style=3D"color:black">Cala=
+bria,
+Rende, Italy. See the ICLP 2025 web site</span> <span style=3D"color:black"=
+>(<a href=3D"https://iclp25.demacs.unical.it">https://iclp25.demacs.unical.=
+it</a>)
+for location details.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Important Dates (Tentative):<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">April 1, 2025:<span>=C2=A0 </span>Proposal submission=
+ deadline<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">April </span>13<span style=3D"color:black">, 2025:<sp=
+an>=C2=A0 </span>Notification<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif">April<=
+span style=3D"color:black"> 27, 2025: Deadline for
+receipt of CfP and workshop web page URL<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"margin:0in 0in 0.0001pt;line-height:115%;fo=
+nt-size:11pt;font-family:&quot;Arial&quot;,sans-serif">June 1, 2025: Tentat=
+ive paper
+submission deadline<span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif">July<s=
+pan style=3D"color:black"> </span>13<span style=3D"color:black">, 2025: </s=
+pan>Latest <span style=3D"color:black">Deadline
+for acceptance notification of paper authors<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">August </span>15<span style=3D"color:black">, 2025: D=
+eadline for workshop program<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Submissions:<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<span></span></sp=
+an></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Please submit your workshop
+proposals by email to the Workshop Chair.<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Workshop Chair:<span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<span></=
+span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Pierangela Bruno<span>=C2=A0=C2=A0=C2=A0 </span><a hr=
+ef=3D"mailto:pierangela.bruno@unical.it">pierangela.bruno@unical.it</a><spa=
+n></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black">Jorge Fandinno </span><span>=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0</span><span style=3D"color:black"><a href=3D"mailto:jfandinno@=
+unomaha.edu">jfandinno@unomaha.edu</a><span></span></span></p>
+
+<p class=3D"MsoNormal" style=3D"border:medium;margin:0in 0in 0.0001pt;line-=
+height:115%;font-size:11pt;font-family:&quot;Arial&quot;,sans-serif"><span =
+style=3D"color:black"><span>=C2=A0</span></span></p>
+
+
+
+
+
+<br></div>
+
+--000000000000d13cb7062f08f63a--
