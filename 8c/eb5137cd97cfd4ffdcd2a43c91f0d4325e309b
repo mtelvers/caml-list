@@ -1,0 +1,359 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=uTW0HOkZ;
+	dkim=fail reason="signature verification failed" (1024-bit key; unprotected) header.d=deinprogramm.de header.i=@deinprogramm.de header.a=rsa-sha256 header.s=default header.b=pST6o6fH;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 876C7400B8
+	for <caml-list@tunbury.org>; Tue, 25 Mar 2025 19:22:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=2mT025FKP870AF1tso/fN5GV0cuq8nw9u/IWcEn2VE8=;
+  b=uTW0HOkZ2jAqG+UGCxNQCo2eqx4EqGEPZGpxvWAZWUCSQtiqqKTsvys3
+   b8XYpjt0zLcXDp05zs4EKLD2iqgTnH/gNol7/KofCVSUKnRJ13Rss/l7J
+   qOYhNKMvjSqV7TVlCBHCTaK1T/kFataexQ/O54GB50LJk5gNz3CKpb+4p
+   8=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@deinprogramm.de
+X-IronPort-AV: E=Sophos;i="6.14,275,1736809200"; 
+   d="scan'208";a="214737871"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Mar 2025 20:22:10 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 86692E0D21; Tue, 25 Mar 2025 20:22:09 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 4C090E007A
+	for <caml-list@sympa.inria.fr>; Tue, 25 Mar 2025 20:22:02 +0100 (CET)
+IronPort-SDR: 67e3025a_AAoha9ZYdccJL7D1O7WjfF2sDlIgSgKLp1GT9sGfv30USFf
+ xR3Hu6ItFpyS8OUQgcn1ansrs61LEq4jfNmRFBQ==
+X-IPAS-Result: =?us-ascii?q?A0E1wACSAeNn/9Oqd6hQChkBAQEBAQErCwYBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQECAQEBAQEBAQEBAQGBaAIBgVkCAQEBAQFhB3ZaEQIgBwhIiCSOI4tmk?=
+ =?us-ascii?q?kSBag8BAwENFAIBAg4SCAECBAEBAwEDggyOGQIfBgEEMwYOAQIEAQEBAQMCA?=
+ =?us-ascii?q?wEBAQEBARABAQUBAQECAQECBAYBAoEKE4V7DUkBEAGCADuCFiwNB4EaIwEBJ?=
+ =?us-ascii?q?hInBQ80AQQMKCcJC4JvgjADMQMEDbE/gQGCDAEBBoEIPgWBHdg/DYJRCYFGA?=
+ =?us-ascii?q?gEBAQEBAQGIKx4BhWyFHhuCDYEVgihRgXSBGkIBA4EpAQcLAYZlghwXgTuCY?=
+ =?us-ascii?q?3sRhxyDSYE0gjqBeoRLgSMyg12CcYQYLYkVgU0cA1ksAVUTFwsHBYFsA4EPg?=
+ =?us-ascii?q?UVDOIJEaUk6Ag0CNYIbfIIohEyEPlwvAwMDA4MohVCCEYIEiSqEXS1PgwkdQ?=
+ =?us-ascii?q?AMLbT03FBukNAE6g2GBEyYMMyMBL10FBwU0EwQcDwIoDS2SV7IHTXGCP4FmB?=
+ =?us-ascii?q?YRqgSSGBY84hkWEA40JhkiTA5h+jgWEB5FRFYVBgX0naXAzGggcFIMiCUYDG?=
+ =?us-ascii?q?Q9XjWGDYzOEYL8QQjU8AgcLAQEDCYVEASQTC4VmhC+BSwEB?=
+IronPort-PHdr: A9a23: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
+ bICR75dTEYyGekTD0EjENFQef9K
+IronPort-Data: A9a23:RzanfqrqK66kFCqyfLi/t/HP4I5eBmIrYRIvgKrLsJaIsI4StFCzt
+ garIBnQOarfY2Pye4p+O42zpkgE6JLXy4JgG1E4ry9jFnhBpePIVI+TRqvSF3PLf5ebFCqLz
+ O1HN4KedJhsJpP4jk3wWlQ0hSAkjclkfpKlVKiefHoZqTZMEE8JkQhkl/MynrlmiN24BxLlk
+ d7pqqUzAnf8s9JPGjxSsv7rRC9H5qyo5WtD5AFmP5ingXeH/5UrJMJHTU2OByCgKmVkNrbSb
+ /rOyri/4lTY838FYj9yuuuTnuUiG9Y+DCDW4pZkc/DKbitq+kTe5p0G2M80Mi+7vdkmc+dZk
+ 72hvbToIesg0zaldO41C3G0GAkmVUFKFSOuzdFSfqV/wmWfG0YAzcmCA2kNL5Ym3cx0WFhQt
+ vAKdQs1dDKZ1ua5lefTpulE3qzPLeHnMYIZomtnwivQCPNgTZ2rr6fivIEImm5p14YXQq6YP
+ ZNAAdZsREyojxlnIU8aEpgzhs+ki3j5aydfp0icoK9x72W7IAlZiuGxb4GKKoHXLSlTtmi0/
+ Vr4/3ryPk1Zb+Lc6BWG1DGs1taayEsXX6pLSuPkqJaGmma7zWUWDFgSVECnieKoj1a3HdNZM
+ U0dvCQ0xZXe72SnQ9j7Rwe/r2SNuxtaV9c4//AGBB+l8bjP3SGzBTE9UH1NeoEdjNUUX20u2
+ Qrc9z/2PgBHvLqQQHOb076bqzKuJCQYRVPugwdUFGPpBPGz+ukOYgLzczp1LEKipvHYcQwcL
+ hiGoSk4n68UgtQC0qD98V2vb9OQSnrhFVJdCub/BzzNAuZFiGmNPtzA1LQjxawcRLt1t3HY1
+ JXE8uDHhAz0MbmDlTaWXMIGF6yz6vCOPVX02AEzRcl9rmz8qiX9Jui8BQ2Swm85aK7onhe5O
+ yfuVf95vcUPZyvCgVJfONjrU5txk8AM6/y8Ca2PN4QmjmdNmP+vpX8wORD4M5HFkEUwg6cyI
+ 9+cd8KtC3tSAKsP8dZFb7d17FLqrwhgrV7uqWfTk0z2iurDPiDEEN/o8jKmN4gE0U9Nmy2Nm
+ /43CidA40w3vDTWM3aLo70AZ0sHN2Y6Dp3QoslaPLzLaAl/FW1rT7ebzbo9csY31+5Yh8XZz
+ EGbA0V48VvYgWGYCAOobns4Vqjjc6wipl0GPAstH22S5V4dXaiV4p0iKqQHJYscyLQ7zNpfb
+ eU0RMGbM/EeFhXF42s8aLf+nqxDdTOqpwG8AC64axgdYaw7ZQzDxYf5TCTS9Q0lLCm+he0hq
+ ZKOiyLZRpsiQVx5LcD0MfiA8XK4jUI/qslTAXTaA4B0Vh330Y5ILyfRsKcGE/sUI0+e+grAh
+ hekPxgIgMLs/ak3yYDtroKZpd6LF+BeIBJrL1PD5+zrCRiAr3uR+q4eYuOmZjuHaXjV/p+lb
+ uBrz/3RFv0LsVJJkohkGYZQ0qMMyIrzloBe0zhbMi3HX3azBpNkB0u2781Fm6lO571e4C+de
+ EaE/PtEMrSoZuLhNnMsJzQeU+fS7sFMxwHu7sk0Ln7quw5x3r6MCntJMze21SdyEbpSMaEe+
+ 9kHhvI40QKEpyQPDsenlQFRrmSFEWwBWf4ot7YcG47atTAowVBjP73ZMCv/38yQYNAdNEIvD
+ COev/fBtY993WvHSWI4TlLW7NpehLMPmRFE90ADLFK3gej4huc78RlS0DYvRCFX80l36P1yM
+ W1VKEFFH6WC0DN2jsxlXWr3OQV+KDCG2072kX0lqXb4ShS2a2nzM2ENA+aB00QH+WZ6fDIA3
+ rW5yn7gYAn6bvPKwSo+dk50mcPNFeUr2FX5p/mmOMCZE70RQznv2PaubFVVjSrXO5o6gUmfq
+ NR6+Op1V7bAChcRhK8GEKif66UbTUGVBW5FQMw5xpgzI0PnRGiQ1wSNemeLQeEcA9zR8ES9N
+ d5iGdIXaTS6yxS1j246AYwiHuZKucAHtfs4VJHlH2oki4ekjyFItcvQ/xfuhWVwTNRJl908G
+ 7zrdDmDMzKxgEFQklCQs8JBa2yzZPcYbjah39KO0f4oEqgbu7pGanAC0bqTvlSUPjB4/hmSg
+ hjxWq/Ow8FmyqVuh4HJEJgfNz6rKNj2avuEwDqzv/tKc9nLF8XE7CERlXXKICVUOuE3d+lst
+ LHQruPy4lzJjIw2X0/dhZOFMatDvue2fehPN/PIPGtopjSDVODs8ik81TiBc7IRq+xk5+6jW
+ wecQ+mzf4RMW95imVtkWxIHGBMZU6nKfqPsoB2mlMu1Cz8f7BfmKe22/nq4fEBZcS41Y6fFM
+ DHWgMr3xN5kr9VrPiQmVsFWW8oyZBepXKY9bNT+uAWJFmTi0BvIprLmkgFm8j3RTGWNFMHh+
+ 5/eWxzib1KItbrVyM1C+ZlH1vHN4K2RXcFrFq7cxzJ3t9x+JGILLOIFK5IJEJhRl2r+2fkUo
+ RnTOXA6B3yVsStsKH3BDBbLB29zxdDi/v/1Kz0v51mTZD2/AYbGDLYJGuJI/SJtYjW6pA24A
+ Yh2x5AzVyRdBrllSOcV/ua8jv1uw/acyn9gFYURVSDtK052PIjmH0CN0OaAueIr3i0NeIj2y
+ bAJeF15
+IronPort-HdrOrdr: A9a23:ED4Dp6BQ2po3buLlHem355DYdb4zR+YMi2TDtnoBKyC9F/bzqy
+ nAppomPHPP5Qr5O0tQ+uxoWpPgfZq0z/ccirX5Vo3MYOCJggeVxc1Zjbff/w==
+X-Talos-CUID: 9a23:FuX7VGxXHCgoXHc62KmwBgUvCNsbVVfelU7OYEOqVF1RUp+PGFufrfY=
+X-Talos-MUID: 9a23:edg55AVvYaUtyhDq/BHA3wlcNNlj3/jtU35OsLoFnYqEZRUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.14,275,1736809200"; 
+   d="scan'208";a="214737855"
+X-MGA-submission: =?us-ascii?q?MDErPsW8KYeYZAD1Ait49qu3tpUnnav4rgYvSS?=
+ =?us-ascii?q?sQZh48Aprurh6Sg8jMUC7WLO/PW1pKjhmcqe6Eg4y6yPteepny86AKsM?=
+ =?us-ascii?q?Sitjr6JZS6qmUP40AQMxHUT9NdonettmH5Xw6fkmpeReXAcsnff3PeMJ?=
+ =?us-ascii?q?RHtCXFkXRQ7KcDJTaGiZbO1A=3D=3D?=
+Received: from deinprogramm.de ([168.119.170.211])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2025 20:22:02 +0100
+Received: from Mac (unknown [85.183.24.121])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by deinprogramm.de (Postfix) with ESMTPSA id DF9C9855B4C
+	for <caml-list@inria.fr>; Tue, 25 Mar 2025 20:22:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=deinprogramm.de;
+	s=default; t=1742930521;
+	bh=y9NeEzAoSpX6lKuZEPshwpuUlxk1HL7Hm00B6KIftd4=;
+	h=From:To:Subject:Date;
+	b=pST6o6fHUluNED2zRRAz0hMi8hbuITZFO7JHdjmZmaDOSLtQ7hQC5qAEg6cwwGqof
+	 zqDbvI7M7tWw6F3em8vioGGFNXrlaRrSk855NlGOtZkKsJKh+8juX9KrTa2Y0JWUgO
+	 jOJHeTECobI+PHOz+YCY+PATxHLKxTwdDCtY3SQc=
+From: Michael Sperber <sperber@deinprogramm.de>
+To: caml-list@inria.fr
+Date: Tue, 25 Mar 2025 20:22:00 +0100
+Message-ID: <y9la59829wn.fsf@deinprogramm.de>
+User-Agent: Gnus/5.13 (Gnus v5.13)
+MIME-Version: 1.0
+Content-Type: text/plain
+Subject: [Caml-list] Call for Papers, Functional Software Architecture
+ (Deadline June 16)
+Reply-To: Michael Sperber <sperber@deinprogramm.de>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19285
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-03/y9la59829wn.fsf%40deinprogramm.de>
+
+
+======================================================================
+
+	       *** FUNARCH 2025 -- CALL FOR PAPERS ***
+
+		    Third ACM SIGPLAN Workshop on
+	  Functional Software Architecture - FP in the Large
+
+		    17th October 2025, Singapore
+		      Co-located with ICFP 2025
+
+       https://functional-architecture.org/events/funarch-2025/
+
+======================================================================
+
+TIMELINE:
+
+Paper submission    16th June 2025
+Author notification 21st July 2025
+Camera ready copy   25th August 2025
+Workshop            17th October 2025
+
+BACKGROUND:
+
+"Functional Software Architecture" refers to methods of construction
+and structure of large and long-lived software projects that are
+implemented in functional languages and released to real users,
+typically in industry.  The goals for the workshop are:
+
+- To assemble a community interested in software architecture
+  techniques and technologies specific to functional programming;
+
+- To identify, categorize, and document topics relevant to
+  the field of functional software architecture;
+
+- To connect the functional programming community to the software
+  architecture community to cross-pollinate between the two.
+
+The workshop follows on from the Functional Software Architecture
+open space that was held at ICFP 2022 in Slovenia.
+
+SCOPE:
+
+The workshop seeks submissions in a range of categories:
+
+- You're a member of the FP community and have thought about how
+  to support programming in the large, for example by framing
+  functional ideas in architectural terms or vice verse, comparing
+  different languages in terms of their architectural capabilities,
+  clarifying architectural roles played by formal methods, proof
+  assistants and DSLs, or observing how functional concepts are
+  used in other language and architecture communities.
+
+  Great, submit a research paper!
+
+- You're a member of the architecture community, and have thought
+  about how your discipline might help functional programmers, for
+  example by applying domain-driven design, implementing hexagonal
+  architecture, or designing self-contained systems.
+
+  Excellent, submit a research paper!
+
+- You've worked on a large project using functional programming,
+  and it's worked out well, or terribly, or a mix of both; bonus
+  points for deriving architectural principles from your experience.
+
+  Wonderful, submit an experience report!
+
+- You know a neat architectural idiom or pattern that may be useful
+  to others developing large functional software systems.
+
+  Fabulous, submit an architectural pearl!
+
+- You have something that doesn't fit the above categories, but
+  that still relates to functional software architecture, such
+  as something that can be written up, or that could be part of
+  the workshop format like a panel debate or a fishbowl.
+
+  Superb, submit to the open category!
+
+Research papers should explain their research contributions in both
+general and technical terms, identifying what has been accomplished,
+explaining why it is significant, and relating it to previous work,
+and to other languages where appropriate.
+
+Experience reports and architectural pearls need not necessarily
+report original research results.  The key criterion for such papers
+is that they make a contribution from which others can benefit.
+It is not enough simply to describe a large software system, or
+to present ideas that are specific to a particular system.
+
+Open category submissions that are not intended for publication
+are not required to follow the formatting guidelines, and can
+submit in PDF, word or plain text format as preferred.  Not knowing
+what kinds of submissions we will receive, we cannot be specific as to
+how they will be evaluated.  However, submissions that seem likely to
+stimulate discussion around practices in functional architecture
+are encouraged.
+
+If you are unsure whether your contribution is suitable, or if you need any kind
+of help with your submission, please email the program chairs
+(Jeff (jmy6342@gmail.com) and Christine (christine.rizkallah@unimelb.edu.au)).
+
+Papers must be submitted by 16th June 2025 using the hotcrp submission
+page (https://funarch25.hotcrp.com/).
+
+Formatting: submissions intended for publication must be
+in PDF format and follow the ACM SIGPLAN style guidelines,
+using the acmart format and the sigplan
+sub-format.  Please use the review option when submitting, as this
+enables line numbers for easy reference in reviews.  For further
+details, see SIGPLAN's author information:
+
+http://www.sigplan.org/Resources/Author/#acmart-format
+
+If your submission is not a research paper, please mark this using
+a subtitle (Experience Report, Architectural Pearl, Open Category).
+
+Length: submissions must adhere to the limits specified below.
+However, there is no requirement or expectation that all pages
+are used, and authors are encouraged to strive for brevity.
+
+Research papers	       5 to 12+ pages
+Architectural pearls   5 to 12 pages
+Experience reports     3 to 6 pages
+Open category	       1 to 6 pages
+
+Publication: The proceedings of FUNARCH 2024 will be published in the ACM Digital
+Library, and authors of accepted papers are required to agree to one
+of the standard ACM licensing options.  Accepted papers must be
+presented at the workshop by one of the authors, but in special cases
+we may consider remote presentation.
+
+The official publication date is the date the papers are made
+available in the ACM Digital Library. This date may be up to two
+weeks prior to the first day of the conference. The official
+publication date affects the deadline for any patent filings
+related to published work.
+
+PROGRAM CHAIRS:
+
+Jeffrey Young (Unaffiliated)
+Cristine Rizkallah (University of Melbourne)
+
+PROGRAM COMMITTEE:
+
+Isabella Stilkerich (Schaeffler Technologies)
+Ryan Scott (Galois)
+Facundo	Dominguez (Tweag)
+J. Garrett Morris (University of Iowa)
+Nada	Amin (Harvard University)
+Tom	Ellis (Groq)
+KC Sivaramakrishnan (IIT Madras and Tarides)
+Hidehiko Masuhara (Institute of Science Tokyo)
+
+WORKSHOP VENUE:
+
+Room to be determined. The workshop will be co-located with the ICFP 2025
+conference at the Marina Bay Sands Convention Centre, Singapore.
+
