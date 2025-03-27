@@ -1,0 +1,436 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=BzGyBXie;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=M+TLXLYA;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id D0360400B8
+	for <caml-list@tunbury.org>; Thu, 27 Mar 2025 16:09:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=Je1VFcaIVoTDUxYJTFXNS2qnGJQCkzoi9Q8ptLqhED4=;
+  b=BzGyBXievW++S+OrJimWHijGd77J8q9sLGf9qorwkhcyAdFMBENOugkc
+   A60s1SD4Nai2Khrpjr7SrSKDs7Fspyj/g9tZ0qfU70LXw/RVRv7coRQ9h
+   i4RVoPijJ9hNWHKvgLAsIIiZqHVmJXhqDq9y2njnjSJobVrG6/vBs2yzc
+   0=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.14,280,1736809200"; 
+   d="scan'208,217";a="215137920"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 27 Mar 2025 17:09:58 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id D8B72E0D22; Thu, 27 Mar 2025 17:09:58 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 97D99E007A;
+	Thu, 27 Mar 2025 17:09:52 +0100 (CET)
+IronPort-SDR: 67e5784f_UgzL6rYNJMa5add14R45rY7Ehm+bGC1CtulozQkIQjiozno
+ OE7q0XmVJr35nd/ibUo9okwCjO8M6DoCy5PUqCw==
+X-IPAS-Result: =?us-ascii?q?A0HPAwBId+VnfDXQVdFCGA6FEn1ZNAQLSIRVgSNAgWyMA?=
+ =?us-ascii?q?oIhl0KEfoMWFigPAQMBDTkLBAEBAwEDggyBPYE3iyYCHgcBBDQTAQIEAQEBA?=
+ =?us-ascii?q?QMCAwEBAQEBARABAQUBAQECAQECBAYBAhABASIZBw4SKYV7DYJbO3FhAgUDO?=
+ =?us-ascii?q?gEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEFAhQYES44C?=
+ =?us-ascii?q?wYdARsMEgMSAw0gFwIjAREBBQEjEhYMgmGCLwEDMQMRlEOPQIEFQos+gRUFA?=
+ =?us-ascii?q?haBAYINBoEJPgXZEQoZKA1vgWICAQYUgTSEdilcglUBgV0CDoN/O4NCgSEbg?=
+ =?us-ascii?q?g2BFTWCRIRtcoMugmkEghgXgTt/gWQ/TYcfgViDKYQ0hEuFMYJxjUsmCAcXA?=
+ =?us-ascii?q?wcHCQUEHAYFBQJCCQUBDxIDBAMEBAECCwkKCQMDAg4CCAMCCAYZAT8SBBMKD?=
+ =?us-ascii?q?QsHBR8KCAwRCigDIhICKQoBAgEfCjEDFAQZAQEHBgICAwEEAgQMAgkCAgYCB?=
+ =?us-ascii?q?AMCCgQFAwIEBAIBBRIDCwEFBgUBAQQJDgICBgICAQgCAgEBAhMBBAMIAgEEA?=
+ =?us-ascii?q?wUDCgEBAQIBBBUEAwUDAwcDBAIDAgYCBwICAwMCAwEDAwIBAgMKEA8WAgIDB?=
+ =?us-ascii?q?AIGAgEEJgIBFQUCAwQCAgcCAgMBAgECAgIEAgQCAgYDCQgBAgIHAQICAgMVA?=
+ =?us-ascii?q?gUBBAkDAwUSDCADAgICAgMHCgMFAgEBAgQDAwMDDA0HAgMBAgEDBQMBAgECC?=
+ =?us-ascii?q?QMGAgIDAwQSGQUDAg8DAgEFBAIIEAsHAQEPFAUECRcDBgIDAxYLBAUDAwMBD?=
+ =?us-ascii?q?A8OAgILAwQTBQEBBwEDDQgDBAQCAwMJAgEQAQMEAgkCBAECCgICAgICBAEBB?=
+ =?us-ascii?q?QQCBAMCBQICAQgEAwMDDQQDCAgDBQMMEgICAgkCAwECAwMDDggdBQkRCwIJA?=
+ =?us-ascii?q?wQNAgQCAgEGAwYKBhQBAhICAgYMBAMDCAMCAwIBAQICAgERAgkIDQUJBQYZA?=
+ =?us-ascii?q?wIDCAEJAxECFAEGAggDBwEBBAICChMKAQECAgEGIwIBAQITEwcDCAICAgIGF?=
+ =?us-ascii?q?gwBBQcDBw8FBQQCAhYDAxEEBBACAgMDAgEBFAYVAQUCAwYLAQYBAgUEAgMEA?=
+ =?us-ascii?q?hICAw4TAwMEBgMBAgoOAgICCQoBBQQDBwUCHwMDAgIFCwIIAgIFAgUHAwkOA?=
+ =?us-ascii?q?QIFAwQJAhQCEAICAggWAgICBQUXAQImAgQBAgECAQIBAgEKAQICDgkDBDgGE?=
+ =?us-ascii?q?QQCAwMCDgECAgsBAgIEAgMBBAcJAwMJCgcBCg0HAgoICRABAgIQAwICAgIGB?=
+ =?us-ascii?q?w4DAhMPBQYGAgoHDQsCAQICFQIDCQYDBQoDBwQKDQIVAhUFAyACCAkLAgcRA?=
+ =?us-ascii?q?gUSAwcHBQMCAhEEAgMDBQMBBwEOBwMHCAICDAICAgIFAgUCBRcRDQQDAwMCC?=
+ =?us-ascii?q?AEEFQYDCQgqGxABAQUBCQIDAgMECAMDAwIGDAsCAQcIAwMGCwgJBgMCBwgZA?=
+ =?us-ascii?q?wUEAwcFCyECBgMCBAUEAQUCEw0CAxkCBgMGEQkNBgcBBwkDBwEBAQICAggBB?=
+ =?us-ascii?q?gUSAgMEAgUEBAEBEgYCAQMCAgQJAwIKAggKAQkTBAMIAwMDAwMFAgIIBBEFB?=
+ =?us-ascii?q?QIBBQoTDAoGAwYDBAICAgoBBwIDAwMCBwELIwIBAwICBQICAQUDAgIGBAMCA?=
+ =?us-ascii?q?QEJAgMCCAECAgECAgIEAQcBCwYBAQIEAgIyAgEDCQIFAQEOAgYCAgECAgIEA?=
+ =?us-ascii?q?gQBCAsEBQ0BAQIBAgIBAQEEAQgDAQECAgMDBQMFCA8NAQEVCx0DBAUCAgEBA?=
+ =?us-ascii?q?QECEwICAQcBAgEBAxoCAQMDBAELAgEBBB8EFgICAgICBAMCAgMCAgsRAiUBA?=
+ =?us-ascii?q?gMFAxMCAgQCAQICBQUFAQMEERkJAwIFBAICBgIEBgoCBwQCGgQCAgIBAwQGA?=
+ =?us-ascii?q?wECCAICBwQEBgMCAgECAgcYAgIZAQMBAQICAgQCAgIJCgQFBAQEAwICAgEMA?=
+ =?us-ascii?q?wECAwICAgIBAwICAQECAwECBQYNAhICAQMPCAQCAgcCAiMPCwECAQECBgYCA?=
+ =?us-ascii?q?wMDCgMBCgECAQECBgIBAhIFAgIBAgQBAgIGBCcBAgECAQEBBQIBAgECBAIHA?=
+ =?us-ascii?q?gECAgMIAQUCBgECAgkBAgECAgIBAgEBAgYCAREEAQICAgICAwEDBgICAgICA?=
+ =?us-ascii?q?gkCAgICBQIFAwIDAQYCAgUCAwMCAgMEAwkDAwgDBgQCAwEBAQIBAgICAQICA?=
+ =?us-ascii?q?QICBQIDAwkBAQMCAQICAgIDBgIFBQEDCAcFBAcBAQIBAwIDBQMDAgMFAgYBD?=
+ =?us-ascii?q?wQDAgIEAgICAgICBAECAgEFAwMCAgUBBQMIAQIEAgEDAwMEBAMFHQIJAyMPA?=
+ =?us-ascii?q?wsJCBM9AQsHMgQ2AQYOFAcrIV+jIwE6hG45VxOBBTkOb8ZFaIM9hG+HKZVKM?=
+ =?us-ascii?q?4QDjQmZS5h+Io1jlW2FMBEjEoFJI4FcMxojgQGCNhI9AxkPV40ohByFE4ohu?=
+ =?us-ascii?q?AEqMjwCBwEKAQEDCZAcgUsBAQ?=
+IronPort-PHdr: A9a23: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
+ QpvMzKWHtps
+IronPort-Data: A9a23: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
+ mHE3kXSz3hp5KycNHN6BOnJF19MvqowMgz0
+IronPort-HdrOrdr: A9a23:uE7SCqg1BwJolFqRCzc+W796BXBQXhIji2hC6mlwRA09TyX4rb
+ HXoB1/73XJYVkqKRQdcLy7Scu9qBDnhP1ICOsqTNCftWDd0QPCEGgI1/qF/9SPIVyGysdtkY
+ hnaLZ3E9D9ABxXiszg8BCkH9tI+rW62ZHtq+Ob4HtkUB1wZ7sI1XYcNi+rVmNzACdJbKBWKH
+ Ne3KV6TvibFEj/ov7bOpDNZYj+m+E=
+X-Talos-CUID: 9a23:QxHJPmDe5mC1ihP6E3ddzE5KQ9A8SF/Q6GbSORWUFXxbdbLAHA==
+X-Talos-MUID: 9a23:Z9eyiQoKMvEPFj09yg0ezzw+BNY25fSeMn4iq5EEl5XYEwliIzjI2Q==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.14,280,1736809200"; 
+   d="scan'208,217";a="112788184"
+X-MGA-submission: =?us-ascii?q?MDF1P6A+2vLhbBHNqvrIhaylte4owaQdCpZ36X?=
+ =?us-ascii?q?BdAx3FkBpgnmG0xns+ZQu/5lKD8ffPFWyJTVSH3zPZbrqe/+MbYjb4gS?=
+ =?us-ascii?q?yx5kor5yI1mgXmAZjMSBxTa4zvBXABdY8lWQ08O3N9XjxD+vUQD2lZZN?=
+ =?us-ascii?q?mXQ7MwcCTHk63eTVrpRnhAag=3D=3D?=
+Received: from mail-ed1-f53.google.com ([209.85.208.53])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2025 17:09:52 +0100
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5eb92df4fcbso2070251a12.0;
+        Thu, 27 Mar 2025 09:09:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1743091790; x=1743696590; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Je1VFcaIVoTDUxYJTFXNS2qnGJQCkzoi9Q8ptLqhED4=;
+        b=M+TLXLYAnOM4vVRUM5UipCIk16ct7QajW4GsBjoM2/c7qtriDcNFrUg0mME3Pk94wN
+         aM17t9uzLRsfzyN/4Ve+FbvolIwplUer+mRd6nSHEXFKgcEolaWrBf700iMB326gp1Hb
+         eQINLp6k/6t0YjBwIwUO+W5xT5gmLFI+9sOB0J/VvPhEs5XcPe+ygh4tUKHTE1yatS79
+         NY6z0sVraX5DQx1fELtC71BVwLkYn1GH8JwbeblyP9kkEEZPFdUeGvCGwHg8PtzpNFii
+         aCRLUUKFVjd/NJwYusevdgsYdGNBw0Y1TGyp3FtKNsxsKBbE1K/7ybuJH5yBfwgbvcuW
+         pScA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743091790; x=1743696590;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Je1VFcaIVoTDUxYJTFXNS2qnGJQCkzoi9Q8ptLqhED4=;
+        b=XrQMdxklAmZZLNNBEKZfU3Wq3st+Y/YTWPdpZM6tMX4MOctTt5fO0EzOrzrf/Bjm5Q
+         oiNXYIrW3zho+eky2XU0gpTftakhBKcO31Y+CPNi52osJ8E2uHMURNTqK+4x1NPGSZYy
+         ZRDabQxc+5doO50pgVQNAcYPgY5Y9ALmz5N+cpu7agMtmGxfFRnLhOHxTjUUVwrpnxNb
+         NRZfuH5xeJ+TMF3CECs8oMTFPq0EGe1I3LgaPx2xR56pLvcbbxlajPQOoE2w89B024Us
+         4ln/t5Bu4f/q/1+p1dedz5NNWz5gfDKh8UibusH4xVsNjEurylWsmvFTjkuu8fddPpmt
+         R2cg==
+X-Forwarded-Encrypted: i=1; AJvYcCV3vsbW+h3PNTHqF1NUMbbT2Eor7IIKzJXA5awN2Ho4Qn9tZowmiNxjxgovGCjFUJ8I+26czlxPLw==@inria.fr
+X-Gm-Message-State: AOJu0YyLtbHQV+cQiTMufu4ZOSbYMaLneIZbuRJ/cbTt/+csECVnNFH8
+	n5+Fz7Es8IWd2l67HrDRJJgjQftxIb9U6tJfRggKExX+Cj1QJw78AP8Zk4HFBqGSXb+/DEmAH7x
+	K9SaI9xQmZ9oOQGiLP4tCwMnxTL0OumRo
+X-Gm-Gg: ASbGncvMEbWt5UYBFBH4MGNDWV5GQAH+nKU85nH3cgOVfn5V+fN1eZdD4qMyvxU8svp
+	Bo5D4JgHLrx708bS9QQay44zrVZFygP9/5RM6SVygQNn/5LipkmODSU/9lVX9yVw7qE2gJkkAyC
+	Z8kV82mAV5QGEsVX/Y5u8Zd0AMOPVDzWAGFkeg
+X-Google-Smtp-Source: AGHT+IFxTJvJDbFJM518Pb4Mcjp9NN51gwe+i5mZUi2qCY3FJTch3g//QmfSNiYxpknwYeZmiVCkjsv5q9OiRp7Kc2U=
+X-Received: by 2002:a05:6402:278e:b0:5ec:9513:1eaa with SMTP id
+ 4fb4d7f45d1cf-5ed8ec1c0d3mr3613299a12.23.1743091789273; Thu, 27 Mar 2025
+ 09:09:49 -0700 (PDT)
+MIME-Version: 1.0
+From: Ningning Xie <xnningxie@gmail.com>
+Date: Thu, 27 Mar 2025 12:09:37 -0400
+X-Gm-Features: AQ5f1JoYsw06dG-e1lk4wBAoLPKL9OPofVbVcht3xd83OH8tmroCIlO5betU4u0
+Message-ID: <CABjRk3nYLo9N8zvc6S8BB+m4Hsod9TBYdQiddRGbp8L45Ls64Q@mail.gmail.com>
+To: caml-list@inria.fr, coq-club@inria.fr, agda@lists.chalmers.se, 
+	haskell-cafe@haskell.org, types-announce@lists.seas.upenn.edu
+Content-Type: multipart/alternative; boundary="000000000000e92af80631552e24"
+Subject: [Caml-list] Haskell Symposium 2025 First Call for Papers
+Reply-To: Ningning Xie <xnningxie@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19286
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-03/CABjRk3nYLo9N8zvc6S8BB%2Bm4Hsod9TBYdQiddRGbp8L45Ls64Q%40mail.gmail.com>
+
+--000000000000e92af80631552e24
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+               Haskell Symposium 2025 Call for Papers
+
+                 Thu 16 - Fri 17 Oct 2025, Singapore
+
+    https://conf.researchr.org/home/icfp-splash-2025/haskellsymp-2025
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+The ACM SIGPLAN Haskell Symposium 2025 will be co-located with the 2025
+International Conference on Functional Programming (ICFP) and the 2025
+International Conference on Systems, Programming, Languages and
+Applications:
+Software for Humanity (SPLASH).
+
+The Haskell Symposium presents original research on Haskell, discusses
+practical
+experience and future development of the language, and promotes other forms
+of
+declarative programming.
+
+ Submission deadline:    9 June  2025      (Mon)
+ Notification:           17 July 2025      (Thu)
+
+Deadlines are valid anywhere on Earth.
+
+Papers should be submitted through HotCRP at: https://haskell25.hotcrp.com/
+
+Topics of interest include:
+
+ * Language design, with a focus on possible extensions and modifications o=
+f
+   Haskell as well as critical discussions of the status quo;
+
+ * Theory, such as formal semantics of the present language or future
+   extensions, type systems, effects, metatheory, and foundations for
+   program analysis and transformation;
+
+ * Implementations, including program analysis and transformation,
+   static and dynamic compilation for sequential, parallel, and distributed
+   architectures, memory management, as well as foreign function and
+   component interfaces;
+
+ * Libraries, that demonstrate new ideas or techniques for functional
+   programming in Haskell;
+
+ * Tools, such as profilers, tracers, debuggers, preprocessors,
+   and testing tools;
+
+ * Applications, to scientific and symbolic computing, databases,
+multimedia,
+   telecommunication, the web, and so forth;
+
+ * Functional Pearls, being elegant and instructive programming examples;
+
+ * Experience Reports, to document general practice and experience in
+   education, industry, or other contexts;
+
+ * Tutorials, to document how to use a particular language feature,
+   programming technique, tool or library within the Haskell ecosystem;
+
+ * System Demonstrations, based on running software rather than novel
+   research results.
+
+Program Committee
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+Andreas Abel                 Gothenburg University
+Patrick Bahr                 IT University of Copenhagen
+Matthew Fluet                Rochester Institute of Technology
+Adam Gundry                  Well-Typed LLP
+Xuejing Huang                IRIF
+Hideya Iwasaki               Meiji University
+Patricia Johann              Appalachian State University
+Hsiang-Shang 'Josh' Ko       Institute of Information Science, Academia
+Sinica
+Andr=C3=A1s Kov=C3=A1cs                University of Gothenburg and Chalmer=
+s
+University of Technology
+Andres L=C3=B6h                   Well-Typed LLP
+J. Garrett Morris (co-chair) University of Iowa
+Liam O'Connor                Australian National University
+Maciej Pir=C3=B3g                 University of Wroc=C5=82aw
+Arnaud Spiwack               Tweag
+Meng Wang                    University of Bristol
+Li-yao Xia                   Inria
+Ningning Xie (co-chair)      University of Toronto
+Gerg=C5=91 =C3=89rdi                   Standard Chartered Bank
+
+If you have questions, please contact the chairs at:
+ningningxie@cs.toronto.edu and garrett-morris@uiowa.edu.
+
+--000000000000e92af80631552e24
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Haskell=
+ Symposium 2025 Call for Papers<br><br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0Thu 16 - Fri 17 Oct 2025, Singapore<br><br>=C2=
+=A0 =C2=A0 <a href=3D"https://conf.researchr.org/home/icfp-splash-2025/hask=
+ellsymp-2025">https://conf.researchr.org/home/icfp-splash-2025/haskellsymp-=
+2025</a><br><br>=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D<br><br>The ACM SIGPLAN Haskell Symposium 2025 will be co-located =
+with the 2025<br>International Conference on Functional Programming (ICFP) =
+and the 2025<br>International Conference on Systems, Programming, Languages=
+ and Applications:<br>Software for Humanity (SPLASH).<br><br>The Haskell Sy=
+mposium presents original research on Haskell, discusses practical<br>exper=
+ience and future development of the language, and promotes other forms of<b=
+r>declarative programming.<br><br>=C2=A0Submission deadline: =C2=A0 =C2=A09=
+ June =C2=A02025 =C2=A0 =C2=A0 =C2=A0(Mon)<br>=C2=A0Notification: =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 17 July 2025 =C2=A0 =C2=A0 =C2=A0(Thu)<br><br>D=
+eadlines are valid anywhere on Earth.<br><br>Papers should be submitted thr=
+ough HotCRP at: <a href=3D"https://haskell25.hotcrp.com/">https://haskell25=
+.hotcrp.com/</a><br><br>Topics of interest include:<br><br>=C2=A0* Language=
+ design, with a focus on possible extensions and modifications of<br>=C2=A0=
+ =C2=A0Haskell as well as critical discussions of the status quo;<br><br>=
+=C2=A0* Theory, such as formal semantics of the present language or future<=
+br>=C2=A0 =C2=A0extensions, type systems, effects, metatheory, and foundati=
+ons for<br>=C2=A0 =C2=A0program analysis and transformation;<br><br>=C2=A0*=
+ Implementations, including program analysis and transformation,<br>=C2=A0 =
+=C2=A0static and dynamic compilation for sequential, parallel, and distribu=
+ted<br>=C2=A0 =C2=A0architectures, memory management, as well as foreign fu=
+nction and<br>=C2=A0 =C2=A0component interfaces;<br><br>=C2=A0* Libraries, =
+that demonstrate new ideas or techniques for functional<br>=C2=A0 =C2=A0pro=
+gramming in Haskell;<br><br>=C2=A0* Tools, such as profilers, tracers, debu=
+ggers, preprocessors,<br>=C2=A0 =C2=A0and testing tools;<br><br>=C2=A0* App=
+lications, to scientific and symbolic computing, databases, multimedia,<br>=
+=C2=A0 =C2=A0telecommunication, the web, and so forth;<br><br>=C2=A0* Funct=
+ional Pearls, being elegant and instructive programming examples;<br><br>=
+=C2=A0* Experience Reports, to document general practice and experience in<=
+br>=C2=A0 =C2=A0education, industry, or other contexts;<br><br>=C2=A0* Tuto=
+rials, to document how to use a particular language feature,<br>=C2=A0 =C2=
+=A0programming technique, tool or library within the Haskell ecosystem;<br>=
+<br>=C2=A0* System Demonstrations, based on running software rather than no=
+vel<br>=C2=A0 =C2=A0research results.<br><br>Program Committee<br>=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D<br><br>Andreas Abel =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Gothenburg University<br>Patr=
+ick Bahr =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 IT Univers=
+ity of Copenhagen<br>Matthew Fluet =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0Rochester Institute of Technology<br>Adam Gundry =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Well-Typed LLP<br>Xu=
+ejing Huang =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0IRIF<br>=
+Hideya Iwasaki =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Meiji Unive=
+rsity<br>Patricia Johann =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Ap=
+palachian State University<br>Hsiang-Shang &#39;Josh&#39; Ko =C2=A0 =C2=A0 =
+=C2=A0 Institute of Information Science, Academia Sinica<br>Andr=C3=A1s Kov=
+=C3=A1cs =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0University =
+of Gothenburg and Chalmers University of Technology<br>Andres L=C3=B6h =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Well-Typed LLP<=
+br>J. Garrett Morris (co-chair) University of Iowa<br>Liam O&#39;Connor =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Australian National Uni=
+versity<br>Maciej Pir=C3=B3g =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 University of Wroc=C5=82aw<br>Arnaud Spiwack =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Tweag<br>Meng Wang =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0University of Bristol<br>Li-ya=
+o Xia =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 Inria<=
+br>Ningning Xie (co-chair) =C2=A0 =C2=A0 =C2=A0University of Toronto<br>Ger=
+g=C5=91 =C3=89rdi =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 Standard Chartered Bank<br><br>If you have questions, please contact=
+ the chairs at: <a href=3D"mailto:ningningxie@cs.toronto.edu">ningningxie@c=
+s.toronto.edu</a> and <a href=3D"mailto:garrett-morris@uiowa.edu">garrett-m=
+orris@uiowa.edu</a>.</div>
+
+--000000000000e92af80631552e24--
