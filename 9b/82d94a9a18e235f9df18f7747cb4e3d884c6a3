@@ -1,0 +1,1309 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=qm0w9avk;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=YGPNMKMN;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 18D1640065
+	for <caml-list@tunbury.org>; Tue,  1 Apr 2025 09:13:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=jpvVNSFd5u1GlPR2U8U7tHgGgcHrEkFjC7Wvd2H4l84=;
+  b=qm0w9avkdiPgAji6GTNI0qb4pTkhufpxu8QZJr7sFQJzkX6Wf36ONDh1
+   MZk5QegAigqSKHw+/RCk6VoYNVuRoMRh4MqkNzjR/zKJxh7xl67d/ZRGI
+   yCIFF42D/agxA8OmJqxoZ3WpAkDz2ycXqsS34hY55hrAHLoqUcfJ+sY9r
+   E=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.14,293,1736809200"; 
+   d="scan'208,217";a="215752038"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 01 Apr 2025 11:13:03 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id CC93CE0D25; Tue,  1 Apr 2025 11:13:02 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id BCA8FE007A
+	for <caml-list@sympa.inria.fr>; Tue,  1 Apr 2025 11:12:56 +0200 (CEST)
+IronPort-SDR: 67ebae05_vfboqkTjdk8bVBlMjiI3BF0QhtMevuhvtcvYvlbSipasU/w
+ qv/HTpQu7nOSKEk9Y2CTKSkbKgreapqD3W6f6kQ==
+X-IPAS-Result: =?us-ascii?q?A0HLBwDIretnjyIeaIFagl6BP1soGQFjWgkqBwhIhFWDT?=
+ =?us-ascii?q?44jkUqKdoJ7AxgWIxQBAwENLgEFDQECBAEBAwECAYUAAosoAh8GAQQ0EwECB?=
+ =?us-ascii?q?AEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEBAQEBOQVJhXsNSQEBB?=
+ =?us-ascii?q?AsBgWpRUx5lCQYBAQEBAQEBAQECAQEBIgEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQECCwEBAjEEDFsJChMBATgYIwMUAQYDA?=
+ =?us-ascii?q?hEBNQMBEwESGgGCD1gBgmQDBQwGkVibS3qBMoEBggwBAQaBCD4CAQsCAgMBD?=
+ =?us-ascii?q?gklAdoHgUsaCYFIhW2CSRoBBSVIawKESAmEMycPgVVEZmSBBoE3B2+BUG8LF?=
+ =?us-ascii?q?wEBAQEYgR0HAQFMAQmDJYJpghwXgTuBM1JegQyBbIRLEoIOg0MdHC1GgQ1Rg?=
+ =?us-ascii?q?SmES4FVg1yCcYEzSIJHiTuBR0szLAFVExcLBwVhgQsDKjQxgUV7gj1pSToCD?=
+ =?us-ascii?q?QI1ghskWIImgxKBOoQ+hD6FTYIRggeJJ4RdLU+DTB1AAwttPTcUG6NhJSI1A?=
+ =?us-ascii?q?TqDdgcHOB02DAgBBiIFARMWAi8gAQgONTUKDhAMGxMLOpJpFgUnnV+TVIEKN?=
+ =?us-ascii?q?AeEHoFdBgyJBYEklX2EA4FXpBdmIphcIoI2hyaBJQlggXmIdYwlPAIRDYU4g?=
+ =?us-ascii?q?X4jPA1iHgwHMxowQ4IzAQEBMQkJAQwwHA+PTwEHa3teEIEuIoEEgXQ7gV9ES?=
+ =?us-ascii?q?sF7QTUCAQE4AgcBCgEBAwmFYgEBZ4IdgheEaTSBSwEB?=
+IronPort-PHdr: A9a23:8vAddxd3W/DHfU0G7MbgiBqtlGM+M9HLVj580XLHo4xHfqnrxZn+J
+ kuXvawr0ASTG92DoKsU0baP+4nbGkU+or+580o+OKRWUBEEjchE1ycBO+WiTXPBEfjxciYhF
+ 95DXlI2t1uyMExSBdqsLwaK+i764jEdAAjwOhRoLerpBIHSk9631+ev8JHPfglEnjWwbL1sI
+ BmssQndqsYajZZhJ6ovxRbFv2ZDdvhLy29vOV+ckBHw69uq8pJk7ypepe8q+dRaUaX9caQ4T
+ LhYAyojPmso+sDltgTNQBWW6HcEXWoYjhRHAw7e7BHnRZjxqTf1tvB82CaBI8L7S60/VCm44
+ KdqTB/ojzoHNyI8/WrKhMF8kL5XrRS8rBN43oDUfZqVNOJgcazBYdMUS21BXsNLWCxABIO3c
+ o8DAuUFMOpdqYT2ulkAogakBQS0BO3h1CJGiHH106I1z+ssChvJ0BA6Et8UrHjYsNf4OaEPW
+ u611qnIyjDDYutK1Df58ofIdA0qr+yQUrJwdMrRyFUvFx/YhViXs4PlOyma1uIXv2iA8+VgV
+ eevi287qwFtuTWv3sAsio3Jh4IJ1F/L6SV5wIA0Jd2hVU50f8SoEJxKtyGVLoZ7RN4pTG50t
+ igg0LIGpYK7czYQyJQh3xPTd/OKfomK7x79SeqcIyt0iG97db+xhhu8/kitxvD4W8e0zVtHr
+ DRJn9jQunwR1hHf9tSLR/9y80mvxTuC1Q/e5+dZKk46kqrbLoQuwr82lpcLqUTMADP2mETqj
+ KCIbkUk/e2o6+H5bbn8oJ+TKZN0hhn5MqsygMO/BOA4PhIJX2iB9uSwzLLj/UzlQLVKk/05i
+ bPVv4zdJcQevqK5DA5V0pon6xmlFDiqytUYnX4fIFJKeRKHk4zpNEvVL/ziEfi/hFGsnC9rx
+ //cIrLhAZDNIWXZnLfgerZx81VcyAopwtFf4ZJbFL8BIPbtVU/tqNPYDgE2Mxauz+bgEtV92
+ ZsSWWGLAq+YKKPSqkGH6vgzI+aSeIAVuC7xJOM/6P/vk3A5nUURcrK03ZsWbHC3A+xqI0qYY
+ XrwgtcBDHwFshA/TOztkFGNTD9TZ22uUKI7/DE0FZiqDYjMRoy1m7OBxyS7H51Mam9cElCMC
+ W/keJ6fW/cPaCOeONRhkjsYWrigUYAh0QmitQ79y7pgK+rY4DAYtYn72Nh64O3Tkh4y9ThqA
+ MiHz26NSGR0knsPRzAqxq9/pEh9xk2Z3ah/mfxYGsRf6OhTXQcmLp7cyPJ6B8ruVQLGe9eFU
+ EqmTc+8ATEwU90+3cQOb1xhFNWlixDPxzCqA7gOmLyWHpw46L7T33/2J8Zl03rG1a8hj0MnQ
+ sRVL2GmiLR/+g7ODIDKi0WUj7umeboY0SLX6WuP0WWDsFtWXQJsS6nIU38SalPLodn3+0/OV
+ aGiBLQoPwdb18KON7FGZsPmgFhCQvroJcrTY2asm2erGRaH2KmMYpfre2QcwirQEFQIngYO9
+ nicLwc+HD2uo2fGATxuC13vZ0Ts/PF7qHK0U0M41RmKb0pl17u15h4am+CTS/MV3rIFoScht
+ it7EEy639LMBNqMvwthfKNCbtMh+FpLyHzVughnMpC9M6xviUQSfgprs0/02Rh6BZ1Mkc0wo
+ 3MryApyJ7iY0FREdz6AwJ7+JqDZJnXq8Ryyaq/b2lHf3c6W9akR8Pk4s1LjvAWpF0o+7Xpoz
+ 9lV032d5pXTEQodT4j9UkEt9xh1v7zVeC096JnS1XF2Kqm7rj/C29coBOs51hatZMxQMKSZF
+ A/0D8IVGdOuJPYvm1WmYRMIJudS9LQ7P8++cfuJw7akPPx8kzK+kWRH/Id931qR+yZkUO7Hw
+ 44Fw+2E3guATzrzkE2ussXzmYxdYTESH3G/yTT/CY5KZqxyeJ4LBn20L822wNV+nZ/tVGRC+
+ F6tHVNVkPOuLFCWcFq3lVlUykI/pWOh3y2102ow2zogq67a2C3V38zjcgAGMyhFXjpMl1Dpd
+ KGwhtZSZ0Ooagk1iFPx7ELzwe5Ar6R6LnXPaV9PeznqImpiVKqpq7fEZNRAvsB7+R5LWfixN
+ AjJAoX2pAEXhn+yd4M/7DUydjXx/478gwQ/k2WFanB6sHvef8h0gxbZ/t3VA/BLjXIdXCctr
+ z7RCxCnOsWxu82OnsLKtum4EXmqVphSbTXD1YSEpTe27m1sAASikra0gNK0WRMi33rD3sJxH
+ T7NsA66Z4Dq06qgNucyRXNTXAql+ZdrT75Cx5M3gIAM1HMagJSM4HdBln38ZNxf0KS4d3ENQ
+ D8X3/bf5xXj00B4aHfV18T+THrOitB5aYyCa3gNkjk489gMCKqQ6+lcmjBpp1OjsQ/LSf1tx
+ 3EFzv8/9HMRg+cIoRcgiCKHDdj+BGF+Oirh31SN5tG69+BMYXq3NKO3zAx4lMygC7eLpkddX
+ mz4c9EsB3046MI3K1/K3HDpj+OsMNDNcdIesAGVmBbcnqBULpw2jP8DmStgPyr0o3Qkz+cxi
+ REm04u9ucCLLGBk/aTxBRA9VHW9bsca/Hf2hqZbn9qK95ioGoR9Fz4LWprxUP/uFygd9LzmO
+ wuIDDwguyKDA7OMeG3XoExirn/JD9WqLyTOfihflI0+AkLFYhcD02V2FH0gk5U0Fx6n3pnke
+ UZ9vXUK40Lg7wBL0qRuPgX+VWHWoEGpbC01Qd6RNkkzjEkK6kHLPMiZ9u82ETtf+8jrlza2c
+ jnCdVlZWF41D1SDA0H/M7Ku49jZ7uXeAfCxevLKaLPIsudeUvaU2bql1ZZg9DuXcMDTLj9lF
+ fJxiS8hFThpXt/UnTkCUXldnibEaYiArxe5+zFrhti49OX3VQnv44qWFrYUNs9gsUPT4+/LJ
+ 6ubgyB3Lixd35UHyCrTybQR61UVjjlnazinFbloWTfldKvLgecXChcab3g2L85U9+cn2RELP
+ 8fHi9Tz37o+j/gvCl4DW0az0s2uYMULJSm6OjalTA6wDo/ecGTZntCiXp/pUbpUnflZvB22u
+ C+GHgnkJDvWnj3gUVa0OuFJjT2HFBZZpYe2fw0rDDTzCtX8ZXjZeJd7gCY3zrs9mn7RfTdGY
+ H4lKx8L9eXWtn8Qi+43A2Fb63t5MeSI0z2U6eXVMNdz07MjAyh5kf5b/GVvzrJU6C9eQ/km0
+ CDWr9NovxSnirzWkGshCUIS7G0TwtnX7iAAce3D+5JNWGjJ5kcI5GSUUFERosd9T8boo+ZWw
+ 8TOk6T6LHFD9cjV9I0SHZuxSorPPXw/PB7uADORAhECSGvhDlvk3xkEgqyDo0Kp+4A9ronwl
+ ZEOTL5CSVFzEekVX01hFdpEO5x3WzI4jZaRi9MO7nel6hyNVINdpJ+NBZfwSb3/bS2Ui7VJf
+ U5C+onDddFKJNDqjnNeP0F9mJXWFkHQW9FUvyAnaRU79UxJ+X44VWYz3kP5diun52IVHvOv2
+ Btqmk15e+tnp1KOqx8nY1HNoiU3ikw4n97o1CuQfDDGJ6C1RYhKCiDwuht5ItbhTg1ydwH3g
+ V18OWKOWedKl7U5PzMO6keUqd5VFPVbV6EBfBIA2aTdeaAzyVoF4mam3RMVvLGUT8I6yE1xK
+ dj38zoD2ho/PodvdOqJfPYPlQAW3f/r3GfgleEpnF1PfgBUqjrUJnRO4RRXfvonP3T6pLQ0s
+ F7ewjcbKmFeCPMn/6A4qE9ia7bblEeCm/YAK1jvZbbHd/rL5zHMzZzREAJs2k5axRYeo7Qkj
+ pt8KwLRXkQrhtN9DjwxPNHZYUFQZstWrz3IeDqW9P7K2dRzNpm8EebhSamPsrwViwSqBlRhE
+ 4MJ58UHVp6itSOQZd/gN6IAwA4x6R7DIUXcSuxOfAOXnTwHpcCm0ZIx2pNSbj0QGmRyNyyr6
+ 62f/1V7xqPbAJFtOjFBAsMNLRdUEIWiljRcvmhcATX/ye8fxAWYrnf9qinWEDjgfo9jafOTN
+ ltnDNC7/yl68rDj0ASGtMyGeyehbZI55oyqi6tSvZuMBvJKQKMotk7dn9IdXHm2SyvUFsbzI
+ ZHsao4qZNiyC3CgU1X5hShmKqW5dNurMKWMhhnlAIhOt4zOlgsZDpfoTyNDCkJPm7Qb46Zte
+ QAIY5w6eAPl8QMkOPm2JA6elM6lQ2OsNSd+Rf5Cy+63fPpSkzpqafW1gihFLNly36ys/EgBS
+ YtfxAnZ3uqmbpJCXDLbH2wEPR3IoTslmmNhMOcr3+p5xwnH+wp5UXjDZKlib2pKuMs5DFWZL
+ CBtC2Y2cFSbiJLK/g+m271BtzsYhdtf1vdJ9WTvppKKKiz5Q7Sl8N+G1khoJchjuaB6NpbvZ
+ 9eLpI+L1CKKV4He60WMGGuzE/4Q8jC/CChfXf9DlHpjPJAW/41b5hhoPi/bD6RIDLgwq7uqb
+ zt9ECNUyjUWBdvoNN0qh/flnaPdkgaMfZ8iNh0drZgEhcESAXceXw==
+IronPort-Data: A9a23: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
+ vRAI5TzOahdFH1s5Q==
+IronPort-HdrOrdr: A9a23:CxhQDqF6wFlDC4NlpLqE1ceALOsnbusQ8zAXPiFKOH9om6mj/f
+ xG88506faZslsssRIb+exoWpPgfZq0z/ccirX5Vo3MYOCJggeVBbAnxbSn6TztES/z+4dmpM
+ VdWpk7Lsb/SXxzjcOS2njdLz/M+qjjzJyV
+X-Talos-CUID: 9a23:5/I0nGzkCyhDl0N3fwILBgUrA9IVVULj7kvReVeoFkZOdYDWdgGfrfY=
+X-Talos-MUID: 9a23:03CE3QWO2dXcZcnq/AS03Sh5Kt5Y2vvtNUwzt58Mns7fLAUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.14,293,1736809200"; 
+   d="scan'208,217";a="113127160"
+X-URL-ContentFilter: 
+X-MGA-submission: =?us-ascii?q?MDGytowtXHswriMkRmxLUwA76/rMNHthEKQRco?=
+ =?us-ascii?q?sqqBRoQ4iZWs2mbRGt52G+BQNofYY+/6X9+aSAR8ptyoER8hipbJNcgE?=
+ =?us-ascii?q?Uc4TByo1uTdPfbq8ib8ymiJkoZ4BKz5WWv9Jz2p8E3sPC33arCnje86q?=
+ =?us-ascii?q?nLpwe7D3JkleI1EIRt+RUmqg=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2025 11:12:38 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 60423564EFD;
+	Tue,  1 Apr 2025 11:12:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1743498756;
+	bh=GL6Z89fyrqVaEpzXS2oWMSheat9NHd8DA4i1X71jrHk=;
+	h=From:To:Subject:Date:Message-ID;
+	b=YGPNMKMNfegYg9JdGEmTU13NY7NqihWd1GmWt5COMEKonVUuz7ALKOl6AUwuIDits
+	 JaRDwGss47y/hjOohL87yMCeLfeTZ+4PvoMYdhT4vjB2d3F0aIRGxPc6Y3dG9w6v0+
+	 HrEKgxWhivXspjSs3zBJZvNQ233mYnhm+tXTgsLM=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 01 Apr 2025 11:12:34 +0200
+Message-ID: <m28qok454t.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Apr  1 11:12:37 2025 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.496085, queueID=10105565067
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19288
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-04/m28qok454t.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of March 25 to April
+01, 2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+MlFront_ZipFile - High-level API for zip files
+MlFront_Cache - Transient caches + slowly varying data
+New lesson on polymorphic variants
+The OBazl Toolsuite 3.0.0.beta.1
+Dune dev meeting
+Other OCaml News
+Old CWN
+
+
+MlFront_ZipFile - High-level API for zip files
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-mlfront-zipfile-high-level-api-for-zip-f=
+iles/16380/1>
+
+
+jbeckford announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  I am happy to announce that `MlFront_ZipFile.2.3.0', a package that
+  can do basic zip/unzip operations on a zip file, was released
+  today. It is available on opam with `opam update' and `opam install
+  MlFront_ZipFile'.
+
+  There are other opam packages for zip files, and often those are more
+  appropriate. `MlFront_ZipFile' is different because:
+
+  =E2=80=A2 It is very high-level. I wanted an API to unzip and zip, with a
+    simple observer API for unzipping so I could attach @CraigFe's
+    excellent [`progress'] bar library.
+  =E2=80=A2 It can unzip 4GB files in a 32-bit OCaml runtime.
+  =E2=80=A2 It has a permissive license.
+  =E2=80=A2 It is not thread-safe (except unzipping).
+  =E2=80=A2 It fully embeds the C code. That means it works on Windows and
+    should work under cross-compilation without needing a
+    non-portable/non-reproducible `pkg-config' installation.
+  =E2=80=A2 It has a binary `mlfront-zip' which can do glob-based exclusion=
+s (a
+    feature not present in the typical InfoZip `/usr/bin/zip' that comes
+    with Unix or PowerShell `Compress-Archive' on Windows). macOS,
+    Windows and Linux have prebuilt binaries.
+
+  Here are the relevant links:
+  =E2=80=A2 Docs:
+    [https://dkml.gitlab.io/build-tools/MlFront/MlFront_ZipFile/MlFront_Zip=
+File/index.html]
+  =E2=80=A2 `mlfront-zip' binaries:
+    [https://gitlab.com/dkml/build-tools/MlFront/-/releases/2.3.0-8]
+  =E2=80=A2 homepage: <https://gitlab.com/dkml/build-tools/MlFront>
+
+  Sidenote: The docs won't be available on ocaml.org. Use the doc links
+  above until I figure out a technical solution (very low-priority).
+
+
+[`progress']
+<https://github.com/craigfe/progress?tab=3Dreadme-ov-file#progress>
+
+[https://dkml.gitlab.io/build-tools/MlFront/MlFront_ZipFile/MlFront_ZipFile=
+/index.html]
+<https://dkml.gitlab.io/build-tools/MlFront/MlFront_ZipFile/MlFront_ZipFile=
+/index.html>
+
+[https://gitlab.com/dkml/build-tools/MlFront/-/releases/2.3.0-8]
+<https://gitlab.com/dkml/build-tools/MlFront/-/releases/2.3.0-8>
+
+
+MlFront_Cache - Transient caches + slowly varying data
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-mlfront-cache-transient-caches-slowly-va=
+rying-data/16381/1>
+
+
+jbeckford announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  I am happy to announce that `MlFront_Cache.2.3.0', a framework for
+  transient caches and slowly varying data, was released today. It is
+  available on opam with `opam update' and `opam install MlFront_Cache'.
+
+  MlFront_Cache lets you cache files and directories, all backed in a
+  local sqlite3 database. It is a bit esoteric. I use it for:
+
+  1. Transient caches when downloading zip files.
+  2. Immutable installs for DkCoder. A related use case is covered in
+     detail in the docs as "Downloading datasets".
+
+  Treat this as an alpha release with a somewhat unstable API. In
+  particular, I haven't implemented cache eviction yet.
+
+  Here are the relevant links:
+  =E2=80=A2 Docs:
+    [https://dkml.gitlab.io/build-tools/MlFront/MlFront_Cache/MlFront_Cache=
+/index.html]
+  =E2=80=A2 homepage: <https://gitlab.com/dkml/build-tools/MlFront>
+
+  Sidenote: The docs won't be available on ocaml.org. Use the doc links
+  above until I figure out a technical solution (very low-priority).
+
+
+[https://dkml.gitlab.io/build-tools/MlFront/MlFront_Cache/MlFront_Cache/ind=
+ex.html]
+<https://dkml.gitlab.io/build-tools/MlFront/MlFront_Cache/MlFront_Cache/ind=
+ex.html>
+
+
+New lesson on polymorphic variants
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/new-lesson-on-polymorphic-variants/16390/1>
+
+
+Jakub Svec announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello,
+
+  I wrote a new lesson on polymorphic variants.
+
+  You can find it [here].
+
+  I appreciate any feedback you may have. I expect that if there is
+  interest in including a lesson on polymorphic variants that there will
+  likely be several rounds of refinement.
+
+  Sources:
+
+  =E2=80=A2 <https://blog.shaynefletcher.org/2017/03/polymorphic-variants-s=
+ubtyping-and.html>
+  =E2=80=A2 <https://discuss.ocaml.org/t/new-draft-tutorial-on-polymorphic-=
+variants/13485>
+  =E2=80=A2 <https://discuss.ocaml.org/t/is-there-any-kind-of-guidline-abou=
+t-when-to-use-polymorphic-variants/11006>
+  =E2=80=A2 <https://blog.klipse.tech/ocaml/2018/03/16/ocaml-polymorphic-ty=
+pes.html>
+
+  This lesson is about 800 lines long (about 1100 with line length
+  limited to 85 columns). This makes this lesson on the longer side when
+  compared to other lessons on OCaml.org. Therefore, this is the first
+  of 2 lessons on polymorphic variants.
+
+  This lesson (lesson 1) introduces the concepts behind polymorphic
+  variants (such as row polymorphism and structural typing), then
+  discusses common syntactic structures of polymorphic variants. It
+  teaches these concepts in a bottom-up direction. It is my subjective
+  belief (held lightly) that introducing polymorphic variants in a
+  top-down direction leads to more complexity and confusion.
+
+  Lesson 2, which is forthcoming, introduces common usecases for
+  polymorphic variants through real-world examples.
+
+  Any feedback a reviewer is willing to provide is greatly
+  appreciated. The author is particularly interested in ensuring
+  accuracy and validity of examples and consistency in the language with
+  OCaml.org's other materials, but all feedback is welcome.
+
+
+[here] <https://hackmd.io/@wqo57Le0RIyZVlb8qdJ8PA/HJchCEX6ye/edit>
+
+
+The OBazl Toolsuite 3.0.0.beta.1
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-the-obazl-toolsuite-3-0-0-beta-1/16407/1>
+
+
+Gregg Reynolds announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The OBazl Toolsuite 3.0.0.beta.1 is now available.
+
+  The OBazl Toolsuite is a collection of rules & tools that support
+  OCaml development using [Bazel]. To get started:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ git clone https://github.com/obazl/demo_hello.git
+  =E2=94=82 $ cd demo_hello
+  =E2=94=82 $ bazel run bin:greetings
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  See [The OBazl Book] for more guidance.
+
+  Tested on MacOS and Linux (Ubuntu).
+
+  This version contains many improvements:
+
+  =E2=80=A2 Improved toolchain support. Select a compiler by passing
+    e.g. `--tc=3Docamlc'.
+  =E2=80=A2 Seamless opam dependencies.  The previous version required a
+    preprocessing step (running `bazel run @coswitch'); this is no
+    longer necessary.
+  =E2=80=A2 Fine-grained dependencies. Depend directly on any module, wheth=
+er it
+    is in a library or not, and whether it is namespaced (~~wrapped'')
+    or not.
+  =E2=80=A2 Context-sensitive archiving. Archives are for distribution; int=
+ernal
+    dependencies do not need them.  The `ocaml_library' rule will only
+    construct an archive on demand. By default, an internal dependency
+    on an `ocaml_library' target will not request archiving. This can be
+    overridden.
+  =E2=80=A2 Several examples of OBazl extensions: rules_ppx, rules_cppo,
+    rules_ctypes, rules_menhir.  These demonstrate the relative ease
+    with which tools can be integrated into the Bazel environment.
+  =E2=80=A2 A new tool, `bazel run @obazl//new' that generates a project fr=
+om a
+    template.
+  =E2=80=A2 Direct support for the tools in the standard SDK (ocamldebug,
+    ocamlobjinfo, etc.) and for a subset of the OCaml Platform
+    tools. For example:
+    =E2=80=A3 `$ bazel run @opam -- list'
+    =E2=80=A3 `$ bazel run @ocaml'
+    =E2=80=A3 `$ bazel run @utop'
+    =E2=80=A3 `$ bazel run @dbg --@dbg//pgm=3Dsrc:greetings'
+
+  OBazl ensures that these commands will be invoked under the correct
+   switch, with correct paths (CAML_LD_LIBRARY_PATH etc.), insulated
+   from environment variables.
+
+  Other tools are invoked by passing an option to an ordinary build
+  command. For example:
+
+  =E2=80=A2 `$ bazel build lib/hello:Hello --modinfo' # runs ocamlobjinfo o=
+n the
+    .cmo/.cmx output
+  =E2=80=A2 `$ bazel build lib/hello:Hello --siginfo' # runs ocamlobjinfo o=
+n the
+    .cmi output
+  =E2=80=A2 `$ bazel build lib/hello:libFoo --archinfo' # runs ocamlobjinfo=
+ on
+    the .cma/.cmxa output
+  =E2=80=A2 `$ bazel build lib/hello:Hello --gensig' # runs `ocamlopt -i' o=
+n the
+    .ml file to generate inteface code.
+
+  The documentation at [The OBazl Book] has been updated.  It remains
+  far from complete but it should be useful.  In particular the [OBazl
+  Guide] and the [`rules_ocaml' Reference Manual].
+
+  What's missing?
+
+  =E2=80=A2 Support for opam publishing.  I have successfully published an =
+OBazl
+    (Bazel) project to an opam switch, and used it in a dune-only
+    project, but the code is still under development so I don't have a
+    demo.
+  =E2=80=A2 Support for `odoc', `ocamlformat', and linting.  Currently under
+    development.
+  =E2=80=A2 Windows support.  The code is designed for portability but it w=
+ill
+    probably be a while before I can get to Windows.
+  =E2=80=A2 Automatic generation of BUILD.bazel files. I have a tool for th=
+is
+    but it is outdated. Bringing it up-to-date is a high priority.
+
+  Support:
+  =E2=80=A2 [discord]
+  =E2=80=A2 [@obazl.bsky.social]
+
+  Cheers!
+
+  Gregg
+
+
+[Bazel] <https://bazel.build/>
+
+[The OBazl Book] <https://obazl.github.io/docs_obazl/>
+
+[OBazl Guide] <https://obazl.github.io/docs_obazl/obazl>
+
+[`rules_ocaml' Reference Manual]
+<https://obazl.github.io/docs_obazl/rules-ocaml/reference/>
+
+[discord] <https://discord.gg/wZCSq2nq6y>
+
+[@obazl.bsky.social] <https://bsky.app/profile/obazl.bsky.social>
+
+
+Dune dev meeting
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/27>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello :waving_hand: The next Dune Dev Meeting will be on *Wednesday,
+  April, 2nd at 9:00 CET*. This is going to be a one-hour-long meeting.
+
+  Whether you are a maintainer, a regular contributor, a new joiner or
+  just curious, you are welcome to join: these discussions are opened!
+  The goal of these meetings is to provide a place to discuss the
+  ongoing work together and synchronize with the Dune developers :+1:
+
+  The agenda is available on the [meeting dedicated page]. Feel free to
+  add more items in it.
+
+  =E2=80=A2 Meeting link: [zoom]
+  =E2=80=A2 Calendar event: [google calendar]
+  =E2=80=A2 Wiki with information and previous notes: [dune wiki on GitHub]
+
+
+[meeting dedicated page]
+<https://github.com/ocaml/dune/wiki/dev-meeting-2025-04-02>
+
+[zoom]
+<https://us06web.zoom.us/j/85096877776?pwd=3DcWNhU1dHQ1ZNSjZuOUZCQ0h2by9Udz=
+09>
+
+[google calendar]
+<https://calendar.google.com/calendar/u/0/embed?src=3Dc_5cd698df6784e385b1c=
+dcdc1dbca18c061faa96959a04781566d304dc9ec7319@group.calendar.google.com>
+
+[dune wiki on GitHub] <https://github.com/ocaml/dune/wiki>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Why F#?]
+  =E2=80=A2 [ FOSDEM 2025: Report from the Friendly Functional Languages BOF
+    Room]
+  =E2=80=A2 [Pushing the opam-repository into a sustainable repository]
+  =E2=80=A2 [=CE=BCTCP, Miou and unikernels]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Why F#?] <https://batsov.com/articles/2025/03/30/why-fsharp/>
+
+[ FOSDEM 2025: Report from the Friendly Functional Languages BOF Room]
+<https://tarides.com/blog/2025-03-28-fosdem-2025-report-from-the-friendly-f=
+unctional-languages-bof-room>
+
+[Pushing the opam-repository into a sustainable repository]
+<https://blog.robur.coop/articles/2025-03-26-opam-repository-archive.html>
+
+[=CE=BCTCP, Miou and unikernels]
+<https://blog.robur.coop/articles/utcp_and_effects.html>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-04-01 Tue 11:11 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.03.25.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.04.08.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of March 25 to April 01,=
+ 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">MlFront_ZipFile - High-level API for zip files</a></li>
+<li><a href=3D"#2">MlFront_Cache - Transient caches + slowly varying data</=
+a></li>
+<li><a href=3D"#3">New lesson on polymorphic variants</a></li>
+<li><a href=3D"#4">The OBazl Toolsuite 3.0.0.beta.1</a></li>
+<li><a href=3D"#5">Dune dev meeting</a></li>
+<li><a href=3D"#6">Other OCaml News</a></li>
+<li><a href=3D"#org43700ca">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">MlFront_ZipFile - High-level API for zip files</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-mlfront-zipfile-high-le=
+vel-api-for-zip-files/16380/1">https://discuss.ocaml.org/t/ann-mlfront-zipf=
+ile-high-level-api-for-zip-files/16380/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org984912a" class=3D"outline-3">
+<h3 id=3D"org984912a">jbeckford announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org984912a">
+<p>
+I am happy to announce that <code>MlFront_ZipFile.2.3.0</code>, a package t=
+hat can do basic zip/unzip operations on a zip file, was released today. It=
+ is available on opam with <code>opam update</code> and <code>opam install =
+MlFront_ZipFile</code>.
+</p>
+
+<p>
+There are other opam packages for zip files, and often those are more appro=
+priate. <code>MlFront_ZipFile</code> is different because:
+</p>
+
+<ul class=3D"org-ul">
+<li>It is very high-level. I wanted an API to unzip and zip, with a simple =
+observer API for unzipping so I could attach @CraigFe's excellent <a href=
+=3D"https://github.com/craigfe/progress?tab=3Dreadme-ov-file#progress"><cod=
+e>progress</code></a> bar library.</li>
+<li>It can unzip 4GB files in a 32-bit OCaml runtime.</li>
+<li>It has a permissive license.</li>
+<li>It is not thread-safe (except unzipping).</li>
+<li>It fully embeds the C code. That means it works on Windows and should w=
+ork under cross-compilation without needing a non-portable/non-reproducible=
+ <code>pkg-config</code> installation.</li>
+<li>It has a binary <code>mlfront-zip</code> which can do glob-based exclus=
+ions (a feature not present in the typical InfoZip <code>/usr/bin/zip</code=
+> that comes with Unix or PowerShell <code>Compress-Archive</code> on Windo=
+ws). macOS, Windows and Linux have prebuilt binaries.</li>
+</ul>
+
+<p>
+Here are the relevant links:
+</p>
+<ul class=3D"org-ul">
+<li>Docs: <a href=3D"https://dkml.gitlab.io/build-tools/MlFront/MlFront_Zip=
+File/MlFront_ZipFile/index.html">https://dkml.gitlab.io/build-tools/MlFront=
+/MlFront_ZipFile/MlFront_ZipFile/index.html</a></li>
+<li><code>mlfront-zip</code> binaries: <a href=3D"https://gitlab.com/dkml/b=
+uild-tools/MlFront/-/releases/2.3.0-8">https://gitlab.com/dkml/build-tools/=
+MlFront/-/releases/2.3.0-8</a></li>
+<li>homepage: <a href=3D"https://gitlab.com/dkml/build-tools/MlFront">https=
+://gitlab.com/dkml/build-tools/MlFront</a></li>
+</ul>
+
+<p>
+Sidenote: The docs won't be available on ocaml.org. Use the doc links above=
+ until I figure out a technical solution (very low-priority).
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">MlFront_Cache - Transient caches + slowly varying data</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-mlfront-cache-transient=
+-caches-slowly-varying-data/16381/1">https://discuss.ocaml.org/t/ann-mlfron=
+t-cache-transient-caches-slowly-varying-data/16381/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org2862100" class=3D"outline-3">
+<h3 id=3D"org2862100">jbeckford announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org2862100">
+<p>
+I am happy to announce that <code>MlFront_Cache.2.3.0</code>, a framework f=
+or transient caches and slowly varying data, was released today. It is avai=
+lable on opam with <code>opam update</code> and <code>opam install MlFront_=
+Cache</code>.
+</p>
+
+<p>
+MlFront_Cache lets you cache files and directories, all backed in a local s=
+qlite3 database. It is a bit esoteric. I use it for:
+</p>
+
+<ol class=3D"org-ol">
+<li>Transient caches when downloading zip files.</li>
+<li>Immutable installs for DkCoder. A related use case is covered in detail=
+ in the docs as "Downloading datasets".</li>
+</ol>
+
+<p>
+Treat this as an alpha release with a somewhat unstable API. In particular,=
+ I haven't implemented cache eviction yet.
+</p>
+
+<p>
+Here are the relevant links:
+</p>
+<ul class=3D"org-ul">
+<li>Docs: <a href=3D"https://dkml.gitlab.io/build-tools/MlFront/MlFront_Cac=
+he/MlFront_Cache/index.html">https://dkml.gitlab.io/build-tools/MlFront/MlF=
+ront_Cache/MlFront_Cache/index.html</a></li>
+<li>homepage: <a href=3D"https://gitlab.com/dkml/build-tools/MlFront">https=
+://gitlab.com/dkml/build-tools/MlFront</a></li>
+</ul>
+
+<p>
+Sidenote: The docs won't be available on ocaml.org. Use the doc links above=
+ until I figure out a technical solution (very low-priority).
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">New lesson on polymorphic variants</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/new-lesson-on-polymorphic-v=
+ariants/16390/1">https://discuss.ocaml.org/t/new-lesson-on-polymorphic-vari=
+ants/16390/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgd7160ab" class=3D"outline-3">
+<h3 id=3D"orgd7160ab">Jakub Svec announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd7160ab">
+<p>
+Hello,
+</p>
+
+<p>
+I wrote a new lesson on polymorphic variants.
+</p>
+
+<p>
+You can find it <a href=3D"https://hackmd.io/@wqo57Le0RIyZVlb8qdJ8PA/HJchCE=
+X6ye/edit">here</a>.
+</p>
+
+<p>
+I appreciate any feedback you may have. I expect that if there is interest =
+in including a lesson on polymorphic variants that there will likely be sev=
+eral rounds of refinement.
+</p>
+
+<p>
+Sources:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://blog.shaynefletcher.org/2017/03/polymorphic-variants=
+-subtyping-and.html">https://blog.shaynefletcher.org/2017/03/polymorphic-va=
+riants-subtyping-and.html</a></li>
+<li><a href=3D"https://discuss.ocaml.org/t/new-draft-tutorial-on-polymorphi=
+c-variants/13485">https://discuss.ocaml.org/t/new-draft-tutorial-on-polymor=
+phic-variants/13485</a></li>
+<li><a href=3D"https://discuss.ocaml.org/t/is-there-any-kind-of-guidline-ab=
+out-when-to-use-polymorphic-variants/11006">https://discuss.ocaml.org/t/is-=
+there-any-kind-of-guidline-about-when-to-use-polymorphic-variants/11006</a>=
+</li>
+<li><a href=3D"https://blog.klipse.tech/ocaml/2018/03/16/ocaml-polymorphic-=
+types.html">https://blog.klipse.tech/ocaml/2018/03/16/ocaml-polymorphic-typ=
+es.html</a></li>
+</ul>
+
+<p>
+This lesson is about 800 lines long (about 1100 with line length limited to=
+ 85 columns). This makes this lesson on the longer side when compared to ot=
+her lessons on OCaml.org. Therefore, this is the first of 2 lessons on poly=
+morphic variants.
+</p>
+
+<p>
+This lesson (lesson 1) introduces the concepts behind polymorphic variants =
+(such as row polymorphism and structural typing), then discusses common syn=
+tactic structures of polymorphic variants. It teaches these concepts in a b=
+ottom-up direction. It is my subjective belief (held lightly) that introduc=
+ing polymorphic variants in a top-down direction leads to more complexity a=
+nd confusion.
+</p>
+
+<p>
+Lesson 2, which is forthcoming, introduces common usecases for polymorphic =
+variants through real-world examples.
+</p>
+
+<p>
+Any feedback a reviewer is willing to provide is greatly appreciated. The a=
+uthor is particularly interested in ensuring accuracy and validity of examp=
+les and consistency in the language with OCaml.org's other materials, but a=
+ll feedback is welcome.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">The OBazl Toolsuite 3.0.0.beta.1</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-the-obazl-toolsuite-3-0=
+-0-beta-1/16407/1">https://discuss.ocaml.org/t/ann-the-obazl-toolsuite-3-0-=
+0-beta-1/16407/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgdbf33f7" class=3D"outline-3">
+<h3 id=3D"orgdbf33f7">Gregg Reynolds announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgdbf33f7">
+<p>
+The OBazl Toolsuite 3.0.0.beta.1 is now available.=20
+</p>
+
+<p>
+The OBazl Toolsuite is a collection of rules &amp; tools that support OCaml=
+ development using <a href=3D"https://bazel.build/">Bazel</a>. To get start=
+ed:
+</p>
+<pre class=3D"example" id=3D"org4f9a4e1">
+$ git clone https://github.com/obazl/demo_hello.git
+$ cd demo_hello
+$ bazel run bin:greetings
+</pre>
+
+<p>
+See <a href=3D"https://obazl.github.io/docs_obazl/">The OBazl Book</a> for =
+more guidance.
+</p>
+
+<p>
+Tested on MacOS and Linux (Ubuntu).
+</p>
+
+<p>
+This version contains many improvements:
+</p>
+
+<ul class=3D"org-ul">
+<li>Improved toolchain support. Select a compiler by passing e.g. <code>--t=
+c=3Docamlc</code>.</li>
+<li>Seamless opam dependencies.  The previous version required a preprocess=
+ing step (running <code>bazel run @coswitch</code>); this is no longer nece=
+ssary.</li>
+<li>Fine-grained dependencies. Depend directly on any module, whether it is=
+ in a library or not, and whether it is namespaced (~~wrapped'') or not.</l=
+i>
+<li>Context-sensitive archiving. Archives are for distribution; internal de=
+pendencies do not need them.  The <code>ocaml_library</code> rule will only=
+ construct an archive on demand. By default, an internal dependency on an <=
+code>ocaml_library</code> target will not request archiving. This can be ov=
+erridden.</li>
+<li>Several examples of OBazl extensions: rules_ppx, rules_cppo, rules_ctyp=
+es, rules_menhir.  These demonstrate the relative ease with which tools can=
+ be integrated into the Bazel environment.</li>
+<li>A new tool, <code>bazel run @obazl//new</code> that generates a project=
+ from a template.</li>
+<li>Direct support for the tools in the standard SDK (ocamldebug, ocamlobji=
+nfo, etc.) and for a subset of the OCaml Platform tools. For example:
+<ul class=3D"org-ul">
+<li><code>$ bazel run @opam -- list</code></li>
+<li><code>$ bazel run @ocaml</code></li>
+<li><code>$ bazel run @utop</code></li>
+<li><code>$ bazel run @dbg --@dbg//pgm=3Dsrc:greetings</code></li>
+</ul></li>
+</ul>
+
+<p>
+OBazl ensures that these commands will be invoked under the
+ correct switch, with correct paths (CAML_LD_LIBRARY_PATH etc.), insulated =
+from environment variables.
+</p>
+
+<p>
+Other tools are invoked by passing an option to an ordinary build command. =
+For example:
+</p>
+
+<ul class=3D"org-ul">
+<li><code>$ bazel build lib/hello:Hello --modinfo</code> # runs ocamlobjinf=
+o on the .cmo/.cmx output</li>
+<li><code>$ bazel build lib/hello:Hello --siginfo</code> # runs ocamlobjinf=
+o on the .cmi output</li>
+<li><code>$ bazel build lib/hello:libFoo --archinfo</code> # runs ocamlobji=
+nfo on the .cma/.cmxa output</li>
+<li><code>$ bazel build lib/hello:Hello --gensig</code> # runs <code>ocamlo=
+pt -i</code> on the .ml file to generate inteface code.</li>
+</ul>
+
+<p>
+The documentation at <a href=3D"https://obazl.github.io/docs_obazl/">The OB=
+azl Book</a> has been updated.  It remains far from complete but it should =
+be useful.  In particular the <a href=3D"https://obazl.github.io/docs_obazl=
+/obazl">OBazl Guide</a> and the <a href=3D"https://obazl.github.io/docs_oba=
+zl/rules-ocaml/reference/"><code>rules_ocaml</code> Reference Manual</a>.
+</p>
+
+<p>
+What's missing?
+</p>
+
+<ul class=3D"org-ul">
+<li>Support for opam publishing.  I have successfully published an OBazl (B=
+azel) project to an opam switch, and used it in a dune-only project, but th=
+e code is still under development so I don't have a demo.</li>
+<li>Support for <code>odoc</code>, <code>ocamlformat</code>, and linting.  =
+Currently under development.</li>
+<li>Windows support.  The code is designed for portability but it will prob=
+ably be a while before I can get to Windows.</li>
+<li>Automatic generation of BUILD.bazel files. I have a tool for this but i=
+t is outdated. Bringing it up-to-date is a high priority.</li>
+</ul>
+
+<p>
+Support:
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://discord.gg/wZCSq2nq6y">discord</a></li>
+<li><a href=3D"https://bsky.app/profile/obazl.bsky.social">@obazl.bsky.soci=
+al</a></li>
+</ul>
+
+<p>
+Cheers!
+</p>
+
+<p>
+Gregg
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Dune dev meeting</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/=
+27">https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/27</a>
+</p>
+</div>
+<div id=3D"outline-container-org1de6680" class=3D"outline-3">
+<h3 id=3D"org1de6680">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org1de6680">
+<p>
+Hello :waving_hand:=20
+The next Dune Dev Meeting will be on <b>Wednesday, April, 2nd at 9:00 CET</=
+b>. This is going to be a one-hour-long meeting.
+</p>
+
+<p>
+Whether you are a maintainer, a regular contributor, a new joiner or just c=
+urious, you are welcome to join: these discussions are opened! The goal of =
+these meetings is to provide a place to discuss the ongoing work together a=
+nd synchronize with the Dune developers :+1:
+</p>
+
+<p>
+The agenda is available on the <a href=3D"https://github.com/ocaml/dune/wik=
+i/dev-meeting-2025-04-02">meeting dedicated page</a>. Feel free to add more=
+ items in it.
+</p>
+
+<ul class=3D"org-ul">
+<li>Meeting link: <a href=3D"https://us06web.zoom.us/j/85096877776?pwd=3DcW=
+NhU1dHQ1ZNSjZuOUZCQ0h2by9Udz09">zoom</a></li>
+<li>Calendar event: <a href=3D"https://calendar.google.com/calendar/u/0/emb=
+ed?src=3Dc_5cd698df6784e385b1cdcdc1dbca18c061faa96959a04781566d304dc9ec7319=
+@group.calendar.google.com">google calendar</a></li>
+<li>Wiki with information and previous notes: <a href=3D"https://github.com=
+/ocaml/dune/wiki">dune wiki on GitHub</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+</div>
+<div id=3D"outline-container-org4306bd8" class=3D"outline-3">
+<h3 id=3D"org4306bd8">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org4306bd8">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://batsov.com/articles/2025/03/30/why-fsharp/">Why F#?<=
+/a></li>
+<li><a href=3D"https://tarides.com/blog/2025-03-28-fosdem-2025-report-from-=
+the-friendly-functional-languages-bof-room"> FOSDEM 2025: Report from the F=
+riendly Functional Languages BOF Room</a></li>
+<li><a href=3D"https://blog.robur.coop/articles/2025-03-26-opam-repository-=
+archive.html">Pushing the opam-repository into a sustainable repository</a>=
+</li>
+<li><a href=3D"https://blog.robur.coop/articles/utcp_and_effects.html">=CE=
+=BCTCP, Miou and unikernels</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org43700ca" class=3D"outline-2">
+<h2 id=3D"org43700ca">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org43700ca">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org3f75d83">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
