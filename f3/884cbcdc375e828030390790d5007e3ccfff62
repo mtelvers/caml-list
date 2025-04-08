@@ -1,0 +1,2343 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=KGx3Q6iX;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=jvlsZdkd;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 56CD6400A7
+	for <caml-list@tunbury.org>; Tue,  8 Apr 2025 13:14:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=yrTXGniLFkFUD+uGkvH6WuIHo4VNamkIlyLhCzx3+HI=;
+  b=KGx3Q6iX62t/TyH2PvJBPs9MM7r+t5HKIwY03MApPfCyj9PbXKX4rhhO
+   kG8AnUNKPn0wMsJd6eOW5wzR3vteGTyldT99HX4PpPLyhHDYTKSqAP4DU
+   vn91UvrRM16YDppQTpLjJPj5b22Q/ZUXnAL3JBG8Mmk+xVFVGh1ejiz5n
+   Q=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.15,198,1739833200"; 
+   d="scan'208,217";a="216923507"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 08 Apr 2025 15:14:26 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 9D4C5E0261; Tue,  8 Apr 2025 15:14:25 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 6845DE007A
+	for <caml-list@sympa.inria.fr>; Tue,  8 Apr 2025 15:14:21 +0200 (CEST)
+IronPort-SDR: 67f5212b_CpkVNQpoNxFK6IDzNTRhtGxtbN2+sEonucw3KsVPj50ey7p
+ ZHBPE7xkK9kbbcLxQkXoeeGLiujaO3ROuEQ8bTQ==
+X-IPAS-Result: =?us-ascii?q?A0EcEAA1IPVnhSIeaIFSCIJegT9bKBkBY1ozBwhIA16Dd?=
+ =?us-ascii?q?INPjiOBFpA0inaBaoERAxgWBR4UAQMBDS4BDgQBAgQBAQMBAgGCDIJ0AospA?=
+ =?us-ascii?q?h8GAQQ0EwECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEBAUBJh?=
+ =?us-ascii?q?XsNSQEBAQECAQYEgWstJFMeYQQDBgYBAQEBAQEBAQEBAQEBASIBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAgwBAjULQBwBC?=
+ =?us-ascii?q?AQGEwEBKw0YIwMUAQYDAhEBNQMBEwESFAUBgmgBgh9FAwUMBpNhm0t6fzOBA?=
+ =?us-ascii?q?YIMAQEGgQg+AgECCQICAwEOCSUB2geBZQmBSIVtgkkaASpIawKESAmEMycPg?=
+ =?us-ascii?q?VVEZi81gXNKB2+BUG8LFwEBAQEBF0ICSAQOAQUBAQYCBj8JGIMNgmmCGhdFP?=
+ =?us-ascii?q?xQfgQqBImWBJYELgXOEQYFVgTqCI4JvgTNIgj+ICYFHSzMsAVUTFwsHBWGBC?=
+ =?us-ascii?q?wMqNDFzOB2BfIN0hTiCEYIEiReEVy1Pg3AdQAMLbT03FBuXPh4iGoMYCREVD?=
+ =?us-ascii?q?j4BARUnGwkCBA4GBwcFARMIDgEBIg0hBwEOKwgCAgMPBREIDQUJASIUEgEJA?=
+ =?us-ascii?q?gsCHBEDkkAUJQMFJQIBdI5WjhSTE0EdbTQHhB6BXQYMiQWBJJV9hAOBV4U9h?=
+ =?us-ascii?q?XWYZWYilXyCIj4igjaHJoElCWCBD2qIdYwlECwCEQ0DhTWBUS0jPA1iAQEZA?=
+ =?us-ascii?q?wwHMxowQw0CBAiCGAEBATEJCjwcD1aJR4UyAQiCQxCBLoEmgTs5O8NRA0E1A?=
+ =?us-ascii?q?gEBDykCBwEKAQEDCYViAQGBToE2gheEagEmBwWBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ vlALkXS3Hi4FX0=
+IronPort-HdrOrdr: A9a23:F+5hxKotgGia852tQC2/AHcaV5oWeYIsimQD101hICG9E/bo9P
+ xG+c5w6faaslgssR0b9OxoW5PhfZq/z/9ICOAqVN/IYOCMggSVxe9ZgbfK8nnJJGnV9+JW16
+ tsGpIOauHYPBxdlsi/xAG5Fr8bsb26GU2T9ILj80s=
+X-Talos-CUID: 9a23:2087sGPc7FGuVO5DRyxVzxQ1CJ8fd3Tj62vTERSqJVcucejA
+X-Talos-MUID: 9a23:C2knQwpNfnuzvajbkWwez2ppF+pMyIr1MV8Qt5pXhuygMSxTJA7I2Q==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,198,1739833200"; 
+   d="scan'208,217";a="113754784"
+X-URL-ContentFilter: 
+X-MGA-submission: =?us-ascii?q?MDHf7i1NvofkXh0dms3nSCIrX0A6pIeauC0RyH?=
+ =?us-ascii?q?dtWjMh2pBd79fuA0XDUb68CIOs+C+Q9G/VZL5cfNpF6zJfGe7NLA8ZC3?=
+ =?us-ascii?q?ppc6wlPvD2etJIxPypcutswxmotQ3WlyCWh1DtkFdJxa3dovZVi6eZvg?=
+ =?us-ascii?q?ABuzjjweVla2lwHSSxQa5srg=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2025 15:14:19 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id B9391564A8C;
+	Tue,  8 Apr 2025 15:14:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1744118057;
+	bh=ck3rh6dsl07hA6BVnlfRYPnS61O0zTtiMo8B6UqGSLc=;
+	h=From:To:Subject:Date:Message-ID;
+	b=jvlsZdkd8XByLLIGlwh7FMdV1iB6WLx1kYINaRRu/Ktc5G4kTJJpux9b+QIPSspPf
+	 WDiFbxEz3lvpCSlHwBSqVJlPQ54g13+9CRXaVDHygPG7WhEn/KBc0vF3jqhmRRxeV8
+	 ymy7cpyqbMFdwVXXGVFwE+8siFC6A6thkcAkcnRQ=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 08 Apr 2025 15:14:17 +0200
+Message-ID: <m2plhmdcd2.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Apr  8 15:14:18 2025 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.374244, queueID=0AD5D564A8D
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19291
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-04/m2plhmdcd2.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of April 01 to 08,
+2025.
+
+Please note that some entries were posted on April 1st.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Ocsigen public meeting
+Roguetype
+Ppx_untype: An end to type errors in OCaml
+Second of Two Lessons on Polymorphic Variants: Practical Usecases
+Caqti 2.2.4 Release and Plans
+update for the magick-core-7
+gegl-0.4 _
+Dune 3.18
+QCheck 0.24
+checked_oint v0.5.0: Safe integer arithmetic for OCaml
+Outreachy December 2024 Round
+OUPS meetup april 2025
+Other OCaml News
+Old CWN
+
+
+Ocsigen public meeting
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ocsigen-public-meeting/16408/1>
+
+
+William Caldwell announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  Hi all!
+
+  The Ocsigen team is organising a public meeting in which we'll be
+  discussing the migration from Lwt to effect-based concurrency, updates
+  about work in progress (wasm_of_ocaml, Ocsigen-i18n, =E2=80=A6).
+
+  We welcome user suggestions & questions, please join us Monday the
+  14th of April at 1pm (France/GMT+2) at the following link:
+  <https://meet.google.com/zdm-krfj-rcw>
+
+
+Roguetype
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-roguetype/16409/1>
+
+
+octachron announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  Have you ever felt pained by the lack of GADTs and high-arity functors
+  when playing games?  Have you ever wondered if you could play games
+  without being weighted by a runtime evaluation?
+
+  Then fear no longer, because in this day it is my pleasure to announce
+  the first release of [Roguetype], the first ever roguelike written in
+  the OCaml type system:
+
+  =E2=80=A2 Test your mettle against the OCaml typechecker and the 8 levels=
+ of
+    `roguetype'.
+  =E2=80=A2 Explore functors, mountains, and forests to discover hidden pat=
+hs.
+  =E2=80=A2 Vanquish goblins and dragon(s), upgrade your equipment, while b=
+eing
+    sure that your travel is well-typed by construction.
+  =E2=80=A2 And maybe, at the end of your adventure, you shall prove that t=
+he
+    victory type is inhabited
+
+
+[Roguetype] <https://github.com/Octachron/roguetype.git>
+
+
+Ppx_untype: An end to type errors in OCaml
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ppx-untype-an-end-to-type-errors-in-ocam=
+l/16410/1>
+
+
+Paul-Elliot announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello dear people reading this!
+
+  Today, I am overly excited to announce one of the greatest and
+  simplest tool, that will fix the biggest of all OCaml flaws.
+
+  Consider Javascript:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ node
+  =E2=94=82 Welcome to Node.js v22.14.0.
+  =E2=94=82 Type ".help" for more information.
+  =E2=94=82 > 1 + 3.5
+  =E2=94=82 4.5
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Simple and elegant, don't we all agree?
+
+  Now, the same with OCaml:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ ocaml
+  =E2=94=82 OCaml version 5.3.0
+  =E2=94=82 Enter #help;; for help.
+  =E2=94=82 # 1 + 3.5 ;;
+  =E2=94=82 Error: The constant 3.5 has type float but an expression was ex=
+pected of type
+  =E2=94=82          int
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  What does this even mean?
+
+  The PPX that I lovingly share with you all is `ppx_untype'. It finally
+  fully removes the OCaml type system that has plagued it since its
+  inception.
+
+  The PPX can be used very simply. Add it to your opam switch:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ opam pin add ppx_untype https://github.com/panglesd/ppx_untyp=
+e.git\#main
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  and then add it to your `dune' (or other build system) file:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 (...
+  =E2=94=82  (preprocess (pps ppx_untype))
+  =E2=94=82  ...)
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  And you can now enjoy OCaml!
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ cat bin.main.ml
+  =E2=94=82 let () =3D print_float (1 + 3.5)
+  =E2=94=82 $ dune exec bin/main.exe
+  =E2=94=82 3.47922429887e-310
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+
+Pros:
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 All programs that was working before, still works.
+  =E2=80=A2 Blazingly fast!
+  =E2=80=A2 Finally integers and floats can be added.
+  =E2=80=A2 All warnings are also removed.
+
+
+Cons:
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 None (apart from some unexpected behaviour at runtime)
+
+
+Second of Two Lessons on Polymorphic Variants: Practical Usecases
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/second-of-two-lessons-on-polymorphic-variant=
+s-practical-usecases/16416/1>
+
+
+Jakub Svec announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80
+
+  This is the second of two lessons on polymorphic variants I've been
+  drafting for potential inclusion in the Lessons section of OCaml.org.
+
+  You can find the draft second lesson [here]. I appreciate any feedback
+  you may have.
+
+  The OCaml.org discussion of the first lesson can be found [here].
+
+  The goal of the first lesson was to introduce the foundational
+  knowledge for how polymorphic variants work (row polymorphism,
+  structural typing, upper bounds, lower bounds, =E2=80=A6), their benefits=
+ and
+  drawbacks, how they relate to "ordinary" variants, their notation
+  (`\~', `>', `<', `#', =E2=80=A6), and their behavior during type refineme=
+nt.
+
+  I am grateful to everyone that provided feedback on the first
+  lesson. I incorporated most of the feedback into the lesson already,
+  but it is not yet complete. I've held off finalizing the first lesson
+  until this second lesson receives feedback, since there may be
+  significant structural changes to the first lesson depending on the
+  feedback received on this second part.
+
+  The objective of this second lesson is to demonstrate practical
+  usecases for polymorphic variants. Presently, it demonstrates seven
+  practical usecases of polymorphic variants, along with "ordinary"
+  variant equivalents for comparison.
+
+  The seven usecases were sourced from:
+
+  =E2=80=A2 Jacques Garrigue's [1998 paper]
+  =E2=80=A2 [This discussion] board on OCaml.org
+
+  Please consider this a rough draft. It does not include an
+  indroduction and conclusion, and every example has minimal narrative
+  supporting it.
+
+  The goal is to solicit feedback on the *selected examples*, the
+  *structure of the examples*, and to solicit *additional examples* if
+  these are insufficient.
+
+  If you have experience with specific usecases for polymorphic variants
+  that you feel would do a better job demonstrating specific usecases or
+  that demonstrate features not presented here, please let me know. If
+  you can supply a concise example with a quick overview I would be
+  grateful. If that does not work with your schedule, I can formulate an
+  example from a description and perhaps a github link if available.
+
+  For example, none of the usecases demonstrate explicit coercions. That
+  may be a useful example to include, however this was not mentioned in
+  the source material and am unsure how commonly it is employed by OCaml
+  developers.
+
+  Once this document's examples are locked down, I will consider the
+  following:
+
+  =E2=80=A2 Which lesson should be introduced first (demonstrations or
+    foundations)?
+  =E2=80=A2 Should the examples in this lesson be extracted into .ml files =
+for
+    readers to clone like in some other lessons on the site?
+  =E2=80=A2 Should the two lessons be merged?
+  =E2=80=A2 Is the length excessive?
+  =E2=80=A2 Can any content be removed or extracted into a standalone lesso=
+n?
+
+  Once that is resolved, I will do a final pass on the lesson(s) and
+  make another request for feedback.
+
+  Once again, I want to express my gratitude to everyone willing to work
+  through these draft lessons, as well to those willing to provide
+  feedback.
+
+  Example Usecases:
+
+  =E2=80=A2 Monomorphic Usecases
+  =E2=80=A2 Overloaded Tags
+  =E2=80=A2 Compose with Result
+  =E2=80=A2 Transitioning from Ordinary to Polymorphic Variants in an API
+  =E2=80=A2 Polymorphic Variants with Phantom Types
+  =E2=80=A2 Functional Reactive Programming with Polymorphic Variants
+  =E2=80=A2 Encoding HTML in Hierarchical Structures
+
+
+[here] <https://hackmd.io/@wqo57Le0RIyZVlb8qdJ8PA/ryPD_7961x>
+
+[here]
+<https://discuss.ocaml.org/t/new-lesson-on-polymorphic-variants/16390/11>
+
+[1998 paper]
+<https://caml.inria.fr/pub/papers/garrigue-polymorphic_variants-ml98.pdf>
+
+[This discussion]
+<https://discuss.ocaml.org/t/is-there-any-kind-of-guidline-about-when-to-us=
+e-polymorphic-variants/11006/14>
+
+
+Caqti 2.2.4 Release and Plans
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-caqti-2-2-4-release-and-plans/16419/1>
+
+
+"Petter A. Urkedal announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80
+
+The Release
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C
+
+  I am pleased to announce the release of [Caqti] 2.2.4, after stumbling
+  through a few minor releases starting at 2.2.0.  These are the
+  combined release notes since the previous OPAM release, omitting
+  intermediate regressions:
+
+
+[Caqti] <https://github.com/paurkedal/ocaml-caqti>
+
+=E2=97=8A Improvements
+
+  =E2=80=A2 The sqlite3 driver now supports the refined error causes
+    (`Caqti_error.cause') for integrity constraint violations.
+  =E2=80=A2 There is now experimental support for Miou ([#117] by Calascibe=
+tta
+    Romain).
+  =E2=80=A2 Make the pool implementation shared-memory safe.
+  =E2=80=A2 The new library `caqti.template' provides a preview of a interf=
+ace
+    for creating and working with request templates, with a few new
+    features and, I think, a tidier design.  This is not yet suitable
+    for production code, since it will change before the final version.
+    Feedback is welcome.
+
+
+  [#117] <https://github.com/paurkedal/ocaml-caqti/pull/117>
+
+
+=E2=97=8A Fixes
+
+  =E2=80=A2 Fixed a memory leak in the fall-back implementation of the
+    `populate' connection method which affects all except the postgresql
+    drivers.
+
+
+=E2=97=8A Deprecations
+
+  =E2=80=A2 `Caqti_request.query_id' is deprecated and will be removed.
+  =E2=80=A2 Constructors of `Caqti_type.t' are now fully private and will be
+    moved away and likely defined differently in the next major release.
+
+
+=E2=97=8A Dependency Updates
+
+  =E2=80=A2 Prepare for upcoming mirage ([#124] by Hannes Mehnert).
+
+
+  [#124] <https://github.com/paurkedal/ocaml-caqti/pull/124>
+
+
+Upcoming Work on `caqti.template'
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  As mentioned, this library is experimental for now, yet it contains
+  the real implementation of request templates, while the stable API is
+  a backwards compatible wrapper.  I already have plans for revising the
+  new API both due to hard requirements and feedback about usability and
+  preferences, esp. for the most commonly used part of the API.
+
+
+=E2=97=8A Dynamic Prepare Policy and Parametric Types
+
+  One thing I am excited about with the `caqti.template' library is the
+  support for prepared queries for dynamically generated request
+  templates.
+
+  To motivate this, note that each prepared query retains resources on
+  both the server side and locally, both associated with an open
+  database connection, which can be long-lived.  So, if the application
+  generates queries based on e.g. search expressions like `(author:Plato
+  or author:Socrates) and topic:epistemology', which cannot be prepared
+  statically due to the boolean algebra over search terms, then users of
+  the current API must use one-shot (non-prepared) queries to avoid
+  unbounded retention of resources over time.  The new API provides a
+  so-called dynamic prepare policy, which uses an LRU cache of prepared
+  queries internally to limit the resource usage while providing a
+  heuristic for re-using common prepared queries.
+
+  There is, however, a missing piece in order for this to be practically
+  efficient.  Type descriptors like `Caqti_type.t2', `Caqti_type.t3',
+  etc.  which represent parametrically polymorphic types, are currently
+  generative with respect to the equality used by the LRU cache, meaning
+  that the type expression would need to be lifted out of the function
+  which generates the request template in order to avoid consistent
+  cache-misses.
+
+  My plan is first to make a major release which moves the concrete type
+  representation away from the public modules, and then revise it to
+  properly encode parametric types.  Apart from changing the
+  constructors, this involves adding an extra phantom type parameter,
+  but the parameter will be universally qualified in the type exposed to
+  the public API, so I expect to retain backwards compatibility for
+  typical usage.
+
+
+=E2=97=8A The Main Request Template API and Bring-Your-Own-Paint
+
+  For most use cases, it is sufficient to be able to construct request
+  templates, which consists of type descriptors and a possibly
+  dialect-dependent query template.  Everything needed for this is
+  bundled into the module `Caqti_template.Create'. I may have developed
+  a bit colourblindness after walking around this bikeshed, so let me
+  show you how the current stable API looks like, how the current
+  iteration of the new API looks like.
+
+  Here is a request template using the stable API:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 let select_owner =3D
+  =E2=94=82   let open Caqti_request.Infix in
+  =E2=94=82   let open Caqti_type.Std in
+  =E2=94=82   (string ->? string)
+  =E2=94=82   "SELECT owner FROM bikereg WHERE frameno =3D ?"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  In the current iteration of the new API, this looks like:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 let select_owner =3D
+  =E2=94=82   let open Caqti_template.Create in
+  =E2=94=82   static T.(string -->? string)
+  =E2=94=82   "SELECT owner FROM bikereg WHERE frameno =3D ?"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  What changed?
+
+  =E2=80=A2 There is now only a single `open'. That can only be good.
+  =E2=80=A2 The type descriptors have been moved under a `T' sub-module.  T=
+his
+    isn't strictly necessary, but I though it was tidier, esp. since
+    there are clashing names (like `int') under a parallel `Q'
+    sub-module which is used for dynamically generated query templates.
+  =E2=80=A2 The arrow was previously the main function, while in the new AP=
+I it
+    only constructs the type and multiplicity representation
+    (`Caqti_template.Request_type.t').
+  =E2=80=A2 Instead, the main function now indicates the policy for whether=
+ to
+    use a prepared query and, if so, the life-time of the request
+    template.  The options are `direct', `static', and `dynamic' (as
+    explained above).
+
+  The latter adds verbosity, but I think it is good to be explicit about
+  static life-time, since using it for generated request templates would
+  typically lead to a resource leakage.
+
+  It's getting late, so I will not write about dynamic and
+  dialect-dependent request templates, but in the current revision, they
+  are constructed with a "general" version of the above functions,
+  `direct_gen', `static_gen', and `dynamic_gen' which takes a function
+  receiving a dialect descriptor and returns a `Caqti_template.Query.t'
+  instead of a string.  The stable API used combinator operators for
+  this.
+
+
+update for the magick-core-7
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-update-for-the-magick-core-7/16422/1>
+
+
+Florent Monnier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  An update to use the magick-core-7 is available there:
+  [https://github.com/fccm2/mgk-gen2]
+
+  If you still want to use the magick-core-6, the previous head is kept
+  here: [https://github.com/fccm2/mgk-gen]
+
+  The updated version was tested with the magick-core version
+  `7.1.1-44', if you want to compile it, you need about `256M' space
+  left on device.
+
+
+[https://github.com/fccm2/mgk-gen2] <https://github.com/fccm2/mgk-gen2>
+
+[https://github.com/fccm2/mgk-gen] <https://github.com/fccm2/mgk-gen>
+
+
+gegl-0.4 _
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-gegl-0-4/16424/1>
+
+
+Florent Monnier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  You can now access `gegl-0.4', from your favorite scripting language,
+  and play with its nodes, with: [https://github.com/fccm2/gegl-ocaml] /
+  ([api-doc])
+
+
+[https://github.com/fccm2/gegl-ocaml]
+<https://github.com/fccm2/gegl-ocaml>
+
+[api-doc] <http://decapode314.free.fr/ocaml/gegl/docs/0.01/Gegl.html>
+
+
+Dune 3.18
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-3-18/16428/1>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  On the behalf of the dune team, I'm glad to announce the release of
+  dune `3.18.0' :partying_face:
+
+  This release contains changes to support the new
+  `x-maintenance-intent' field by default. It also contains some changes
+  regarding the cache, about how it handles file permissions. It
+  introduces a new `(format-dune-file ...)' stanza with the intention to
+  formalize the `dune format-dune-file' command as an inside
+  rule. Finally, it includes various bug fixes for Dune.
+
+  If you encounter a problem with this release, you can report it on the
+  [ocaml/dune] repository.
+
+
+[ocaml/dune] <https://github.com/ocaml/dune/issues>
+
+Changelog
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C
+
+=E2=97=8A Fixed
+
+  =E2=80=A2 Support HaikuOS: don't call `execve' since it's not allowed if =
+other
+    pthreads have been created. The fact that Haiku can't call `execve'
+    from other threads than the principal thread of a process (a team in
+    haiku jargon), is a discrepancy to POSIX and hence there is a [bug
+    about it]. (@Sylvain78, #10953)
+
+    =E2=80=A2 Fix flag ordering in generated Merlin configurations (#11503,
+      @voodoos, fixes ocaml/merlin#1900, reported by @vouillon)
+
+
+  [bug about it] <https://dev.haiku-os.org/ticket/18665>
+
+
+=E2=97=8A Added
+
+  =E2=80=A2 Add `(format-dune-file <src> <dst>)' action. It provides an
+    alternative to the `dune format-dune-file' command.  (#11166, @nojb)
+
+    =E2=80=A2 Allow the `--prefix' flag when configuring dune with `ocaml
+      configure.ml'.  This allows to set the prefix just like `$ dune
+      install --prefix'. (#11172, @rgrinberg)
+
+    =E2=80=A2 Allow arguments starting with `+' in preprocessing definitions
+      (starting with `(lang dune 3.18)'). (@amonteiro, #11234)
+
+    =E2=80=A2 Support for opam `(maintenance_intent ...)' in dune-project
+      (#11274, @art-w)
+
+    =E2=80=A2 Validate opam `maintenance_intent' (#11308, @art-w)
+
+    =E2=80=A2 Support `not' in package dependencies constraints (#11404, @a=
+rt-w,
+      reported by @hannesm)
+
+
+=E2=97=8A Changed
+
+  =E2=80=A2 Warn when failing to discover root due to reads failing. The
+    previous behavior was to abort. (@KoviRobi, #11173)
+
+  =E2=80=A2 Use shorter path for inline-tests artifacts. (@hhugo, #11307)
+
+  =E2=80=A2 Allow dash in `dune init' project name (#11402, @art-w, reporte=
+d by
+    @saroupille)
+
+  =E2=80=A2 On Windows, under heavy load, file delete operations can someti=
+mes
+    fail due to AV programs, etc. Guard against it by retrying the
+    operation up to 30x with a 1s waiting gap (#11437, fixes #11425,
+    @MSoegtropIMC)
+
+  =E2=80=A2 Cache: we now only store the executable permission bit for files
+    (#11541, fixes #11533, @ElectreAAS)
+
+  =E2=80=A2 Display negative error codes on Windows in hex which is the more
+    customary way to display `NTSTATUS' codes (#11504, @MisterDA)
+
+
+QCheck 0.24
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-qcheck-0-24/16198/2>
+
+
+Jan Midtgaard announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  FYI, QCheck 0.25 is now available from the opam repository :smiley:
+
+  <https://github.com/c-cube/qcheck/releases/>
+
+  The 0.25 release contains a combination of all-round fixes,
+  documentation, and polishing:
+
+  =E2=80=A2 Restore `Test.make''s `max_fail' parameter which was accidental=
+ly
+    broken in 0.18
+  =E2=80=A2 Adjust `stats' computation of average and standard deviation to
+    limit precision loss, print both using scientific notation, and
+    workaround MinGW float printing to also pass expect tests
+  =E2=80=A2 Fix dune snippets missing a language specifier in README.adoc
+    causing `asciidoc' to error
+  =E2=80=A2 Add a note to `QCheck{,2.Gen}.small_int_corners' and
+    `QCheck{,2}.Gen.graft_corners' about internal state, and fix a range
+    of documentation reference warnings
+  =E2=80=A2 Reorganize and polish the `README', rewrite it to use `qcheck-c=
+ore',
+    and add a `QCheck2' integrated shrinking example
+  =E2=80=A2 Document `QCHECK_MSG_INTERVAL' introduced in 0.20
+  =E2=80=A2 Add `QCheck{,2}.Gen.map{4,5}' combinators
+
+  The accompanying `ppx_deriving_qcheck.0.7' release offers:
+
+  =E2=80=A2 Support `ppxlib.0.36.0' based on the OCaml 5.2 AST
+
+  Thanks to @Pat-Lafon and @patricoferris for contributing PRs! =F0=9F=8E=89
+
+  Happy testing! :smiley: :keyboard:
+
+
+checked_oint v0.5.0: Safe integer arithmetic for OCaml
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-checked-oint-v0-5-0-safe-integer-arithme=
+tic-for-ocaml/16450/1>
+
+
+hirrolot announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80
+
+  I would like to announce [`checked_oint'] v0.5.0, which provides
+  checked integer arithmetic for OCaml. We support both signed and
+  unsigned integers of 8, 16, 32, 64, and 128 bits. Unlike other
+  libraries, `checked_oint' either returns an option or raises an
+  exception when the result of an arithmetic operation cannot be
+  represented in a desired integer type.
+
+  In addition, it contains abstractions for manipulating arbitrary
+  integers and integer types in a generic and type-safe manner, which I
+  find tremendously useful for compiler/interpreter implementations.
+
+  Usage example:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 open Checked_oint
+  =E2=94=82=20
+  =E2=94=82 let () =3D
+  =E2=94=82   let x =3D U8.of_int_exn 50 in
+  =E2=94=82   let y =3D U8.of_int_exn 70 in
+  =E2=94=82   assert (U8.equal (U8.add_exn x y) (U8.of_int_exn 120));
+  =E2=94=82   assert (Option.is_none (U8.mul x y))
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The release v0.5.0 introduced crucial functionality for converting
+  between any two integer types in a safe manner =E2=80=93 see [`S.of_gener=
+ic']
+  and [`S.of_generic_exn'].
+
+
+[`checked_oint'] <https://github.com/hirrolot/checked_oint>
+
+[`S.of_generic']
+<https://hirrolot.github.io/checked_oint/checked_oint/Checked_oint/module-t=
+ype-S/index.html#val-of_generic>
+
+[`S.of_generic_exn']
+<https://hirrolot.github.io/checked_oint/checked_oint/Checked_oint/module-t=
+ype-S/index.html#val-of_generic_exn>
+
+
+Outreachy December 2024 Round
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/outreachy-december-2024-round/15223/3>
+
+
+Patrick Ferris announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  With the [June 2025 round] about to begin, it is time to celebrate the
+  awesome work @abdulaziz.alkurd has been doing on [ocaml-api-watch]
+  mentored by @NathanReb and @panglesd!
+
+  Please join us on [date=3D2025-04-15 time=3D10:00:00 timezone=3D"UTC"] for
+  the community zoom call where we will get to hear about all of the
+  progress that has been made.
+
+  Hope to see you there. I'll post a link to the video call closer to
+  the time. For those that can't make it, the meeting will be recorded
+  and uploaded to watch.ocaml.org :two_hump_camel:
+
+
+[June 2025 round]
+<https://discuss.ocaml.org/t/outreachy-june-2025/16154>
+
+[ocaml-api-watch] <https://github.com/ocaml-semver/ocaml-api-watch>
+
+
+OUPS meetup april 2025
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/oups-meetup-april-2025/16453/1>
+
+
+zapashcanon announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  CAUTION: the time has been changed from 7pm to 6:30pm and it will be
+  at ENS Ulm instead of Jussieu
+
+  The next OUPS meetup will take place on *Thursday, 24th of April*
+  2025. It will start at *6:30pm* at the *45 rue d'Ulm* in Paris. It
+  will be in the in the *Salle des r=C3=A9sistants* (first floor in the
+  "couloir du carr=C3=A9").
+
+  Please, *[register on meetup ]* as soon as possible to let us know how
+  many pizza we should order.
+
+  For more details, you may check the [OUPS=E2=80=99 website ].
+
+  This time we=E2=80=99ll have the following talks:
+
+  *A translation of OCaml programs from Gospel to Viper =E2=80=93 Charl=C3=
+=A8ne Gros*
+
+        Presentation of a translation of OCaml programs specified
+        in Gospel into Viper, an intermediate verification
+        language supporting separation logic.
+
+        The practical goal is to add a new backend to Cameleer to
+        verify OCaml programs that manipulate the heap.  The
+        logical specification of such OCaml programs is described
+        in the Gospel language, and we detail the extensions made
+        to support separation logic in Viper.
+
+  *Posca: an experimental social network based on Matrix, written in
+   OCaml with melange =E2=80=93 Pierre de Lacroix*
+
+        TBA
+
+  After the talks there will be some pizzas offered by the [OCaml
+  Software Foundation] and later on we=E2=80=99ll move to a pub nearby as u=
+sual.
+
+
+[register on meetup ]
+<https://www.meetup.com/fr-FR/ocaml-paris/events/307176170>
+
+[OUPS=E2=80=99 website ] <https://oups.frama.io>
+
+[OCaml Software Foundation] <https://ocaml-sf.org>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [What's new with Mollymawk?]
+  =E2=80=A2 [Learning OCaml: Module Aliases]
+  =E2=80=A2 [Learning OCaml: Parsing Data with Scanf]
+  =E2=80=A2 [Learning OCaml: Regular Expressions]
+  =E2=80=A2 [Making OCaml Safe for Performance Engineering]
+  =E2=80=A2 [OCaml in Space: SpaceOS is on a Satellite!]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[What's new with Mollymawk?]
+<https://blog.robur.coop/articles/mollymawk-first-milestone.html>
+
+[Learning OCaml: Module Aliases]
+<https://batsov.com/articles/2025/04/06/learning-ocaml-module-aliases/>
+
+[Learning OCaml: Parsing Data with Scanf]
+<https://batsov.com/articles/2025/04/06/learning-ocaml-parsing-data-with-sc=
+anf/>
+
+[Learning OCaml: Regular Expressions]
+<https://batsov.com/articles/2025/04/04/learning-ocaml-regular-expressions/>
+
+[Making OCaml Safe for Performance Engineering]
+<https://www.youtube.com/watch/g3qd4zpm1LA?version=3D3>
+
+[OCaml in Space: SpaceOS is on a Satellite!]
+<https://tarides.com/blog/2025-04-03-ocaml-in-space-spaceos-is-on-a-satelli=
+te>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-04-08 Tue 15:12 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.04.01.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.04.15.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of April 01 to 08, 2025.
+</p>
+
+<p>
+Please note that some entries were posted on April 1st.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Ocsigen public meeting</a></li>
+<li><a href=3D"#2">Roguetype</a></li>
+<li><a href=3D"#3">Ppx_untype: An end to type errors in OCaml</a></li>
+<li><a href=3D"#4">Second of Two Lessons on Polymorphic Variants: Practical=
+ Usecases</a></li>
+<li><a href=3D"#5">Caqti 2.2.4 Release and Plans</a></li>
+<li><a href=3D"#6">update for the magick-core-7</a></li>
+<li><a href=3D"#7">gegl-0.4 _</a></li>
+<li><a href=3D"#8">Dune 3.18</a></li>
+<li><a href=3D"#9">QCheck 0.24</a></li>
+<li><a href=3D"#10">checked_oint v0.5.0: Safe integer arithmetic for OCaml<=
+/a></li>
+<li><a href=3D"#11">Outreachy December 2024 Round</a></li>
+<li><a href=3D"#12">OUPS meetup april 2025</a></li>
+<li><a href=3D"#13">Other OCaml News</a></li>
+<li><a href=3D"#orgdb70c40">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Ocsigen public meeting</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocsigen-public-meeting/=
+16408/1">https://discuss.ocaml.org/t/ann-ocsigen-public-meeting/16408/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org7823f85" class=3D"outline-3">
+<h3 id=3D"org7823f85">William Caldwell announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org7823f85">
+<p>
+Hi all!
+</p>
+
+<p>
+The Ocsigen team is organising a public meeting in which we'll be discussin=
+g the migration from Lwt to effect-based concurrency, updates about work in=
+ progress (wasm_of_ocaml, Ocsigen-i18n, =E2=80=A6).
+</p>
+
+<p>
+We welcome user suggestions &amp; questions, please join us Monday the 14th=
+ of April at 1pm (France/GMT+2) at the following link: <a href=3D"https://m=
+eet.google.com/zdm-krfj-rcw">https://meet.google.com/zdm-krfj-rcw</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Roguetype</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-roguetype/16409/1">http=
+s://discuss.ocaml.org/t/ann-roguetype/16409/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc9cf9ef" class=3D"outline-3">
+<h3 id=3D"orgc9cf9ef">octachron announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc9cf9ef">
+<p>
+Have you ever felt pained by the lack of GADTs and high-arity functors when=
+ playing games?
+Have you ever wondered if you could play games without being weighted by a =
+runtime evaluation?
+</p>
+
+<p>
+Then fear no longer, because in this day it is my pleasure to announce the =
+first release of <a href=3D"https://github.com/Octachron/roguetype.git">Rog=
+uetype</a>, the first ever roguelike written in the OCaml type system:
+</p>
+
+<ul class=3D"org-ul">
+<li>Test your mettle against the OCaml typechecker and the 8 levels of <cod=
+e>roguetype</code>.</li>
+<li>Explore functors, mountains, and forests to discover hidden paths.</li>
+<li>Vanquish goblins and dragon(s), upgrade your equipment, while being sur=
+e that your travel is well-typed by construction.</li>
+<li>And maybe, at the end of your adventure, you shall prove that the victo=
+ry type is inhabited</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Ppx_untype: An end to type errors in OCaml</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ppx-untype-an-end-to-ty=
+pe-errors-in-ocaml/16410/1">https://discuss.ocaml.org/t/ann-ppx-untype-an-e=
+nd-to-type-errors-in-ocaml/16410/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orge3c1ec5" class=3D"outline-3">
+<h3 id=3D"orge3c1ec5">Paul-Elliot announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orge3c1ec5">
+<p>
+Hello dear people reading this!
+</p>
+
+<p>
+Today, I am overly excited to announce one of the greatest and simplest too=
+l, that will fix the biggest of all OCaml flaws.
+</p>
+
+<p>
+Consider Javascript:
+</p>
+
+<pre class=3D"example" id=3D"orgf3f0dc1">
+$ node
+Welcome to Node.js v22.14.0.
+Type ".help" for more information.
+&gt; 1 + 3.5
+4.5
+</pre>
+
+<p>
+Simple and elegant, don't we all agree?
+</p>
+
+<p>
+Now, the same with OCaml:
+</p>
+
+<pre class=3D"example" id=3D"org7ac042d">
+$ ocaml
+OCaml version 5.3.0
+Enter #help;; for help.
+# 1 + 3.5 ;;
+Error: The constant 3.5 has type float but an expression was expected of ty=
+pe
+         int
+</pre>
+
+<p>
+What does this even mean?
+</p>
+
+<p>
+The PPX that I lovingly share with you all is <code>ppx_untype</code>. It f=
+inally fully removes the OCaml type system that has plagued it since its in=
+ception.
+</p>
+
+<p>
+The PPX can be used very simply. Add it to your opam switch:
+</p>
+
+<pre class=3D"example" id=3D"org7caddd9">
+$ opam pin add ppx_untype https://github.com/panglesd/ppx_untype.git\#main
+</pre>
+
+<p>
+and then add it to your <code>dune</code> (or other build system) file:
+</p>
+
+<pre class=3D"example" id=3D"orga4504c2">
+(...
+ (preprocess (pps ppx_untype))
+ ...)
+</pre>
+
+<p>
+And you can now enjoy OCaml!
+</p>
+
+<pre class=3D"example" id=3D"orgafcdb11">
+$ cat bin.main.ml
+let () =3D print_float (1 + 3.5)
+$ dune exec bin/main.exe
+3.47922429887e-310
+</pre>
+</div>
+<div id=3D"outline-container-org334527a" class=3D"outline-4">
+<h4 id=3D"org334527a">Pros:</h4>
+<div class=3D"outline-text-4" id=3D"text-org334527a">
+<ul class=3D"org-ul">
+<li>All programs that was working before, still works.</li>
+<li>Blazingly fast!</li>
+<li>Finally integers and floats can be added.</li>
+<li>All warnings are also removed.</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org44e87af" class=3D"outline-4">
+<h4 id=3D"org44e87af">Cons:</h4>
+<div class=3D"outline-text-4" id=3D"text-org44e87af">
+<ul class=3D"org-ul">
+<li>None (apart from some unexpected behaviour at runtime)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Second of Two Lessons on Polymorphic Variants: Practical Useca=
+ses</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/second-of-two-lessons-on-po=
+lymorphic-variants-practical-usecases/16416/1">https://discuss.ocaml.org/t/=
+second-of-two-lessons-on-polymorphic-variants-practical-usecases/16416/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org343bfca" class=3D"outline-3">
+<h3 id=3D"org343bfca">Jakub Svec announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org343bfca">
+<p>
+This is the second of two lessons on polymorphic variants I've been draftin=
+g for potential inclusion in the Lessons section of OCaml.org.
+</p>
+
+<p>
+You can find the draft second lesson <a href=3D"https://hackmd.io/@wqo57Le0=
+RIyZVlb8qdJ8PA/ryPD_7961x">here</a>. I appreciate any feedback you may have.
+</p>
+
+<p>
+The OCaml.org discussion of the first lesson can be found <a href=3D"https:=
+//discuss.ocaml.org/t/new-lesson-on-polymorphic-variants/16390/11">here</a>.
+</p>
+
+<p>
+The goal of the first lesson was to introduce the foundational knowledge fo=
+r how polymorphic variants work (row polymorphism, structural typing, upper=
+ bounds, lower bounds, &#x2026;), their benefits and drawbacks, how they re=
+late to "ordinary" variants, their notation (<code>\~</code>, <code>&gt;</c=
+ode>, <code>&lt;</code>, <code>#</code>, &#x2026;), and their behavior duri=
+ng type refinement.
+</p>
+
+<p>
+I am grateful to everyone that provided feedback on the first lesson. I inc=
+orporated most of the feedback into the lesson already, but it is not yet c=
+omplete. I've held off finalizing the first lesson until this second lesson=
+ receives feedback, since there may be significant structural changes to th=
+e first lesson depending on the feedback received on this second part.
+</p>
+
+<p>
+The objective of this second lesson is to demonstrate practical usecases fo=
+r polymorphic variants. Presently, it demonstrates seven practical usecases=
+ of polymorphic variants, along with "ordinary" variant equivalents for com=
+parison.
+</p>
+
+<p>
+The seven usecases were sourced from:
+</p>
+
+<ul class=3D"org-ul">
+<li>Jacques Garrigue's <a href=3D"https://caml.inria.fr/pub/papers/garrigue=
+-polymorphic_variants-ml98.pdf">1998 paper</a></li>
+<li><a href=3D"https://discuss.ocaml.org/t/is-there-any-kind-of-guidline-ab=
+out-when-to-use-polymorphic-variants/11006/14">This discussion</a> board on=
+ OCaml.org</li>
+</ul>
+
+<p>
+Please consider this a rough draft. It does not include an indroduction and=
+ conclusion, and every example has minimal narrative supporting it.=20
+</p>
+
+<p>
+The goal is to solicit feedback on the <b>selected examples</b>, the <b>str=
+ucture of the examples</b>, and
+to solicit <b>additional examples</b> if these are insufficient.
+</p>
+
+<p>
+If you have experience with specific usecases for polymorphic variants that=
+ you feel would do a better job demonstrating specific usecases or that dem=
+onstrate features not presented here, please let me know. If you can supply=
+ a concise example with a quick overview I would be grateful. If that does =
+not work with your schedule, I can formulate an example from a description =
+and perhaps a github link if available.
+</p>
+
+<p>
+For example, none of the usecases demonstrate explicit coercions. That may =
+be a useful example to include, however this was not mentioned in the sourc=
+e material and am unsure how commonly it is employed by OCaml developers.
+</p>
+
+<p>
+Once this document's examples are locked down, I will consider the followin=
+g:
+</p>
+
+<ul class=3D"org-ul">
+<li>Which lesson should be introduced first (demonstrations or foundations)=
+?</li>
+<li>Should the examples in this lesson be extracted into .ml files for read=
+ers to clone like in some other lessons on the site?</li>
+<li>Should the two lessons be merged?</li>
+<li>Is the length excessive?</li>
+<li>Can any content be removed or extracted into a standalone lesson?</li>
+</ul>
+
+<p>
+Once that is resolved, I will do a final pass on the lesson(s) and make ano=
+ther request for feedback.
+</p>
+
+<p>
+Once again, I want to express my gratitude to everyone willing to work thro=
+ugh these draft lessons, as well to those willing to provide feedback.
+</p>
+
+<p>
+Example Usecases:
+</p>
+
+<ul class=3D"org-ul">
+<li>Monomorphic Usecases</li>
+<li>Overloaded Tags</li>
+<li>Compose with Result</li>
+<li>Transitioning from Ordinary to Polymorphic Variants in an API</li>
+<li>Polymorphic Variants with Phantom Types</li>
+<li>Functional Reactive Programming with Polymorphic Variants</li>
+<li>Encoding HTML in Hierarchical Structures</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Caqti 2.2.4 Release and Plans</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-caqti-2-2-4-release-and=
+-plans/16419/1">https://discuss.ocaml.org/t/ann-caqti-2-2-4-release-and-pla=
+ns/16419/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org20acbf0" class=3D"outline-3">
+<h3 id=3D"org20acbf0">"Petter A. Urkedal announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org20acbf0">
+</div>
+<div id=3D"outline-container-org986340e" class=3D"outline-4">
+<h4 id=3D"org986340e">The Release</h4>
+<div class=3D"outline-text-4" id=3D"text-org986340e">
+<p>
+I am pleased to announce the release of <a href=3D"https://github.com/paurk=
+edal/ocaml-caqti">Caqti</a> 2.2.4, after stumbling through a few minor rele=
+ases starting at 2.2.0.  These are the combined release notes since the pre=
+vious OPAM release, omitting intermediate regressions:
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orga8cdc82"></a>Improvements<br />
+<div class=3D"outline-text-5" id=3D"text-orga8cdc82">
+<ul class=3D"org-ul">
+<li>The sqlite3 driver now supports the refined error causes (<code>Caqti_e=
+rror.cause</code>) for integrity constraint violations.</li>
+<li>There is now experimental support for Miou (<a href=3D"https://github.c=
+om/paurkedal/ocaml-caqti/pull/117">#117</a> by Calascibetta Romain).</li>
+<li>Make the pool implementation shared-memory safe.</li>
+<li>The new library <code>caqti.template</code> provides a preview of a int=
+erface for creating and working with request templates, with a few new feat=
+ures and, I think, a tidier design.  This is not yet suitable for productio=
+n code, since it will change before the final version.  Feedback is welcome=
+.</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgbfe6128"></a>Fixes<br />
+<div class=3D"outline-text-5" id=3D"text-orgbfe6128">
+<ul class=3D"org-ul">
+<li>Fixed a memory leak in the fall-back implementation of the <code>popula=
+te</code> connection method which affects all except the postgresql drivers=
+.</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org52080ca"></a>Deprecations<br />
+<div class=3D"outline-text-5" id=3D"text-org52080ca">
+<ul class=3D"org-ul">
+<li><code>Caqti_request.query_id</code> is deprecated and will be removed.<=
+/li>
+<li>Constructors of <code>Caqti_type.t</code> are now fully private and wil=
+l be moved away and likely defined differently in the next major release.</=
+li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org061ddcc"></a>Dependency Updates<br />
+<div class=3D"outline-text-5" id=3D"text-org061ddcc">
+<ul class=3D"org-ul">
+<li>Prepare for upcoming mirage (<a href=3D"https://github.com/paurkedal/oc=
+aml-caqti/pull/124">#124</a> by Hannes Mehnert).</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-org685744b" class=3D"outline-4">
+<h4 id=3D"org685744b">Upcoming Work on <code>caqti.template</code></h4>
+<div class=3D"outline-text-4" id=3D"text-org685744b">
+<p>
+As mentioned, this library is experimental for now, yet it contains the rea=
+l implementation of request templates, while the stable API is a backwards =
+compatible wrapper.  I already have plans for revising the new API both due=
+ to hard requirements and feedback about usability and preferences, esp. fo=
+r the most commonly used part of the API.
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org9714589"></a>Dynamic Prepare Policy and Parametric Types<br=
+ />
+<div class=3D"outline-text-5" id=3D"text-org9714589">
+<p>
+One thing I am excited about with the <code>caqti.template</code> library i=
+s the support for prepared queries for dynamically generated request templa=
+tes.
+</p>
+
+<p>
+To motivate this, note that each prepared query retains resources on both t=
+he server side and locally, both associated with an open database connectio=
+n, which can be long-lived.  So, if the application generates queries based=
+ on e.g. search expressions like <code>(author:Plato or author:Socrates) an=
+d topic:epistemology</code>, which cannot be prepared statically due to the=
+ boolean algebra over search terms, then users of the current API must use =
+one-shot (non-prepared) queries to avoid unbounded retention of resources o=
+ver time.  The new API provides a so-called dynamic prepare policy, which u=
+ses an LRU cache of prepared queries internally to limit the resource usage=
+ while providing a heuristic for re-using common prepared queries.
+</p>
+
+<p>
+There is, however, a missing piece in order for this to be practically effi=
+cient.  Type descriptors like <code>Caqti_type.t2</code>, <code>Caqti_type.=
+t3</code>, etc.  which represent parametrically polymorphic types, are curr=
+ently generative with respect to the equality used by the LRU cache, meanin=
+g that the type expression would need to be lifted out of the function whic=
+h generates the request template in order to avoid consistent cache-misses.
+</p>
+
+<p>
+My plan is first to make a major release which moves the concrete type repr=
+esentation away from the public modules, and then revise it to properly enc=
+ode parametric types.  Apart from changing the constructors, this involves =
+adding an extra phantom type parameter, but the parameter will be universal=
+ly qualified in the type exposed to the public API, so I expect to retain b=
+ackwards compatibility for typical usage.
+</p>
+</div>
+</li>
+<li><a id=3D"orge289542"></a>The Main Request Template API and Bring-Your-O=
+wn-Paint<br />
+<div class=3D"outline-text-5" id=3D"text-orge289542">
+<p>
+For most use cases, it is sufficient to be able to construct request templa=
+tes, which consists of type descriptors and a possibly dialect-dependent qu=
+ery template.  Everything needed for this is bundled into the module <code>=
+Caqti_template.Create</code>. I may have developed a bit colourblindness af=
+ter walking around this bikeshed, so let me show you how the current stable=
+ API looks like, how the current iteration of the new API looks like.
+</p>
+
+<p>
+Here is a request template using the stable API:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">let</span> <span style=3D"color: #007a9f;">select_owner</span> =3D
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #000000; font-weight: bold;">open </span><span style=3D"color: #=
+444fcf;">Caqti_request.Infix</span> <span style=3D"color: #000000; font-wei=
+ght: bold;">in</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #000000; font-weight: bold;">open </span><span style=3D"color: #=
+444fcf;">Caqti_type.Std</span> <span style=3D"color: #000000; font-weight: =
+bold;">in</span>
+  (string -&gt;? string)
+  <span style=3D"color: #ca3400;">"SELECT owner FROM bikereg WHERE frameno =
+=3D ?"</span>
+</pre>
+</div>
+
+<p>
+In the current iteration of the new API, this looks like:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">let</span> <span style=3D"color: #007a9f;">select_owner</span> =3D
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #000000; font-weight: bold;">open </span><span style=3D"color: #=
+444fcf;">Caqti_template.Create</span> <span style=3D"color: #000000; font-w=
+eight: bold;">in</span>
+  static <span style=3D"color: #444fcf;">T.</span>(string --&gt;? string)
+  <span style=3D"color: #ca3400;">"SELECT owner FROM bikereg WHERE frameno =
+=3D ?"</span>
+</pre>
+</div>
+
+<p>
+What changed?
+</p>
+
+<ul class=3D"org-ul">
+<li>There is now only a single <code>open</code>. That can only be good.</l=
+i>
+<li>The type descriptors have been moved under a <code>T</code> sub-module.=
+  This isn't strictly necessary, but I though it was tidier, esp. since the=
+re are clashing names (like <code>int</code>) under a parallel <code>Q</cod=
+e> sub-module which is used for dynamically generated query templates.</li>
+<li>The arrow was previously the main function, while in the new API it onl=
+y constructs the type and multiplicity representation (<code>Caqti_template=
+.Request_type.t</code>).</li>
+<li>Instead, the main function now indicates the policy for whether to use =
+a prepared query and, if so, the life-time of the request template.  The op=
+tions are <code>direct</code>, <code>static</code>, and <code>dynamic</code=
+> (as explained above).</li>
+</ul>
+
+<p>
+The latter adds verbosity, but I think it is good to be explicit about stat=
+ic life-time, since using it for generated request templates would typicall=
+y lead to a resource leakage.
+</p>
+
+<p>
+It's getting late, so I will not write about dynamic and dialect-dependent =
+request templates, but in the current revision, they are constructed with a=
+ "general" version of the above functions, <code>direct_gen</code>, <code>s=
+tatic_gen</code>, and <code>dynamic_gen</code> which takes a function recei=
+ving a dialect descriptor and returns a <code>Caqti_template.Query.t</code>=
+ instead of a string.  The stable API used combinator operators for this.
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">update for the magick-core-7</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-update-for-the-magick-c=
+ore-7/16422/1">https://discuss.ocaml.org/t/ann-update-for-the-magick-core-7=
+/16422/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org49e7898" class=3D"outline-3">
+<h3 id=3D"org49e7898">Florent Monnier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org49e7898">
+<p>
+An update to use the magick-core-7 is available there:
+<a href=3D"https://github.com/fccm2/mgk-gen2">https://github.com/fccm2/mgk-=
+gen2</a>
+</p>
+
+<p>
+If you still want to use the magick-core-6, the previous head is kept here:
+<a href=3D"https://github.com/fccm2/mgk-gen">https://github.com/fccm2/mgk-g=
+en</a>
+</p>
+
+<p>
+The updated version was tested with the magick-core version <code>7.1.1-44<=
+/code>, if you want to compile it, you need about <code>256M</code> space l=
+eft on device.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">gegl-0.4 _</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-gegl-0-4/16424/1">https=
+://discuss.ocaml.org/t/ann-gegl-0-4/16424/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org19ede26" class=3D"outline-3">
+<h3 id=3D"org19ede26">Florent Monnier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org19ede26">
+<p>
+You can now access <code>gegl-0.4</code>, from your favorite scripting lang=
+uage,
+and play with its nodes, with:
+<a href=3D"https://github.com/fccm2/gegl-ocaml">https://github.com/fccm2/ge=
+gl-ocaml</a> / (<a href=3D"http://decapode314.free.fr/ocaml/gegl/docs/0.01/=
+Gegl.html">api-doc</a>)
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">Dune 3.18</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-3-18/16428/1">http=
+s://discuss.ocaml.org/t/ann-dune-3-18/16428/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org1d0aafa" class=3D"outline-3">
+<h3 id=3D"org1d0aafa">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org1d0aafa">
+<p>
+On the behalf of the dune team, I'm glad to announce the release of dune <c=
+ode>3.18.0</code> :partying_face:=20
+</p>
+
+<p>
+This release contains changes to support the new <code>x-maintenance-intent=
+</code> field by default. It also contains some changes regarding the cache=
+, about how it handles file permissions. It introduces a new <code>(format-=
+dune-file ...)</code> stanza with the intention to formalize the <code>dune=
+ format-dune-file</code> command as an inside rule. Finally, it includes va=
+rious bug fixes for Dune.
+</p>
+
+<p>
+If you encounter a problem with this release, you can report it on the <a h=
+ref=3D"https://github.com/ocaml/dune/issues">ocaml/dune</a> repository.
+</p>
+</div>
+<div id=3D"outline-container-org6bff106" class=3D"outline-4">
+<h4 id=3D"org6bff106">Changelog</h4>
+<div class=3D"outline-text-4" id=3D"text-org6bff106">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org2f135b6"></a>Fixed<br />
+<div class=3D"outline-text-5" id=3D"text-org2f135b6">
+<ul class=3D"org-ul">
+<li>Support HaikuOS: don't call <code>execve</code> since it's not allowed =
+if other pthreads
+have been created. The fact that Haiku can't call <code>execve</code> from =
+other threads
+than the principal thread of a process (a team in haiku jargon), is a
+discrepancy to POSIX and hence there is a <a href=3D"https://dev.haiku-os.o=
+rg/ticket/18665">bug about
+it</a>. (@Sylvain78, #10953)
+
+<ul class=3D"org-ul">
+<li>Fix flag ordering in generated Merlin configurations (#11503, @voodoos,=
+ fixes
+ocaml/merlin#1900, reported by @vouillon)</li>
+</ul></li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org226d24d"></a>Added<br />
+<div class=3D"outline-text-5" id=3D"text-org226d24d">
+<ul class=3D"org-ul">
+<li>Add <code>(format-dune-file &lt;src&gt; &lt;dst&gt;)</code> action. It =
+provides an alternative to the
+<code>dune format-dune-file</code> command.  (#11166, @nojb)
+
+<ul class=3D"org-ul">
+<li>Allow the <code>--prefix</code> flag when configuring dune with <code>o=
+caml configure.ml</code>.
+This allows to set the prefix just like <code>$ dune install --prefix</code=
+>. (#11172,
+@rgrinberg)</li>
+
+<li>Allow arguments starting with <code>+</code> in preprocessing definitio=
+ns (starting with
+<code>(lang dune 3.18)</code>). (@amonteiro, #11234)</li>
+
+<li>Support for opam <code>(maintenance_intent ...)</code> in dune-project =
+(#11274, @art-w)</li>
+
+<li>Validate opam <code>maintenance_intent</code> (#11308, @art-w)</li>
+
+<li>Support <code>not</code> in package dependencies constraints (#11404, @=
+art-w, reported
+by @hannesm)</li>
+</ul></li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org80430e7"></a>Changed<br />
+<div class=3D"outline-text-5" id=3D"text-org80430e7">
+<ul class=3D"org-ul">
+<li>Warn when failing to discover root due to reads failing. The previous
+behavior was to abort. (@KoviRobi, #11173)</li>
+
+<li>Use shorter path for inline-tests artifacts. (@hhugo, #11307)</li>
+
+<li>Allow dash in <code>dune init</code> project name (#11402, @art-w, repo=
+rted by @saroupille)</li>
+
+<li>On Windows, under heavy load, file delete operations can sometimes fail=
+ due to
+AV programs, etc. Guard against it by retrying the operation up to 30x with=
+ a
+1s waiting gap (#11437, fixes #11425, @MSoegtropIMC)</li>
+
+<li>Cache: we now only store the executable permission bit for files (#1154=
+1,
+fixes #11533, @ElectreAAS)</li>
+
+<li>Display negative error codes on Windows in hex which is the more custom=
+ary
+way to display <code>NTSTATUS</code> codes (#11504, @MisterDA)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">QCheck 0.24</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-qcheck-0-24/16198/2">ht=
+tps://discuss.ocaml.org/t/ann-qcheck-0-24/16198/2</a>
+</p>
+</div>
+<div id=3D"outline-container-org0e76a3c" class=3D"outline-3">
+<h3 id=3D"org0e76a3c">Jan Midtgaard announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org0e76a3c">
+<p>
+FYI, QCheck 0.25 is now available from the opam repository :smiley:=20
+</p>
+
+<p>
+<a href=3D"https://github.com/c-cube/qcheck/releases/">https://github.com/c=
+-cube/qcheck/releases/</a>
+</p>
+
+<p>
+The 0.25 release contains a combination of all-round fixes, documentation, =
+and polishing:
+</p>
+
+<ul class=3D"org-ul">
+<li>Restore <code>Test.make</code>'s <code>max_fail</code> parameter which =
+was accidentally broken in 0.18</li>
+<li>Adjust <code>stats</code> computation of average and standard deviation=
+ to limit precision loss, print both using scientific notation, and workaro=
+und MinGW float printing to also pass expect tests</li>
+<li>Fix dune snippets missing a language specifier in README.adoc causing <=
+code>asciidoc</code> to error</li>
+<li>Add a note to <code>QCheck{,2.Gen}.small_int_corners</code> and <code>Q=
+Check{,2}.Gen.graft_corners</code> about internal state, and fix a range of=
+ documentation reference warnings</li>
+<li>Reorganize and polish the <code>README</code>, rewrite it to use <code>=
+qcheck-core</code>, and add a <code>QCheck2</code> integrated shrinking exa=
+mple</li>
+<li>Document <code>QCHECK_MSG_INTERVAL</code> introduced in 0.20</li>
+<li>Add <code>QCheck{,2}.Gen.map{4,5}</code> combinators</li>
+</ul>
+
+<p>
+The accompanying <code>ppx_deriving_qcheck.0.7</code> release offers:
+</p>
+
+<ul class=3D"org-ul">
+<li>Support <code>ppxlib.0.36.0</code> based on the OCaml 5.2 AST</li>
+</ul>
+
+<p>
+Thanks to @Pat-Lafon and @patricoferris for contributing PRs! =F0=9F=8E=89
+</p>
+
+<p>
+Happy testing! :smiley: :keyboard:
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-10" class=3D"outline-2">
+<h2 id=3D"10">checked_oint v0.5.0: Safe integer arithmetic for OCaml</h2>
+<div class=3D"outline-text-2" id=3D"text-10">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-checked-oint-v0-5-0-saf=
+e-integer-arithmetic-for-ocaml/16450/1">https://discuss.ocaml.org/t/ann-che=
+cked-oint-v0-5-0-safe-integer-arithmetic-for-ocaml/16450/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org4243970" class=3D"outline-3">
+<h3 id=3D"org4243970">hirrolot announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org4243970">
+<p>
+I would like to announce <a href=3D"https://github.com/hirrolot/checked_oin=
+t"><code>checked_oint</code></a> v0.5.0, which provides checked integer ari=
+thmetic for OCaml. We support both signed and unsigned integers of 8, 16, 3=
+2, 64, and 128 bits. Unlike other libraries, <code>checked_oint</code> eith=
+er returns an option or raises an exception when the result of an arithmeti=
+c operation cannot be represented in a desired integer type.
+</p>
+
+<p>
+In addition, it contains abstractions for manipulating arbitrary integers a=
+nd integer types in a generic and type-safe manner, which I find tremendous=
+ly useful for compiler/interpreter implementations.
+</p>
+
+<p>
+Usage example:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><span style=3D"color: #000000; font-weight: bo=
+ld;">open </span><span style=3D"color: #444fcf;">Checked_oint</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> () =3D
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">x</span> =3D <span style=3D"color: #444fcf;">U8.</span=
+>of_int_exn 50 <span style=3D"color: #000000; font-weight: bold;">in</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">y</span> =3D <span style=3D"color: #444fcf;">U8.</span=
+>of_int_exn 70 <span style=3D"color: #000000; font-weight: bold;">in</span>
+  <span style=3D"color: #006f00; font-weight: bold;">assert</span> (<span s=
+tyle=3D"color: #444fcf;">U8.</span>equal (<span style=3D"color: #444fcf;">U=
+8.</span>add_exn x y) (<span style=3D"color: #444fcf;">U8.</span>of_int_exn=
+ 120));
+  <span style=3D"color: #006f00; font-weight: bold;">assert</span> (<span s=
+tyle=3D"color: #444fcf;">Option.</span>is_none (<span style=3D"color: #444f=
+cf;">U8.</span>mul x y))
+</pre>
+</div>
+
+<p>
+The release v0.5.0 introduced crucial functionality for converting between =
+any two integer types in a safe manner &#x2013; see <a href=3D"https://hirr=
+olot.github.io/checked_oint/checked_oint/Checked_oint/module-type-S/index.h=
+tml#val-of_generic"><code>S.of_generic</code></a> and <a href=3D"https://hi=
+rrolot.github.io/checked_oint/checked_oint/Checked_oint/module-type-S/index=
+.html#val-of_generic_exn"><code>S.of_generic_exn</code></a>.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-11" class=3D"outline-2">
+<h2 id=3D"11">Outreachy December 2024 Round</h2>
+<div class=3D"outline-text-2" id=3D"text-11">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/outreachy-december-2024-rou=
+nd/15223/3">https://discuss.ocaml.org/t/outreachy-december-2024-round/15223=
+/3</a>
+</p>
+</div>
+<div id=3D"outline-container-org9e2f2ba" class=3D"outline-3">
+<h3 id=3D"org9e2f2ba">Patrick Ferris announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9e2f2ba">
+<p>
+With the <a href=3D"https://discuss.ocaml.org/t/outreachy-june-2025/16154">=
+June 2025 round</a> about to begin, it is time to celebrate the awesome wor=
+k @abdulaziz.alkurd has been doing on <a href=3D"https://github.com/ocaml-s=
+emver/ocaml-api-watch">ocaml-api-watch</a> mentored by @NathanReb and @pang=
+lesd!=20
+</p>
+
+<p>
+Please join us on [date=3D2025-04-15 time=3D10:00:00 timezone=3D"UTC"] for =
+the community zoom call where we will get to hear about all of the progress=
+ that has been made.
+</p>
+
+<p>
+Hope to see you there. I'll post a link to the video call closer to the tim=
+e. For those that can't make it, the meeting will be recorded and uploaded =
+to watch.ocaml.org :two_hump_camel:
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-12" class=3D"outline-2">
+<h2 id=3D"12">OUPS meetup april 2025</h2>
+<div class=3D"outline-text-2" id=3D"text-12">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/oups-meetup-april-2025/1645=
+3/1">https://discuss.ocaml.org/t/oups-meetup-april-2025/16453/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org6a66b60" class=3D"outline-3">
+<h3 id=3D"org6a66b60">zapashcanon announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org6a66b60">
+<p>
+CAUTION: the time has been changed from 7pm to 6:30pm and it will be at ENS=
+ Ulm instead of Jussieu
+</p>
+
+<p>
+The next OUPS meetup will take place on <b>Thursday, 24th of April</b> 2025=
+. It will start at <b>6:30pm</b> at the <b>45 rue d'Ulm</b> in Paris. It wi=
+ll be in the in the <b>Salle des r=C3=A9sistants</b> (first floor in the "c=
+ouloir du carr=C3=A9").
+</p>
+
+<p>
+Please, <b><a href=3D"https://www.meetup.com/fr-FR/ocaml-paris/events/30717=
+6170">register on meetup </a></b> as soon as possible to let us know how ma=
+ny pizza we should order.
+</p>
+
+<p>
+For more details, you may check the <a href=3D"https://oups.frama.io">OUPS=
+=E2=80=99 website </a>.
+</p>
+
+<p>
+This time we=E2=80=99ll have the following talks:
+</p>
+
+<p>
+<b>A translation of OCaml programs from Gospel to Viper &#x2013; Charl=C3=
+=A8ne Gros</b>
+</p>
+
+<blockquote>
+<p>
+Presentation of a translation of OCaml programs specified in Gospel into Vi=
+per, an intermediate verification language supporting separation logic.
+</p>
+
+<p>
+The practical goal is to add a new backend to Cameleer to verify OCaml prog=
+rams that manipulate the heap.
+The logical specification of such OCaml programs is described in the Gospel=
+ language, and we detail the extensions made to support separation logic in=
+ Viper.
+</p>
+</blockquote>
+
+<p>
+<b>Posca: an experimental social network based on Matrix, written in OCaml =
+with melange &#x2013; Pierre de Lacroix</b>
+</p>
+
+<blockquote>
+<p>
+TBA
+</p>
+</blockquote>
+
+<p>
+After the talks there will be some pizzas offered by the <a href=3D"https:/=
+/ocaml-sf.org">OCaml Software Foundation</a> and later on we=E2=80=99ll mov=
+e to a pub nearby as usual.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-13" class=3D"outline-2">
+<h2 id=3D"13">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-13">
+</div>
+<div id=3D"outline-container-org969f0da" class=3D"outline-3">
+<h3 id=3D"org969f0da">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org969f0da">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://blog.robur.coop/articles/mollymawk-first-milestone.h=
+tml">What's new with Mollymawk?</a></li>
+<li><a href=3D"https://batsov.com/articles/2025/04/06/learning-ocaml-module=
+-aliases/">Learning OCaml: Module Aliases</a></li>
+<li><a href=3D"https://batsov.com/articles/2025/04/06/learning-ocaml-parsin=
+g-data-with-scanf/">Learning OCaml: Parsing Data with Scanf</a></li>
+<li><a href=3D"https://batsov.com/articles/2025/04/04/learning-ocaml-regula=
+r-expressions/">Learning OCaml: Regular Expressions</a></li>
+<li><a href=3D"https://www.youtube.com/watch/g3qd4zpm1LA?version=3D3">Makin=
+g OCaml Safe for Performance Engineering</a></li>
+<li><a href=3D"https://tarides.com/blog/2025-04-03-ocaml-in-space-spaceos-i=
+s-on-a-satellite">OCaml in Space: SpaceOS is on a Satellite!</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-orgdb70c40" class=3D"outline-2">
+<h2 id=3D"orgdb70c40">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-orgdb70c40">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org765a910">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
