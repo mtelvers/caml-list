@@ -1,0 +1,879 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=BXEITiv9;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=uib.no header.i=@uib.no header.a=rsa-sha256 header.s=selector2 header.b=jPCEVPR4;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id F2AF240066
+	for <caml-list@tunbury.org>; Mon, 14 Apr 2025 16:06:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=9jGCOKzuXgDX/VoHvS2vgBaa6yF5BRyS2KDkBnXG9dE=;
+  b=BXEITiv9RNid3OhQOKUYV8YHYnEIwM+pdzP4K9fl9o4ARiYl34XM3yvK
+   DuvE6A63twtdUKVwwGUAlTtoeu+LJ1vqaprJ2i+kd6edr+5Hp4TsVbDH4
+   r2Jo7npXTnsSwSvBrceaoxNCJ2CC9KH7xtPYYkujX6CnRooXM0/y17i5Q
+   A=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@uib.no
+X-IronPort-AV: E=Sophos;i="6.15,212,1739833200"; 
+   d="scan'208,217";a="217817821"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 14 Apr 2025 18:06:36 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id EBD66E0D21; Mon, 14 Apr 2025 18:06:35 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 16006E007A
+	for <caml-list@sympa.inria.fr>; Mon, 14 Apr 2025 18:06:34 +0200 (CEST)
+IronPort-SDR: 67fd3289_K8izuOuHrqP1jI0zydRl9HLKDRyVL/KhkQBHoXYO6ysQsOK
+ Yh4DGvno8H2DnxNa0djtN7iPzYMO7241i1cOx8A==
+X-IPAS-Result: =?us-ascii?q?A0GxBwBIMf1ngXwVayhaHAEBATwBAQQEAQECAQEHAQEVg?=
+ =?us-ascii?q?VMCgT8xUnsCWzIHCEiIJIUtiHaeFoElAxg+DwEDAQwBFAIBAg4SCwQBAQMBA?=
+ =?us-ascii?q?4UAAosqIAYBBDAJDgECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQA?=
+ =?us-ascii?q?QE7Bw47hXsBDIJFUXFjCDoBAQEBAQEBAQEBAQEBAQEBAQEBAQEBARMCDQdXO?=
+ =?us-ascii?q?C4BASQCAw8RAUABPicEGxqCYYIcDTsEAg6lbQF/ARIuAgKLIYE0gQGCDAEBB?=
+ =?us-ascii?q?gQEgQA+BdpVgWUDBoFIAYEVhFeCYwEqgTOEDziEP4ILRIEVQoI1gXaBXAICG?=
+ =?us-ascii?q?IFIhBOCL4IxgRdJhRQWh3GBOoRyKIQyiD+BR0szLAFVExcLBwWBbAMqNBUcc?=
+ =?us-ascii?q?TUdgXtbJwMDAwOCZIU2ghGJVIFGhFctT4R2HUADC209NxQbCYE1ljsHDAs8h?=
+ =?us-ascii?q?A0CG4EkEz1NEwQdQxgcHhGPFoNmjzOBe6FyB4QeihuBfpVmF6pXiAOQeyKNY?=
+ =?us-ascii?q?5EehDwThRcCBAIEBQIRBoFnOjyBIDMag1pPAxkPV5Qoggwjw2JENDwCBwEKA?=
+ =?us-ascii?q?QEDCZAcgUsBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:8Z4ed68ClmvbHB9Om+Vuk+FGdb1zdoMgy1knxilNoENuH/Bwxv
+ rFoB1E73TJYW4qKRcdcKO7SdC9qBLnhOhICOwqUYtKMzOW3FdAQLsC0WKA+UyoJ8SdzJ876U
+ 4IScEXZ7PN5DNB/KXHCXyDYrMdKa68gcKVbInlr0tFfEVPUeVN/g15AgGUHgldXw9dH6c0E5
+ Ka+45uuyegUW5/VLXxOlA1G8z44/HbnpPvZhALQzQ97hOVsD+u4LnmVzCFwxYlVS9Vy7tKyx
+ mOr+W53NTvjxiI8G6S64bh1eUZpDIn8KoDOCW4sLlYFtwrsHfpWG0uYczAgNl/mpDW1L9jqq
+ i2n/5nBbU615qZRBDJnfPgtjOQqgoG+jvsz0SVjmDkptG8TDUmC9BZjYYcaRfB7VE81esMpZ
+ 6j8ljpxKa/Nymw7hjV9pzNTVVnh0C0qX0tnaoaiGFeS5IXbPtUoZYE9E1YHZ8cFGaigbpXZ9
+ VGHYXZ/rJbYFmaZ3fWsi1mx8GtRG06GlODTlIZssKY3jBKlDRyzlcexsYYgnAcnahNP6Vs9q
+ DBKOBlhbtORsgZYeZ0A/oAW9K+DijXTRfFIAupUCTa/WE8SgPwQrLMkcsIDbuRCeA1JbMJ6e
+ v8bG8=
+X-Talos-CUID: 9a23:pnZfmWFtXD7shIW7qmJl91UoRet4ckTilkvKKkuBDUZqaYSaHAo=
+X-Talos-MUID: =?us-ascii?q?9a23=3AZr6O7A3hUVGr7KG/CTd5GK77nzUj54qBAW4Ttpc?=
+ =?us-ascii?q?95+q4ChVRESywpWimXdpy?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,212,1739833200"; 
+   d="scan'208,217";a="114245486"
+X-MGA-submission: =?us-ascii?q?MDEL45ZuNktjowVvLK6C5y63slgq7iekAV1c3p?=
+ =?us-ascii?q?fPW8yGKMyk0EciHlBIL3aods8pCT1QFzsf6Zsc/qkY+SfmzRBDIQzKtK?=
+ =?us-ascii?q?WpsGEGcWUbowm5HW9dEPYAt/9Z3F7wTWc+/hmgFrxWkI9QF5dfoSX1fl?=
+ =?us-ascii?q?n2kxAkxK1T3fEDENVlS8Z4hg=3D=3D?=
+Received: from mail-vi1eur05on2124.outbound.protection.outlook.com (HELO EUR05-VI1-obe.outbound.protection.outlook.com) ([40.107.21.124])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2025 18:06:33 +0200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=eQ8YFvaUMxYXWfM4gdC1B9BkRdcfvrSuxmJggUDhZ2pXmKRXY0hzvu0vV3t45EKJmVSyR6nRRC2pvd9ZF3tq1+1QezGtfKA1t4LUSQ7G4xCl1FZdFUsAJ3pXEO6qmHQUOhv2nUn6iV/VS8wqjuc1ZV72mQk5dW3W3AHy/Lf0Ee6KAp9qK+wy7nbzH/aC8nzFRz321fDRQInD4x2gdO3ETba5FLFkbP1lDHDzwuBBH8rjy80IhUx2wVOqnS15I5qZaDhW84BBTeW+l7u147qMLBSLmj+/a/0X5HajOALrx9v4j+3BdWvJHUps5Dx05uqX0bHgJfvb+wMnHlYKRSgjmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9jGCOKzuXgDX/VoHvS2vgBaa6yF5BRyS2KDkBnXG9dE=;
+ b=AN3iUyExl7ykALaHM+nORiDQQ+0XFRzVXS4gw3EFzXPS68t45LtaYvqLuv6K1n0y+VzM8FtrSODOekJi+DzL7BkLQ/7lpi5ns7gcP44rEeOeQP94XKFs/qmNqk1vyx+rYiZ0sjC0OO9BMQYmk6Zue2YLVtEuOol7mfZ1bYVy7l4jtQkoveU7OrUiSL1KLxiZW/Oo7FwkyekquwWi2axbYN49tMnSve4KlgZccat5TwgXaQ6OQ9l7R9p8gTwOI9/VYz6O6S2NWjTfVzKF0PGDEWkPp+CauOJP7sO3cFbGeIR0OEGFj+yVZIBmqU0bB6t8KJ8H1/SZTNufnY3ILXr2wQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=uib.no; dmarc=pass action=none header.from=uib.no; dkim=pass
+ header.d=uib.no; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uib.no; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9jGCOKzuXgDX/VoHvS2vgBaa6yF5BRyS2KDkBnXG9dE=;
+ b=jPCEVPR4lJ5UDgzMETXcf4M+opfrdCiBoecBy/mS6cdv9pVye7+N+PN1EoUdGM9Ehcc0PYprJhLIcOCmMhpCRBNkUPAYWVtx+GaLbRmGCxBZ31Dnh4F8LUqF4u3GqvLyzF4FbeTQmjl4/g1D3p5aecL4PWfFW0SxsS/E/VM3WgLJwFlRgnfxiSWwZw6hYOH0AZv8sPT38PBfMLHL4AIs0zlr7PvnGYXVEFtZ8IAkpiCGxIcFziC4/aGNdapE46dYyt+i5n+a/sQgyNNLPRR+DMHw8Vko1HffSL3GQrh+AgaydkEljuVJhPgiIUfbRNJBYIbhyY0eeKyawgThVecHrA==
+Received: from DB9PR01MB9392.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:360::13) by AS1PR01MB9297.eurprd01.prod.exchangelabs.com
+ (2603:10a6:20b:4d6::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8632.29; Mon, 14 Apr
+ 2025 16:06:30 +0000
+Received: from DB9PR01MB9392.eurprd01.prod.exchangelabs.com
+ ([fe80::493a:c33:a7f3:5f24]) by DB9PR01MB9392.eurprd01.prod.exchangelabs.com
+ ([fe80::493a:c33:a7f3:5f24%3]) with mapi id 15.20.8632.025; Mon, 14 Apr 2025
+ 16:06:30 +0000
+From: Crystal Chang Din <Crystal.Din@uib.no>
+To: "caml-list@inria.fr" <caml-list@inria.fr>
+Thread-Topic: FTfJP 2025 - Last CfP (extended deadline)
+Thread-Index: AQHbrUmy4oHX+LMlD0GWYpTwjHAiig==
+Date: Mon, 14 Apr 2025 16:06:30 +0000
+Message-ID:
+ <DB9PR01MB939266ED4B0EE94DF5BC0A6C84B32@DB9PR01MB9392.eurprd01.prod.exchangelabs.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: DB9PR01MB9392:EE_|AS1PR01MB9297:EE_
+x-ms-office365-filtering-correlation-id: 5ade0807-1f5c-46e8-1384-08dd7b6e51b1
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|376014|1800799024|366016|8096899003|13003099007|38070700018;
+x-microsoft-antispam-message-info:
+ =?iso-8859-1?Q?JOtXgzApUOuTgrrlF5Ta3302oXFg0kiEf1qoYyLk6N2nDFtu0MxSmNaF7n?=
+ =?iso-8859-1?Q?d7KuHZs5vqG8qnQrpHbgoWgruVFa+1lGn+Ts3cifiEOqJADrcZ5OMs3VN+?=
+ =?iso-8859-1?Q?vSXWvX2EgfOnrYGxrJq4jh2FGZ9No3gin0CEcjH7oGQBrD3qLzOCcIswQR?=
+ =?iso-8859-1?Q?XT1ybhUndGJD8LVril4C5trPT/lM5z1f1Dg/Z1B3TcLjomkwpfVvg2+40P?=
+ =?iso-8859-1?Q?iXLYTvHSxDm/Ffkv+5aM2HvsxTYMGwjwlJ1ZZpjA7l46jeUTs5DP7qpV6I?=
+ =?iso-8859-1?Q?uj5IJHzFeB5gBByz/UuI3TpeJStE4HXvIzjWtA5m+A/64mMJRCc4EUSSaT?=
+ =?iso-8859-1?Q?iafIy+/3vkFRxfwJHJgYBnkCMiiAImzi2YeCmKN/JHJ2IPqkr3dPwlShg5?=
+ =?iso-8859-1?Q?kYK0OB0XCmakGRjh29TMNNJlK3ceFwf6QaiTtqdvI+AGqOkYNVvujhOZUn?=
+ =?iso-8859-1?Q?/zFneh+gjIu8gKDkldgtEqjSx7Yd2Ncp0d9zu5UBem8bTrBy7RxzEH9A64?=
+ =?iso-8859-1?Q?T9FwT9KmThLozb1imB5GhJ1lqA7IIZ5p9qBpHRS9i9hZ9JoaU2Ha7g7zSS?=
+ =?iso-8859-1?Q?cLOF5MC3byJ+9sJFKaDN6N37g+uLzejnGP3lq3aruuNuCT3GZ+scj6a03w?=
+ =?iso-8859-1?Q?SOEbO/ivmdTg1M1Wco0pZNAsXhPISMCmNwEqlpcqIIhmu+zsTz+qswcrdU?=
+ =?iso-8859-1?Q?ufa7rKnLHhKiP5R5eVrXMtwfLjYCjjb9xy0XpuVOP683Z4WbUIvNPUEU3i?=
+ =?iso-8859-1?Q?frzHQG2BAja6HVrf+rp5q56lDvt7e/It2oLNXhQTgChBcJ8RDyzQRYlfRu?=
+ =?iso-8859-1?Q?Bp+e0nj5ovkCEWA7BFeiC7FmIzogo9UPDWnEBav/bQ2uyV0cagtbH9MJxW?=
+ =?iso-8859-1?Q?ROK/sLwnYNfc8pbirSSYSXS0rpGybcnavpFpv0nnOzFKTGV3ZLHcXmXZIz?=
+ =?iso-8859-1?Q?H8GNvZ6IXTeY/940YJnIshA0m1w0wwsVTDWTDrxU3Wn8a9k29IwwXHAX8w?=
+ =?iso-8859-1?Q?Cg9kj8ogkF8ANIzcdTATaDOk3IYhrwSiRDDIcY+cdExiXG4XLynT2+DHsg?=
+ =?iso-8859-1?Q?BfO5fm8xsISB9HufeUtjkCGRs9g5Obj2W4k1rz+d3kF+ykjdm7NSrTA0YS?=
+ =?iso-8859-1?Q?zn4yPeSgk/v2I1zbnL62FdirLB4TL1wM3XMihhQH3y0dgSqPSMV4F7lb2l?=
+ =?iso-8859-1?Q?vWaHfAtlFBC8UGlB7D6EEHiftfmAOMFka+8w/Ldrc15cZYQt48F4LeBTHK?=
+ =?iso-8859-1?Q?HqEEdSc8ss9zuyQF3OAFItJPE8XO7Ytdsjy3YWSBxYOe/xWhG4aK5bKGJF?=
+ =?iso-8859-1?Q?F06379sT++FRR+sX8gSpokTMcZBoFmlxlb7m99LXPdirGrfkRL/1gTphUa?=
+ =?iso-8859-1?Q?n2sXEEeE6+jSysG1LnnYnL7Yf3XsB2lJErY068lsUbYvj9bbsw82GB2mcT?=
+ =?iso-8859-1?Q?WL1NfrxqjE2kmM5g1DgtOgg9x+nlM6iKfJU/RHP9kWvLX+tB12byWGRA8Z?=
+ =?iso-8859-1?Q?8=3D?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR01MB9392.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(8096899003)(13003099007)(38070700018);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?0TcHqkaGwaqFfkKxtim1qfr7jTsi7vtNHAQ5fjWO6miFAJdSuLy9tTkpI/?=
+ =?iso-8859-1?Q?r0TZhHiCfrdqDqiTL3aQ2gzpBrRxIV07n43VdSCCYFbENogZ+Wu1pkJaAE?=
+ =?iso-8859-1?Q?jG4tEVmV38k+ZMFyo25MMOAspqS7kfvnDxVdZzsb773fQKOCIRAK37s/24?=
+ =?iso-8859-1?Q?1H9t2BUyE/5GUaNpgIT24iCFDaPlcpxFz8ZZgLrqth9yxejmy5PqFoHG99?=
+ =?iso-8859-1?Q?U9FThlKe9DVyrdlBQaT8C/p5vjGhpSzWNv8eAvJHOXMlXPk4PaT851/pay?=
+ =?iso-8859-1?Q?Jl0wwczB3NjsVDsPy5zC9lB7R6vCd2+MGSYj/RDlXOt63RCkjmMS106n4f?=
+ =?iso-8859-1?Q?El5ykyTxf98cPYRrmTow91ep4RDre1Cv9ZcVR5qjzHLCqWb1NYP3AvM4Wc?=
+ =?iso-8859-1?Q?+jRGuWw1wACiAa8M40lCdR+ePlgBLa8yFDl2aFN8XRVrgyy3jyIkmWLLm4?=
+ =?iso-8859-1?Q?Z1dazmlj04AzQmhGpj3gI28WdKEx3yQjJ+1YiLM0WF06my1vp/EnIwpNxi?=
+ =?iso-8859-1?Q?uR7p9+wSv/mgWIqB/lKDfT5RTgk0rzsCIspJN5rT6nNtQxHcKHyidjZPvA?=
+ =?iso-8859-1?Q?DHFjomdSk4SpKhmjb4ilHq4Fsg7FUdga5oayVreQAbcW7JYDqnCzcY3cCR?=
+ =?iso-8859-1?Q?wogW7trYD9dH4xB6yKR9G3JniJzkt47hZAvA+jj4JLd+yt+Rv4yL0q29jA?=
+ =?iso-8859-1?Q?/0WQyAAFLUi46KOMecUsuFYpF2sm3Yl80PMKpvUFjtQaInUl+VqF6Oh7jA?=
+ =?iso-8859-1?Q?kgCz36kPxnrH5I2mrJK/R4qOlowrS0sw3ld/Y4OZn07a2gMnNRfppbSGZq?=
+ =?iso-8859-1?Q?lQBMLbpHo0Y+kUAal8f5m8o/inYdwbZEL43Jebm/A40BCDVWullLuDnkEw?=
+ =?iso-8859-1?Q?krYpF3bcUvjZv5LIxQ07i5QaV7wecX9q6URH3d52S+XbpeVP93QS6s6wK4?=
+ =?iso-8859-1?Q?khCdcBC268i7Zb1fhvwzlnK8WdGfTTjwVpP1WhQLBovxLKR6Q+n/ZzWpN0?=
+ =?iso-8859-1?Q?Ywxmtab/4rSsQsEa2l/u+R084T4KF4I6agHm4umnsCxR2nIblQhFHQ/mut?=
+ =?iso-8859-1?Q?ElfuxOuygbXJFNwf2xI1WusIdfQPJ75ZDH6dRMYiAqWl6vEr/HHyP6xBhK?=
+ =?iso-8859-1?Q?oC0ocjBPzcf6rfr7UrI46Md3Jdqg/uQSlVuCfVz8avK7FiSegD82K0TCqT?=
+ =?iso-8859-1?Q?w9ijJVMNw55QXbVqZJFJWKbxpId1UqjJgKePVmUtvxlT0QuzLBmJ+j8x/M?=
+ =?iso-8859-1?Q?SkYFB6HzzaMxZfPgWm9J6LdUJy03rTtnQnVCVS7IzKYSxM18YxqliUivxW?=
+ =?iso-8859-1?Q?WAFbxd2Oy3WIN2xusJ7DIHsmWf8jMFZoVMK6t24Es7loXkC1HdyoPkYXf4?=
+ =?iso-8859-1?Q?bKV/ETa6iXWhLkbmy52wI0cz2dyMtcL97xZ19sD2n2PfLAEWMInvWlMCDD?=
+ =?iso-8859-1?Q?btz/lAVS8c1shntVxPcAAdS0HAeiMnM5j90/0rr5oGJntruECTNpCQeBu1?=
+ =?iso-8859-1?Q?IxrgX/eKwoL6JD8Y01JkF5a4618J1zx8R3BIFIAbX4NB+B9jLj/1EPXBkR?=
+ =?iso-8859-1?Q?bd7LWDrVAFCjb0GXlBBNuN/aOyQTWhFrwTzz+1GOkhcgjsyvc3w1fpnRks?=
+ =?iso-8859-1?Q?Mt6AsXRzBdgZs=3D?=
+Content-Type: multipart/alternative;
+	boundary="_000_DB9PR01MB939266ED4B0EE94DF5BC0A6C84B32DB9PR01MB9392eurp_"
+MIME-Version: 1.0
+X-OriginatorOrg: uib.no
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR01MB9392.eurprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ade0807-1f5c-46e8-1384-08dd7b6e51b1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Apr 2025 16:06:30.3406
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 648a24bc-a98d-4025-9c60-48c19a142069
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wq2j6pCi4Rk+lC8gjBysH76qUqEuW82vQzK7OjPey54V6TgCL8cmOojeC/EIlv30tU3FJjkuIgNKx3j6fkIy2g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR01MB9297
+Subject: [Caml-list] FTfJP 2025 - Last CfP (extended deadline)
+Reply-To: Crystal Chang Din <Crystal.Din@uib.no>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19294
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-04/DB9PR01MB939266ED4B0EE94DF5BC0A6C84B32%40DB9PR01MB9392.eurprd01.prod.exchangelabs.com>
+
+--_000_DB9PR01MB939266ED4B0EE94DF5BC0A6C84B32DB9PR01MB9392eurp_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+FTfJP 2025
+
+27th International Workshop on Formal Techniques for Judicious Programming,=
+ 03 July 2025, Bergen, Norway
+
+Conference website:
+https://2025.ecoop.org/home/FTfJP-2025
+
+Submission link:
+https://easychair.org/conferences?conf=3Dftfjp2025
+
+
+=3D=3D=3D Important dates =3D=3D=3D
+
+- Paper submission: 30 April 2025 (AoE, extended)
+- Paper notification: 21 May 2025 (AoE)
+- Workshop date: 03 July 2025 (co-located with ECOOP 2025)
+Deadlines expire at 23:59 anywhere on earth on the dates displayed above.
+
+
+=3D=3D=3D Objectives and scope =3D=3D=3D
+
+Formal techniques can help analyse programs, precisely describe program beh=
+aviour, and verify program properties. Modern programming languages (such a=
+s C#, Java, Kotlin, Rust, or Scala) are interesting targets for formal tech=
+niques due to their ubiquity and wide user base, stable and well-defined in=
+terfaces and platforms, and powerful (but also complex) libraries. New lang=
+uages and applications in this space are continually arising, resulting in =
+new programming languages research challenges.
+
+Work on formal techniques and tools and on the formal underpinnings of prog=
+ramming languages themselves naturally complement each other.
+The Formal Techniques for Judicious Programming (FTfJP) workshop is an esta=
+blished workshop which has run annually since 1999 alongside ECOOP, with th=
+e goal of bringing together people working in both fields. Webpages for pre=
+vious workshops in this series are available at https://ftfjp.github.io/.
+
+Example topics of interest include:
+
+- Language design and semantics
+- Type systems
+- Concurrency and new application domains
+- Specification and verification of program properties
+- Program analysis (static or dynamic)
+- Program synthesis
+- Security
+- Pearls (programs or proofs)
+
+FTfJP welcomes submissions on technical contributions, case studies, experi=
+ence reports, challenge proposals, tools, and position papers.
+
+
+=3D=3D=3D Paper Categories =3D=3D=3D
+
+We solicit two categories of papers:
+
+- Full Papers (12 pages, excluding references) present a technical contribu=
+tion, case study, or detailed experience report. We welcome both complete a=
+nd incomplete technical results; ongoing work is particularly welcome, prov=
+ided it is substantial enough to stimulate interesting discussions.
+
+- Short Papers (6 pages, excluding references) should advocate a promising =
+research direction, or otherwise present a position likely to stimulate dis=
+cussion at the workshop. We encourage e.g. established researchers to set o=
+ut a personal vision, and beginning researchers to present a planned path t=
+o a PhD.
+
+Both types of contributions will benefit from feedback received at the work=
+shop. Submissions will be peer reviewed and will be evaluated based on thei=
+r clarity and their potential to generate interesting discussions. Reviewin=
+g will be single blind, i.e, submissions need not be anonymized.
+
+The format of the workshop encourages interaction. FTfJP is a forum in whic=
+h a wide range of people share their expertise, from experienced researcher=
+s to beginning PhD students.
+
+
+=3D=3D=3D Submission guidelines =3D=3D=3D
+
+Papers must be formatted according to the guidelines for Springer LNCS pape=
+rs.
+Submissions should be made via EasyChair: https://easychair.org/conferences=
+?conf=3Dftfjp2025.
+There is no need to indicate the paper category (long/short).
+
+The accepted papers will be published as post-proceedings in JOT (Journal o=
+f Object Technology), though authors will be able to opt out of this public=
+ation, if desired. At least one author of an accepted paper must register t=
+o the workshop by the early registration date and attend the workshop to pr=
+esent the work and participate in the discussions.
+
+
+=3D=3D=3D Steering Committee =3D=3D=3D
+
+- Rosemary Monahan, National University of Ireland, Ireland (SC chair)
+- Radu Grigore, Facebook, United Kingdom
+- Gary T. Leavens, University of Central Florida, United States
+- Werner Dietl, University of Waterloo, Canada
+- Alexander J. Summers, University of British Columbia, Canada
+
+
+=3D=3D=3D Program Committee =3D=3D=3D
+
+- Crystal Chang Din, University of Bergen, Norway (PC Chair)
+- Richard Bubel, Technische Universit=E4t Darmstadt, Germany
+- Syed Ali Asadullah Bukhari, Maynooth University, Ireland
+- Claire Dross, AdaCore, France
+- Erik Ernst, Google Inc., Denmark
+- Marie Farrell, The University of Manchester, United Kingdom
+- Carlo A. Furia, Universit=E0 della Svizzera italiana (USI), Switzerland
+- Atsushi Igarashi, Kyoto University, Japan
+- Marie-Christine Jakobs, LMU Munich, Germany
+- Taylor T Johnson, Vanderbilt University, United States
+- Matthew Lutze, Aarhus University, Denmark
+- Wojciech Mostowski, Halmstad University, Sweden
+- Wytse Oortwijn, TNO-ESI, Netherlands
+- Violet Ka I Pun, Western Norway University of Applied Sciences, Norway
+- Anton Wijs, Eindhoven University of Technology, Netherlands
+- Elena Zucca, University of Genoa, Italy
+
+--_000_DB9PR01MB939266ED4B0EE94DF5BC0A6C84B32DB9PR01MB9392eurp_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+FTfJP 2025&nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+27th International Workshop on Formal Techniques for Judicious Programming,=
+ 03 July 2025, Bergen, Norway &nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Conference website:&nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+https://2025.ecoop.org/home/FTfJP-2025&nbsp;&nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Submission link:&nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+https://easychair.org/conferences?conf=3Dftfjp2025</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+=3D=3D=3D Important dates =3D=3D=3D</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Paper submission: 30 April 2025 (AoE, extended)</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Paper notification: 21 May 2025 (AoE)</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Workshop date: 03 July 2025 (co-located with ECOOP 2025)</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Deadlines expire at 23:59 anywhere on earth on the dates displayed above.</=
+div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+=3D=3D=3D Objectives and scope =3D=3D=3D</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Formal techniques can help analyse programs, precisely describe program beh=
+aviour, and verify program properties. Modern programming languages (such a=
+s C#, Java, Kotlin, Rust, or Scala) are interesting targets for formal tech=
+niques due to their ubiquity and
+ wide user base, stable and well-defined interfaces and platforms, and powe=
+rful (but also complex) libraries. New languages and applications in this s=
+pace are continually arising, resulting in new programming languages resear=
+ch challenges.</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Work on formal techniques and tools and on the formal underpinnings of prog=
+ramming languages themselves naturally complement each other.</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+The Formal Techniques for Judicious Programming (FTfJP) workshop is an esta=
+blished workshop which has run annually since 1999 alongside ECOOP, with th=
+e goal of bringing together people working in both fields. Webpages for pre=
+vious workshops in this series are
+ available at https://ftfjp.github.io/.</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Example topics of interest include:</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Language design and semantics</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Type systems</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Concurrency and new application domains</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Specification and verification of program properties</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Program analysis (static or dynamic)</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Program synthesis</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Security</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Pearls (programs or proofs)</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+FTfJP welcomes submissions on technical contributions, case studies, experi=
+ence reports, challenge proposals, tools, and position papers.&nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+=3D=3D=3D Paper Categories =3D=3D=3D</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+We solicit two categories of papers:</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Full Papers (12 pages, excluding references) present a technical contribu=
+tion, case study, or detailed experience report. We welcome both complete a=
+nd incomplete technical results; ongoing work is particularly welcome, prov=
+ided it is substantial enough to
+ stimulate interesting discussions.</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Short Papers (6 pages, excluding references) should advocate a promising =
+research direction, or otherwise present a position likely to stimulate dis=
+cussion at the workshop. We encourage e.g. established researchers to set o=
+ut a personal vision, and beginning
+ researchers to present a planned path to a PhD.</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Both types of contributions will benefit from feedback received at the work=
+shop. Submissions will be peer reviewed and will be evaluated based on thei=
+r clarity and their potential to generate interesting discussions. Reviewin=
+g will be single blind, i.e, submissions
+ need not be anonymized.</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+The format of the workshop encourages interaction. FTfJP is a forum in whic=
+h a wide range of people share their expertise, from experienced researcher=
+s to beginning PhD students.</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+=3D=3D=3D Submission guidelines =3D=3D=3D</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Papers must be formatted according to the guidelines for Springer LNCS pape=
+rs. &nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+Submissions should be made via EasyChair: https://easychair.org/conferences=
+?conf=3Dftfjp2025. &nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+There is no need to indicate the paper category (long/short).&nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+The accepted papers will be published as post-proceedings in JOT (Journal o=
+f Object Technology), though authors will be able to opt out of this public=
+ation, if desired. At least one author of an accepted paper must register t=
+o the workshop by the early registration
+ date and attend the workshop to present the work and participate in the di=
+scussions.</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+=3D=3D=3D Steering Committee =3D=3D=3D</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Rosemary Monahan, National University of Ireland, Ireland (SC chair)</div=
+>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Radu Grigore, Facebook, United Kingdom</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Gary T. Leavens, University of Central Florida, United States</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Werner Dietl, University of Waterloo, Canada</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+- Alexander J. Summers, University of British Columbia, Canada</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+&nbsp; &nbsp;&nbsp;</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+=3D=3D=3D Program Committee =3D=3D=3D</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Crystal Chang Din, University of Bergen, Norway (PC Chair)</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Richard Bubel, Technische Universit=E4t Darmstadt, Germany</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Syed Ali Asadullah Bukhari, Maynooth University, Ireland</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Claire Dross, AdaCore, France</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Erik Ernst, Google Inc., Denmark</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Marie Farrell, The University of Manchester, United Kingdom</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Carlo A. Furia, Universit=E0 della Svizzera italiana (USI), Switzerl=
+and</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Atsushi Igarashi, Kyoto University, Japan</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Marie-Christine Jakobs, LMU Munich, Germany</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Taylor T Johnson, Vanderbilt University, United States</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Matthew Lutze, Aarhus University, Denmark</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Wojciech Mostowski, Halmstad University, Sweden</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Wytse Oortwijn, TNO-ESI, Netherlands</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Violet Ka I Pun, Western Norway University of Applied Sciences, Norw=
+ay</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Anton Wijs, Eindhoven University of Technology, Netherlands</div>
+<div class=3D"elementToProof" style=3D"text-align: left; text-indent: 0px; =
+margin: 0px; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+-&nbsp;Elena Zucca, University of Genoa, Italy</div>
+</body>
+</html>
+
+--_000_DB9PR01MB939266ED4B0EE94DF5BC0A6C84B32DB9PR01MB9392eurp_--
