@@ -1,0 +1,2111 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=G3a7Qune;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=TpJUMw3Q;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 44C6540068
+	for <caml-list@tunbury.org>; Tue, 22 Apr 2025 12:08:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=MnhJPdKpr4YSMZkrDab8O6m+3evmjF8FzjdavChdURA=;
+  b=G3a7Qune6qCB4RpIQPNemnuB3qTiUzZ2Z9JXuI5pbHkgSorjpjNa02LQ
+   hRycUc7p9GaVPsUiJ9q8J6UGnCWMvd006PVPQSV+B+dxsGdEocFqfq7wW
+   h25nq5tfyNYBMiSr6EzSGWL4WLWSvkAnQMc74rZkVtkpAtbrnHZx9rI32
+   g=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.15,231,1739833200"; 
+   d="scan'208,217";a="218870453"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 22 Apr 2025 13:50:29 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 4E6E5E0D37; Tue, 22 Apr 2025 13:50:28 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id C6000E0261
+	for <caml-list@sympa.inria.fr>; Tue, 22 Apr 2025 13:50:25 +0200 (CEST)
+IronPort-SDR: 6807827b_Qy38tLBA76FzOlWziuXky1z8YzLR6duPW1LyvJ9OmPzOsYq
+ tuP1SNfYGzuVBZ2IO/iR9TeBwB1DF2hzMTKCpJA==
+X-IPAS-Result: =?us-ascii?q?A0HCCgAfggdohSIeaIFagl6BP1soGQFjWjMHCEiEVYNPj?=
+ =?us-ascii?q?iKBFpA0iEiCL4FpgREDLiMUAQMBDS4BDgQBAgQBAQMBAgGCDIIuRgKLLQIfB?=
+ =?us-ascii?q?gEENBMBAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEBgECEAEBAQFASYV7D?=
+ =?us-ascii?q?UkBAQEDAQoBgWpRcYElAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAggEAQIFEhcuQAECBgoTAQEmAwcIGBYNAxQBBgMCEQE1A?=
+ =?us-ascii?q?wETARIUBgKCDhREAYIfRQMFDAaTe5tLeoEygQGCDAEBBoEIPgIDDQMPL9oHg?=
+ =?us-ascii?q?UsaCYExGIVtgkkaASpIawKESAmEMycPgVVEgRU1gj0Hb4FCgQgMCwEBAQEYg?=
+ =?us-ascii?q?R0HAQEGAgkLJAwBCYMlgmmCGhdFPhQfKh6BW4IFgQuGZIEgh0IoSCuCEIkVg?=
+ =?us-ascii?q?UdLMywBVRMXCwcFYYELAyo0MXE1HYF6g26FNYIRggSJD4RSLU+FMmgdQAMLb?=
+ =?us-ascii?q?T03FBuYRh4iGoMfLwcHOAgFJAMSDRQBEwEGCQUFCx8BARAQAgcmAQgFBAULG?=
+ =?us-ascii?q?AgHAwUPAQQOAwYCBAkOAhQGHw4BCwcEAisCA5JFDxMSAyoDdJxtlF80B4Qeg?=
+ =?us-ascii?q?V4GDIkFgSSCWI9Og1eEA4FXhT2FdYcAkksimFwighAmhieBAAqBGwmBb2qGD?=
+ =?us-ascii?q?IFNgi6JNoITBgQPBAmDPIF9gX4jgSsBHQwHMxowIiENBoIgAQEBMQkJPRwPV?=
+ =?us-ascii?q?4gFhVEWg16BPoEmgXQ7vGUDQTUCAQE4AgcBCgEBAwmFYgEBaYIbghdug3sCJ?=
+ =?us-ascii?q?gxrYAEB?=
+IronPort-PHdr: A9a23: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
+ JPuiQ==
+IronPort-Data: A9a23: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
+ tVh3pTmOHm4FQ==
+IronPort-HdrOrdr: A9a23:k9bjk6vXkmje1JIhoieqDjVb7skDS9V00zEX/kB9WHVpm62j5q
+ OTdZEgvyMc5wx+ZJhNo7290cq7IU80l6QV3WB5B97LNzUO01HGEGgN1+ff6gylMxK73O9Q36
+ VtfsFFeb/NJGk/q931pC2xE9NI+qjizElEv5a680tQ
+X-Talos-CUID: =?us-ascii?q?9a23=3AAbOH2miEZ2UiRZ5Vsq9dMqEWSDJubm3QnXiBDAi?=
+ =?us-ascii?q?BN3dRULy8WwGr//tgup87?=
+X-Talos-MUID: 9a23:AUhnWgS4ADaZEOy/RXTqqz4/b8JGupj1VkALwbscltO2EiNJbmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,230,1739833200"; 
+   d="scan'208,217";a="114868548"
+X-MGA-submission: =?us-ascii?q?MDGLdRhbBFaQGMScgB1lgDKog4xTlcFunr1YLx?=
+ =?us-ascii?q?gdMh7BRc00phbbHPVvJL7iTAkHVUQfU61vVlnzf8dsBD45wKonnb42Fb?=
+ =?us-ascii?q?/Ii3a2TQY+gRUgHJTTvmJD8fhA9nmELeJBDfU9tDmam8B9q2WZwD/lXP?=
+ =?us-ascii?q?3sexPQrxOzZ6gcc8EpQ+YWuQ=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 13:50:19 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 18BAA564B72;
+	Tue, 22 Apr 2025 13:50:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1745322618;
+	bh=YGZB5BaI+9f+/yD8CfGP0Uwdt2LGSl6OnjSe8INXHE4=;
+	h=From:To:Subject:Date:Message-ID;
+	b=TpJUMw3QPrVgm5u+r0hNeDDd88vdOWAzhmBdZj+3BpSvxPrNCX983WMuQuMQ4lo4R
+	 850rXnaUKgzDg53mmxGx5sCwiRneOwT0vo9i6cJ/WTdxc5EQtCdLja91JwX0eBsJc5
+	 KUPTO2axSb7in0gEUIcZrYnk/eQ/UogHrmV5WjW0=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 22 Apr 2025 13:50:16 +0200
+Message-ID: <m2plh4qutj.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Apr 22 13:50:18 2025 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.385001, queueID=512DD564B75
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19299
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-04/m2plh4qutj.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of April 15 to 22,
+2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Flambda2 Ep. 4: How to write a purely functional compiler, by OCamlPro
+R and D Engineer Positions available at OCamlPro, in Paris (France)
+Release of ocaml-eglot 1.2.0
+Outreachy December 2024 Round
+Dune 3.18
+opam 2.4.0~alpha1
+ML Family Workshop 2025: Call for Presentations
+Other OCaml News
+Old CWN
+
+
+Flambda2 Ep. 4: How to write a purely functional compiler, by OCamlPro
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/blog-flambda2-ep-4-how-to-write-a-purely-fun=
+ctional-compiler-by-ocamlpro/16512/1>
+
+
+OCamlPro announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80
+
+  *Greetings Cameleers!*
+
+  We're back with another deep dive into the *Flambda2 Optimizing
+  Compiler*! Our latest entry in the *Flambda2 Snippets* blog series is
+  out !
+
+  [Flambda2 Ep. 4: How to write a purely functional compiler]
+
+  *Beware, this episode is a hefty one ! :muscle: :triumph:*
+
+  This time again, we take you on a journey through the heart of
+  *Flambda2*'s optimization process. Indeed, we take a look at the
+  high-level considerations of `Simplify', the main optimization
+  algorithm! This post is the most important one yet. The subject is key
+  to coming to grasps with the philosophy and design behind our
+  home-made compiler and we highly recommend that you read it if you're
+  interested in *functional programming*, *exotic compiler
+  architectures*, *novel engineering*, and *programming language
+  representation*!
+
+  If you've been following [the series], this article builds on what
+  we've covered before =E2=80=94 especially [*Foundational Design Decisions=
+*]
+  (episode 1), and [*Speculative inlining*] (episode 3) =E2=80=94 so you mi=
+ght
+  want to check these out first. And as always, this is all leading up
+  to even more compiler spelunking in future posts! :pick:
+
+  Hope you enjoy the read, and let us know what you think!
+
+  Until next time, *The OCamlPro Team*
+
+
+[Flambda2 Ep. 4: How to write a purely functional compiler]
+<https://ocamlpro.com/blog/2025_02_19_the_flambda2_snippets_4/>
+
+[the series]
+<https://ocamlpro.com/blog/2024_03_18_the_flambda2_snippets_0/#listing>
+
+[*Foundational Design Decisions*]
+<https://ocamlpro.com/blog/2024_03_19_the_flambda2_snippets_1/>
+
+[*Speculative inlining*]
+<https://ocamlpro.com/blog/2024_08_09_the_flambda2_snippets_3/>
+
+
+R and D Engineer Positions available at OCamlPro, in Paris (France)
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/hiring-r-d-engineer-positions-available-at-o=
+camlpro-in-paris-france/16513/1>
+
+
+OCamlPro announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80
+
+  Greetings Cameleers,
+
+  We are thrilled to announce that *OCamlPro is hiring!*
+
+  OCamlPro is a R&D lab founded in 2011, with the mission to help
+  industrial users benefit from experts with a state-of-the-art
+  knowledge of programming languages theory and practice. We provide
+  audit, support, custom developer tools and training for both the most
+  modern languages, such as Rust, Wasm and OCaml, and for legacy
+  languages. We design, create and implement software with great
+  added-value for our clients. We have a long history of creating and
+  maintaining open-source projects, such as the Opam package manager,
+  the LearnOCaml web platform, Ocp-indent / Ocp-index, Flambda and
+  Flambda2 optimizing OCaml compilers. We also contributed to the Rust
+  compiler and standard library, and are now core contributors of the
+  GnuCOBOL project. We are also experts of Formal Methods, developing
+  tools such as our SMT Solver Alt-Ergo.
+
+  We are currently looking to hire *French speaking* *Senior* and
+  *non-Senior R&D Engineers* as well as new *Project Managers*. Since
+  *speaking French is mandatory*, the rest of this article, and the job
+  offers linked below, will be written in French. :france:
+
+  OCamlPro recrute :
+
+  =E2=80=A2 *Un=C2=B7e Ing=C3=A9nieur=C2=B7e R&D Senior*
+
+    Conception et dev en OCaml (et Rust), encadrement, relation client,
+    exploration techno, perfs, tests, veille et formations. Poste cl=C3=A9 =
+au
+    c=C5=93ur d=E2=80=99une =C3=A9quipe experte.
+
+  =E2=80=A2 *Un=C2=B7e Ing=C3=A9nieur=C2=B7e R&D*
+
+    D=C3=A9veloppement en OCaml (et Rust), conception logicielle, perfs,
+    tests, veille techno, mont=C3=A9e en comp=C3=A9tences et travail en =C3=
+=A9quipe
+    experte.
+
+  =E2=80=A2 *Un=C2=B7e Chef=C2=B7fe de Projet Informatique & R&D*
+
+    Pilotage de projets, coordination d=E2=80=99=C3=A9quipes, interface cli=
+ent, suivi
+    budget/d=C3=A9lais, reporting, et veille techno dans un environnement
+    innovant.
+
+  Notre =C3=A9quipe est principalement bas=C3=A9e =C3=A0 Paris, mais nous s=
+ommes
+  ouverts au travail =C3=A0 distance, tant que des s=C3=A9jours r=C3=A9guli=
+ers =C3=A0 Paris
+  sont possibles pour renforcer la coh=C3=A9sion de l'=C3=A9quipe.
+
+  Veuillez envoyer votre CV ainsi qu'une description de certaines de vos
+  meilleures r=C3=A9alisations =C3=A0 l'adresse suivante :
+  [contact@ocamlpro.com](<mailto:contact@ocamlpro.com>)
+
+  *Vous trouverez des fiches de poste d=C3=A9taill=C3=A9es au format PDF ic=
+i :*
+  <http://www.ocamlpro.com/jobs>
+
+
+Release of ocaml-eglot 1.2.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-1-2-0/16515/1>
+
+
+Xavier Van de Woestyne announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We (at [Tarides]) are *particularly pleased* to announce the release
+  of [OCaml-eglot] `1.2.0', An overlay on [Eglot] (the /built-in/ [LSP]
+  client for Emacs) for editing OCaml!
+
+        `ocaml-eglot' is an *alternative mode* to [`merlin'] which
+        uses [`ocaml-lsp-server'] (instead of `ocamlmerlin') as
+        the language server. So yes, if you decide to
+        use~ocaml-eglot~, `merlin' *is no longer needed*. (Merlin
+        is still used as a library, in `ocaml-lsp-server').
+
+  =E2=80=A2 [Release note]
+  =E2=80=A2 [Github repository]
+  =E2=80=A2 [Package on MELPA]
+  =E2=80=A2 [Features list]
+  =E2=80=A2 [Installation procedure]
+  =E2=80=A2 [Comparison table with Merlin]
+
+  This version discreetly improves the ergonomics of certain orders,
+  gives more control over customer-side order support and drastically
+  improves error handling! Here's the full changelog and, in the
+  meantime, I'm adding the changelog for version `1.1.0', which hadn't
+  been announced:
+
+
+[Tarides] <https://tarides.com/>
+
+[OCaml-eglot] <https://github.com/tarides/ocaml-eglot>
+
+[Eglot] <https://www.gnu.org/software/emacs/manual/html_node/eglot/>
+
+[LSP] <https://microsoft.github.io/language-server-protocol/>
+
+[`merlin'] <https://ocaml.github.io/merlin/>
+
+[`ocaml-lsp-server'] <https://github.com/ocaml/ocaml-lsp>
+
+[Release note]
+<https://github.com/tarides/ocaml-eglot/releases/tag/1.2.0>
+
+[Github repository] <https://github.com/tarides/ocaml-eglot>
+
+[Package on MELPA] <https://melpa.org/#/ocaml-eglot>
+
+[Features list]
+<https://github.com/tarides/ocaml-eglot?tab=3Dreadme-ov-file#features>
+
+[Installation procedure]
+<https://github.com/tarides/ocaml-eglot?tab=3Dreadme-ov-file#installation>
+
+[Comparison table with Merlin]
+<https://github.com/tarides/ocaml-eglot?tab=3Dreadme-ov-file#comparison-of-=
+merlin-and-ocaml-eglot-commands>
+
+`1.2.0'
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 Fix Type-enclosing's buffer update when using `caml-mode' ([#48=
+])
+  =E2=80=A2 Add `ocaml-eglot-search-definition',
+    `ocaml-eglot-search-declaration' and alternative functions ([#45])
+  =E2=80=A2 Fix some warnings on byte-compilation ([#40])
+  =E2=80=A2 Fix error on on `ocaml-eglot-construct' ([#42])
+  =E2=80=A2 `ocaml-eglot-alternate-file' now visits file in other window wh=
+en
+    prefix argument is set ([#51])
+  =E2=80=A2 Add error-handling for jsonrpc-request ([#52])
+  =E2=80=A2 Maintain more diagnostics for location failure ([#52])
+  =E2=80=A2 Fix hole cycle navigation ([#53])
+  =E2=80=A2 Relay on custom request (if it is available) for managing holes
+    ([#53])
+  =E2=80=A2 Implementation of support for experimental client commands (and
+    implementation of `ocaml.next-hole' in the presence of the
+    `ocaml-eglot-destruct' action) ([#54])
+
+
+[#48] <https://github.com/tarides/ocaml-eglot/pull/48>
+
+[#45] <https://github.com/tarides/ocaml-eglot/pull/45>
+
+[#40] <https://github.com/tarides/ocaml-eglot/pull/40>
+
+[#42] <https://github.com/tarides/ocaml-eglot/pull/40>
+
+[#51] <https://github.com/tarides/ocaml-eglot/pull/51>
+
+[#52] <https://github.com/tarides/ocaml-eglot/pull/52>
+
+[#53] <https://github.com/tarides/ocaml-eglot/pull/53>
+
+[#54] <https://github.com/tarides/ocaml-eglot/pull/54>
+
+
+`1.1.0'
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 A first support for `flycheck' ([#29], [#33] and [#37])
+  =E2=80=A2 Use a more efficient way to ensure that a vector is empty ([#27=
+])
+  =E2=80=A2 Made the mode-line "lighter" more conventional ([#26])
+
+
+[#29] <https://github.com/tarides/ocaml-eglot/pull/29>
+
+[#33] <https://github.com/tarides/ocaml-eglot/pull/33>
+
+[#37] <https://github.com/tarides/ocaml-eglot/pull/37>
+
+[#27] <https://github.com/tarides/ocaml-eglot/pull/27>
+
+[#26] <https://github.com/tarides/ocaml-eglot/pull/26>
+
+
+Spotlight on new features
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Two easily observable features:
+
+
+=E2=97=8A Finding an identifier
+
+  =E2=80=A2 `ocaml-eglot-find-identifier-declaration'
+  =E2=80=A2 `ocaml-eglot-find-identifier-definition'
+
+  the two commands behave like their analogues
+  (`ocaml-eglot-find-definition' and `ocaml-eglot-find-declaration') but
+  allow the user to enter the identifier directly:
+
+  <https://us1.discourse-cdn.com/flex020/uploads/ocaml/original/2X/5/583574=
+2f3fadaf6054faf15e02c02c842a757e5a.gif>
+
+
+=E2=97=8A Searching for a definition or a declaration
+
+  =E2=80=A2 `ocaml-eglot-search-declaration'
+  =E2=80=A2 `ocaml-eglot-search-definition'
+
+  Allows you to search by type or polarity to find the definition
+  (implementation) or declaration (signature) of values!
+
+  <https://us1.discourse-cdn.com/flex020/uploads/ocaml/original/2X/f/f48b3c=
+b62a6eb6b81aa141e471e40e6f7641e0ae.gif>
+
+
+Upgrading
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C
+
+  The release is available on MELPA, so you can update it using the
+  usual process. As always, your feedback is invaluable!
+
+  _Happy hacking_
+
+
+Outreachy December 2024 Round
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/outreachy-december-2024-round/15223/6>
+
+
+Continuing this thread, Patrick Ferris announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Thank you everyone who came along to our demo day. I think I speak for
+  everyone when I say @abdulaziz.alkurd's work is very impressive and we
+  all can't wait for being able to easily diff OCaml APIs!
+
+  The meeting has now been published:
+  <https://watch.ocaml.org/w/eWRikkpwoox1SboAwrDshD>
+
+
+Dune 3.18
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-3-18/16428/2>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We are happy to announce the release of Dune `3.18.1' :camel:
+
+  This version is a minor release that contains a bug fix to an issue
+  that was preventing `pkg-config' from finding some libraries in some
+  contexts.
+
+  If you encounter a problem with this release, you can report it on the
+  [ocaml/dune] repository.
+
+
+[ocaml/dune] <https://github.com/ocaml/dune/issues>
+
+Changelog
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C
+
+=E2=97=8A Fixed
+
+  =E2=80=A2 fix: pass pkg-config (extra) args in all pkgconfig invocations.=
+ A
+    missing `--personality' flag would result in pkgconf not finding
+    libraries in some contexts. (#11619, @MisterDA)
+
+
+opam 2.4.0~alpha1
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha1/16520/1>
+
+
+Kate announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hi everyone,
+
+  We are happy to announce the first alpha release of opam 2.4.0.
+
+  This version is an alpha, we invite users to test it to spot
+  previously unnoticed bugs as we head towards the stable release.
+
+
+What=E2=80=99s new? Some highlights:
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 :dragon_face: *On `opam init' the compiler* chosen for the defa=
+ult
+    switch will *no longer be `ocaml-system'* ([#3509]) This was done
+    because the system compiler (as-is your ocaml installed system wide,
+    e.g. /usr/bin/ocaml) is known to be under-tested and prone to a
+    variety of bugs and configuration issues.  Removing it from the
+    default compiler allows new-comers a more smooth experience.  *Note:
+    if you wish to use it anyway, you are always able to do it
+    explicitly using `opam init --compiler=3Docaml-system'*
+
+  =E2=80=A2 :camel: GNU *`patch'* and the *`diff'* command are *no longer
+    runtime dependencies*. Instead the OCaml `patch' library is used
+    ([#6019], [#6052], [#3782], [ocaml/setup-ocaml#933]) Doing this
+    we've removed some rarely used features of GNU Patch such as the
+    support of [Context diffs].  The new implementation only supports
+    [Unified diffs] including the [git extended headers], however file
+    permission changes via said extended headers have no effect.
+
+  =E2=80=A2 :snowflake: Add *Nix support* for *external dependencies (depex=
+ts)*
+    by adding support for stateless package managers ([#5982]). *Thanks
+    to [@RyanGibb] for this contribution*
+
+  =E2=80=A2 :cockroach: *Fix `opam install <local_dir>'* with and without
+    options like `--deps-only' or `--show-action' having *unexpected
+    behaviours* ([#6248], [#5567]) such as:
+    =E2=80=A3 reporting `Nothing to do' despite dependencies or package not
+      being up-to-date
+    =E2=80=A3 asking to install the wrong dependencies
+
+  =E2=80=A2 :ocean: Many more UI additions and improvements, bug fixes,
+    performance improvements, =E2=80=A6
+
+
+  :open_book: You can read our [blog post] for more information about
+  these changes and more, and for even more details you can take a look
+  at the [release note] or the [changelog].
+
+
+[#3509] <https://github.com/ocaml/opam/issues/3509>
+
+[#6019] <https://github.com/ocaml/opam/issues/6019>
+
+[#6052] <https://github.com/ocaml/opam/issues/6052>
+
+[#3782] <https://github.com/ocaml/opam/issues/3782>
+
+[ocaml/setup-ocaml#933] <https://github.com/ocaml/setup-ocaml/pull/933>
+
+[Context diffs]
+<https://www.gnu.org/software/diffutils/manual/html_node/Example-Context.ht=
+ml>
+
+[Unified diffs]
+<https://www.gnu.org/software/diffutils/manual/html_node/Example-Unified.ht=
+ml>
+
+[git extended headers] <https://git-scm.com/docs/diff-format>
+
+[#5982] <https://github.com/ocaml/opam/issues/5982>
+
+[@RyanGibb] <https://github.com/RyanGibb>
+
+[#6248] <https://github.com/ocaml/opam/issues/6248>
+
+[#5567] <https://github.com/ocaml/opam/issues/5567>
+
+[blog post] <https://opam.ocaml.org/blog/opam-2-4-0-alpha1/>
+
+[release note] <https://github.com/ocaml/opam/releases/tag/2.4.0-alpha1>
+
+[changelog] <https://github.com/ocaml/opam/blob/2.4.0-alpha1/CHANGES>
+
+
+Try it!
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The upgrade instructions are unchanged:
+
+  For Unix systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 bash -c "sh <(curl -fsSL https://opam.ocaml.org/install.sh) --v=
+ersion 2.4.0~alpha1"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  or from PowerShell for Windows systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 Invoke-Expression "& { $(Invoke-RestMethod https://opam.ocaml.o=
+rg/install.ps1) } -Version 2.4.0~alpha1"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Please report any issues to the [bug-tracker].
+
+  Happy hacking, <> <> The opam team <> <> :camel:
+
+
+[bug-tracker] <https://github.com/ocaml/opam/issues>
+
+
+ML Family Workshop 2025: Call for Presentations
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ml-family-workshop-2025-call-for-presentatio=
+ns/16521/1>
+
+
+Sam announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We are happy to invite submissions to the 2025 ML Family Workshop!
+  Please help spread the word and consider submitting!
+  <https://conf.researchr.org/home/icfp-splash-2025/mlsymposium-2025>
+
+
+Higher-order, Typed, Inferred, Strict: ML Family Workshop 2025
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Co-located with [ICFP/SPLASH]
+
+  *Workshop date*: October 16, 2025, Singapore
+
+  *Submission deadline*: June 19, 2025
+
+  The ML Family Workshop is an established informal workshop serving to
+  promote and inform the development of programming languages in the ML
+  family (such as OCaml, Standard ML, F#, and many others) as well as
+  related languages (such as Haskell, Scala, Rust, Koka, F*, Eff, ATS,
+  Nemerle, Links, etc.) We welcome presentations on all aspects of the
+  design, semantics, theory, application, implementation, and teaching
+  of languages in the entire extended ML family.
+
+  The ML 2025 workshop will continue the informal approach followed
+  since 2010. Presentations are selected by the program committee from
+  submitted proposals. There are no published proceedings, so
+  contributions may be submitted for publication elsewhere. The main
+  criterion is promoting and informing the development of the entire
+  extended ML family and delivering a lively workshop atmosphere. We
+  particularly encourage talks about works in progress, presentations of
+  negative results (things that were expected to but did not quite work
+  out) and informed positions.
+
+  Each presentation should take 20-25 minutes. The exact time will be
+  decided based on scheduling constraints.
+
+  We plan the workshop to an be in-person event with remote
+  participation (streamed live). We hope that speakers are able to
+  present in person. If a speaker is unable to attend, they may instead
+  present remotely.
+
+  The 2025 ML family workshop is co-located with ICFP/SPLASH 2025 and
+  will take place on *October 16, 2025* in Singapore.
+
+
+[ICFP/SPLASH] <https://conf.researchr.org/home/icfp-splash-2025>
+
+
+Scope
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  We seek presentations on topics including (but not limited to):
+
+  =E2=80=A3 Language design: abstraction, higher forms of polymorphism,
+    concurrency and parallelism, distribution and mobility, staging,
+    extensions for semi-structured data, generic programming, object
+    systems, etc.
+
+  =E2=80=A3 Implementation: compilers, interpreters, type checkers, partial
+    evaluators, runtime systems, garbage collectors, foreign function
+    interfaces, etc.
+
+  =E2=80=A3 Type systems: inference, effects, modules, contracts, specifica=
+tions
+    and assertions, dynamic typing, error reporting, etc.
+
+  =E2=80=A3 Applications: case studies, experience reports, pearls, etc.
+
+  =E2=80=A3 Environments: libraries, tools, editors, debuggers, cross-langu=
+age
+    interoperability, functional data structures, etc.
+
+  =E2=80=A3 Semantics of ML-family languages: operational and denotational
+    semantics, program equivalence, parametricity, mechanization, etc.
+
+  We specifically encourage reporting what did not meet expectations or
+  what, despite all efforts, did not work to satisfaction.
+
+  Four kinds of submissions are solicited: Research Presentations,
+  Experience Reports, Demos, and Informed Positions.
+
+  =E2=80=A3 Research Presentations: Research presentations should describe =
+new
+    ideas, experimental results, or significant advances in ML-related
+    projects. We especially encourage presentations that describe work
+    in progress, that outline a future research agenda, or that
+    encourage lively discussion. These presentations should be
+    structured in a way which can be, at least in part, of interest to
+    (advanced) users.
+
+  =E2=80=A3 Experience Reports: Users are invited to submit Experience Repo=
+rts
+    about their use of ML and related languages. These presentations do
+    not need to contain original research but they should tell an
+    interesting story to researchers or other advanced users, such as an
+    innovative or unexpected use of advanced features or a description
+    of the challenges they are facing or attempting to solve.
+
+  =E2=80=A3 Demos: Live demonstrations or short tutorials should show new
+    developments, interesting prototypes, or work in progress, in the
+    form of tools, libraries, or applications built on or related to ML
+    and related languages. (You will need to provide all the hardware
+    and software required for your demo; the workshop organizers are
+    only able to provide a projector.)
+
+  =E2=80=A3 Informed Positions: A justified argument for or against a langu=
+age
+    feature. The argument must be substantiated, either theoretically
+    (e.g., by a demonstration of (un)soundness, an inference algorithm,
+    a complexity analysis), empirically or by substantial experience.
+    Personal experience is accepted as justification so long as it is
+    extensive and illustrated with concrete examples.
+
+
+Submission details
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C
+
+  Submissions must be in the PDF format and have a short summary
+  (abstract) at the beginning. Submissions in the categories of
+  Experience Reports, Demos, or Informed Positions should indicate so in
+  the title or subtitle. The point of the submission should be clear
+  from its two first pages (PC members are not obligated to read any
+  further.)
+
+  Submissions must be uploaded to the workshop submission website before
+  the submission deadline.
+
+  Only the short summary/abstract of accepted submissions will be
+  published on the conference website. After acceptance, authors will
+  have the opportunity to attach or link to that summary any relevant
+  material (such as the updated submission, slides, etc.)
+
+  *Submission Website*: <https://ml2025.hotcrp.com/>
+
+  *Workshop Website*:
+  <https://conf.researchr.org/home/icfp-splash-2025/mlsymposium-2025>
+
+
+Dates and Deadlines
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C
+
+  *Submission Deadline*: Thursday, June 19 AoE
+
+  *Initial Author Notification* (most cases): Thursday, July 31
+
+  *Final Author Notification* (if needed): Thursday, Aug 7
+
+  *Workshop Date*: Thursday, Oct 16
+
+
+Program Committee
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C
+
+  =E2=80=A3 Sam Westrick (New York University, USA) (Chair)
+  =E2=80=A3 Michael D. Adams (National University of Singapore, Singapore)
+  =E2=80=A3 Jonathan Brachth=C3=A4user (University of T=C3=BCbingen, German=
+y)
+  =E2=80=A3 Chris Casinghino (Jane Street, USA)
+  =E2=80=A3 Arthur Chargu=C3=A9raud (INRIA, France)
+  =E2=80=A3 Kiran Gopinathan (University of Illinois Urbana-Champaign, USA)
+  =E2=80=A3 Mirai Ikebuchi (Kyoto University, Japan)
+  =E2=80=A3 Keigo Imai (DeNA Co., Ltd., Japan)
+  =E2=80=A3 Anton Lorenzen (University of Edinburgh, UK)
+  =E2=80=A3 Cyrus Omar (University of Michigan, USA)
+  =E2=80=A3 Zoe Paraskevopoulou (National Technical University of Athens,
+    Greece)
+  =E2=80=A3 Filip Sieczkowski (Heriot-Watt University, UK)
+  =E2=80=A3 Yong Kiam Tan (A*STAR Institute for Infocomm Research, Singapor=
+e)
+  =E2=80=A3 Yuting Wang (Shanghai Jiao Tong University, China)
+
+
+Past Iterations
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 2024: <https://icfp24.sigplan.org/home/mlworkshop-2024>
+  =E2=80=A2 2023: <https://icfp23.sigplan.org/home/mlworkshop-2023>
+  =E2=80=A2 2022: <https://icfp22.sigplan.org/home/mlfamilyworkshop-2022>
+  =E2=80=A2 2021: <https://icfp21.sigplan.org/home/mlfamilyworkshop-2021>
+
+  More info: <https://www.mlworkshop.org/home>
+
+
+Coordination with the OCaml Users and Developers Workshop
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The OCaml workshop is seen as more practical and is dedicated in
+  significant part to OCaml community building and the development of
+  the OCaml system. In contrast, the ML family workshop is not focused
+  on any language in particular, is more research-oriented, and deals
+  with general issues of ML-style programming and type systems. There is
+  some overlap, which we are keen to explore in various ways. The
+  authors who feel their submission fits both workshops are encouraged
+  to mention it at submission time or contact the program chairs.
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Outreachy December 2024 Demo]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Outreachy December 2024 Demo]
+<https://watch.ocaml.org/videos/watch/70ef58ff-ff7c-40d6-ab19-e886e4e98205>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-04-22 Tue 13:49 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.04.15.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.04.29.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of April 15 to 22, 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Flambda2 Ep. 4: How to write a purely functional compile=
+r, by OCamlPro</a></li>
+<li><a href=3D"#2">R and D Engineer Positions available at OCamlPro, in Par=
+is (France)</a></li>
+<li><a href=3D"#3">Release of ocaml-eglot 1.2.0</a></li>
+<li><a href=3D"#4">Outreachy December 2024 Round</a></li>
+<li><a href=3D"#5">Dune 3.18</a></li>
+<li><a href=3D"#6">opam 2.4.0~alpha1</a></li>
+<li><a href=3D"#7">ML Family Workshop 2025: Call for Presentations</a></li>
+<li><a href=3D"#8">Other OCaml News</a></li>
+<li><a href=3D"#orgc23feed">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Flambda2 Ep. 4: How to write a purely functional compiler, by =
+OCamlPro</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/blog-flambda2-ep-4-how-to-w=
+rite-a-purely-functional-compiler-by-ocamlpro/16512/1">https://discuss.ocam=
+l.org/t/blog-flambda2-ep-4-how-to-write-a-purely-functional-compiler-by-oca=
+mlpro/16512/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org32b6a8e" class=3D"outline-3">
+<h3 id=3D"org32b6a8e">OCamlPro announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org32b6a8e">
+<p>
+<b>Greetings Cameleers!</b>
+</p>
+
+<p>
+We're back with another deep dive into the <b>Flambda2 Optimizing Compiler<=
+/b>! Our latest entry in the <b>Flambda2 Snippets</b> blog series is out !=
+=20
+</p>
+
+<p>
+<a href=3D"https://ocamlpro.com/blog/2025_02_19_the_flambda2_snippets_4/">F=
+lambda2 Ep. 4: How to write a purely functional compiler</a>
+</p>
+
+<p>
+<b>Beware, this episode is a hefty one ! :muscle: :triumph:</b>
+</p>
+
+<p>
+This time again, we take you on a journey through the heart of <b>Flambda2<=
+/b>'s optimization process. Indeed, we take a look at the high-level consid=
+erations of <code>Simplify</code>, the main optimization algorithm! This po=
+st is the most important one yet. The subject is key to coming to grasps wi=
+th the philosophy and design behind our home-made compiler and we highly re=
+commend that you read it if you're interested in <b>functional programming<=
+/b>, <b>exotic compiler architectures</b>, <b>novel engineering</b>, and <b=
+>programming language representation</b>!
+</p>
+
+<p>
+If you've been following <a href=3D"https://ocamlpro.com/blog/2024_03_18_th=
+e_flambda2_snippets_0/#listing">the series</a>, this article builds on what=
+ we've covered before =E2=80=94 especially <a href=3D"https://ocamlpro.com/=
+blog/2024_03_19_the_flambda2_snippets_1/"><b>Foundational Design Decisions<=
+/b></a> (episode 1), and <a href=3D"https://ocamlpro.com/blog/2024_08_09_th=
+e_flambda2_snippets_3/"><b>Speculative inlining</b></a> (episode 3) =E2=80=
+=94 so you might want to check these out first. And as always, this is all =
+leading up to even more compiler spelunking in future posts! :pick:=20
+</p>
+
+<p>
+Hope you enjoy the read, and let us know what you think!
+</p>
+
+<p>
+Until next time,
+<b>The OCamlPro Team</b>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">R and D Engineer Positions available at OCamlPro, in Paris (Fr=
+ance)</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/hiring-r-d-engineer-positio=
+ns-available-at-ocamlpro-in-paris-france/16513/1">https://discuss.ocaml.org=
+/t/hiring-r-d-engineer-positions-available-at-ocamlpro-in-paris-france/1651=
+3/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org3275737" class=3D"outline-3">
+<h3 id=3D"org3275737">OCamlPro announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3275737">
+<p>
+Greetings Cameleers,
+</p>
+
+<p>
+We are thrilled to announce that <b>OCamlPro is hiring!</b>
+</p>
+
+<p>
+OCamlPro is a R&amp;D lab founded in 2011, with the mission to help industr=
+ial users benefit from experts with a state-of-the-art knowledge of program=
+ming languages theory and practice. We provide audit, support, custom devel=
+oper tools and training for both the most modern languages, such as Rust, W=
+asm and OCaml, and for legacy languages. We design, create and implement so=
+ftware with great added-value for our clients. We have a long history of cr=
+eating and maintaining open-source projects, such as the Opam package manag=
+er, the LearnOCaml web platform, Ocp-indent / Ocp-index, Flambda and Flambd=
+a2 optimizing OCaml compilers. We also contributed to the Rust compiler and=
+ standard library, and are now core contributors of the GnuCOBOL project. W=
+e are also experts of Formal Methods, developing tools such as our SMT Solv=
+er Alt-Ergo.
+</p>
+
+<p>
+We are currently looking to hire <b>French speaking</b> <b>Senior</b> and <=
+b>non-Senior R&amp;D Engineers</b> as well as new <b>Project Managers</b>. =
+Since <b>speaking French is mandatory</b>, the rest of this article, and th=
+e job offers linked below, will be written in French. :france:
+</p>
+
+<p>
+OCamlPro recrute :
+</p>
+
+<ul class=3D"org-ul">
+<li><p>
+<b>Un=C2=B7e Ing=C3=A9nieur=C2=B7e R&amp;D Senior</b>
+</p>
+
+<p>
+Conception et dev en OCaml (et Rust), encadrement, relation client, explora=
+tion techno, perfs, tests, veille et formations. Poste cl=C3=A9 au c=C5=93u=
+r d=E2=80=99une =C3=A9quipe experte.
+</p></li>
+
+<li><p>
+<b>Un=C2=B7e Ing=C3=A9nieur=C2=B7e R&amp;D</b>
+</p>
+
+<p>
+D=C3=A9veloppement en OCaml (et Rust), conception logicielle, perfs, tests,=
+ veille techno, mont=C3=A9e en comp=C3=A9tences et travail en =C3=A9quipe e=
+xperte.
+</p></li>
+
+<li><p>
+<b>Un=C2=B7e Chef=C2=B7fe de Projet Informatique &amp; R&amp;D</b>
+</p>
+
+<p>
+Pilotage de projets, coordination d=E2=80=99=C3=A9quipes, interface client,=
+ suivi budget/d=C3=A9lais, reporting, et veille techno dans un environnemen=
+t innovant.
+</p></li>
+</ul>
+
+<p>
+Notre =C3=A9quipe est principalement bas=C3=A9e =C3=A0 Paris, mais nous som=
+mes ouverts au travail =C3=A0 distance, tant que des s=C3=A9jours r=C3=A9gu=
+liers =C3=A0 Paris sont possibles pour renforcer la coh=C3=A9sion de l'=C3=
+=A9quipe.
+</p>
+
+<p>
+Veuillez envoyer votre CV ainsi qu'une description de certaines de vos meil=
+leures r=C3=A9alisations =C3=A0 l'adresse suivante : [contact@ocamlpro.com]=
+(<a href=3D"mailto:contact@ocamlpro.com">mailto:contact@ocamlpro.com</a>)
+</p>
+
+<p>
+<b>Vous trouverez des fiches de poste d=C3=A9taill=C3=A9es au format PDF ic=
+i :</b>
+<a href=3D"http://www.ocamlpro.com/jobs">http://www.ocamlpro.com/jobs</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Release of ocaml-eglot 1.2.0</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-=
+1-2-0/16515/1">https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-1-2-0=
+/16515/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc2d561e" class=3D"outline-3">
+<h3 id=3D"orgc2d561e">Xavier Van de Woestyne announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc2d561e">
+<p>
+We (at <a href=3D"https://tarides.com/">Tarides</a>) are <b>particularly pl=
+eased</b> to announce the release of <a href=3D"https://github.com/tarides/=
+ocaml-eglot">OCaml-eglot</a> <code>1.2.0</code>, An overlay on <a href=3D"h=
+ttps://www.gnu.org/software/emacs/manual/html_node/eglot/">Eglot</a> (the <=
+i>built-in</i> <a href=3D"https://microsoft.github.io/language-server-proto=
+col/">LSP</a> client for Emacs) for editing OCaml!
+</p>
+
+<blockquote>
+<p>
+<code>ocaml-eglot</code> is an <b>alternative mode</b> to <a href=3D"https:=
+//ocaml.github.io/merlin/"><code>merlin</code></a> which uses <a href=3D"ht=
+tps://github.com/ocaml/ocaml-lsp"><code>ocaml-lsp-server</code></a> (instea=
+d of <code>ocamlmerlin</code>) as the language server. So yes, if you decid=
+e to use~ocaml-eglot~, <code>merlin</code> <b>is no longer needed</b>. (Mer=
+lin is still used as a library, in <code>ocaml-lsp-server</code>).
+</p>
+</blockquote>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/tarides/ocaml-eglot/releases/tag/1.2.0">R=
+elease note</a></li>
+<li><a href=3D"https://github.com/tarides/ocaml-eglot">Github repository</a=
+></li>
+<li><a href=3D"https://melpa.org/#/ocaml-eglot">Package on MELPA</a></li>
+<li><a href=3D"https://github.com/tarides/ocaml-eglot?tab=3Dreadme-ov-file#=
+features">Features list</a></li>
+<li><a href=3D"https://github.com/tarides/ocaml-eglot?tab=3Dreadme-ov-file#=
+installation">Installation procedure</a></li>
+<li><a href=3D"https://github.com/tarides/ocaml-eglot?tab=3Dreadme-ov-file#=
+comparison-of-merlin-and-ocaml-eglot-commands">Comparison table with Merlin=
+</a></li>
+</ul>
+
+<p>
+This version discreetly improves the ergonomics of certain orders, gives mo=
+re control over customer-side order support and drastically improves error =
+handling! Here's the full changelog and, in the meantime, I'm adding the ch=
+angelog for version <code>1.1.0</code>, which hadn't been announced:
+</p>
+</div>
+<div id=3D"outline-container-orgd9f0f1e" class=3D"outline-4">
+<h4 id=3D"orgd9f0f1e"><code>1.2.0</code></h4>
+<div class=3D"outline-text-4" id=3D"text-orgd9f0f1e">
+<ul class=3D"org-ul">
+<li>Fix Type-enclosing's buffer update when using <code>caml-mode</code> (<=
+a href=3D"https://github.com/tarides/ocaml-eglot/pull/48">#48</a>)</li>
+<li>Add <code>ocaml-eglot-search-definition</code>, <code>ocaml-eglot-searc=
+h-declaration</code> and alternative functions (<a href=3D"https://github.c=
+om/tarides/ocaml-eglot/pull/45">#45</a>)</li>
+<li>Fix some warnings on byte-compilation (<a href=3D"https://github.com/ta=
+rides/ocaml-eglot/pull/40">#40</a>)</li>
+<li>Fix error on on <code>ocaml-eglot-construct</code> (<a href=3D"https://=
+github.com/tarides/ocaml-eglot/pull/40">#42</a>)</li>
+<li><code>ocaml-eglot-alternate-file</code> now visits file in other window=
+ when prefix argument is set (<a href=3D"https://github.com/tarides/ocaml-e=
+glot/pull/51">#51</a>)</li>
+<li>Add error-handling for jsonrpc-request (<a href=3D"https://github.com/t=
+arides/ocaml-eglot/pull/52">#52</a>)</li>
+<li>Maintain more diagnostics for location failure (<a href=3D"https://gith=
+ub.com/tarides/ocaml-eglot/pull/52">#52</a>)</li>
+<li>Fix hole cycle navigation (<a href=3D"https://github.com/tarides/ocaml-=
+eglot/pull/53">#53</a>)</li>
+<li>Relay on custom request (if it is available) for managing holes (<a hre=
+f=3D"https://github.com/tarides/ocaml-eglot/pull/53">#53</a>)</li>
+<li>Implementation of support for experimental client commands (and impleme=
+ntation of <code>ocaml.next-hole</code> in the presence of the <code>ocaml-=
+eglot-destruct</code> action) (<a href=3D"https://github.com/tarides/ocaml-=
+eglot/pull/54">#54</a>)</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org22794f9" class=3D"outline-4">
+<h4 id=3D"org22794f9"><code>1.1.0</code></h4>
+<div class=3D"outline-text-4" id=3D"text-org22794f9">
+<ul class=3D"org-ul">
+<li>A first support for <code>flycheck</code> (<a href=3D"https://github.co=
+m/tarides/ocaml-eglot/pull/29">#29</a>, <a href=3D"https://github.com/tarid=
+es/ocaml-eglot/pull/33">#33</a> and <a href=3D"https://github.com/tarides/o=
+caml-eglot/pull/37">#37</a>)</li>
+<li>Use a more efficient way to ensure that a vector is empty (<a href=3D"h=
+ttps://github.com/tarides/ocaml-eglot/pull/27">#27</a>)</li>
+<li>Made the mode-line "lighter" more conventional (<a href=3D"https://gith=
+ub.com/tarides/ocaml-eglot/pull/26">#26</a>)</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-orgaf86198" class=3D"outline-4">
+<h4 id=3D"orgaf86198">Spotlight on new features</h4>
+<div class=3D"outline-text-4" id=3D"text-orgaf86198">
+<p>
+Two easily observable features:
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgd947820"></a>Finding an identifier<br />
+<div class=3D"outline-text-5" id=3D"text-orgd947820">
+<ul class=3D"org-ul">
+<li><code>ocaml-eglot-find-identifier-declaration</code></li>
+<li><code>ocaml-eglot-find-identifier-definition</code></li>
+</ul>
+
+<p>
+the two commands behave like their analogues (<code>ocaml-eglot-find-defini=
+tion</code> and <code>ocaml-eglot-find-declaration</code>) but allow the us=
+er to enter the identifier directly:
+</p>
+
+
+<div id=3D"org7e39348" class=3D"figure">
+<p><img src=3D"https://us1.discourse-cdn.com/flex020/uploads/ocaml/original=
+/2X/5/5835742f3fadaf6054faf15e02c02c842a757e5a.gif" alt=3D"5835742f3fadaf60=
+54faf15e02c02c842a757e5a.gif" width=3D"80%" />
+</p>
+</div>
+</div>
+</li>
+<li><a id=3D"org1575e7d"></a>Searching for a definition or a declaration<br=
+ />
+<div class=3D"outline-text-5" id=3D"text-org1575e7d">
+<ul class=3D"org-ul">
+<li><code>ocaml-eglot-search-declaration</code></li>
+<li><code>ocaml-eglot-search-definition</code></li>
+</ul>
+
+<p>
+Allows you to search by type or polarity to find the definition (implementa=
+tion) or declaration (signature) of values!
+</p>
+
+
+<div id=3D"orge3bd058" class=3D"figure">
+<p><img src=3D"https://us1.discourse-cdn.com/flex020/uploads/ocaml/original=
+/2X/f/f48b3cb62a6eb6b81aa141e471e40e6f7641e0ae.gif" alt=3D"f48b3cb62a6eb6b8=
+1aa141e471e40e6f7641e0ae.gif" width=3D"80%" />
+</p>
+</div>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-orgc298147" class=3D"outline-4">
+<h4 id=3D"orgc298147">Upgrading</h4>
+<div class=3D"outline-text-4" id=3D"text-orgc298147">
+<p>
+The release is available on MELPA, so you can update it using the usual pro=
+cess. As always, your feedback is invaluable!
+</p>
+
+<p>
+<span class=3D"underline">Happy hacking</span>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Outreachy December 2024 Round</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/outreachy-december-2024-rou=
+nd/15223/6">https://discuss.ocaml.org/t/outreachy-december-2024-round/15223=
+/6</a>
+</p>
+</div>
+<div id=3D"outline-container-org7d3ec60" class=3D"outline-3">
+<h3 id=3D"org7d3ec60">Continuing this thread, Patrick Ferris announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org7d3ec60">
+<p>
+Thank you everyone who came along to our demo day. I think I speak for ever=
+yone when I say @abdulaziz.alkurd's work is very impressive and we all can'=
+t wait for being able to easily diff OCaml APIs!
+</p>
+
+<p>
+The meeting has now been published: <a href=3D"https://watch.ocaml.org/w/eW=
+Rikkpwoox1SboAwrDshD">https://watch.ocaml.org/w/eWRikkpwoox1SboAwrDshD</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Dune 3.18</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-3-18/16428/2">http=
+s://discuss.ocaml.org/t/ann-dune-3-18/16428/2</a>
+</p>
+</div>
+<div id=3D"outline-container-org3662d3c" class=3D"outline-3">
+<h3 id=3D"org3662d3c">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3662d3c">
+<p>
+We are happy to announce the release of Dune <code>3.18.1</code> :camel:=20
+</p>
+
+<p>
+This version is a minor release that contains a bug fix to an issue that wa=
+s preventing <code>pkg-config</code> from finding some libraries in some co=
+ntexts.
+</p>
+
+<p>
+If you encounter a problem with this release, you can report it on the <a h=
+ref=3D"https://github.com/ocaml/dune/issues">ocaml/dune</a> repository.
+</p>
+</div>
+<div id=3D"outline-container-org18c01d8" class=3D"outline-4">
+<h4 id=3D"org18c01d8">Changelog</h4>
+<div class=3D"outline-text-4" id=3D"text-org18c01d8">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgeb2ba2f"></a>Fixed<br />
+<div class=3D"outline-text-5" id=3D"text-orgeb2ba2f">
+<ul class=3D"org-ul">
+<li>fix: pass pkg-config (extra) args in all pkgconfig invocations. A missi=
+ng
+<code>--personality</code> flag would result in pkgconf not finding librari=
+es in some
+ contexts. (#11619, @MisterDA)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">opam 2.4.0~alpha1</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha1/16520=
+/1">https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha1/16520/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org71cbe7d" class=3D"outline-3">
+<h3 id=3D"org71cbe7d">Kate announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org71cbe7d">
+<p>
+Hi everyone,
+</p>
+
+<p>
+We are happy to announce the first alpha release of opam 2.4.0.
+</p>
+
+<p>
+This version is an alpha, we invite users to test it to spot previously unn=
+oticed bugs as we head towards the stable release.
+</p>
+</div>
+<div id=3D"outline-container-orgb295b18" class=3D"outline-4">
+<h4 id=3D"orgb295b18">What=E2=80=99s new? Some highlights:</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb295b18">
+<ul class=3D"org-ul">
+<li>:dragon_face: <b>On <code>opam init</code> the compiler</b> chosen for =
+the default switch will <b>no longer be <code>ocaml-system</code></b> (<a h=
+ref=3D"https://github.com/ocaml/opam/issues/3509">#3509</a>)
+This was done because the system compiler (as-is your ocaml installed syste=
+m wide, e.g. /usr/bin/ocaml) is known to be under-tested and prone to a var=
+iety of bugs and configuration issues.
+Removing it from the default compiler allows new-comers a more smooth exper=
+ience.
+<b>Note: if you wish to use it anyway, you are always able to do it explici=
+tly using <code>opam init --compiler=3Docaml-system</code></b></li>
+
+<li>:camel: GNU <b><code>patch</code></b> and the <b><code>diff</code></b> =
+command are <b>no longer runtime dependencies</b>. Instead the OCaml <code>=
+patch</code> library is used (<a href=3D"https://github.com/ocaml/opam/issu=
+es/6019">#6019</a>, <a href=3D"https://github.com/ocaml/opam/issues/6052">#=
+6052</a>, <a href=3D"https://github.com/ocaml/opam/issues/3782">#3782</a>, =
+<a href=3D"https://github.com/ocaml/setup-ocaml/pull/933">ocaml/setup-ocaml=
+#933</a>)
+Doing this we've removed some rarely used features of GNU Patch such as the=
+ support of <a href=3D"https://www.gnu.org/software/diffutils/manual/html_n=
+ode/Example-Context.html">Context diffs</a>.
+The new implementation only supports <a href=3D"https://www.gnu.org/softwar=
+e/diffutils/manual/html_node/Example-Unified.html">Unified diffs</a> includ=
+ing the <a href=3D"https://git-scm.com/docs/diff-format">git extended heade=
+rs</a>, however file permission changes via said extended headers have no e=
+ffect.</li>
+
+<li>:snowflake: Add <b>Nix support</b> for <b>external dependencies (depext=
+s)</b> by adding support for stateless package managers (<a href=3D"https:/=
+/github.com/ocaml/opam/issues/5982">#5982</a>). <b>Thanks to <a href=3D"htt=
+ps://github.com/RyanGibb">@RyanGibb</a> for this contribution</b></li>
+
+<li>:cockroach: <b>Fix <code>opam install &lt;local_dir&gt;</code></b> with=
+ and without options like <code>--deps-only</code> or <code>--show-action</=
+code> having <b>unexpected behaviours</b> (<a href=3D"https://github.com/oc=
+aml/opam/issues/6248">#6248</a>, <a href=3D"https://github.com/ocaml/opam/i=
+ssues/5567">#5567</a>) such as:
+<ul class=3D"org-ul">
+<li>reporting <code>Nothing to do</code> despite dependencies or package no=
+t being up-to-date</li>
+<li>asking to install the wrong dependencies</li>
+</ul></li>
+
+<li>:ocean: Many more UI additions and improvements, bug fixes, performance=
+ improvements, =E2=80=A6</li>
+</ul>
+
+
+<p>
+:open_book: You can read our <a href=3D"https://opam.ocaml.org/blog/opam-2-=
+4-0-alpha1/">blog post</a> for more information about these changes and mor=
+e, and for even more details you can take a look at the <a href=3D"https://=
+github.com/ocaml/opam/releases/tag/2.4.0-alpha1">release note</a> or the <a=
+ href=3D"https://github.com/ocaml/opam/blob/2.4.0-alpha1/CHANGES">changelog=
+</a>.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org67d3b0d" class=3D"outline-4">
+<h4 id=3D"org67d3b0d">Try it!</h4>
+<div class=3D"outline-text-4" id=3D"text-org67d3b0d">
+<p>
+The upgrade instructions are unchanged:
+</p>
+
+<p>
+For Unix systems
+</p>
+<pre class=3D"example" id=3D"org0d13d41">
+bash -c "sh &lt;(curl -fsSL https://opam.ocaml.org/install.sh) --version 2.=
+4.0~alpha1"
+</pre>
+<p>
+or from PowerShell for Windows systems
+</p>
+<pre class=3D"example" id=3D"org2a4e57e">
+Invoke-Expression "&amp; { $(Invoke-RestMethod https://opam.ocaml.org/insta=
+ll.ps1) } -Version 2.4.0~alpha1"
+</pre>
+
+<p>
+Please report any issues to the <a href=3D"https://github.com/ocaml/opam/is=
+sues">bug-tracker</a>.
+</p>
+
+<p>
+Happy hacking,
+&lt;&gt; &lt;&gt; The opam team &lt;&gt; &lt;&gt; :camel:
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">ML Family Workshop 2025: Call for Presentations</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ml-family-workshop-2025-cal=
+l-for-presentations/16521/1">https://discuss.ocaml.org/t/ml-family-workshop=
+-2025-call-for-presentations/16521/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org7415b8b" class=3D"outline-3">
+<h3 id=3D"org7415b8b">Sam announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org7415b8b">
+<p>
+We are happy to invite submissions to the 2025 ML Family Workshop! Please h=
+elp spread the word and consider submitting!
+<a href=3D"https://conf.researchr.org/home/icfp-splash-2025/mlsymposium-202=
+5">https://conf.researchr.org/home/icfp-splash-2025/mlsymposium-2025</a>
+</p>
+</div>
+<div id=3D"outline-container-org37effec" class=3D"outline-4">
+<h4 id=3D"org37effec">Higher-order, Typed, Inferred, Strict: ML Family Work=
+shop 2025</h4>
+<div class=3D"outline-text-4" id=3D"text-org37effec">
+<p>
+Co-located with <a href=3D"https://conf.researchr.org/home/icfp-splash-2025=
+">ICFP/SPLASH</a>
+</p>
+
+<p>
+<b>Workshop date</b>: October 16, 2025, Singapore
+</p>
+
+<p>
+<b>Submission deadline</b>: June 19, 2025
+</p>
+
+<p>
+The ML Family Workshop is an established informal workshop serving to promo=
+te and inform the development of programming languages in the ML family (su=
+ch as OCaml, Standard ML, F#, and many others) as well as related languages=
+ (such as Haskell, Scala, Rust, Koka, F*, Eff, ATS, Nemerle, Links, etc.) W=
+e welcome presentations on all aspects of the design, semantics, theory, ap=
+plication, implementation, and teaching of languages in the entire extended=
+ ML family.
+</p>
+
+<p>
+The ML 2025 workshop will continue the informal approach followed since 201=
+0. Presentations are selected by the program committee from submitted propo=
+sals. There are no published proceedings, so contributions may be submitted=
+ for publication elsewhere. The main criterion is promoting and informing t=
+he development of the entire extended ML family and delivering a lively wor=
+kshop atmosphere. We particularly encourage talks about works in progress, =
+presentations of negative results (things that were expected to but did not=
+ quite work out) and informed positions.
+</p>
+
+<p>
+Each presentation should take 20-25 minutes. The exact time will be decided=
+ based on scheduling constraints.
+</p>
+
+<p>
+We plan the workshop to an be in-person event with remote participation (st=
+reamed live). We hope that speakers are able to present in person. If a spe=
+aker is unable to attend, they may instead present remotely.
+</p>
+
+<p>
+The 2025 ML family workshop is co-located with ICFP/SPLASH 2025 and will ta=
+ke place on <b>October 16, 2025</b> in Singapore.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orgcd2f85a" class=3D"outline-4">
+<h4 id=3D"orgcd2f85a">Scope</h4>
+<div class=3D"outline-text-4" id=3D"text-orgcd2f85a">
+<p>
+We seek presentations on topics including (but not limited to):
+</p>
+
+<ul class=3D"org-ul">
+<li>Language design: abstraction, higher forms of polymorphism,
+concurrency and parallelism, distribution and mobility, staging,
+extensions for semi-structured data, generic programming,
+object systems, etc.</li>
+
+<li>Implementation: compilers, interpreters, type checkers, partial
+evaluators, runtime systems, garbage collectors, foreign function
+interfaces, etc.</li>
+
+<li>Type systems: inference, effects, modules, contracts, specifications
+and assertions, dynamic typing, error reporting, etc.</li>
+
+<li>Applications: case studies, experience reports, pearls, etc.</li>
+
+<li>Environments: libraries, tools, editors, debuggers, cross-language
+interoperability, functional data structures, etc.</li>
+
+<li>Semantics of ML-family languages: operational and denotational
+semantics, program equivalence, parametricity, mechanization, etc.</li>
+</ul>
+
+<p>
+We specifically encourage reporting what did not meet expectations or
+what, despite all efforts, did not work to satisfaction.
+</p>
+
+<p>
+Four kinds of submissions are solicited: Research Presentations,
+Experience Reports, Demos, and Informed Positions.
+</p>
+
+<ul class=3D"org-ul">
+<li>Research Presentations: Research presentations should describe new
+ideas, experimental results, or significant advances in ML-related
+projects. We especially encourage presentations that describe work
+in progress, that outline a future research agenda, or that
+encourage lively discussion. These presentations should be
+structured in a way which can be, at least in part, of interest to
+(advanced) users.</li>
+
+<li>Experience Reports: Users are invited to submit Experience Reports
+about their use of ML and related languages. These presentations do
+not need to contain original research but they should tell an
+interesting story to researchers or other advanced users, such as an
+innovative or unexpected use of advanced features or a description
+of the challenges they are facing or attempting to solve.</li>
+
+<li>Demos: Live demonstrations or short tutorials should show new
+developments, interesting prototypes, or work in progress, in the
+form of tools, libraries, or applications built on or related to ML
+and related languages. (You will need to provide all the hardware
+and software required for your demo; the workshop organizers are
+only able to provide a projector.)</li>
+
+<li>Informed Positions: A justified argument for or against a language
+feature. The argument must be substantiated, either theoretically
+(e.g., by a demonstration of (un)soundness, an inference algorithm,
+a complexity analysis), empirically or by substantial experience.
+Personal experience is accepted as justification so long as it is
+extensive and illustrated with concrete examples.</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org93c9938" class=3D"outline-4">
+<h4 id=3D"org93c9938">Submission details</h4>
+<div class=3D"outline-text-4" id=3D"text-org93c9938">
+<p>
+Submissions must be in the PDF format and have a short summary
+(abstract) at the beginning. Submissions in the categories of
+Experience Reports, Demos, or Informed Positions should indicate so in
+the title or subtitle. The point of the submission should be clear
+from its two first pages (PC members are not obligated to read any
+further.)
+</p>
+
+<p>
+Submissions must be uploaded to the workshop submission website before
+the submission deadline.
+</p>
+
+<p>
+Only the short summary/abstract of accepted submissions will be
+published on the conference website. After acceptance, authors will
+have the opportunity to attach or link to that summary any relevant
+material (such as the updated submission, slides, etc.)
+</p>
+
+<p>
+<b>Submission Website</b>:
+<a href=3D"https://ml2025.hotcrp.com/">https://ml2025.hotcrp.com/</a>
+</p>
+
+<p>
+<b>Workshop Website</b>:
+<a href=3D"https://conf.researchr.org/home/icfp-splash-2025/mlsymposium-202=
+5">https://conf.researchr.org/home/icfp-splash-2025/mlsymposium-2025</a>
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orge52a175" class=3D"outline-4">
+<h4 id=3D"orge52a175">Dates and Deadlines</h4>
+<div class=3D"outline-text-4" id=3D"text-orge52a175">
+<p>
+<b>Submission Deadline</b>:
+Thursday, June 19 AoE
+</p>
+
+<p>
+<b>Initial Author Notification</b> (most cases):
+Thursday, July 31
+</p>
+
+<p>
+<b>Final Author Notification</b> (if needed):
+Thursday, Aug 7
+</p>
+
+<p>
+<b>Workshop Date</b>:
+Thursday, Oct 16
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orgb21a73c" class=3D"outline-4">
+<h4 id=3D"orgb21a73c">Program Committee</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb21a73c">
+<ul class=3D"org-ul">
+<li>Sam Westrick (New York University, USA) (Chair)</li>
+<li>Michael D. Adams (National University of Singapore, Singapore)</li>
+<li>Jonathan Brachth=C3=A4user (University of T=C3=BCbingen, Germany)</li>
+<li>Chris Casinghino (Jane Street, USA)</li>
+<li>Arthur Chargu=C3=A9raud (INRIA, France)</li>
+<li>Kiran Gopinathan (University of Illinois Urbana-Champaign, USA)</li>
+<li>Mirai Ikebuchi (Kyoto University, Japan)</li>
+<li>Keigo Imai (DeNA Co., Ltd., Japan)</li>
+<li>Anton Lorenzen (University of Edinburgh, UK)</li>
+<li>Cyrus Omar (University of Michigan, USA)</li>
+<li>Zoe Paraskevopoulou (National Technical University of Athens, Greece)</=
+li>
+<li>Filip Sieczkowski (Heriot-Watt University, UK)</li>
+<li>Yong Kiam Tan (A*STAR Institute for Infocomm Research, Singapore)</li>
+<li>Yuting Wang (Shanghai Jiao Tong University, China)</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org0bd101c" class=3D"outline-4">
+<h4 id=3D"org0bd101c">Past Iterations</h4>
+<div class=3D"outline-text-4" id=3D"text-org0bd101c">
+<ul class=3D"org-ul">
+<li>2024: <a href=3D"https://icfp24.sigplan.org/home/mlworkshop-2024">https=
+://icfp24.sigplan.org/home/mlworkshop-2024</a></li>
+<li>2023: <a href=3D"https://icfp23.sigplan.org/home/mlworkshop-2023">https=
+://icfp23.sigplan.org/home/mlworkshop-2023</a></li>
+<li>2022: <a href=3D"https://icfp22.sigplan.org/home/mlfamilyworkshop-2022"=
+>https://icfp22.sigplan.org/home/mlfamilyworkshop-2022</a></li>
+<li>2021: <a href=3D"https://icfp21.sigplan.org/home/mlfamilyworkshop-2021"=
+>https://icfp21.sigplan.org/home/mlfamilyworkshop-2021</a></li>
+</ul>
+
+<p>
+More info: <a href=3D"https://www.mlworkshop.org/home">https://www.mlworksh=
+op.org/home</a>
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org1d75d23" class=3D"outline-4">
+<h4 id=3D"org1d75d23">Coordination with the OCaml Users and Developers Work=
+shop</h4>
+<div class=3D"outline-text-4" id=3D"text-org1d75d23">
+<p>
+The OCaml workshop is seen as more practical and is dedicated in
+significant part to OCaml community building and the development of
+the OCaml system. In contrast, the ML family workshop is not focused
+on any language in particular, is more research-oriented, and deals
+with general issues of ML-style programming and type systems. There
+is some overlap, which we are keen to explore in various ways. The
+authors who feel their submission fits both workshops are encouraged
+to mention it at submission time or contact the program chairs.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+</div>
+<div id=3D"outline-container-orga79764b" class=3D"outline-3">
+<h3 id=3D"orga79764b">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-orga79764b">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://watch.ocaml.org/videos/watch/70ef58ff-ff7c-40d6-ab19=
+-e886e4e98205">Outreachy December 2024 Demo</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-orgc23feed" class=3D"outline-2">
+<h2 id=3D"orgc23feed">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-orgc23feed">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgc421cc4">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
