@@ -1,0 +1,324 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=HC1XkMAZ;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=cZWPAmwX;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id BD89C40068
+	for <caml-list@tunbury.org>; Tue, 22 Apr 2025 11:49:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=4IS/BcJwRGzH39kynzu7VSydmTEYncsW1H47Mg0Xp7A=;
+  b=HC1XkMAZKDcvlK8DgpOZ/lVLp+T6KToRb+F/VorYZHDcO1iJ7dz0lkg+
+   v4HZpy1omy9PnO3ak5MyvAnFgaJAYOnk9+s9c0MVB9UUDF7YekDO3NWEl
+   Qv+2NLeBtbjGcmyX96nrJWFwKF3aFj74MQdA1XGbrWQlWx79QU4ckchAn
+   U=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.15,230,1739833200"; 
+   d="scan'208,217";a="218847143"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 22 Apr 2025 11:31:25 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 4A633E0D70; Tue, 22 Apr 2025 11:31:26 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 02F9AE0E2E
+	for <caml-list@sympa.inria.fr>; Tue, 22 Apr 2025 11:31:06 +0200 (CEST)
+IronPort-SDR: 68073d4b_0mkHs4zSaBMq6CPoE6ygAmg8y7b3vd69AOQT+GOIVtvZezn
+ yJ4vKHRsQxJ44b7SrWdP6fvUbHLlO/E+QFxksKQ==
+X-IPAS-Result: =?us-ascii?q?A0FWAgAxPAdogTKgVdFaglyBQYEDfVk0BAtIhFWBI4Isj?=
+ =?us-ascii?q?AGCIZdChH+BVYFAPg8BAwENOQsEAQEDAQM3AYFUgnSLLwIeBwEEMQgOAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABASIZBw47hXsNgmIBM3FhA?=
+ =?us-ascii?q?gUDOgEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEFAg0fP?=
+ =?us-ascii?q?zgRHQEbHgMSCQc3AiMBEQEFASITIoJhgi8BAzEDEQagd4IkgQVCiz6BFQUCF?=
+ =?us-ascii?q?hRtgg0GgQk+AwsCQ9hDChkoDWwDgWICAQYUgTWEdilODoI4AxoBBW1rAg6Hf?=
+ =?us-ascii?q?IEhD4FVRIEVNYJEg1ABAoIMgy6CaQSBEIEdgRdngVuDEIgDgwCEaoRfFIcCJ?=
+ =?us-ascii?q?ggHFwMHBwkFBBwGBQUCQgkFAQ8SAwQDBAQBAgsJCgkDAwIOAggDAggGGQE/E?=
+ =?us-ascii?q?gQTCg0LBwUfCggMEQooAyISKwoBAgFaNAEIBgICBAQCBAwCCQICCAcCEQMEA?=
+ =?us-ascii?q?QEIAgIuBQEDGQgKAggCDQUTCgEFBAMHBQIbAwMCAgULAggFAgUHAwkOAQIFA?=
+ =?us-ascii?q?wQVAhACAggVAgIFBRcDJAMDAwMLAQICDgkGGA8EAgMDAg4BAgIJAQIBAwMCB?=
+ =?us-ascii?q?gMDCQgHCgkBAgoICRABAgIQAwICAgIGBw4DAhMPBQYGAgoHDQsCEgIDCQYDB?=
+ =?us-ascii?q?QoDBwQKDQIVAhUFIAIICQ4RAgUSAw4FAwICEQQCAwMFAwEHARUDBwgCAgwCA?=
+ =?us-ascii?q?gICBQIFAgUXEQ0EAwMDAggBBBUGAwkIJRsQAQMBCQMCAwQIAwMDAgYMCwIBB?=
+ =?us-ascii?q?wgDAwYLCAkGAwIHCBkDBQQDBwULIQIGAwIEBQQBBQITDQIDGQIGAwYRCQ0GC?=
+ =?us-ascii?q?AcJAwcBAQECAgIIAQYFEgIDBAIFBAQBARIGAgEDAgIECQECAgoCCAoBCRMEA?=
+ =?us-ascii?q?wgDAwMDAwUCAgoRBQUCAQUKEwwKBgMGAwQCAgIKAQcCAwMDBwELHAIBAwICB?=
+ =?us-ascii?q?QICAQUDAgIGBAMCAQEJAgMCCAECAgECAgIEAQcBCwYBAQIEAgIyAgEDCQIFA?=
+ =?us-ascii?q?QEOAgYCAgECAgIEAgQBCAsEBQ0BAQIBAgIBAQEEAQgDAQECAgMDBQMFCA8NA?=
+ =?us-ascii?q?QEXCx0DBAUCAgEBAQECEgICAQcBAgEBAxoCAQMDBAELAgEBBB4EFgICAgICB?=
+ =?us-ascii?q?AMCAwICCxMlAQIDBhMCBAIBAgIFBQUBAwQREAkDAgUEAgIGAgQGCgIHBAIaB?=
+ =?us-ascii?q?AICAgEDBAYDAQIIAgIHBAQGAwICAQICBxkCGQEDAQECAgIEAgICCQoEBQQEB?=
+ =?us-ascii?q?AMCAgIBDAMBAgMCAgICAQMCAgEBAwEFBg0CEgIBAw8IBAICBwICIQ8LAQIBA?=
+ =?us-ascii?q?QYGAgMDAwoDAQoBAgEBAgYCAQISBQICAQIEAQICAwQlAQIBAgEBAQUCAQIBA?=
+ =?us-ascii?q?gQCBwIBAgIDCAEFAgYBAgIJAQIBAgICAQIBAQIGAgERBAECAgICAgMBAwYCA?=
+ =?us-ascii?q?gICAgIJAgICAgUCBQMCAwEGAgIFAgMDAgIDBAMJAwMIAwYEAgMBAQECAQICA?=
+ =?us-ascii?q?gECAQIFAgMJAQEDAgECAgICAwYCBQUBAwsFBAcBAQIBAwUDAwQDBgEMBAMCA?=
+ =?us-ascii?q?gQCAgICAgIEAgIBBQMDAgIFAQUDCAECBAIBAwMDBAQDAQICCgwCBAEBAQECA?=
+ =?us-ascii?q?QICCgMCBQEBAwMBEgMEAQYFBQYCBwkDAgIEAgMCBAMJBAIGAwMCAgIBAQsCA?=
+ =?us-ascii?q?gECAgEBAwMHBhABAgICAgEPAgMDAwMDDwYDBQkBAwEHAQEBAQECFAMCAQUdA?=
+ =?us-ascii?q?gkDIw8DCwkIEz0BCwcyBDYBFBQHKyFfl3aERSM8GRYCgRABTUIMkyIoKrJDN?=
+ =?us-ascii?q?AeEHoFeBgyJBYEklUozixefQJh+jgaVVjOFFREjEoEzATiBXE0jUDGCNk8DG?=
+ =?us-ascii?q?Q+SIcF7RDI8AgcBCgEBAwmGSIlUgUsBAQ?=
+IronPort-PHdr: A9a23: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
+ Ro7zAB5ZLZ1nN8Jy1gyL1vO4iA3lRtp8eg=
+IronPort-Data: A9a23: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
+ gWR3kU=
+IronPort-HdrOrdr: A9a23:XpJ0vayTtd+yf4UE0j03KrPwAb1zdoMgy1knxilNoH1uA7Wlfq
+ WV9sjzuiWE6gr5NEtQ+uxoW5PhfZq/z+8Q3WB5B97LNzUO01HYS72Kg7GSpQHIKmnR8qpz2a
+ 98b7NzErTLfD1HpPe/zg39PdhI+ra6GWOT6ds2DU0BceinUc9dBs5CazqmLg==
+X-Talos-CUID: =?us-ascii?q?9a23=3ALJN++GlHGmZiwn4uNYQ32QzvXnTXOUP8kU/hfEL?=
+ =?us-ascii?q?nNT1CY6+OYhiJ6fg/vfM7zg=3D=3D?=
+X-Talos-MUID: 9a23:iChO5Ag1ewmKHjfalL/pNsMpM8Z22qiVC2UxkIgil9OfFXxAEROfg2Hi
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,230,1739833200"; 
+   d="scan'208,217";a="114813323"
+X-MGA-submission: =?us-ascii?q?MDHzw/+dfhRZ92ZTcONqOMUW9oBjomk7mYDpKE?=
+ =?us-ascii?q?SccNKu2R8NWQI3cxzRxMP8su6/xNwb2WTvkqr5wgGoQtmWvech91yzFA?=
+ =?us-ascii?q?dZ6hJBUU5vIgkD56z3UI3BDEb6fAvvqHNOJokZQyllbJD4eOlqCBZxBe?=
+ =?us-ascii?q?DVNH6DUqYl+7cSJ2oAnqxUOA=3D=3D?=
+Received: from mail-oa1-f50.google.com ([209.85.160.50])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 08:55:07 +0200
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-2cc44c72959so3297435fac.0
+        for <caml-list@inria.fr>; Mon, 21 Apr 2025 23:55:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1745304905; x=1745909705; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=4IS/BcJwRGzH39kynzu7VSydmTEYncsW1H47Mg0Xp7A=;
+        b=cZWPAmwXvBQx6woRERvMod7kEGSooHEFFwHzQJU41xTIjhr0egs9qmUt0Sjsw+/Uy8
+         kxeqLPnh/IxVF9VySSXVIHA0TJ5BPlCMURAUq+qz3Gy1tTfLHQ+so4eIhK+xezLXmZR1
+         oRyt6GNWhEPPnpW3XCTkj76Ge9GQJupO2WbFOlyxPNqBnWyHSmDIcH7x9YstRd9rtub2
+         u2LFT+AMKHm8E94i3qjEu3vm3DFRwm/LmqYxybj8HWksc7vTUnpItQPc4fH+PlJmJ3Pz
+         mKbbmhmrnOV29/n4ZYtbaSeUGdc0cpcajZu1n+ZYhuRUZ03divXDV+TL1evTCiFlZovl
+         65Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745304905; x=1745909705;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4IS/BcJwRGzH39kynzu7VSydmTEYncsW1H47Mg0Xp7A=;
+        b=pjSq+OQH/xRMq7VN7yA0BTj4zg+QCl9VOwL0k7bo0KD/oyV6rR9fZckJPfJRZEzX+h
+         EkXGYcDKbY6QocMSvJx1sa25ANrxTC9VCRsYoWSZN51Aw/Ofk1tZ7Z4ZkZ3q08SKrJUo
+         vRHSuc8kojbKOEfnGoHdhm42Y4SQGv+JMZ81AvRcla+cbXf0i7Z0OS4jqEcB4RTu+Xy2
+         dtENIRIXf8HJ08j2fxGrUNFor0+n+dTJdBP2L33yIk64E8x652nepG5xbw2k0tvn7rbG
+         hdaZqbFJybAESE3bsWTuFskFcHPi8h76sIKL55bOXQdIKnj5O/Md+UP6HGL/yoebXiMh
+         wt8g==
+X-Gm-Message-State: AOJu0Yxp7zoGyPm/KkowHzM27n7dZAl2jxtCw2T71iV/BRp0o/BNuY07
+	65imLTBx1hpWF8gMmx/lCKvEQlQ1cSIRdtIxzN337X+evRYnuQqyARiqMtThfnV+8Xy0KRxoJkM
+	UKI21g3/0vAwyT4MXL35yK3mktw1QTmp44PM=
+X-Gm-Gg: ASbGncsA+ebzRplUvXcC35C+J7DGv8vyqp6dFI4kiu3Rdf0HTKXwNosLDHoc6K+P4On
+	PMrX+Cz88FhSq6fVIi398M2OdhNYq/UFX5Vzkv10/jBU02B+0cnkxTlmjuEQslOTcZJWHC4R0Rv
+	WMbPP3KeNz+HBjL1tANClT+UQ=
+X-Google-Smtp-Source: AGHT+IEPhurgQtGSgZHPSelTCZ0uFaUgsSFqQ5hHKPDIh4gklRCvehGaTahFsWoN3JTW8xRjzZyUOKL8SfJi6JvHfcU=
+X-Received: by 2002:a05:6871:3a81:b0:2c1:4090:9263 with SMTP id
+ 586e51a60fabf-2d526ec5b08mr9049284fac.35.1745304905233; Mon, 21 Apr 2025
+ 23:55:05 -0700 (PDT)
+MIME-Version: 1.0
+From: Julien Signoles <julien.signoles@gmail.com>
+Date: Tue, 22 Apr 2025 08:54:53 +0200
+X-Gm-Features: ATxdqUHp0YVIxAPRKAE2TV5BIMcfv5GYfTRz5X7Jwu8qgXmtTgO51khI4OJU-oY
+Message-ID: <CAPczgCDFLB1RfiS_wYE33Xf-DMoa6tzrWzb_1g0JWPvkHGz3aQ@mail.gmail.com>
+To: Caml List <caml-list@inria.fr>
+Content-Type: multipart/alternative; boundary="000000000000e6c0ca06335876bf"
+Subject: [Caml-list] Open PhD position in the Frama-C team, Paris-Saclay,
+ France
+Reply-To: Julien Signoles <julien.signoles@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19297
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-04/CAPczgCDFLB1RfiS_wYE33Xf-DMoa6tzrWzb_1g0JWPvkHGz3aQ%40mail.gmail.com>
+
+--000000000000e6c0ca06335876bf
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+A PhD position on E-ACSL, the runtime annotation checker of Frama-C, is
+available in the Frama-C team.
+The team is part of Software Safety and Security Lab of CEA List, located
+at Paris-Saclay, France.
+This PhD is a collaboration between CEA List and Universit=C3=A9 d'Orl=C3=
+=A9ans in
+the context of a national project recently started.
+
+It aims at verifying multi-state properties at runtime.
+More details available online:
+https://frama-c.com/jobs/2025-01-20-multistate-rac.html
+
+Feel free to contact me for any question.
+
+Best regards,
+Julien Signoles
+
+Research Director                           |  Scientific advisor
+
+CEA List, Software Safety and Security Lab  |  Department of Software
+and System Engineering
+
+Julien.Signoles@cea.fr                      |  tel:(+33)1.69.08.00.18
+
+--000000000000e6c0ca06335876bf
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div style=3D"unicode-bidi:plaintext;color:rgb(0,0,0);font=
+-family:Ubuntu;font-size:14.6667px">Hello,</div><div style=3D"unicode-bidi:=
+plaintext;color:rgb(0,0,0);font-family:Ubuntu;font-size:14.6667px"><br></di=
+v><div style=3D"unicode-bidi:plaintext;color:rgb(0,0,0);font-family:Ubuntu;=
+font-size:14.6667px">A PhD position on E-ACSL, the runtime annotation check=
+er of Frama-C, is available in the Frama-C team.=C2=A0</div><div style=3D"u=
+nicode-bidi:plaintext;color:rgb(0,0,0);font-family:Ubuntu;font-size:14.6667=
+px"><span style=3D"font-size:14.6667px">The team is part of=C2=A0</span><sp=
+an style=3D"font-size:14.6667px">Software Safety and Security Lab of=C2=A0<=
+/span><span style=3D"font-size:14.6667px">CEA List, located at Paris-Saclay=
+, France.</span></div><div style=3D"unicode-bidi:plaintext;color:rgb(0,0,0)=
+;font-family:Ubuntu;font-size:14.6667px"><span style=3D"font-size:14.6667px=
+">This PhD is a collaboration between CEA List and Universit=C3=A9 d&#39;Or=
+l=C3=A9ans in the context of a national project recently started.=C2=A0</sp=
+an></div><div style=3D"unicode-bidi:plaintext;color:rgb(0,0,0);font-family:=
+Ubuntu;font-size:14.6667px"><span style=3D"font-size:14.6667px"><br></span>=
+</div><div style=3D"unicode-bidi:plaintext;color:rgb(0,0,0);font-family:Ubu=
+ntu;font-size:14.6667px"><span style=3D"font-size:14.6667px">It aims at ver=
+ifying multi-state properties at runtime.=C2=A0</span></div><div style=3D"u=
+nicode-bidi:plaintext;color:rgb(0,0,0);font-family:Ubuntu;font-size:14.6667=
+px"><span style=3D"font-size:14.6667px">More details available online:=C2=
+=A0</span><a href=3D"https://frama-c.com/jobs/2025-01-20-multistate-rac.htm=
+l" title=3D"Click to open https://frama-c.com/jobs/2025-01-20-multistate-ra=
+c.html" style=3D"font-size:14.6667px">https://frama-c.com/jobs/2025-01-20-m=
+ultistate-rac.html</a></div><div style=3D"unicode-bidi:plaintext;color:rgb(=
+0,0,0);font-family:Ubuntu;font-size:14.6667px"><br></div><div style=3D"unic=
+ode-bidi:plaintext;color:rgb(0,0,0);font-family:Ubuntu;font-size:14.6667px"=
+>Feel free to contact me for any question.</div><div style=3D"unicode-bidi:=
+plaintext;color:rgb(0,0,0);font-family:Ubuntu;font-size:14.6667px"><br></di=
+v><div style=3D"unicode-bidi:plaintext;color:rgb(0,0,0);font-family:Ubuntu;=
+font-size:14.6667px">Best regards,</div><div style=3D"unicode-bidi:plaintex=
+t;color:rgb(0,0,0);font-family:Ubuntu;font-size:14.6667px">Julien Signoles<=
+/div><pre style=3D"color:rgb(61,61,61)"><font size=3D"2">Research Director =
+                          |  Scientific advisor</font></pre><pre style=3D"c=
+olor:rgb(61,61,61)"><font size=3D"2">CEA List, Software Safety and Security=
+ Lab  |  Department of Software and System Engineering</font></pre><pre sty=
+le=3D"color:rgb(61,61,61)"><font size=3D"2"><a href=3D"mailto:Julien.Signol=
+es@cea.fr" title=3D"Click to mail Julien.Signoles@cea.fr">Julien.Signoles@c=
+ea.fr</a>                      |  tel:(+33)1.69.08.00.18</font></pre><br cl=
+ass=3D"gmail-Apple-interchange-newline"></div>
+
+--000000000000e6c0ca06335876bf--
