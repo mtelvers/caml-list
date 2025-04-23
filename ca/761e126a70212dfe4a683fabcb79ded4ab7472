@@ -1,0 +1,353 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=AGQW/qpF;
+	dkim=fail reason="signature verification failed" (1024-bit key; unprotected) header.d=ieee.org header.i=@ieee.org header.a=rsa-sha256 header.s=google header.b=Di2M8Iqb;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 1082D40016
+	for <caml-list@tunbury.org>; Wed, 23 Apr 2025 14:46:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:references:in-reply-to:from:date:message-id:
+   to:cc:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=2k/d2PWQdpjCrmNw5XuhmmSkD/43xD1YR57U2OL9GRA=;
+  b=AGQW/qpFVIpYYBqLc9jCTyIKNV1y3ZgRthI5OyHRSGO8HplEOSZ+0wJn
+   1NCLp8YQn7B1dYXRFxl/qv9vqrbAWkpevj0F6CzZWHk0tqa8ppMuXezmW
+   eRHRYKwdC5H63cXjjNuirWkJEtBZ5Qjl4J1EY/JaNbfstVlQw+o3sTHXp
+   E=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@ieee.org
+X-IronPort-AV: E=Sophos;i="6.15,233,1739833200"; 
+   d="scan'208,217";a="219131561"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 23 Apr 2025 16:46:13 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 6D53AE007A; Wed, 23 Apr 2025 16:46:13 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 02EECE007A
+	for <caml-list@sympa.inria.fr>; Wed, 23 Apr 2025 16:46:06 +0200 (CEST)
+IronPort-SDR: 6808fd26_kKFfzh3htZMqRk0LDLZSO8v4TzAa66LZ3DQzykid2QpBf+n
+ bJLeM1sjdCmHaOe8qoWBqvcOWs1A5h/3B1UP0Rw==
+X-IPAS-Result: =?us-ascii?q?A0FwAwCR/AhogTLaVdFaFggBAQsSDIIIC4JEfVk0BAtIh?=
+ =?us-ascii?q?FWBI44tgiEDi3OLTIR/gVWBQD4PAQMBDTUPBAEBAwMBhQACiy0CHgcBBDIHD?=
+ =?us-ascii?q?gECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEiGQcOO4V7DYJiA?=
+ =?us-ascii?q?YEkXgcJOAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAjA7AR8BAQECARIRBBkBATcBDwsEBzcCAiESAQUBHAYTIoJhgkEjAxGlA?=
+ =?us-ascii?q?oEFQos+fzOBAYIMAQEG3CCBZQMGFIE1iDYaAQVtawIOh3x6JxuBSUSBSlSBH?=
+ =?us-ascii?q?2oYPoRwgy6CaYIxgQMUklOLZyYDBwcODR5JDgEhAyYzLAFVExcLBwVhRUMBA?=
+ =?us-ascii?q?gGBDiNLBTAdgleFJYIRgVwDAyIBgWs5b3QchGiEUi1Pgy+CA2gGHUADC2ILP?=
+ =?us-ascii?q?TcUG0yWQYM5LYEVLCJvQCcFfZJ8LI9NoWqBPoQlinWBJJVKM6pXmH6OBpVWh?=
+ =?us-ascii?q?UgRI4FLDiWBXH0IOzEGgjBPAxkPjiEMFoUcg1W8dioyPAIHAQoBAQMJkByBS?=
+ =?us-ascii?q?wEB?=
+IronPort-PHdr: A9a23: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
+ d/KxvqbwNhq8t/Z8I0bHceGcaq6
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:/IY0Fa8khMPf2dNvNSxuk+AiI+orL9Y04lQ7vn2ZhyYlCPBw9v
+ re4cjzsCWftN9/YgBGpTntAtjlfZqYz+8R3WBzB8bAYOCFghrQEGgK1+KLqAEIWReOlNK1vp
+ 0QC5SWZueAdmRSvILU5hKnG80szNTC3KejnvfG0nthJDsHV4hQqyl8TimWGlBrXwVdbKBJcq
+ a0145oo36Pdx0sAPhTxUNrYwEAnbD2fV7dACLuziRG1DWz
+X-Talos-CUID: 9a23:XHpXumxzMFrOJ+YKlXj4BgVOGJ4XSFb/0k3zYHWoIm9UQbnEFQ+5rfY=
+X-Talos-MUID: =?us-ascii?q?9a23=3As+mAZQ6i92GmU3NqMP1yn9Xxxoxt0vmST2E9ya8?=
+ =?us-ascii?q?YlMKtNDcpIhLNgzKeF9o=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,233,1739833200"; 
+   d="scan'208,217";a="114994348"
+X-MGA-submission: =?us-ascii?q?MDFsly4a/7LVfpizb07zzcQMaNeSRdPrGapkf+?=
+ =?us-ascii?q?L1/GmYEB7kaVbfa9y+th5pznTe9D714LTDRoUcJW3A82KjLbkCfB/Z3a?=
+ =?us-ascii?q?2JgFbG79HgoEuRASQTTLkUPfGZ1Yhap4eXo9aaXAbxrtK0EXJN1WipbR?=
+ =?us-ascii?q?1g6lSZ0cPZWD7Roq5VCJBJGQ=3D=3D?=
+Received: from mail-ej1-f50.google.com ([209.85.218.50])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 16:45:58 +0200
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-ac2ab99e16eso1188099066b.0
+        for <caml-list@inria.fr>; Wed, 23 Apr 2025 07:45:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google; t=1745419557; x=1746024357; darn=inria.fr;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=2k/d2PWQdpjCrmNw5XuhmmSkD/43xD1YR57U2OL9GRA=;
+        b=Di2M8IqbZMA2FhSWLTYOon3dU9/RjAt++EuR8c5dxAUZQln+7aq0Wg5xNVI+Yo4Nmr
+         Pi6tYpLQqtQksP+pW1CnuqdpekjRbsfCMjHUil50vrju0CUCrizYbW0vk9ioQW8/UDgx
+         amjykotVNBR4XzsA4EIjGNjuPDagVN3TbhtnQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745419557; x=1746024357;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2k/d2PWQdpjCrmNw5XuhmmSkD/43xD1YR57U2OL9GRA=;
+        b=O7SRPV9qFgTiejtSoMczL1bwlEvCDTxYN7LnK+H/4X6jerm4Q/mnvdea3ZVI68AmlF
+         0dzfCW73a14abGcTY/nbuTUYq+kcIp3kOqMUYrLw7avXaR75InrtoYgdTicKJwdMm9j9
+         yHO7JIPxGFyH5ddvaHqxNcdmQTZKmpq3wM7OI6ulwK9nt8bmTopS6HK9pjzIflS+jla8
+         EokNMy7em2whuq3g74eeTjAkn8/j7//Z+1WO2pkBTsixFLqFxpp4ypMsGln55vMvuRGU
+         XkY0g4ngYQMvvQ7JYQ2vCl8mgPWiSYXwCfG+paHq1sWCP7OtMs4R6nv+DkFs/op6p21B
+         bW9Q==
+X-Forwarded-Encrypted: i=1; AJvYcCV+BY8AhMMlntmdJahZUybOrOEbdk/nNjSj/SDPU/95XN+XJi8MqxgD22hFiwURjHXDpiwk/h1Y3SM=@inria.fr
+X-Gm-Message-State: AOJu0YzktYJiqAeicmvMryM/tfC+Lvr2t+Ga95DhEWES1zqDbfII5GBJ
+	m3eU4wUyjq9RDd1RDaBus0SY3mV9UbgYoa3P/i4TXX4kO/uXSXYdGG2T+eVtm1geOWnslfQPKTS
+	kg+KgJMKgxjNW463pX/NdVZVkV77UB0tgphba
+X-Gm-Gg: ASbGnct+4OtOQ1cOTLHkuLz73dVc+FXn+I8hNhwWdIyQLVY1X1eaJ4Io2xn61kQX9Tj
+	m+4QDgIuCYKpKgzYW2U2hs0aMzq6kKh7/b9v4Y0YsCngpts4wiaMrta1RsqJfo+40DgckaVT89H
+	CQ8aTjBT/q+SVdqnvIXkEl1Q==
+X-Google-Smtp-Source: AGHT+IFM1etSu9yF3sptGE5vxbP3fOiGbcDAGTh2SluWwVwFthKKPXJtBmuMjJZZaQtVMQ4iE13i3e+YI62fv761Rhk=
+X-Received: by 2002:a17:907:7255:b0:acb:33ba:2889 with SMTP id
+ a640c23a62f3a-acb74dd0838mr1773357066b.41.1745419557222; Wed, 23 Apr 2025
+ 07:45:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <aAj03hsKG9C9rdb-@pllab.is.ocha.ac.jp> <b1043d81-1eb2-4175-aa64-308f51e7814c@inria.fr>
+In-Reply-To: <b1043d81-1eb2-4175-aa64-308f51e7814c@inria.fr>
+From: Ivan Gotovchits <ivg@ieee.org>
+Date: Wed, 23 Apr 2025 10:45:46 -0400
+X-Gm-Features: ATxdqUE-g9iP5mJWl5yf0t5ATtvEgIcH4o8OqYfAC07tVHiu0iH-so6NfriMDK8
+Message-ID: <CALdWJ+xxizBHMz9bz1Qf2K9nb+tQbZj1+DpdU7d6bFRH1iXOsg@mail.gmail.com>
+To: Francois Pottier <francois.pottier@inria.fr>
+Cc: Kenichi Asai <asai@is.ocha.ac.jp>, caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="000000000000b19ee906337328c1"
+Subject: Re: [Caml-list] automatically resolving open?
+Reply-To: Ivan Gotovchits <ivg@ieee.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19304
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-04/CALdWJ%2BxxizBHMz9bz1Qf2K9nb%2BtQbZj1%2BDpdU7d6bFRH1iXOsg%40mail.gmail.com>
+
+--000000000000b19ee906337328c1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+An interesting corner case is
+```
+open struct let map f x =3D f x end
+let () =3D map (fun _ -> ()) 0
+```
+since OCaml let's us open anonymous modules. In this case, -dtypedtree
+generates an unqualified names. So it would be rather easy to remove all
+opens to of the named modules, since OCaml will generate fully qualified
+names, e.g., `Texp_ident "Stdlib!.List.map"`, but for anonymous modules, it
+would be harder to do.
+
+On Wed, Apr 23, 2025 at 10:32=E2=80=AFAM Francois Pottier <francois.pottier=
+@inria.fr>
+wrote:
+
+>
+> Hello,
+>
+> Le 23/04/2025 =C3=A0 16:10, Kenichi Asai a =C3=A9crit :
+> > Would it be possible to transform an OCaml file to the one that does
+> > not use open?
+>
+> I don't know whether it is possible/easy to do this today,
+> but it would certainly interesting and useful to have such
+> a tool.
+>
+> I note that the output that you expect cannot always be
+> produced, due to name shadowing issues. For example if
+> the program is
+>
+> open List
+> module List =3D struct end
+> let test =3D map (fun x -> x + 1) [1; 2; 3]
+>
+> then the best output that one can expect is
+>
+> let map =3D List.map
+> module List =3D struct end
+> let test =3D map (fun x -> x + 1) [1; 2; 3]
+>
+> That said (contradicting myself), one can actually obtain
+> better output if one is careful to always use absolute paths.
+> In this example one could write:
+>
+> module List =3D struct end
+> let test =3D Stdlib.List.map (fun x -> x + 1) [1; 2; 3]
+>
+> which relies on the fact that the name "Stdlib" is not shadowed.
+>
+> As far as I know there is currently no syntax for absolute
+> paths in OCaml (every path is relative, and every name can
+> be shadowed). Maybe we should consider adding such a syntax?
+>
+> --
+> Fran=C3=A7ois Pottier
+> francois.pottier@inria.fr
+> https://cambium.inria.fr/~fpottier/
+>
+>
+
+--000000000000b19ee906337328c1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">An interesting corner case is=C2=A0<div>```</div><div>open=
+ struct let map f x =3D f x end<br>let () =3D map (fun _ -&gt; ()) 0<br></d=
+iv><div>```</div><div>since OCaml let&#39;s us open anonymous modules. In t=
+his case, -dtypedtree generates an unqualified names. So it would be rather=
+ easy to remove all opens to of the named modules, since OCaml will generat=
+e fully qualified names, e.g., `Texp_ident &quot;Stdlib!.List.map&quot;`, b=
+ut for anonymous modules, it would be harder to do.=C2=A0</div></div><br><d=
+iv class=3D"gmail_quote gmail_quote_container"><div dir=3D"ltr" class=3D"gm=
+ail_attr">On Wed, Apr 23, 2025 at 10:32=E2=80=AFAM Francois Pottier &lt;<a =
+href=3D"mailto:francois.pottier@inria.fr">francois.pottier@inria.fr</a>&gt;=
+ wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px =
+0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><br>
+Hello,<br>
+<br>
+Le 23/04/2025 =C3=A0 16:10, Kenichi Asai a =C3=A9crit=C2=A0:<br>
+&gt; Would it be possible to transform an OCaml file to the one that does<b=
+r>
+&gt; not use open?<br>
+<br>
+I don&#39;t know whether it is possible/easy to do this today,<br>
+but it would certainly interesting and useful to have such<br>
+a tool.<br>
+<br>
+I note that the output that you expect cannot always be<br>
+produced, due to name shadowing issues. For example if<br>
+the program is<br>
+<br>
+open List<br>
+module List =3D struct end<br>
+let test =3D map (fun x -&gt; x + 1) [1; 2; 3]<br>
+<br>
+then the best output that one can expect is<br>
+<br>
+let map =3D List.map<br>
+module List =3D struct end<br>
+let test =3D map (fun x -&gt; x + 1) [1; 2; 3]<br>
+<br>
+That said (contradicting myself), one can actually obtain<br>
+better output if one is careful to always use absolute paths.<br>
+In this example one could write:<br>
+<br>
+module List =3D struct end<br>
+let test =3D Stdlib.List.map (fun x -&gt; x + 1) [1; 2; 3]<br>
+<br>
+which relies on the fact that the name &quot;Stdlib&quot; is not shadowed.<=
+br>
+<br>
+As far as I know there is currently no syntax for absolute<br>
+paths in OCaml (every path is relative, and every name can<br>
+be shadowed). Maybe we should consider adding such a syntax?<br>
+<br>
+-- <br>
+Fran=C3=A7ois Pottier<br>
+<a href=3D"mailto:francois.pottier@inria.fr" target=3D"_blank">francois.pot=
+tier@inria.fr</a><br>
+<a href=3D"https://cambium.inria.fr/~fpottier/" rel=3D"noreferrer" target=
+=3D"_blank">https://cambium.inria.fr/~fpottier/</a><br>
+<br>
+</blockquote></div>
+
+--000000000000b19ee906337328c1--
