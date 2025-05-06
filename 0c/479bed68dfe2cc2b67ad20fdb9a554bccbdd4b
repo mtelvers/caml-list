@@ -1,0 +1,1317 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=PT76Y3yG;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=fDlH55gd;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id E00BF4003C
+	for <caml-list@tunbury.org>; Tue,  6 May 2025 07:24:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=iNIsqejhgaFbgmZYBW7dNTit6m3Uo8fLXDqOHvLb05E=;
+  b=PT76Y3yG0xZEPFYhi4EKrk4D++L7V7+popB8nwXWBO+YQMwOuPOCiPBV
+   iYyxGyVv/3AKhNWIbm3xyYxaKbWWKyhxTt570MFqZRT4J34gkWIkumUZ/
+   mWvewpJHeyjPHDsdw8dBPYv3IBJN/5/aK6ZHbkYOhhRsJtuBE8yiIXR2m
+   w=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.15,265,1739833200"; 
+   d="scan'208,217";a="220793069"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 06 May 2025 09:24:22 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 2D321E0AF6; Tue,  6 May 2025 09:24:22 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 651A1E0131
+	for <caml-list@sympa.inria.fr>; Tue,  6 May 2025 09:24:19 +0200 (CEST)
+IronPort-SDR: 6819b921_in/kjwLhDIB5phOJzozV9VhMHBDv4kHY1FWDlerZJGCIgIJ
+ MzU2bdU9PfgyFFQ+0ynVSm/eD5RCGJjDnTA/V7w==
+X-IPAS-Result: =?us-ascii?q?A0GmCAA4uBlojyIeaIFaHQEBPAEFBQECAQkBgWgCAYE+g?=
+ =?us-ascii?q?QMZAWNaESIHCEmEVYNPjiKRSohJgi+DKyMUAQMBDRQCAQIOBwEbBAECBAEBA?=
+ =?us-ascii?q?wECAYUAAotEAh8GAQQzBg4BAgQBAQEBAwIDAQEBAQEBEAEBBQEBAQIBAQIEB?=
+ =?us-ascii?q?gECEAEBAQEBATkFSYV7DUkBAQQLAYFqGThxgSUBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECDAEZCoEEChMBATIGGCMDEAQBB?=
+ =?us-ascii?q?gMCEQE1AwETARIagiREAYJkAwQBDAaTOJtLeoEygQGCDAEBBoEIPgIBDwMPL?=
+ =?us-ascii?q?9oHgWUJgTEYAYVsgkkaASpIawKESAmEMycPgVVEgRWCeW+CShcBAQEBgTQCB?=
+ =?us-ascii?q?gEBTQmDJYJpghoXRD4UH4IygVmBRYJqgVSDS4JngQcogwGJGYFHIgMmMywBV?=
+ =?us-ascii?q?RMXCwcFYYEIAyo0MW4zHYIPhRuCD4IEiQmETS1PhTGBKn9AAwttPTcUG5Y5H?=
+ =?us-ascii?q?CMagx8OPgEbIiMDKwEFBQkIDgIiLggjFgcDGR0JDiMmAQsCCQIeDQKSQwISC?=
+ =?us-ascii?q?R8qA3SOWYNVnx80B4QegV4GDIkGgSSWAIQDgVeLM4cAkkwimF4iiV0KgRsJg?=
+ =?us-ascii?q?W9qiHWMYSGFOIF9JIFGDwczGjBDgmcJCT0cD44tFoNeQX2DGjtauUFBNQIBA?=
+ =?us-ascii?q?TgCBwEKAQEDCYVFHQEBaYIbgheFEwEDDRcMgUsBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ NVhD7jSyXlp8Hxs5YA=
+IronPort-HdrOrdr: A9a23:VxUvyKwXw6o46l6hW86tKrPwEb1zdoMgy1knxilNoH1uA6+lfq
+ WV9sjzuiWbtN98YhwdcLO7WJVoI0m8yXcd2+B4VotKNzOIhILHFu1fxLqn6wKlMSzz/OxQ2M
+ 5bAspDIey1K0N1yeLz4AzQKadF/DBrytHMudvj
+X-Talos-CUID: 9a23:w3MAMGzaet1/AUdFSmUTBgURP/x8cnGB7Uz7OlWYLGNrRZGFbXmfrfY=
+X-Talos-MUID: 9a23:vqG0BwWBHeU0cgHq/BXUowBSMOZu2rWzERoQl8wrhPGZZQUlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,265,1739833200"; 
+   d="scan'208,217";a="115913368"
+X-MGA-submission: =?us-ascii?q?MDEgSCFjru9zPxNvB4+rfr2Ys8/I+mxDCsY+zn?=
+ =?us-ascii?q?74Wt5+baeTX5Lkl7aKMAttEZUxB8tHXM4QbTtvf3BqkMdlj4ClkxHJ0A?=
+ =?us-ascii?q?hzDJ2OKmVI1SsW0c1DxOSBYGVCcJ2YqSxuoA4BNFc0klV/qN6+rM5izl?=
+ =?us-ascii?q?C5QkC9xkaR9yxrFvTV2QPw2Q=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2025 09:24:18 +0200
+Received: from TM.local (unknown [89.207.175.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 138F256514E;
+	Tue,  6 May 2025 09:24:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1746516256;
+	bh=67zVmYNXU8JhqHSONm6STQ+lgSG7Ae8F2EVgXZR0LrY=;
+	h=From:To:Subject:Date:Message-ID;
+	b=fDlH55gdyKGS8X+8Yg/gntndIaozbmmBUJmH1uMjjjATorMLpquT30atxahftwyvq
+	 4wSlC1AswhUxLSwQXeTIwZwKWBfL7/Ocs9EOp+CcVtsEKHUONn8N62ey34PjuLnYTT
+	 d1hKuO9SWDXQoeiEtdYWzjp4hNCjhQTwTZPmnRQU=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 06 May 2025 09:24:13 +0200
+Message-ID: <m2msbqcici.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue May  6 09:24:16 2025 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.391722, queueID=C29D8565150
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19316
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-05/m2msbqcici.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of April 29 to May
+06, 2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Docfd 11.0.0: TUI multiline fuzzy document finder
+opam 2.4.0~alpha1
+Early work experimenting with zig as a cross-compiler for OCaml
+Dune 3.18
+A tool to reverse debug OCaml/other binary runs
+opam 2.4.0~alpha2
+(BER) MetaOCaml N153, for OCaml 5.3.0
+Other OCaml News
+Old CWN
+
+
+Docfd 11.0.0: TUI multiline fuzzy document finder
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-docfd-11-0-0-tui-multiline-fuzzy-documen=
+t-finder/16574/1>
+
+
+Darren announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hi all, I am happy to announce the release of Docfd 11.0.0.
+
+  [Repo]
+
+
+[Repo] <https://github.com/darrenldl/docfd>
+
+What Docfd is
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Think interactive grep for text files, PDFs, DOCXs, etc, but
+  word/token based instead of regex and line based, so you can search
+  across lines easily.
+
+  Docfd aims to provide good UX via integration with common text editors
+  and PDF viewers, so you can jump directly to a search result with a
+  single key press.
+
+  If you have used Recoll or other local document search engines before,
+  then you can roughly think of this as Recoll-lite with TUI.
+
+
+=E2=97=8A Interactive use
+
+  <https://us1.discourse-cdn.com/flex020/uploads/ocaml/original/2X/6/6e01a7=
+79f649ba35dec72595d3706847f87e1442.gif>
+
+
+=E2=97=8A Non-interactive use
+
+  <https://us1.discourse-cdn.com/flex020/uploads/ocaml/original/2X/6/6d6984=
+de3d73d0c949d06f1c8345ac9940d7f28e.gif>
+
+
+=E2=97=8A Features
+
+  =E2=80=A2 Multithreaded indexing and searching
+  =E2=80=A2 Multiline fuzzy search of multiple files
+  =E2=80=A2 Content view pane that shows the snippet surrounding the search
+    result selected
+  =E2=80=A2 Text editor and PDF viewer integration
+  =E2=80=A2 Editable command history - rewrite/plan your actions in text ed=
+itor
+  =E2=80=A2 Search scope narrowing - limit scope of next search based on cu=
+rrent
+    search results
+  =E2=80=A2 Clipboard integration
+
+
+Changes since 3.0.0
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C
+
+  The last version announced here was 3.0.0. Docfd has since then
+  undergone many improvements.
+
+  Major changes:
+
+  =E2=80=A2 Asynchronous UI
+    =E2=80=A2 You can type and interact with UI without any blocking even if
+      search is slow, and active search will be cancelled when
+      appropriate
+  =E2=80=A2 Scripting functionality in the form of a commands file
+    =E2=80=A2 One-to-one correspondence to most UI interactions, allowing y=
+ou to
+      interact as normal, and save your interaction into a file to
+      repeat the search steps later via `=E2=80=93commands-from`
+  =E2=80=A2 Swapped to using SQLite as index DB format, which lowers the me=
+mory
+    footprint significantly
+    =E2=80=A2 For the sample of 1.4GB of PDFs used, earlier versions use ar=
+ound
+      1.9GB of memory to store the index in-memory, while versions since
+      9.0.0 use only 39MB of memory
+  =E2=80=A2 Document indexing was reworked into a multistage pipeline to al=
+low
+    I/O tasks and computational tasks to run concurrently, which makes
+    indexing a few times faster than older versions usually
+  =E2=80=A2 Searching was also reworked into a pipeline for better work
+    distribution across domains, improving search speed by 30% in the
+    sample set of PDFs
+  =E2=80=A2 Added `--open-with' to allow customising the command used to op=
+en a
+    file based on file extension
+
+
+opam 2.4.0~alpha1
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha1/16520/2>
+
+
+Continuing this thread, Ryan Gibb announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80
+
+        :snowflake: Add *Nix support* for *external dependencies
+        (depexts)* by adding support for stateless package
+        managers ([#5982]). /Thanks to [@RyanGibb] for this
+        contribution/
+
+  I've written a small explainer of this at
+  <https://ryan.freumh.org/opam-nix.html> and am happy to receive
+  feedback on this mechanism!
+
+
+[#5982] <https://github.com/ocaml/opam/issues/5982>
+
+[@RyanGibb] <https://github.com/RyanGibb>
+
+
+Early work experimenting with zig as a cross-compiler for OCaml
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/early-work-experimenting-with-zig-as-a-cross=
+-compiler-for-ocaml/16151/17>
+
+
+Continuing this thread, Chris Armstrong announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I've written up a summary in a blog post of much of my progress I've
+  described above:
+  <https://www.chrisarmstrong.dev/posts/ocaml-cross-compilation-an-experime=
+nt>
+
+
+Dune 3.18
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-3-18/16428/3>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The Dune Team is glad to announce the release of Dune `3.18.2'.
+
+  This version contains a fix to restore compatibility with the upcoming
+  OCaml `5.4.0'.
+
+
+Changelog
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C
+
+=E2=97=8A Fixed
+
+  =E2=80=A2 fix compatibility with `ocaml.5.4.0' by avoiding shadowing sigw=
+inch
+    (@nojb, #11639)
+
+
+A tool to reverse debug OCaml/other binary runs
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-a-tool-to-reverse-debug-ocaml-other-bina=
+ry-runs/16366/6>
+
+
+Continuing this thread, Sid Kshatriya announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  BTW aarch64 support was released =E2=80=93 forgot to mention it on this
+  thread.
+
+
+opam 2.4.0~alpha2
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha2/16609/1>
+
+
+Kate announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hi everyone,
+
+  We are happy to announce the second alpha release of opam 2.4.0.
+
+  This version is an alpha, we invite users to test it to spot
+  previously unnoticed bugs as we head towards the stable release.
+
+
+What=E2=80=99s new?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 :dragon_face: `opam switch create [name] <version>' will not in=
+clude
+    compiler packages flagged with `avoid-version~/~deprecated' in the
+    generated invariant anymore. ([#6494]) This will allow opam to avoid
+    the use of the `ocaml-system' package unless actually explicitly
+    requested by the user. The opam experience when the `ocaml-system'
+    compiler is used is known to be prone to a variety of bugs and
+    configuration issues.  This alpha made this change in order to
+    provide `opam switch create' with the same experience as `opam
+    init', which will itself not choose `ocaml-system' anymore since the
+    previous alpha1 release.
+
+  =E2=80=A2 :window: Fallback to the existing Cygwin package manager if its
+    upgrade failed to be fetched ([#6495], partial fix for [#6474])
+
+  =E2=80=A2 :goggles: Fix various crashes and extreme performance issues wh=
+en
+    updating some opam repositories ([#6448])
+
+  :open_book: You can read our [blog post] for more information, and for
+  even more details you can take a look at the [release note] or the
+  [changelog].
+
+
+[#6494] <https://github.com/ocaml/opam/pull/6494>
+
+[#6495] <https://github.com/ocaml/opam/issues/6495>
+
+[#6474] <https://github.com/ocaml/opam/issues/6474>
+
+[#6448] <https://github.com/ocaml/opam/issues/6448>
+
+[blog post] <https://opam.ocaml.org/blog/opam-2-4-0-alpha2/>
+
+[release note] <https://github.com/ocaml/opam/releases/tag/2.4.0-alpha2>
+
+[changelog] <https://github.com/ocaml/opam/blob/2.4.0-alpha2/CHANGES>
+
+
+Try it!
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The upgrade instructions are unchanged:
+
+  For Unix systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 bash -c "sh <(curl -fsSL https://opam.ocaml.org/install.sh) --v=
+ersion 2.4.0~alpha2"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  or from PowerShell for Windows systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 Invoke-Expression "& { $(Invoke-RestMethod https://opam.ocaml.o=
+rg/install.ps1) } -Version 2.4.0~alpha2"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  Please report any issues to the [bug-tracker].
+
+  Happy hacking, <> <> The opam team <> <> :camel:
+
+
+[bug-tracker] <https://github.com/ocaml/opam/issues>
+
+
+(BER) MetaOCaml N153, for OCaml 5.3.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://inbox.ci.dev/caml-list/aBmw%2F+5a2x%2FaQN5m@Magus.localnet/T/#u>
+
+
+Oleg announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  BER MetaOCaml (or, simply MetaOCaml, since there aren't any others)
+  N153 is a strict superset of OCaml 5.3.0 for ``writing programs that
+  generate programs''.  MetaOCaml adds to OCaml the type of code values
+  (denoting ``program code'', or future-stage computations), and two
+  basic constructs to build them: quoting and splicing. MetaOCaml also
+  features cross-stage persistence, generating ordinary and
+  mutually-recursive definitions, first-class pattern-matching and
+  heterogeneous metaprogramming.
+
+  The generated code can be printed, stored in a file =E2=80=93 or compiled=
+ and
+  linked-back to the running program, thus implementing run-time code
+  optimization. A subset of the generated OCaml code can also be
+  converted to C, via offshoring. (The generated C needs no particular
+  runtime or GC.) A well-typed MetaOCaml program generates only
+  well-scoped and well-typed programs: The generated code shall compile
+  without type errors.  Staging-annotation=E2=80=93free MetaOCaml is identi=
+cal
+  to OCaml; MetaOCaml can link to any OCaml-compiled library (and vice
+  versa).
+
+  There aren't any notable new features to talk about. OCaml 5.x has
+  changed AST (Parsetree) and Typedtree in significant ways, especially
+  concerning functions. Adjusting MetaOCaml to those changes took some
+  work. See also ChangeLog and NOTES.txt in the MetaOCaml distribution
+  for more details.
+
+  I'm very thankful to the OCaml team for merging the patch to the OCaml
+  grammar concerning staging annotations. It has made maintaining
+  MetaOCaml quite easier.
+
+  MetaOCaml N153 should be available through OPAM, hopefully soon.  In
+  the meanwhile, it is available as a set of patches to the OCaml 5.3.0
+  distribution.  <https://okmij.org/ftp/ML/ber-metaocaml.tar.gz> See the
+  INSTALL document in that archive. You need the source distribution of
+  OCaml 5.3.0.
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Bstr, a synthetic library for bigstrings]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Bstr, a synthetic library for bigstrings]
+<https://blog.osau.re/articles/bstr.html>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-05-06 Tue 09:22 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.04.29.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.05.13.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of April 29 to May 06, 2=
+025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Docfd 11.0.0: TUI multiline fuzzy document finder</a></l=
+i>
+<li><a href=3D"#2">opam 2.4.0~alpha1</a></li>
+<li><a href=3D"#3">Early work experimenting with zig as a cross-compiler fo=
+r OCaml</a></li>
+<li><a href=3D"#4">Dune 3.18</a></li>
+<li><a href=3D"#5">A tool to reverse debug OCaml/other binary runs</a></li>
+<li><a href=3D"#6">opam 2.4.0~alpha2</a></li>
+<li><a href=3D"#7">(BER) MetaOCaml N153, for OCaml 5.3.0</a></li>
+<li><a href=3D"#8">Other OCaml News</a></li>
+<li><a href=3D"#org94b0d7f">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Docfd 11.0.0: TUI multiline fuzzy document finder</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-docfd-11-0-0-tui-multil=
+ine-fuzzy-document-finder/16574/1">https://discuss.ocaml.org/t/ann-docfd-11=
+-0-0-tui-multiline-fuzzy-document-finder/16574/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org8c3f29e" class=3D"outline-3">
+<h3 id=3D"org8c3f29e">Darren announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8c3f29e">
+<p>
+Hi all, I am happy to announce the release of Docfd 11.0.0.
+</p>
+
+<p>
+<a href=3D"https://github.com/darrenldl/docfd">Repo</a>
+</p>
+</div>
+<div id=3D"outline-container-org9cb730b" class=3D"outline-4">
+<h4 id=3D"org9cb730b">What Docfd is</h4>
+<div class=3D"outline-text-4" id=3D"text-org9cb730b">
+<p>
+Think interactive grep for text files, PDFs, DOCXs, etc, but word/token bas=
+ed instead of regex and line based, so you can search across lines easily.
+</p>
+
+<p>
+Docfd aims to provide good UX via integration with common text editors and =
+PDF viewers, so you can jump directly to a search result with a single key =
+press.
+</p>
+
+<p>
+If you have used Recoll or other local document search engines before, then=
+ you can roughly think of this as Recoll-lite with TUI.
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgccbb2ae"></a>Interactive use<br />
+<div class=3D"outline-text-5" id=3D"text-orgccbb2ae">
+
+<div id=3D"org511592e" class=3D"figure">
+<p><img src=3D"https://us1.discourse-cdn.com/flex020/uploads/ocaml/original=
+/2X/6/6e01a779f649ba35dec72595d3706847f87e1442.gif" alt=3D"6e01a779f649ba35=
+dec72595d3706847f87e1442.gif" width=3D"80%" />
+</p>
+</div>
+</div>
+</li>
+<li><a id=3D"org434100e"></a>Non-interactive use<br />
+<div class=3D"outline-text-5" id=3D"text-org434100e">
+
+<div id=3D"orga46be81" class=3D"figure">
+<p><img src=3D"https://us1.discourse-cdn.com/flex020/uploads/ocaml/original=
+/2X/6/6d6984de3d73d0c949d06f1c8345ac9940d7f28e.gif" alt=3D"6d6984de3d73d0c9=
+49d06f1c8345ac9940d7f28e.gif" width=3D"80%" />
+</p>
+</div>
+</div>
+</li>
+<li><a id=3D"orgb54f0a4"></a>Features<br />
+<div class=3D"outline-text-5" id=3D"text-orgb54f0a4">
+<ul class=3D"org-ul">
+<li>Multithreaded indexing and searching</li>
+<li>Multiline fuzzy search of multiple files</li>
+<li>Content view pane that shows the snippet surrounding the search result =
+selected</li>
+<li>Text editor and PDF viewer integration</li>
+<li>Editable command history - rewrite/plan your actions in text editor</li>
+<li>Search scope narrowing - limit scope of next search based on current se=
+arch results</li>
+<li>Clipboard integration</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-org1f518c8" class=3D"outline-4">
+<h4 id=3D"org1f518c8">Changes since 3.0.0</h4>
+<div class=3D"outline-text-4" id=3D"text-org1f518c8">
+<p>
+The last version announced here was 3.0.0. Docfd has since then undergone m=
+any improvements.
+</p>
+
+<p>
+Major changes:
+</p>
+
+<ul class=3D"org-ul">
+<li>Asynchronous UI
+<ul class=3D"org-ul">
+<li>You can type and interact with UI without any blocking even if search i=
+s slow, and active search will be cancelled when appropriate</li>
+</ul></li>
+<li>Scripting functionality in the form of a commands file
+<ul class=3D"org-ul">
+<li>One-to-one correspondence to most UI interactions, allowing you to inte=
+ract as normal, and save your interaction into a file to repeat the search =
+steps later via `&#x2013;commands-from`</li>
+</ul></li>
+<li>Swapped to using SQLite as index DB format, which lowers the memory foo=
+tprint significantly
+<ul class=3D"org-ul">
+<li>For the sample of 1.4GB of PDFs used, earlier versions use around 1.9GB=
+ of memory to store the index in-memory, while versions since 9.0.0 use onl=
+y 39MB of memory</li>
+</ul></li>
+<li>Document indexing was reworked into a multistage pipeline to allow I/O =
+tasks and computational tasks to run concurrently, which makes indexing a f=
+ew times faster than older versions usually</li>
+<li>Searching was also reworked into a pipeline for better work distributio=
+n across domains, improving search speed by 30% in the sample set of PDFs</=
+li>
+<li>Added <code>--open-with</code> to allow customising the command used to=
+ open a file based on file extension</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">opam 2.4.0~alpha1</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha1/16520=
+/2">https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha1/16520/2</a>
+</p>
+</div>
+<div id=3D"outline-container-org810b7d7" class=3D"outline-3">
+<h3 id=3D"org810b7d7">Continuing this thread, Ryan Gibb announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org810b7d7">
+<blockquote>
+<p>
+:snowflake: Add <b>Nix support</b> for <b>external dependencies (depexts)</=
+b> by adding support for stateless package managers (<a href=3D"https://git=
+hub.com/ocaml/opam/issues/5982">#5982</a>). <i>Thanks to <a href=3D"https:/=
+/github.com/RyanGibb">@RyanGibb</a> for this contribution</i>
+</p>
+</blockquote>
+
+<p>
+I've written a small explainer of this at <a href=3D"https://ryan.freumh.or=
+g/opam-nix.html">https://ryan.freumh.org/opam-nix.html</a> and am happy to =
+receive feedback on this mechanism!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Early work experimenting with zig as a cross-compiler for OCam=
+l</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/early-work-experimenting-wi=
+th-zig-as-a-cross-compiler-for-ocaml/16151/17">https://discuss.ocaml.org/t/=
+early-work-experimenting-with-zig-as-a-cross-compiler-for-ocaml/16151/17</a>
+</p>
+</div>
+<div id=3D"outline-container-org56e8047" class=3D"outline-3">
+<h3 id=3D"org56e8047">Continuing this thread, Chris Armstrong announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org56e8047">
+<p>
+I've written up a summary in a blog post of much of my progress I've descri=
+bed above: <a href=3D"https://www.chrisarmstrong.dev/posts/ocaml-cross-comp=
+ilation-an-experiment">https://www.chrisarmstrong.dev/posts/ocaml-cross-com=
+pilation-an-experiment</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Dune 3.18</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-3-18/16428/3">http=
+s://discuss.ocaml.org/t/ann-dune-3-18/16428/3</a>
+</p>
+</div>
+<div id=3D"outline-container-org26d8595" class=3D"outline-3">
+<h3 id=3D"org26d8595">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org26d8595">
+<p>
+The Dune Team is glad to announce the release of Dune <code>3.18.2</code>.
+</p>
+
+<p>
+This version contains a fix to restore compatibility with the upcoming OCam=
+l <code>5.4.0</code>.
+</p>
+</div>
+<div id=3D"outline-container-orgfbbbcab" class=3D"outline-4">
+<h4 id=3D"orgfbbbcab">Changelog</h4>
+<div class=3D"outline-text-4" id=3D"text-orgfbbbcab">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgface427"></a>Fixed<br />
+<div class=3D"outline-text-5" id=3D"text-orgface427">
+<ul class=3D"org-ul">
+<li>fix compatibility with <code>ocaml.5.4.0</code> by avoiding shadowing s=
+igwinch (@nojb, #11639)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">A tool to reverse debug OCaml/other binary runs</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-a-tool-to-reverse-debug=
+-ocaml-other-binary-runs/16366/6">https://discuss.ocaml.org/t/ann-a-tool-to=
+-reverse-debug-ocaml-other-binary-runs/16366/6</a>
+</p>
+</div>
+<div id=3D"outline-container-org29bf6b7" class=3D"outline-3">
+<h3 id=3D"org29bf6b7">Continuing this thread, Sid Kshatriya announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org29bf6b7">
+<p>
+BTW aarch64 support was released &#x2013; forgot to mention it on this thre=
+ad.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">opam 2.4.0~alpha2</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha2/16609=
+/1">https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha2/16609/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc301896" class=3D"outline-3">
+<h3 id=3D"orgc301896">Kate announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc301896">
+<p>
+Hi everyone,
+</p>
+
+<p>
+We are happy to announce the second alpha release of opam 2.4.0.
+</p>
+
+<p>
+This version is an alpha, we invite users to test it to spot previously unn=
+oticed bugs as we head towards the stable release.
+</p>
+</div>
+<div id=3D"outline-container-orgb991c00" class=3D"outline-4">
+<h4 id=3D"orgb991c00">What=E2=80=99s new?</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb991c00">
+<ul class=3D"org-ul">
+<li>:dragon_face: <code>opam switch create [name] &lt;version&gt;</code> wi=
+ll not include compiler packages flagged with <code>avoid-version~/~depreca=
+ted</code> in the generated invariant anymore. (<a href=3D"https://github.c=
+om/ocaml/opam/pull/6494">#6494</a>)
+This will allow opam to avoid the use of the <code>ocaml-system</code> pack=
+age unless actually explicitly requested by the user. The opam experience w=
+hen the <code>ocaml-system</code> compiler is used is known to be prone to =
+a variety of bugs and configuration issues.
+This alpha made this change in order to provide <code>opam switch create</c=
+ode> with the same experience as <code>opam init</code>, which will itself =
+not choose <code>ocaml-system</code> anymore since the previous alpha1 rele=
+ase.</li>
+
+<li>:window: Fallback to the existing Cygwin package manager if its upgrade=
+ failed to be fetched (<a href=3D"https://github.com/ocaml/opam/issues/6495=
+">#6495</a>, partial fix for <a href=3D"https://github.com/ocaml/opam/issue=
+s/6474">#6474</a>)</li>
+
+<li>:goggles: Fix various crashes and extreme performance issues when updat=
+ing some opam repositories (<a href=3D"https://github.com/ocaml/opam/issues=
+/6448">#6448</a>)</li>
+</ul>
+
+<p>
+:open_book: You can read our <a href=3D"https://opam.ocaml.org/blog/opam-2-=
+4-0-alpha2/">blog post</a> for more information, and for even more details =
+you can take a look at the <a href=3D"https://github.com/ocaml/opam/release=
+s/tag/2.4.0-alpha2">release note</a> or the <a href=3D"https://github.com/o=
+caml/opam/blob/2.4.0-alpha2/CHANGES">changelog</a>.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org9d4107f" class=3D"outline-4">
+<h4 id=3D"org9d4107f">Try it!</h4>
+<div class=3D"outline-text-4" id=3D"text-org9d4107f">
+<p>
+The upgrade instructions are unchanged:
+</p>
+
+<p>
+For Unix systems
+</p>
+<pre class=3D"example" id=3D"orgd841ece">
+bash -c "sh &lt;(curl -fsSL https://opam.ocaml.org/install.sh) --version 2.=
+4.0~alpha2"
+</pre>
+<p>
+or from PowerShell for Windows systems
+</p>
+<pre class=3D"example" id=3D"org91ffae8">
+Invoke-Expression "&amp; { $(Invoke-RestMethod https://opam.ocaml.org/insta=
+ll.ps1) } -Version 2.4.0~alpha2"
+</pre>
+<p>
+Please report any issues to the <a href=3D"https://github.com/ocaml/opam/is=
+sues">bug-tracker</a>.
+</p>
+
+<p>
+Happy hacking,
+&lt;&gt; &lt;&gt; The opam team &lt;&gt; &lt;&gt; :camel:
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">(BER) MetaOCaml N153, for OCaml 5.3.0</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://inbox.ci.dev/caml-list/aBmw%2F+5a2x%2FaQN5m@Mag=
+us.localnet/T/#u">https://inbox.ci.dev/caml-list/aBmw%2F+5a2x%2FaQN5m@Magus=
+.localnet/T/#u</a>
+</p>
+</div>
+<div id=3D"outline-container-org499eab6" class=3D"outline-3">
+<h3 id=3D"org499eab6">Oleg announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org499eab6">
+<p>
+BER MetaOCaml (or, simply MetaOCaml, since there aren't any others)
+N153 is a strict superset of OCaml 5.3.0 for ``writing programs that
+generate programs''.  MetaOCaml adds to OCaml the type of code values
+(denoting ``program code'', or future-stage computations), and two
+basic constructs to build them: quoting and splicing. MetaOCaml also
+features cross-stage persistence, generating ordinary and
+mutually-recursive definitions, first-class pattern-matching and
+heterogeneous metaprogramming.
+</p>
+
+<p>
+The generated code can be printed, stored in a file &#x2013; or
+compiled and linked-back to the running program, thus implementing
+run-time code optimization. A subset of the generated OCaml code can
+also be converted to C, via offshoring. (The generated C needs no
+particular runtime or GC.) A well-typed MetaOCaml program
+generates only well-scoped and well-typed programs: The generated code
+shall compile without type errors.  Staging-annotation&#x2013;free
+MetaOCaml is identical to OCaml; MetaOCaml can link to any
+OCaml-compiled library (and vice versa).
+</p>
+
+<p>
+There aren't any notable new features to talk about. OCaml 5.x has
+changed AST (Parsetree) and Typedtree in significant ways, especially
+concerning functions. Adjusting MetaOCaml to those changes took some
+work. See also ChangeLog and NOTES.txt in the MetaOCaml distribution
+for more details.
+</p>
+
+<p>
+I'm very thankful to the OCaml team for merging the patch to the OCaml
+grammar concerning staging annotations. It has made maintaining
+MetaOCaml quite easier.
+</p>
+
+<p>
+MetaOCaml N153 should be available through OPAM, hopefully soon.
+In the meanwhile, it is available as a set of patches to the=20
+OCaml 5.3.0 distribution.=20
+        <a href=3D"https://okmij.org/ftp/ML/ber-metaocaml.tar.gz">https://o=
+kmij.org/ftp/ML/ber-metaocaml.tar.gz</a>
+See the INSTALL document in that archive. You need the source
+distribution of OCaml 5.3.0.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+</div>
+<div id=3D"outline-container-org3385c74" class=3D"outline-3">
+<h3 id=3D"org3385c74">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org3385c74">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://blog.osau.re/articles/bstr.html">Bstr, a synthetic l=
+ibrary for bigstrings</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org94b0d7f" class=3D"outline-2">
+<h2 id=3D"org94b0d7f">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org94b0d7f">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org2acf572">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
