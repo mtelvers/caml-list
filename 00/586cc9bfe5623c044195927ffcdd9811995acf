@@ -1,0 +1,2431 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=gezC8ZdE;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=3Zo8CFA2;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 3A7FE4003C
+	for <caml-list@tunbury.org>; Tue, 13 May 2025 09:40:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=3rgbhr5HCu2qncbqmSXqAnASqdZo60W7tuh6lB51eM8=;
+  b=gezC8ZdELmWYhUJIuUKWJ3sqBcJfK6S4+c9ATFr1drTLlu6T5VYkFyd0
+   mvOQA+4UU+gJJqUrGAMymZu1iFBEvifFc1suI+g/nadoVT/MYX+jkiR8n
+   mPFfg1bySYcCOqdtcYkSwWz1AT+/zURbzzzl7SSrA/1ikVKdCs6LrCqlf
+   o=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.15,284,1739833200"; 
+   d="scan'208,217";a="221770146"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 13 May 2025 11:40:24 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 1D084E0157; Tue, 13 May 2025 11:40:24 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 12190E0131
+	for <caml-list@sympa.inria.fr>; Tue, 13 May 2025 11:40:20 +0200 (CEST)
+IronPort-SDR: 68231381_b6TxH+a0b6CBNa0wDvlTpga9E2Dp2KlK6RVYKW0vyBr0rC7
+ h0Hxptx9K6pY8FeMHFJosazmMpVVOp0FdQrfg1Q==
+X-IPAS-Result: =?us-ascii?q?A0GICAB1EiNojyIeaIFQCoJegT9bKBkBZFozBwhJAwGEU?=
+ =?us-ascii?q?YNPjiKBFpA1iEqCL4FpgREDGBYjFAEDAQ0uAQkWAQIEAQEDAQIBhQACi0sCH?=
+ =?us-ascii?q?wYBBDQTAQIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABAQEBAQE5B?=
+ =?us-ascii?q?UmFew1JAQEECwEEAYFlUXFeRwEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQIIBAECXAE9AgEIChMBASULCBgjAxQBBgMCEQE1A?=
+ =?us-ascii?q?wETARIUBQGCaAGCIkkDBQwGP5Uam0t6gTKBAYIMAQEGgQg+AgECCQICAwEOC?=
+ =?us-ascii?q?SUB2gmBZQmBSQGFbIJJGgEqSGsChEgJhDMnD4FVRIEVNYI9B2+BUAFuCxcBA?=
+ =?us-ascii?q?QEBGIEZAwgBAQYCCTwJgyWCaYIaF4ECFB2BI4ELgVmELIFCEoNCgl+BLUWCN?=
+ =?us-ascii?q?Yl+gUdLMywBVRMXCwcFYYEIAyo0MW4zHYINhRmCEYIEiQaERytPhSKBJIIfQ?=
+ =?us-ascii?q?AMLbT03FBuWeRwjGoJ0BQIkDgsUHwImFg8VEwcTARMICAYCBRsCMgQFCRURD?=
+ =?us-ascii?q?xgBGQ0KBBULFxMFBAICAwIEAi0DkkA4BCoDdLBEHW00B4QegV4GDIkGgSSWA?=
+ =?us-ascii?q?IQDgVeLM4cBkSeBJSKYXiKCNocnCoEbCYFvaoh1jGEIMYUggX4jPG8BARkDD?=
+ =?us-ascii?q?AczGjBDDQIGgh4BATIJCT0cD4gAh1UBCYFkXkEkWYEmgXQ7vn8DQTUCAQEPK?=
+ =?us-ascii?q?QIHAQoBAQMJhWIBAWmCG4IXg2OBPw8XDIFLAQE?=
+IronPort-PHdr: A9a23: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
+ MTU7fvj
+IronPort-Data: A9a23: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
+ 9ViD7XSxKhIFayJ5ICr9A==
+IronPort-HdrOrdr: A9a23:lm8tsqrLcRXiMozOxLWpPfQaV5oWeYIsimQD101hICG9E/bo9P
+ xG+c5w6faaslgssR0b9OxoW5PhfZq/z/9ICOAqVN/IYOCMggSVxe9ZgbfK8nnJJGnV9+JW16
+ tsGpIOauHYPBxdlsi/xAG5Fr8bsb26GU2T9ILj80s=
+X-Talos-CUID: =?us-ascii?q?9a23=3Ayun7Hmq54gjtOwYh9WHywynmUeUZeG/6w26PH2u?=
+ =?us-ascii?q?5WUBKc5nSd0Sa45oxxg=3D=3D?=
+X-Talos-MUID: 9a23:o12ucguy2oZO5+gK9c2nvj5eH5dx7aiXVlERkMwWh5m7HyMzNGLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,284,1739833200"; 
+   d="scan'208,217";a="116442912"
+X-MGA-submission: =?us-ascii?q?MDExIEZZZzXgROXsncfFrQO6rFMsrMEJAhgXmc?=
+ =?us-ascii?q?8r5m4GRYmPnbouYoGBDb8ZRvj3aKE8QFduGX8vkNdc0sar3e1HUTdIPX?=
+ =?us-ascii?q?5aRb+Al+rt9Qxq0JSQhvI1D1ZQzOWDomww2lF9AlxB9ku3m+Dc47PeIw?=
+ =?us-ascii?q?Q+977BgvVuzyyHz2DDBP2flg=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2025 11:40:17 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 0414E564A54;
+	Tue, 13 May 2025 11:40:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1747129216;
+	bh=k7kig8Ch+J44ReVb7JgrSfAllPRRjRLkID/gvPsR4L0=;
+	h=From:To:Subject:Date:Message-ID;
+	b=3Zo8CFA2LRJ2p8W1A+OtD/4kksqf71r8QsTuVYZ3cKfsvyjMBIMBm7hU+zcHv3UqM
+	 wX+d8+UOT54bjiBeck+LZcRxfR56A8Fn5jRgIsFDdIlt4IiQGOB6QI7KCyKNQvnnpM
+	 rxXNMP1DXiaOCL5XDkGdLFD0VMvTcdd1GUEWqPNw=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 13 May 2025 11:40:15 +0200
+Message-ID: <m2y0v097cw.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue May 13 11:40:17 2025 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.492688, queueID=ADD11564A59
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19320
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-05/m2y0v097cw.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of May 06 to 13,
+2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+FlexDLL 0.44 released
+(BER) MetaOCaml N153, for OCaml 5.3.0
+Using fixture files in OCaml tests with Dune
+OCaml support in Zed editor
+Typesafe complicated combinations
+OCaml Platform Newsletter: February to April 2025
+Other OCaml News
+Old CWN
+
+
+FlexDLL 0.44 released
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/flexdll-0-44-released/16614/1>
+
+
+David Allsopp announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I'm pleased to announce the release of [FlexDLL 0.44] which has just
+  been [merged to opam-repository].
+
+  FlexDLL is primarily used by the mingw-w64 and MSVC versions of
+  Windows OCaml to implement `Dynlink'.
+
+  The release contains several bug-fixes to do with the handling of
+  objects ([ocaml/flexdll#29], [ocaml/flexdll#126] and
+  [ocaml/flexdll#150]), several improvements to command line handling
+  ([ocaml/flexdll#148], [ocaml/flexdll#151] and [ocaml/flexdll#152]), as
+  well as various hardenings and improvements for cross-compiling and
+  for use of alternate compiler toolchains.
+
+  Since FlexDLL is used by the compiler itself, the upgrade is similar
+  in impact to a new compiler release, in that opam switches will be
+  fully recompiled.
+
+
+[FlexDLL 0.44] <https://github.com/ocaml/flexdll/releases/tag/0.44>
+
+[merged to opam-repository]
+<https://github.com/ocaml/opam-repository/pull/27855>
+
+[ocaml/flexdll#29] <https://github.com/ocaml/flexdll/issues/29>
+
+[ocaml/flexdll#126] <https://github.com/ocaml/flexdll/issues/126>
+
+[ocaml/flexdll#150] <https://github.com/ocaml/flexdll/pull/150>
+
+[ocaml/flexdll#148] <https://github.com/ocaml/flexdll/pull/148>
+
+[ocaml/flexdll#151] <https://github.com/ocaml/flexdll/pull/151>
+
+[ocaml/flexdll#152] <https://github.com/ocaml/flexdll/pull/152>
+
+
+(BER) MetaOCaml N153, for OCaml 5.3.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://inbox.ci.dev/caml-list/CAAxsn=3DFjN6R8ornKdjGsUZ_URuDEQ9m51em7=
+=3DSayp3YjRvH0Kw@mail.gmail.com/>
+
+
+Continuing this thread, Jeremy Yallop announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It's now available on OPAM:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create 5.3.0+BER
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+
+Using fixture files in OCaml tests with Dune
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/blog-using-fixture-files-in-ocaml-tests-with=
+-dune/16620/1>
+
+
+Richard Degenne announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I have a couple of ongoing side-projects that I use to practice my
+  OCaml every now and then, whenever I have some free time. The other
+  day, I wanted to use fixtures for a test and it took me a while to get
+  it to work properly with Dune, so I thought it was worth a write-up!
+
+  I'm sharing it here because I would be especially interested in having
+  some feedback from other OCaml developers, seasoned or not. <3
+
+  <https://blog.richarddegenne.fr/2025/05/07/using-fixture-files-in-ocaml-t=
+ests-with-dune/>
+
+
+OCaml support in Zed editor
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ocaml-support-in-zed-editor/16623/1>
+
+
+Louis Roch=C3=A9 announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The [zed editor] is a modern and very snappy editor developped in
+  rust. It's a bit behind more mature emacs/vim/vscode in term of
+  features, though it's already pretty usable. There is an [ocaml
+  extension] which I contributed to a little bit.
+
+  I'd be curious to know if other people have tried this editor and
+  would be willing to put a little bit of work into the extension. For
+  now I do it mostly for myself. And would probably have more motivation
+  if I knew it's actually being used by other people too.
+
+
+[zed editor] <https://zed.dev/>
+
+[ocaml extension] <https://github.com/zed-extensions/ocaml>
+
+
+Typesafe complicated combinations
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/blog-typesafe-complicated-combinations/16548=
+/2>
+
+
+Continuing this thread, rand announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  To those of you interested, I updated the text with [further
+  discussion] of the design-pattern - specifically about the fact that
+  it reverses the dependency-relation between combined data, vs what one
+  would have done by aggregating data within data.
+
+  This is also loosely related to OO in an interesting way - in that
+  objects in OO have identities, and *contain* data and procedures -
+  where here it's individual data-sources (`Socket.Endpoint`s) that have
+  identities, which are carried across different data, and finally used
+  to combine in a typesafe way.
+
+  I would be interested to hear if anyone also has experience with
+  related patterns, and for what? Tyxml is one example.
+
+
+[further discussion]
+<https://r7p5.earth/blog/2025-4-25/Typesafe%20complicated%20combinations#h-=
+illegal-states>
+
+
+OCaml Platform Newsletter: February to April 2025
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ocaml-platform-newsletter-february-to-april-=
+2025/16644/1>
+
+
+Sabine Schmaltz announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Welcome to the fourteenth edition of the OCaml Platform newsletter!
+
+  In this February to April 2025 edition, we are excited to bring you
+  the latest on the OCaml Platform, continuing our tradition of
+  highlighting recent developments as seen in [previous editions]. To
+  understand the direction we're headed, especially regarding
+  development workflows and user experience improvements, check out our
+  [roadmap].
+
+  *Highlights:*
+
+  =E2=80=A2 *Dune Package Management is now Compatible with Large Parts of =
+the
+     Ecosystem*: The majority of Dune-based packages in opam-repository
+     now build successfully with Dune package management. Continuous
+     monitoring is available at [dune.check.ci.dev]. Technical barriers
+     are being systematically addressed while maintaining compatibility
+     with both opam and Dune workflows to ensure teams can transition at
+     their own pace.
+  =E2=80=A2 *Odoc 3.0 Release*: A major upgrade, introducing powerful featu=
+res
+     like type-based search through Sherlodoc, global sidebar
+     navigation, integrated source code display, multimedia support,
+     hierarchical documentation pages, and cross-package linking that
+     creates truly connected documentation.
+  =E2=80=A2 *New minor Emacs Mode:* OCaml-eglot replaces the venerable
+     "merlin-mode", providing modern editor features through
+     `ocaml-lsp-server'.
+  =E2=80=A2 *First alpha of opam 2.4.0*: Significant improvements including
+     removal of GNU patch/diff dependencies, better Nix integration,
+     improved pinned repository visibility, UI enhancements for
+     deprecated packages, and new version comparison tools and lock file
+     management features.
+
+  *Announcements:*
+
+  =E2=80=A2 ["opam 2.4.0 alpha1 release" on the Opam Blog]
+  =E2=80=A2 [OCaml Infrastructure: FreeBSD 14.2 Upgrade]
+  =E2=80=A2 [OCaml Infrastructure: OCaml-version 4.0.0 released]
+
+  *Calls for Feedback:*
+
+  =E2=80=A2 [Dune Developer Preview Adoption Survey]
+  =E2=80=A2 [OCaml Editor Plugins Survey]
+  =E2=80=A2 [Asking For Community Feedback on the OCaml Platform Communicat=
+ions]
+
+  *Releases:*
+
+  =E2=80=A2 [opam 2.4.0~alpha1]
+  =E2=80=A2 [Dune 3.18.2]
+  =E2=80=A2 [Dune 3.18.1]
+  =E2=80=A2 [Dune 3.18.0]
+  =E2=80=A2 [Odoc 3.0]
+  =E2=80=A2 [dune-release 2.1.0]
+  =E2=80=A2 [Ppxlib 0.36.0]
+  =E2=80=A2 [Ppxlib 0.35.0]
+  =E2=80=A2 [ocaml-eglot 1.2.0]
+  =E2=80=A2 [ocaml-eglot 1.1.0]
+
+
+[previous editions] <https://discuss.ocaml.org/tag/platform-newsletter>
+
+[roadmap] <https://ocaml.org/docs/platform-roadmap>
+
+[dune.check.ci.dev] <https://dune.check.ci.dev>
+
+["opam 2.4.0 alpha1 release" on the Opam Blog]
+<https://opam.ocaml.org/blog/opam-2-4-0-alpha1/>
+
+[OCaml Infrastructure: FreeBSD 14.2 Upgrade]
+<https://ocaml.org/changelog/2025-03-26-freebsd-14.2>
+
+[OCaml Infrastructure: OCaml-version 4.0.0 released]
+<https://ocaml.org/changelog/2025-03-24-recent-ocaml-versions>
+
+[Dune Developer Preview Adoption Survey]
+<https://discuss.ocaml.org/t/ann-dune-developer-preview-updates/15160/57?u=
+=3Dsabine>
+
+[OCaml Editor Plugins Survey]
+<https://discuss.ocaml.org/t/ocaml-editors-plugins-survey/16216>
+
+[Asking For Community Feedback on the OCaml Platform Communications]
+<https://discuss.ocaml.org/t/asking-for-community-feedback-on-the-ocaml-pla=
+tform-communications/16142>
+
+[opam 2.4.0~alpha1]
+<https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha1/16520>
+
+[Dune 3.18.2] <https://ocaml.org/changelog/2025-04-30-dune.3.18.2>
+
+[Dune 3.18.1] <https://ocaml.org/changelog/2025-04-17-dune.3.18.1>
+
+[Dune 3.18.0] <https://ocaml.org/changelog/2025-04-03-dune.3.18.0>
+
+[Odoc 3.0] <https://ocaml.org/changelog/2025-03-20-odoc-3.0.0>
+
+[dune-release 2.1.0]
+<https://ocaml.org/changelog/2025-02-03-dune-release-2.1.0>
+
+[Ppxlib 0.36.0] <https://ocaml.org/changelog/2025-03-05-ppxlib-0.36.0>
+
+[Ppxlib 0.35.0] <https://ocaml.org/changelog/2025-02-04-ppxlib-0.35.0>
+
+[ocaml-eglot 1.2.0]
+<https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-1-2-0/16515>
+
+[ocaml-eglot 1.1.0]
+<https://github.com/tarides/ocaml-eglot/releases/tag/1.1.0>
+
+*Dune*
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  *Roadmap:* [Develop / (W4) Build a Project]
+
+  Dune 3.18 brings various quality-of-life improvements, bug fixes, and
+  new features. It introduces support for the new `x-maintenance-intent'
+  field in opam packages, allowing maintainers to better communicate
+  project status. The release also includes the new `(format-dune-file
+  ...)' stanza, formalizing the dune format-dune-file command as an
+  inside rule, and adds support for the `not' operator in package
+  dependencies constraints. Several improvements to cache handling of
+  file permissions have been implemented, and users can now utilize the
+  `--prefix' flag when configuring dune with `ocaml configure.ml',
+  providing greater installation flexibility.
+
+  From 3.18.0, Dune now uses shorter paths for inline-test artifacts,
+  allows dash characters in project names created with `dune init', and
+  displays negative error codes on Windows in hexadecimal format =E2=80=94 =
+the
+  customary way to display `NTSTATUS' codes. The release also enhances
+  stability with improved retry mechanisms for file delete operations on
+  Windows under heavy load and provides better warning behavior when
+  failing to discover the project root due to read failures, replacing
+  the previous abort behavior.
+
+  Shortly after, Dune 3.18.1 was released with a hotfix that corrects an
+  issue where `pkg-config' would fail to find certain libraries in
+  specific contexts, while Dune 3.18.2 provides support for the upcoming
+  OCaml 5.4 release.
+
+  *Activities:*
+
+  =E2=80=A2 [Release of Dune 3.18.2]
+  =E2=80=A2 [Release of Dune 3.18.1]
+  =E2=80=A2 [Release of Dune 3.18.0]
+
+  *Maintained by:* Rudi Grinberg (@rgrinberg, Jane Street), Nicol=C3=A1s
+   Ojeda B=C3=A4r (@nojb, LexiFi), Marek Kubica (@Leonidas-from-XIV,
+   Tarides), Ali Caglayan (@Alizter), Etienne Millon (@emillon,
+   Tarides), Stephen Sherratt (@gridbugs, Tarides), Antonio Nuno
+   Monteiro (@anmonteiro), Etienne Marais (@maiste)
+
+
+[Develop / (W4) Build a Project]
+<https://ocaml.org/docs/platform-roadmap#w4-build-a-project>
+
+[Release of Dune 3.18.2]
+<https://ocaml.org/changelog/2025-04-30-dune.3.18.2>
+
+[Release of Dune 3.18.1]
+<https://ocaml.org/changelog/2025-04-17-dune.3.18.1>
+
+[Release of Dune 3.18.0]
+<https://ocaml.org/changelog/2025-04-03-dune.3.18.0>
+
+=E2=97=8A *Dune Package Management*
+
+  As of May 9, a large part of Dune-based packages on `opam-repository'
+  now build successfully with Dune package management. At
+  [dune.check.ci.dev], we provide continuous monitoring of build success
+  across the ecosystem, giving visibility into compatibility before
+  migration.
+
+  The effort of making Dune package management compatible with the wider
+  OCaml ecosystem is ongoing and aims to assess when Dune package
+  management is ready for adoption in production settings. We are
+  committed to maintain compatibility with both opam and Dune workflows,
+  ensuring teams can transition at their own pace with minimal
+  disruption to existing projects
+
+  Technical barriers have been and are being systematically addressed,
+  e.g. improved handling of ZIP archives, better dependency conflict
+  resolution, and enhanced support for pinned packages that don't use
+  Dune's build system.
+
+  *Activities:*
+
+  =E2=80=A2 ["Expanding Dune Package Management to the Rest of the Ecosyste=
+m" on
+    the Tarides Blog]
+
+
+  [dune.check.ci.dev] <https://dune.check.ci.dev>
+
+  ["Expanding Dune Package Management to the Rest of the Ecosystem" on
+  the Tarides Blog]
+  <https://tarides.com/blog/2025-04-11-expanding-dune-package-management-to=
+-the-rest-of-the-ecosystem/>
+
+
+=E2=97=8A *Dune Developer Preview*
+
+  [Dune Developer Preview] is an experimental channel that introduces
+  cutting-edge features to streamline OCaml development
+  workflows. Building upon Dune's foundation as OCaml's official build
+  system, this initiative allows us to iterate quickly on ideas and
+  experiment with improving the developer experience and with
+  experimental features. For example, one feature that came out of Dune
+  Developer Preview and made it into the upstream codebase is package
+  management: by enabling Dune to deal with project dependencies, we
+  eliminate the need to juggle multiple tools.
+
+  The tooling includes built-in LSP support, formatting capabilities,
+  and a shared cache that dramatically improves build performance. Early
+  adopters are encouraged to [provide feedback] as these experimental
+  features mature toward stable releases.
+
+  We are in the process of adopting Dune Developer Preview for the OCaml
+  Platform Tools and other projects. This is to ensure that (1) Dune
+  Developer Preview keeps providing a good developer experience on
+  production codebases and (2) to catch bugs and issues as early as we
+  can. At the moment, we are making a concerted effort to fix issues and
+  add necessary features that block adoption of Dune Developer Preview
+  on the OCaml Platform Tools projects.
+
+  We're always interested in and addressing community feedback and bug
+  reports, as well. In March, we conducted a [public survey to better
+  understand the reach, adoption, and experience of/with Dune Developer
+  Preview] in the OCaml community.
+
+  *Activities:*
+
+  =E2=80=A2 [Dune Developer Preview Adoption Survey]
+
+
+  [Dune Developer Preview] <https://preview.dune.build/>
+
+  [provide feedback]
+  <https://docs.google.com/forms/u/2/d/e/1FAIpQLSda-mOTHIdATTt_e9dFmNgUCy-f=
+D55Qzr3bGGsxpfY_Ecfyxw/viewform?usp=3Dsend_form>
+
+  [public survey to better understand the reach, adoption, and
+  experience of/with Dune Developer Preview]
+  <https://discuss.ocaml.org/t/ann-dune-developer-preview-updates/15160/57>
+
+  [Dune Developer Preview Adoption Survey]
+  <https://discuss.ocaml.org/t/ann-dune-developer-preview-updates/15160/57?=
+u=3Dsabine>
+
+
+*Editor Tools*
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  *Roadmap:* [Edit / (W19) Navigate Code], [Edit / (W20) Refactor Code]
+
+  To better understand how the OCaml community uses the different editor
+  plugins available for OCaml, and to get an idea which features are
+  most anticipated, we ran a [survey on the OCaml Editors Plugins].
+
+  *Notable Activity*
+
+  =E2=80=A2 [OCaml Editor Plugins Survey]
+  =E2=80=A2 [April 2025 Editors Dev Meeting]
+
+  Focus: Project-wide occurrences demo
+
+  =E2=80=A2 [February 2025 Editors Dev Meeting]
+
+  Focus: Introduction of ocaml-eglot Emacs mode
+
+  *OCaml LSP Server maintained by:* Ulysse G=C3=A9rard (@voodoos, Tarides),
+   Xavier Van de Woestyne (@xvw, Tarides), Rudi Grinberg (@rgrinberg,
+   Jane Street)
+
+  *Merlin maintained by:* Ulysse G=C3=A9rard (@voodoos, Tarides), Xavier Van
+   de Woestyne (@xvw, Tarides)
+
+
+[Edit / (W19) Navigate Code]
+<https://ocaml.org/tools/platform-roadmap#w19-navigate-code>
+
+[Edit / (W20) Refactor Code]
+<https://ocaml.org/tools/platform-roadmap#w20-refactor-code>
+
+[survey on the OCaml Editors Plugins]
+<https://discuss.ocaml.org/t/ocaml-editors-plugins-survey/16216>
+
+[OCaml Editor Plugins Survey]
+<https://discuss.ocaml.org/t/ocaml-editors-plugins-survey/16216>
+
+[April 2025 Editors Dev Meeting]
+<https://github.com/ocaml/merlin/wiki/Public-dev%E2%80%90meetings#-ulysse-v=
+oodoos--xavier-xvw--pizzie-piziedust--sonja-pitag-ha--florian-angeletti-oct=
+achron--darius-foo-dariusf--andrey-popp-andreypopp--nicolas-ojeda-b%C3%A4r-=
+nojb>
+
+[February 2025 Editors Dev Meeting]
+<https://github.com/ocaml/merlin/wiki/Public-dev%E2%80%90meetings#-pixie-du=
+st--x-gerard-vemeulen--x-jack-joergensen--x-jean-marc-eber--x-arthur-wendli=
+ng--x-xavier-van-de-woestyne--x-nicolas-ojeda-bar--x-ulysee-gerard--x-joy-o=
+dinaka>
+
+=E2=97=8A Merlin and OCaml LSP Server
+
+  Project-wide occurrences are available in both Merlin and OCaml-LSP,
+  allowing developers to find all instances of a symbol across their
+  codebase by running `dune build @build-index -w'. The feature has
+  basic editor support via `merlin-project-occurrences' in Emacs and
+  `:MerlinOccurrencesProjectWide' in Vim. Additionally, users of OCaml
+  5.3 and LSP-based plugins can experiment with the first iteration on
+  project-wide *renaming*.
+
+
+=E2=97=8A Visual Studio Code plugin
+
+  Behind the scenes, some work is happening on improving the developer
+  experience for the OCaml VSCode editor plugin: When `ocaml-lsp-server'
+  is not found in the opam switch, the plugin will prompt the user to
+  offer installing it, and we are working on making the editor plugin
+  work seamlessly with the recent dune package management features.
+
+  *Notable Activity*
+
+  =E2=80=A2 WIP on opam: Automatically installing/updating ocaml-lsp-server
+    <https://github.com/ocamllabs/vscode-ocaml-platform/pull/1725>
+  =E2=80=A2 WIP on Dune: Automatically configuring dune package management:
+    <https://github.com/ocamllabs/vscode-ocaml-platform/pull/1791>
+
+
+=E2=97=8A Emacs support
+
+  On January 17, [OCaml-eglot version 1.0.0 was released], providing a
+  new minor emacs mode to enable the editor features provided by
+  *ocaml-lsp-server*. This replaces the venerable =E2=80=9Cmerlin-mode=E2=
+=80=9D, after
+  many years of loyal service.
+
+  Subsequent releases [`1.1.0'] and [`1.2.0'] enable support for
+  `flycheck' as a configurable alternative to `flymake' (`1.0.0'
+  release), Emacs `30.1' support, better user experience and error
+  handling, as well as support for new features.
+
+  All these features have enabled OCaml-eglot to support client
+  commands, making it possible to extend OCaml-eglot more easily and to
+  integrate features much more rapidly. Since version `1.2.0',
+  OCaml-eglot has all the functions of Merlin mode (and more)!
+
+  We encourage you to try `ocaml-eglot' (refer to the updated
+  [documentation on editor setup on OCaml.org]) and to [give feedback /
+  report bugs by raising an issue on the ocaml-eglot repository]!
+
+  Besides this, we have updated the documentation on Editor Setup on
+  OCaml.org to reflect the new situation for Emacs!
+
+  *Notable Activity*
+
+  =E2=80=A2 [Updated Tutorial on Setting Up Emacs Support on OCaml.org]
+  =E2=80=A2 [Release of ocaml-eglot 1.1.0]
+  =E2=80=A2 [Release of ocaml-eglot 1.2.0]
+
+
+  [OCaml-eglot version 1.0.0 was released]
+  <https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-1-0-0/15978/14>
+
+  [`1.1.0'] <https://github.com/tarides/ocaml-eglot/releases/tag/1.1.0>
+
+  [`1.2.0']
+  <https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-1-2-0/16515>
+
+  [documentation on editor setup on OCaml.org]
+  <https://ocaml.org/docs/set-up-editor#emacs>
+
+  [give feedback / report bugs by raising an issue on the ocaml-eglot
+  repository] <https://github.com/tarides/ocaml-eglot/issues>
+
+  [Updated Tutorial on Setting Up Emacs Support on OCaml.org]
+  <https://ocaml.org/docs/set-up-editor#emacs>
+
+  [Release of ocaml-eglot 1.1.0]
+  <https://github.com/tarides/ocaml-eglot/releases/tag/1.1.0>
+
+  [Release of ocaml-eglot 1.2.0]
+  <https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-1-2-0/16515>
+
+
+*Documentation Tools*
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  *Roadmap:* [Share / (W25) Generate Documentation]
+
+
+[Share / (W25) Generate Documentation]
+<https://ocaml.org/tools/platform-roadmap#w25-generate-documentation>
+
+=E2=97=8A Odoc
+
+  Odoc 3.0 has arrived after more than a year of development since the
+  previous 2.4 release, bringing significant enhancements to OCaml's
+  documentation tooling. The update introduces powerful new features
+  including type-based search functionality through [Sherlodoc], a
+  global sidebar for improved navigation across documentation pages, and
+  integrated source code display that allows developers to jump directly
+  from documentation to rendered source regardless of module system
+  complexity. Additional highlights include support for multimedia
+  content (images, video, and audio), hierarchical documentation pages
+  for better structure, and cross-package linking capabilities that
+  create truly connected documentation, as well as support for
+  incremental documentation builds.
+
+  It's worth noting that Dune does not yet support Odoc 3 as its rules
+  need rewriting to accommodate the new CLI and incremental build
+  capabilities. In the interim, developers can use the standalone
+  `odoc_driver' command to generate documentation for their packages as
+  shown in the ["Remapping dependencies" documentation].
+
+  The Odoc team encourages all OCaml developers to test their
+  documentation with the new release before publishing packages, which
+  can help avoid post-release fixes like [this example]. For a practical
+  introduction to the new features, developers can install the package
+  via `opam install odoc-driver' and explore the comprehensive
+  documentation available for the [Odoc toolchain].
+
+  *Notable Activity*
+
+  =E2=80=A2 [Release of odoc 3.0.0]
+  =E2=80=A2 ["Odoc 3: So what?" on Jon Ludlam's blog] - blog post that touc=
+hes
+    on how odoc 3's cross-package linking capabilities enable writing
+    better manuals
+
+  *Maintained by:* Jon Ludlam (@jonludlam, Tarides), Daniel B=C3=BCnzli
+   (@dbuenzli), Jules Aguillon (@julow, Tarides), Paul-Elliot Angl=C3=A8s
+   d'Auriac (@panglesd, Tarides), Emile Trotignon (@EmileTrotignon,
+   Tarides, then Ahrefs)
+
+
+  [Sherlodoc] <https://github.com/ocaml/odoc/tree/master/sherlodoc>
+
+  ["Remapping dependencies" documentation]
+  <https://ocaml.github.io/odoc/odoc-driver/index.html#remapping-dependenci=
+es>
+
+  [this example] <https://github.com/ocaml/odoc/pull/1333>
+
+  [Odoc toolchain] <https://ocaml.github.io/odoc/>
+
+  [Release of odoc 3.0.0]
+  <https://ocaml.org/changelog/2025-03-20-odoc-3.0.0>
+
+  ["Odoc 3: So what?" on Jon Ludlam's blog]
+  <https://jon.recoil.org/blog/2025/04/odoc-3.html>
+
+
+*Package Management*
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A Opam
+
+  The [first alpha of opam 2.4.0 has been released], bringing
+  significant improvements.
+
+  The removal of GNU `patch' and `diff' as runtime dependencies reduces
+  cross-platform inconsistencies, as the manager now uses the native
+  OCaml `patch' library instead. Nix users will appreciate Nix support
+  for external dependencies, facilitating more consistent environments
+  across development and production systems.
+
+  Notable for daily development work: pinned VCS repositories now
+  display their current revision for better traceability, and several UI
+  improvements provide clearer visibility into deprecated packages. The
+  enhanced command set includes version comparison tools and better lock
+  file management with `opam lock --keep-local', particularly useful for
+  maintaining consistent dependency states across team environments.
+
+  Teams running NixOS will benefit from fixed sandboxing support, while
+  the new `OPAMSOLVERTOLERANCE' environment variable helps resolve
+  persistent solver timeouts that previously was unsolvable by MCCS.
+
+  Early testing and feedback from development teams is encouraged to
+  ensure a stable final release. Please [report any issues to the
+  bug-tracker].
+
+  *Notable Activity*
+
+  =E2=80=A2 ["opam 2.4.0 alpha1 release" on the Opam Blog]
+  =E2=80=A2 `opam upgrade' fixes [#6373]
+  =E2=80=A2 Use `patch' OCaml library instead of the `patch' command [#5892]
+  =E2=80=A2 Add some lints [#6317], [#6438]
+  =E2=80=A2 Pinning system fixes [#5471], [#6343], [#6309], [#6375], [#6256=
+],
+    [#5471]
+  =E2=80=A2 Add `opam admin migrate-extrafiles' command [#5960], change opam
+    admin check options [#6335]
+  =E2=80=A2 Depext system: better performance [#6324], enhance OpenBSD [#63=
+62]
+  =E2=80=A2 Some UI improvments [#6376], [#6401], [#6358], [#6273]
+  =E2=80=A2 UX improvments: remove `ocaml-system' from default compiler at =
+init
+    [#6307]
+  =E2=80=A2 Provide a way to avoid solver timeouts [#5510]
+  =E2=80=A2 Add `opam lock <pkg> --keep-local' [#6411]
+
+  *Maintained by:* Raja Boujbel (@rjbou - OCamlPro), Kate Deplaix
+   (@kit-ty-kate, Ahrefs), David Allsopp (@dra27, Tarides)
+
+
+  [first alpha of opam 2.4.0 has been released]
+  <https://opam.ocaml.org/blog/opam-2-4-0-alpha1/>
+
+  [report any issues to the bug-tracker]
+  <https://github.com/ocaml/opam/issues>
+
+  ["opam 2.4.0 alpha1 release" on the Opam Blog]
+  <https://opam.ocaml.org/blog/opam-2-4-0-alpha1/>
+
+  [#6373] <https://github.com/ocaml/opam/pull/6373>
+
+  [#5892] <https://github.com/ocaml/opam/pull/5892>
+
+  [#6317] <https://github.com/ocaml/opam/pull/6317>
+
+  [#6438] <https://github.com/ocaml/opam/pull/6438>
+
+  [#5471] <https://github.com/ocaml/opam/pull/5471>
+
+  [#6343] <https://github.com/ocaml/opam/pull/6343>
+
+  [#6309] <https://github.com/ocaml/opam/pull/6309>
+
+  [#6375] <https://github.com/ocaml/opam/pull/6375>
+
+  [#6256] <https://github.com/ocaml/opam/pull/6256>
+
+  [#5960] <https://github.com/ocaml/opam/pull/5960>
+
+  [#6335] <https://github.com/ocaml/opam/pull/6335>
+
+  [#6324] <https://github.com/ocaml/opam/pull/6324>
+
+  [#6362] <https://github.com/ocaml/opam/pull/6362>
+
+  [#6376] <https://github.com/ocaml/opam/pull/6376>
+
+  [#6401] <https://github.com/ocaml/opam/pull/6401>
+
+  [#6358] <https://github.com/ocaml/opam/pull/6358>
+
+  [#6273] <https://github.com/ocaml/opam/pull/6273>
+
+  [#6307] <https://github.com/ocaml/opam/pull/6307>
+
+  [#5510] <https://github.com/ocaml/opam/pull/5510>
+
+  [#6411] <https://github.com/ocaml/opam/pull/6411>
+
+
+=E2=97=8A Dune-release
+
+  *Roadmap:* [Share / (W26) Package Publication]
+
+  Dune-release 2.1.0, has been released, providing a new command
+  `dune-release delegate-info version', which makes it easier to
+  identify the current version of a package as inferred by the
+  tool. Additionally, the release introduces more flexibility with the
+  `--dev-repo' flag for `dune-release' and `dune-release publish'
+  commands, allowing users to override the `dev-repo' field specified in
+  the `.opam' file during the release process.
+
+  Dune-release no longer publishes documentation to GitHub Pages by
+  default. This decision reflects the OCaml ecosystem's consolidation
+  around centralized documentation, as package documentation is now
+  automatically built and served by [ocaml.org/packages] following
+  publication to the opam repository.
+
+  The update also improves compatibility and resolves several issues,
+  including a fix for decoding GitHub URLs and ensuring dune-release
+  works with the experimental package management feature from Dune. The
+  tool now handles the presence of `~/.dune/bin/dune' without failing,
+  making it more robust for developers exploring Dune's newer features.
+
+  *Notable Activity*
+
+  =E2=80=A2 [Release of dune-release 2.1.0]
+
+  *Maintained by:* Thomas Gazagnaire (@samoht, Tarides), Etienne Millon
+   (@emillon, Tarides), Marek Kubica (@Leonidas-from-XIV, Tarides)
+
+
+  [Share / (W26) Package Publication]
+  <https://ocaml.org/tools/platform-roadmap#w26-package-publication>
+
+  [ocaml.org/packages] <https://ocaml.org/packages>
+
+  [Release of dune-release 2.1.0]
+  <https://ocaml.org/changelog/2025-02-03-dune-release-2.1.0>
+
+
+Ppxlib
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The ppxlib team has released versions 0.35.0 and 0.36.0!
+
+  Ppxlib 0.35.0, released in February 2025, brings significant
+  improvements for OCaml 5.3 compatibility by allowing ppx rewriters to
+  operate on files containing the new effect syntax. While ppx
+  extensions and effect syntax can coexist, developers should note that
+  rewriters might encounter errors when processing effect syntax nodes
+  in extension payloads or generated code. The release introduces a new
+  `--use-compiler-pp' driver flag, useful for preserving effect syntax
+  when outputting source code instead of marshalled AST. This update
+  also removes support for compilers older than 4.08.
+
+  The latest ppxlib 0.36.0, released in March 2025, updates the internal
+  AST to target OCaml 5.2, enabling ppx authors to leverage features
+  from this version while maintaining compatibility with OCaml 4.08.0
+  and newer. This release includes notable changes to the representation
+  of functions. Thus, package authors are strongly encouraged to consult
+  [the upgrade guide] as many ppxes may break.
+
+  Other improvements include fixing a bug in `loc_of_attribute', adding
+  support for the `[@@@expand_inline]' transformation and floating
+  attribute context-free transformations, and introducing a
+  `-raise-embedded-errors' flag to the driver.
+
+  *Notable Activity*
+
+  =E2=80=A2 [Release of ppxlib 0.36.0]
+  =E2=80=A2 [Release of ppxlib 0.35.0]
+  =E2=80=A2 [Upgrade guide for the OCaml 5.3 release of ppxlib]
+
+  *Maintained by:* Patrick Ferris ([@patricoferris])
+
+
+[the upgrade guide]
+<https://github.com/ocaml-ppx/ppxlib/wiki/Upgrading-to-ppxlib-0.36.0>
+
+[Release of ppxlib 0.36.0]
+<https://ocaml.org/changelog/2025-03-05-ppxlib-0.36.0>
+
+[Release of ppxlib 0.35.0]
+<https://ocaml.org/changelog/2025-02-04-ppxlib-0.35.0>
+
+[Upgrade guide for the OCaml 5.3 release of ppxlib]
+<https://github.com/ocaml-ppx/ppxlib/wiki/Upgrading-to-ppxlib-0.36.0>
+
+[@patricoferris] <https://github.com/patricoferris>
+
+
+OCaml Infrastructure
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The OCaml infrastructure team has upgraded their OBuilder workers for
+  FreeBSD from version 14.1 to 14.2, which directly impacts two key
+  continuous integration services:
+
+  1. *OCaml-CI* ([ocaml.ci.dev]) - This service automatically tests
+      OCaml projects hosted on GitHub, and will now test against FreeBSD
+      14.2 instead of 14.1. Projects using this CI service will
+      automatically be tested against the newer FreeBSD version.
+  2. *opam-repo-CI* ([opam.ci.ocaml.org]) - This service tests pull
+      requests to the opam package repository, and will also now test
+      against FreeBSD 14.2 rather than 14.1.
+
+  With the release of `ocaml-version' 4.0.0, the OCaml version
+  considered "recent" has been raised from 4.02 to 4.08. This change
+  affects multiple services that use this definition to determine which
+  OCaml versions to test against:
+
+  1. *OCaml-CI* - Will adjust which OCaml compiler versions are tested
+      by default for projects
+  2. *opam-repo-CI* - Will modify its testing matrix for packages in the
+      opam repository
+  3. *Docker base image builder* - Will only build images for OCaml 4.08
+      and newer
+
+  As these services update, testing on older OCaml releases (versions
+  4.02 through 4.07) will be gradually removed. Package maintainers
+  should consider upgrading projects still using pre-4.08 OCaml versions
+  to OCaml 4.08 or higher.
+
+  Apart from this, at the end of April 2025, registry.ci.dev,
+  opam-repo-ci, OCaml-CI and get.dune.build were moved from Equinix
+  Hosting to hosting at the Cambridge University Computer Lab, because
+  of the [sunset of the Equinix Metal platform].
+
+  *Notable Activity*
+
+  =E2=80=A2 ["Moving OCaml-CI" on tunbury.org]
+  =E2=80=A2 ["Equinix Moves" on tunbury.org]
+  =E2=80=A2 [OCaml Infrastructure: FreeBSD 14.2 Upgrade]
+  =E2=80=A2 [OCaml Infrastructure: OCaml-version 4.0.0 released]
+
+
+[ocaml.ci.dev] <https://ocaml.ci.dev>
+
+[opam.ci.ocaml.org] <https://opam.ci.ocaml.org>
+
+[sunset of the Equinix Metal platform]
+<https://deploy.equinix.com/blog/sunsetting-equinix-metal/>
+
+["Moving OCaml-CI" on tunbury.org] <https://www.tunbury.org/ocaml-ci/>
+
+["Equinix Moves" on tunbury.org]
+<https://www.tunbury.org/equinix-moves/>
+
+[OCaml Infrastructure: FreeBSD 14.2 Upgrade]
+<https://ocaml.org/changelog/2025-03-26-freebsd-14.2>
+
+[OCaml Infrastructure: OCaml-version 4.0.0 released]
+<https://ocaml.org/changelog/2025-03-24-recent-ocaml-versions>
+
+=E2=97=8A WIP: Odoc 3 on OCaml-Docs-CI
+
+  The OCaml documentation pages provided through the [OCaml.org package
+  area] are scheduled to receive significant updates with the release of
+  odoc 3. To enable odoc 3 and all of its new features on OCaml.org, we
+  are overhauling the docs-ci pipeline that powers documentation on
+  ocaml.org. The improved pipeline addresses dependency complexities by
+  using a new tool (<https://github.com/jonludlam/opamh>) that archives
+  and restores opam packages, eliminating redundant builds of packages
+  like dune that previously occurred thousands of times. The underlying
+  infrastructure is also being upgraded, with plans to migrate docs-ci
+  to a new blade server.
+
+  *Notable Activity*
+
+  =E2=80=A2 ["OCaml-Docs-CI and Odoc 3" on Jon Ludlam's blog]
+
+
+  [OCaml.org package area] <https://ocaml.org/packages>
+
+  ["OCaml-Docs-CI and Odoc 3" on Jon Ludlam's blog]
+  <https://jon.recoil.org/blog/2025/04/ocaml-docs-ci-and-odoc-3.html>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Tarides at BOB Konferenz 2025]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Tarides at BOB Konferenz 2025]
+<https://tarides.com/blog/2025-05-08-tarides-at-bob-konferenz-2025>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-05-13 Tue 11:38 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.05.06.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.05.20.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of May 06 to 13, 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">FlexDLL 0.44 released</a></li>
+<li><a href=3D"#2">(BER) MetaOCaml N153, for OCaml 5.3.0</a></li>
+<li><a href=3D"#3">Using fixture files in OCaml tests with Dune</a></li>
+<li><a href=3D"#4">OCaml support in Zed editor</a></li>
+<li><a href=3D"#5">Typesafe complicated combinations</a></li>
+<li><a href=3D"#6">OCaml Platform Newsletter: February to April 2025</a></l=
+i>
+<li><a href=3D"#7">Other OCaml News</a></li>
+<li><a href=3D"#org6412e61">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">FlexDLL 0.44 released</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/flexdll-0-44-released/16614=
+/1">https://discuss.ocaml.org/t/flexdll-0-44-released/16614/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgbe5ca97" class=3D"outline-3">
+<h3 id=3D"orgbe5ca97">David Allsopp announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgbe5ca97">
+<p>
+I'm pleased to announce the release of <a href=3D"https://github.com/ocaml/=
+flexdll/releases/tag/0.44">FlexDLL 0.44</a> which has just been <a href=3D"=
+https://github.com/ocaml/opam-repository/pull/27855">merged to opam-reposit=
+ory</a>.
+</p>
+
+<p>
+FlexDLL is primarily used by the mingw-w64 and MSVC versions of Windows OCa=
+ml to implement <code>Dynlink</code>.
+</p>
+
+<p>
+The release contains several bug-fixes to do with the handling of objects (=
+<a href=3D"https://github.com/ocaml/flexdll/issues/29">ocaml/flexdll#29</a>=
+, <a href=3D"https://github.com/ocaml/flexdll/issues/126">ocaml/flexdll#126=
+</a> and <a href=3D"https://github.com/ocaml/flexdll/pull/150">ocaml/flexdl=
+l#150</a>),   several improvements to command line handling (<a href=3D"htt=
+ps://github.com/ocaml/flexdll/pull/148">ocaml/flexdll#148</a>, <a href=3D"h=
+ttps://github.com/ocaml/flexdll/pull/151">ocaml/flexdll#151</a> and <a href=
+=3D"https://github.com/ocaml/flexdll/pull/152">ocaml/flexdll#152</a>), as w=
+ell as various hardenings and improvements for cross-compiling and for use =
+of alternate compiler toolchains.
+</p>
+
+<p>
+Since FlexDLL is used by the compiler itself, the upgrade is similar in imp=
+act to a new compiler release, in that opam switches will be fully recompil=
+ed.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">(BER) MetaOCaml N153, for OCaml 5.3.0</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://inbox.ci.dev/caml-list/CAAxsn=3DFjN6R8ornKdjGsU=
+Z_URuDEQ9m51em7=3DSayp3YjRvH0Kw@mail.gmail.com/">https://inbox.ci.dev/caml-=
+list/CAAxsn=3DFjN6R8ornKdjGsUZ_URuDEQ9m51em7=3DSayp3YjRvH0Kw@mail.gmail.com=
+/</a>
+</p>
+</div>
+<div id=3D"outline-container-org85f7a74" class=3D"outline-3">
+<h3 id=3D"org85f7a74">Continuing this thread, Jeremy Yallop announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org85f7a74">
+<p>
+It's now available on OPAM:
+</p>
+
+<pre class=3D"example" id=3D"org37700e7">
+opam update
+opam switch create 5.3.0+BER
+</pre>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Using fixture files in OCaml tests with Dune</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/blog-using-fixture-files-in=
+-ocaml-tests-with-dune/16620/1">https://discuss.ocaml.org/t/blog-using-fixt=
+ure-files-in-ocaml-tests-with-dune/16620/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orge8ff0c2" class=3D"outline-3">
+<h3 id=3D"orge8ff0c2">Richard Degenne announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orge8ff0c2">
+<p>
+I have a couple of ongoing side-projects that I use to practice my OCaml ev=
+ery now and then, whenever I have some free time. The other day, I wanted t=
+o use fixtures for a test and it took me a while to get it to work properly=
+ with Dune, so I thought it was worth a write-up!
+</p>
+
+<p>
+I'm sharing it here because I would be especially interested in having some=
+ feedback from other OCaml developers, seasoned or not. &lt;3
+</p>
+
+<p>
+<a href=3D"https://blog.richarddegenne.fr/2025/05/07/using-fixture-files-in=
+-ocaml-tests-with-dune/">https://blog.richarddegenne.fr/2025/05/07/using-fi=
+xture-files-in-ocaml-tests-with-dune/</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">OCaml support in Zed editor</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocaml-support-in-zed-editor=
+/16623/1">https://discuss.ocaml.org/t/ocaml-support-in-zed-editor/16623/1</=
+a>
+</p>
+</div>
+<div id=3D"outline-container-org75112c8" class=3D"outline-3">
+<h3 id=3D"org75112c8">Louis Roch=C3=A9 announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org75112c8">
+<p>
+The <a href=3D"https://zed.dev/">zed editor</a> is a modern and very snappy=
+ editor developped in rust. It's a bit behind more mature emacs/vim/vscode =
+in term of features, though it's already pretty usable. There is an <a href=
+=3D"https://github.com/zed-extensions/ocaml">ocaml extension</a> which I co=
+ntributed to a little bit.
+</p>
+
+<p>
+I'd be curious to know if other people have tried this editor and would be =
+willing to put a little bit of work into the extension. For now I do it mos=
+tly for myself. And would probably have more motivation if I knew it's actu=
+ally being used by other people too.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Typesafe complicated combinations</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/blog-typesafe-complicated-c=
+ombinations/16548/2">https://discuss.ocaml.org/t/blog-typesafe-complicated-=
+combinations/16548/2</a>
+</p>
+</div>
+<div id=3D"outline-container-orga05b935" class=3D"outline-3">
+<h3 id=3D"orga05b935">Continuing this thread, rand announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga05b935">
+<p>
+To those of you interested, I updated the text with <a href=3D"https://r7p5=
+.earth/blog/2025-4-25/Typesafe%20complicated%20combinations#h-illegal-state=
+s">further discussion</a> of the design-pattern - specifically about the fa=
+ct that it reverses the dependency-relation between combined data, vs what =
+one would have done by aggregating data within data.=20
+</p>
+
+<p>
+This is also loosely related to OO in an interesting way - in that objects =
+in OO have identities, and <b>contain</b> data and procedures - where here =
+it's individual data-sources (`Socket.Endpoint`s) that have identities, whi=
+ch are carried across different data, and finally used to combine in a type=
+safe way.
+</p>
+
+<p>
+I would be interested to hear if anyone also has experience with related pa=
+tterns, and for what? Tyxml is one example.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">OCaml Platform Newsletter: February to April 2025</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocaml-platform-newsletter-f=
+ebruary-to-april-2025/16644/1">https://discuss.ocaml.org/t/ocaml-platform-n=
+ewsletter-february-to-april-2025/16644/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgd60895a" class=3D"outline-3">
+<h3 id=3D"orgd60895a">Sabine Schmaltz announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd60895a">
+<p>
+Welcome to the fourteenth edition of the OCaml Platform newsletter!
+</p>
+
+<p>
+In this February to April 2025 edition, we are excited to bring you the lat=
+est on the OCaml Platform, continuing our tradition of highlighting recent =
+developments as seen in <a href=3D"https://discuss.ocaml.org/tag/platform-n=
+ewsletter">previous editions</a>. To understand the direction we're headed,=
+ especially regarding development workflows and user experience improvement=
+s, check out our <a href=3D"https://ocaml.org/docs/platform-roadmap">roadma=
+p</a>.
+</p>
+
+<p>
+<b>Highlights:</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><b>Dune Package Management is now Compatible with Large Parts of the Ec=
+osystem</b>: The majority of Dune-based packages in opam-repository now bui=
+ld successfully with Dune package management. Continuous monitoring is avai=
+lable at <a href=3D"https://dune.check.ci.dev">dune.check.ci.dev</a>. Techn=
+ical barriers are being systematically addressed while maintaining compatib=
+ility with both opam and Dune workflows to ensure teams can transition at t=
+heir own pace.</li>
+<li><b>Odoc 3.0 Release</b>: A major upgrade, introducing powerful features=
+ like type-based search through Sherlodoc, global sidebar navigation, integ=
+rated source code display, multimedia support, hierarchical documentation p=
+ages, and cross-package linking that creates truly connected documentation.=
+</li>
+<li><b>New minor Emacs Mode:</b> OCaml-eglot replaces the venerable "merlin=
+-mode", providing modern editor features through <code>ocaml-lsp-server</co=
+de>.</li>
+<li><b>First alpha of opam 2.4.0</b>: Significant improvements including re=
+moval of GNU patch/diff dependencies, better Nix integration, improved pinn=
+ed repository visibility, UI enhancements for deprecated packages, and new =
+version comparison tools and lock file management features.</li>
+</ul>
+
+<p>
+<b>Announcements:</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://opam.ocaml.org/blog/opam-2-4-0-alpha1/">"opam 2.4.0 =
+alpha1 release" on the Opam Blog</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-03-26-freebsd-14.2">OCaml I=
+nfrastructure: FreeBSD 14.2 Upgrade</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-03-24-recent-ocaml-versions=
+">OCaml Infrastructure: OCaml-version 4.0.0 released</a></li>
+</ul>
+
+<p>
+<b>Calls for Feedback:</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://discuss.ocaml.org/t/ann-dune-developer-preview-updat=
+es/15160/57?u=3Dsabine">Dune Developer Preview Adoption Survey</a></li>
+<li><a href=3D"https://discuss.ocaml.org/t/ocaml-editors-plugins-survey/162=
+16">OCaml Editor Plugins Survey</a></li>
+<li><a href=3D"https://discuss.ocaml.org/t/asking-for-community-feedback-on=
+-the-ocaml-platform-communications/16142">Asking For Community Feedback on =
+the OCaml Platform Communications</a></li>
+</ul>
+
+<p>
+<b>Releases:</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://discuss.ocaml.org/t/ann-opam-2-4-0-alpha1/16520">opa=
+m 2.4.0~alpha1</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-04-30-dune.3.18.2">Dune 3.1=
+8.2</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-04-17-dune.3.18.1">Dune 3.1=
+8.1</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-04-03-dune.3.18.0">Dune 3.1=
+8.0</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-03-20-odoc-3.0.0">Odoc 3.0<=
+/a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-02-03-dune-release-2.1.0">d=
+une-release 2.1.0</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-03-05-ppxlib-0.36.0">Ppxlib=
+ 0.36.0</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-02-04-ppxlib-0.35.0">Ppxlib=
+ 0.35.0</a></li>
+<li><a href=3D"https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-1-2-0=
+/16515">ocaml-eglot 1.2.0</a></li>
+<li><a href=3D"https://github.com/tarides/ocaml-eglot/releases/tag/1.1.0">o=
+caml-eglot 1.1.0</a></li>
+</ul>
+</div>
+<div id=3D"outline-container-org81606e8" class=3D"outline-4">
+<h4 id=3D"org81606e8"><b>Dune</b></h4>
+<div class=3D"outline-text-4" id=3D"text-org81606e8">
+<p>
+<b>Roadmap:</b> <a href=3D"https://ocaml.org/docs/platform-roadmap#w4-build=
+-a-project">Develop / (W4) Build a Project</a>
+</p>
+
+<p>
+Dune 3.18 brings various quality-of-life improvements, bug fixes, and new f=
+eatures. It introduces support for the new <code>x-maintenance-intent</code=
+> field in opam packages, allowing maintainers to better communicate projec=
+t status. The release also includes the new <code>(format-dune-file ...)</c=
+ode> stanza, formalizing the dune format-dune-file command as an inside rul=
+e, and adds support for the <code>not</code> operator in package dependenci=
+es constraints. Several improvements to cache handling of file permissions =
+have been implemented, and users can now utilize the <code>--prefix</code> =
+flag when configuring dune with <code>ocaml configure.ml</code>, providing =
+greater installation flexibility.
+</p>
+
+<p>
+>From 3.18.0, Dune now uses shorter paths for inline-test artifacts, allows =
+dash characters in project names created with <code>dune init</code>, and d=
+isplays negative error codes on Windows in hexadecimal format =E2=80=94 the=
+ customary way to display <code>NTSTATUS</code> codes. The release also enh=
+ances stability with improved retry mechanisms for file delete operations o=
+n Windows under heavy load and provides better warning behavior when failin=
+g to discover the project root due to read failures, replacing the previous=
+ abort behavior.
+</p>
+
+<p>
+Shortly after, Dune 3.18.1 was released with a hotfix that corrects an issu=
+e where <code>pkg-config</code> would fail to find certain libraries in spe=
+cific contexts, while Dune 3.18.2 provides support for the upcoming OCaml 5=
+.4 release.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/changelog/2025-04-30-dune.3.18.2">Release =
+of Dune 3.18.2</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-04-17-dune.3.18.1">Release =
+of Dune 3.18.1</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-04-03-dune.3.18.0">Release =
+of Dune 3.18.0</a></li>
+</ul>
+
+<p>
+<b>Maintained by:</b> Rudi Grinberg (@rgrinberg, Jane Street), Nicol=C3=A1s=
+ Ojeda B=C3=A4r (@nojb, LexiFi), Marek Kubica (@Leonidas-from-XIV, Tarides)=
+, Ali Caglayan (@Alizter), Etienne Millon (@emillon, Tarides), Stephen Sher=
+ratt (@gridbugs, Tarides), Antonio Nuno Monteiro (@anmonteiro), Etienne Mar=
+ais (@maiste)
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orga3ba203"></a><b>Dune Package Management</b><br />
+<div class=3D"outline-text-5" id=3D"text-orga3ba203">
+<p>
+As of May 9, a large part of Dune-based packages on <code>opam-repository</=
+code> now build successfully with Dune package management. At <a href=3D"ht=
+tps://dune.check.ci.dev">dune.check.ci.dev</a>, we provide continuous monit=
+oring of build success across the ecosystem, giving visibility into compati=
+bility before migration.
+</p>
+
+<p>
+The effort of making Dune package management compatible with the wider OCam=
+l ecosystem is ongoing and aims to assess when Dune package management is r=
+eady for adoption in production settings. We are committed to maintain comp=
+atibility with both opam and Dune workflows, ensuring teams can transition =
+at their own pace with minimal disruption to existing projects
+</p>
+
+<p>
+Technical barriers have been and are being systematically addressed, e.g. i=
+mproved handling of ZIP archives, better dependency conflict resolution, an=
+d enhanced support for pinned packages that don't use Dune's build system.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2025-04-11-expanding-dune-package-m=
+anagement-to-the-rest-of-the-ecosystem/">"Expanding Dune Package Management=
+ to the Rest of the Ecosystem" on the Tarides Blog</a></li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org7b03c67"></a><b>Dune Developer Preview</b><br />
+<div class=3D"outline-text-5" id=3D"text-org7b03c67">
+<p>
+<a href=3D"https://preview.dune.build/">Dune Developer Preview</a> is an ex=
+perimental channel that introduces cutting-edge features to streamline OCam=
+l development workflows. Building upon Dune's foundation as OCaml's officia=
+l build system, this initiative allows us to iterate quickly on ideas and e=
+xperiment with improving the developer experience and with experimental fea=
+tures. For example, one feature that came out of Dune Developer Preview and=
+ made it into the upstream codebase is package management: by enabling Dune=
+ to deal with project dependencies, we eliminate the need to juggle multipl=
+e tools.
+</p>
+
+<p>
+The tooling includes built-in LSP support, formatting capabilities, and a s=
+hared cache that dramatically improves build performance. Early adopters ar=
+e encouraged to <a href=3D"https://docs.google.com/forms/u/2/d/e/1FAIpQLSda=
+-mOTHIdATTt_e9dFmNgUCy-fD55Qzr3bGGsxpfY_Ecfyxw/viewform?usp=3Dsend_form">pr=
+ovide feedback</a> as these experimental features mature toward stable rele=
+ases.
+</p>
+
+<p>
+We are in the process of adopting Dune Developer Preview for the OCaml Plat=
+form Tools and other projects. This is to ensure that (1) Dune Developer Pr=
+eview keeps providing a good developer experience on production codebases a=
+nd (2) to catch bugs and issues as early as we can. At the moment, we are m=
+aking a concerted effort to fix issues and add necessary features that bloc=
+k adoption of Dune Developer Preview on the OCaml Platform Tools projects.
+</p>
+
+<p>
+We're always interested in and addressing community feedback and bug report=
+s, as well. In March, we conducted a <a href=3D"https://discuss.ocaml.org/t=
+/ann-dune-developer-preview-updates/15160/57">public survey to better under=
+stand the reach, adoption, and experience of/with Dune Developer Preview</a=
+> in the OCaml community.
+</p>
+
+<p>
+<b>Activities:</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://discuss.ocaml.org/t/ann-dune-developer-preview-updat=
+es/15160/57?u=3Dsabine">Dune Developer Preview Adoption Survey</a></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-orgb85bbe7" class=3D"outline-4">
+<h4 id=3D"orgb85bbe7"><b>Editor Tools</b></h4>
+<div class=3D"outline-text-4" id=3D"text-orgb85bbe7">
+<p>
+<b>Roadmap:</b> <a href=3D"https://ocaml.org/tools/platform-roadmap#w19-nav=
+igate-code">Edit / (W19) Navigate Code</a>, <a href=3D"https://ocaml.org/to=
+ols/platform-roadmap#w20-refactor-code">Edit / (W20) Refactor Code</a>
+</p>
+
+<p>
+To better understand how the OCaml community uses the different editor plug=
+ins available for OCaml, and to get an idea which features are most anticip=
+ated, we ran a <a href=3D"https://discuss.ocaml.org/t/ocaml-editors-plugins=
+-survey/16216">survey on the OCaml Editors Plugins</a>.
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://discuss.ocaml.org/t/ocaml-editors-plugins-survey/162=
+16">OCaml Editor Plugins Survey</a></li>
+<li><a href=3D"https://github.com/ocaml/merlin/wiki/Public-dev%E2%80%90meet=
+ings#-ulysse-voodoos--xavier-xvw--pizzie-piziedust--sonja-pitag-ha--florian=
+-angeletti-octachron--darius-foo-dariusf--andrey-popp-andreypopp--nicolas-o=
+jeda-b%C3%A4r-nojb">April 2025 Editors Dev Meeting</a></li>
+</ul>
+
+<p>
+Focus: Project-wide occurrences demo
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/merlin/wiki/Public-dev%E2%80%90meet=
+ings#-pixie-dust--x-gerard-vemeulen--x-jack-joergensen--x-jean-marc-eber--x=
+-arthur-wendling--x-xavier-van-de-woestyne--x-nicolas-ojeda-bar--x-ulysee-g=
+erard--x-joy-odinaka">February 2025 Editors Dev Meeting</a></li>
+</ul>
+
+<p>
+Focus: Introduction of ocaml-eglot Emacs mode
+</p>
+
+<p>
+<b>OCaml LSP Server maintained by:</b> Ulysse G=C3=A9rard (@voodoos, Taride=
+s), Xavier Van de Woestyne (@xvw, Tarides), Rudi Grinberg (@rgrinberg, Jane=
+ Street)
+</p>
+
+<p>
+<b>Merlin maintained by:</b> Ulysse G=C3=A9rard (@voodoos, Tarides), Xavier=
+ Van de Woestyne (@xvw, Tarides)
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org5bac2f0"></a>Merlin and OCaml LSP Server<br />
+<div class=3D"outline-text-5" id=3D"text-org5bac2f0">
+<p>
+Project-wide occurrences are available in both Merlin and OCaml-LSP, allowi=
+ng developers to find all instances of a symbol across their codebase by ru=
+nning <code>dune build @build-index -w</code>. The feature has basic editor=
+ support via <code>merlin-project-occurrences</code> in Emacs and <code>:Me=
+rlinOccurrencesProjectWide</code> in Vim. Additionally, users of OCaml 5.3 =
+and LSP-based plugins can experiment with the first iteration on project-wi=
+de <b>renaming</b>.
+</p>
+</div>
+</li>
+<li><a id=3D"org9d60f31"></a>Visual Studio Code plugin<br />
+<div class=3D"outline-text-5" id=3D"text-org9d60f31">
+<p>
+Behind the scenes, some work is happening on improving the developer experi=
+ence for the OCaml VSCode editor plugin: When <code>ocaml-lsp-server</code>=
+ is not found in the opam switch, the plugin will prompt the user to offer =
+installing it, and we are working on making the editor plugin work seamless=
+ly with the recent dune package management features.
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li>WIP on opam: Automatically installing/updating ocaml-lsp-server <a href=
+=3D"https://github.com/ocamllabs/vscode-ocaml-platform/pull/1725">https://g=
+ithub.com/ocamllabs/vscode-ocaml-platform/pull/1725</a></li>
+<li>WIP on Dune: Automatically configuring dune package management: <a href=
+=3D"https://github.com/ocamllabs/vscode-ocaml-platform/pull/1791">https://g=
+ithub.com/ocamllabs/vscode-ocaml-platform/pull/1791</a></li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org648bf24"></a>Emacs support<br />
+<div class=3D"outline-text-5" id=3D"text-org648bf24">
+<p>
+On January 17, <a href=3D"https://discuss.ocaml.org/t/ann-release-of-ocaml-=
+eglot-1-0-0/15978/14">OCaml-eglot version 1.0.0 was released</a>, providing=
+ a new minor emacs mode to enable the editor features provided by <b>ocaml-=
+lsp-server</b>. This replaces the venerable =E2=80=9Cmerlin-mode=E2=80=9D, =
+after many years of loyal service.
+</p>
+
+<p>
+Subsequent releases <a href=3D"https://github.com/tarides/ocaml-eglot/relea=
+ses/tag/1.1.0"><code>1.1.0</code></a> and <a href=3D"https://discuss.ocaml.=
+org/t/ann-release-of-ocaml-eglot-1-2-0/16515"><code>1.2.0</code></a> enable=
+ support for <code>flycheck</code> as a configurable alternative to <code>f=
+lymake</code> (<code>1.0.0</code> release), Emacs <code>30.1</code> support=
+, better user experience and error handling, as well as support for new fea=
+tures.
+</p>
+
+<p>
+All these features have enabled OCaml-eglot to support client commands, mak=
+ing it possible to extend OCaml-eglot more easily and to integrate features=
+ much more rapidly. Since version <code>1.2.0</code>, OCaml-eglot has all t=
+he functions of Merlin mode (and more)!
+</p>
+
+<p>
+We encourage you to try <code>ocaml-eglot</code> (refer to the updated <a h=
+ref=3D"https://ocaml.org/docs/set-up-editor#emacs">documentation on editor =
+setup on OCaml.org</a>) and to <a href=3D"https://github.com/tarides/ocaml-=
+eglot/issues">give feedback / report bugs by raising an issue on the ocaml-=
+eglot repository</a>!
+</p>
+
+<p>
+Besides this, we have updated the documentation on Editor Setup on OCaml.or=
+g to reflect the new situation for Emacs!
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/docs/set-up-editor#emacs">Updated Tutorial=
+ on Setting Up Emacs Support on OCaml.org</a></li>
+<li><a href=3D"https://github.com/tarides/ocaml-eglot/releases/tag/1.1.0">R=
+elease of ocaml-eglot 1.1.0</a></li>
+<li><a href=3D"https://discuss.ocaml.org/t/ann-release-of-ocaml-eglot-1-2-0=
+/16515">Release of ocaml-eglot 1.2.0</a></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-orgdf29be7" class=3D"outline-4">
+<h4 id=3D"orgdf29be7"><b>Documentation Tools</b></h4>
+<div class=3D"outline-text-4" id=3D"text-orgdf29be7">
+<p>
+<b>Roadmap:</b> <a href=3D"https://ocaml.org/tools/platform-roadmap#w25-gen=
+erate-documentation">Share / (W25) Generate Documentation</a>
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org25676f3"></a>Odoc<br />
+<div class=3D"outline-text-5" id=3D"text-org25676f3">
+<p>
+Odoc 3.0 has arrived after more than a year of development since the previo=
+us 2.4 release, bringing significant enhancements to OCaml's documentation =
+tooling. The update introduces powerful new features including type-based s=
+earch functionality through <a href=3D"https://github.com/ocaml/odoc/tree/m=
+aster/sherlodoc">Sherlodoc</a>, a global sidebar for improved navigation ac=
+ross documentation pages, and integrated source code display that allows de=
+velopers to jump directly from documentation to rendered source regardless =
+of module system complexity. Additional highlights include support for mult=
+imedia content (images, video, and audio), hierarchical documentation pages=
+ for better structure, and cross-package linking capabilities that create t=
+ruly connected documentation, as well as support for incremental documentat=
+ion builds.
+</p>
+
+<p>
+It's worth noting that Dune does not yet support Odoc 3 as its rules need r=
+ewriting to accommodate the new CLI and incremental build capabilities. In =
+the interim, developers can use the standalone <code>odoc_driver</code> com=
+mand to generate documentation for their packages as shown in the <a href=
+=3D"https://ocaml.github.io/odoc/odoc-driver/index.html#remapping-dependenc=
+ies">"Remapping dependencies" documentation</a>.
+</p>
+
+<p>
+The Odoc team encourages all OCaml developers to test their documentation w=
+ith the new release before publishing packages, which can help avoid post-r=
+elease fixes like <a href=3D"https://github.com/ocaml/odoc/pull/1333">this =
+example</a>. For a practical introduction to the new features, developers c=
+an install the package via <code>opam install odoc-driver</code> and explor=
+e the comprehensive documentation available for the <a href=3D"https://ocam=
+l.github.io/odoc/">Odoc toolchain</a>.
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/changelog/2025-03-20-odoc-3.0.0">Release o=
+f odoc 3.0.0</a></li>
+<li><a href=3D"https://jon.recoil.org/blog/2025/04/odoc-3.html">"Odoc 3: So=
+ what?" on Jon Ludlam's blog</a> - blog post that touches on how odoc 3's c=
+ross-package linking capabilities enable writing better manuals</li>
+</ul>
+
+<p>
+<b>Maintained by:</b> Jon Ludlam (@jonludlam, Tarides), Daniel B=C3=BCnzli =
+(@dbuenzli), Jules Aguillon (@julow, Tarides), Paul-Elliot Angl=C3=A8s d'Au=
+riac (@panglesd, Tarides), Emile Trotignon (@EmileTrotignon, Tarides, then =
+Ahrefs)
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-org80b1f61" class=3D"outline-4">
+<h4 id=3D"org80b1f61"><b>Package Management</b></h4>
+<div class=3D"outline-text-4" id=3D"text-org80b1f61">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org463e63a"></a>Opam<br />
+<div class=3D"outline-text-5" id=3D"text-org463e63a">
+<p>
+The <a href=3D"https://opam.ocaml.org/blog/opam-2-4-0-alpha1/">first alpha =
+of opam 2.4.0 has been released</a>, bringing significant improvements.
+</p>
+
+<p>
+The removal of GNU <code>patch</code> and <code>diff</code> as runtime depe=
+ndencies reduces cross-platform inconsistencies, as the manager now uses th=
+e native OCaml <code>patch</code> library instead. Nix users will appreciat=
+e Nix support for external dependencies, facilitating more consistent envir=
+onments across development and production systems.
+</p>
+
+<p>
+Notable for daily development work: pinned VCS repositories now display the=
+ir current revision for better traceability, and several UI improvements pr=
+ovide clearer visibility into deprecated packages. The enhanced command set=
+ includes version comparison tools and better lock file management with <co=
+de>opam lock --keep-local</code>, particularly useful for maintaining consi=
+stent dependency states across team environments.
+</p>
+
+<p>
+Teams running NixOS will benefit from fixed sandboxing support, while the n=
+ew <code>OPAMSOLVERTOLERANCE</code> environment variable helps resolve pers=
+istent solver timeouts that previously was unsolvable by MCCS.
+</p>
+
+<p>
+Early testing and feedback from development teams is encouraged to ensure a=
+ stable final release. Please <a href=3D"https://github.com/ocaml/opam/issu=
+es">report any issues to the bug-tracker</a>.
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://opam.ocaml.org/blog/opam-2-4-0-alpha1/">"opam 2.4.0 =
+alpha1 release" on the Opam Blog</a></li>
+<li><code>opam upgrade</code> fixes <a href=3D"https://github.com/ocaml/opa=
+m/pull/6373">#6373</a></li>
+<li>Use <code>patch</code> OCaml library instead of the <code>patch</code> =
+command <a href=3D"https://github.com/ocaml/opam/pull/5892">#5892</a></li>
+<li>Add some lints <a href=3D"https://github.com/ocaml/opam/pull/6317">#631=
+7</a>, <a href=3D"https://github.com/ocaml/opam/pull/6438">#6438</a></li>
+<li>Pinning system fixes <a href=3D"https://github.com/ocaml/opam/pull/5471=
+">#5471</a>, <a href=3D"https://github.com/ocaml/opam/pull/6343">#6343</a>,=
+ <a href=3D"https://github.com/ocaml/opam/pull/6309">#6309</a>, <a href=3D"=
+https://github.com/ocaml/opam/pull/6375">#6375</a>, <a href=3D"https://gith=
+ub.com/ocaml/opam/pull/6256">#6256</a>, <a href=3D"https://github.com/ocaml=
+/opam/pull/5471">#5471</a></li>
+<li>Add <code>opam admin migrate-extrafiles</code> command <a href=3D"https=
+://github.com/ocaml/opam/pull/5960">#5960</a>, change opam admin check opti=
+ons <a href=3D"https://github.com/ocaml/opam/pull/6335">#6335</a></li>
+<li>Depext system: better performance <a href=3D"https://github.com/ocaml/o=
+pam/pull/6324">#6324</a>, enhance OpenBSD <a href=3D"https://github.com/oca=
+ml/opam/pull/6362">#6362</a></li>
+<li>Some UI improvments <a href=3D"https://github.com/ocaml/opam/pull/6376"=
+>#6376</a>, <a href=3D"https://github.com/ocaml/opam/pull/6401">#6401</a>, =
+<a href=3D"https://github.com/ocaml/opam/pull/6358">#6358</a>, <a href=3D"h=
+ttps://github.com/ocaml/opam/pull/6273">#6273</a></li>
+<li>UX improvments: remove <code>ocaml-system</code> from default compiler =
+at init <a href=3D"https://github.com/ocaml/opam/pull/6307">#6307</a></li>
+<li>Provide a way to avoid solver timeouts <a href=3D"https://github.com/oc=
+aml/opam/pull/5510">#5510</a></li>
+<li>Add <code>opam lock &lt;pkg&gt; --keep-local</code> <a href=3D"https://=
+github.com/ocaml/opam/pull/6411">#6411</a></li>
+</ul>
+
+<p>
+<b>Maintained by:</b> Raja Boujbel (@rjbou - OCamlPro), Kate Deplaix (@kit-=
+ty-kate, Ahrefs), David Allsopp (@dra27, Tarides)
+</p>
+</div>
+</li>
+<li><a id=3D"org364635d"></a>Dune-release<br />
+<div class=3D"outline-text-5" id=3D"text-org364635d">
+<p>
+<b>Roadmap:</b> <a href=3D"https://ocaml.org/tools/platform-roadmap#w26-pac=
+kage-publication">Share / (W26) Package Publication</a>
+</p>
+
+<p>
+Dune-release 2.1.0, has been released, providing a new command <code>dune-r=
+elease delegate-info version</code>, which makes it easier to identify the =
+current version of a package as inferred by the tool. Additionally, the rel=
+ease introduces more flexibility with the <code>--dev-repo</code> flag for =
+<code>dune-release</code> and <code>dune-release publish</code> commands, a=
+llowing users to override the <code>dev-repo</code> field specified in the =
+<code>.opam</code> file during the release process.
+</p>
+
+<p>
+Dune-release no longer publishes documentation to GitHub Pages by default. =
+This decision reflects the OCaml ecosystem's consolidation around centraliz=
+ed documentation, as package documentation is now automatically built and s=
+erved by <a href=3D"https://ocaml.org/packages">ocaml.org/packages</a> foll=
+owing publication to the opam repository.
+</p>
+
+<p>
+The update also improves compatibility and resolves several issues, includi=
+ng a fix for decoding GitHub URLs and ensuring dune-release works with the =
+experimental package management feature from Dune. The tool now handles the=
+ presence of <code>~/.dune/bin/dune</code> without failing, making it more =
+robust for developers exploring Dune's newer features.
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/changelog/2025-02-03-dune-release-2.1.0">R=
+elease of dune-release 2.1.0</a></li>
+</ul>
+
+<p>
+<b>Maintained by:</b> Thomas Gazagnaire (@samoht, Tarides), Etienne Millon =
+(@emillon, Tarides), Marek Kubica (@Leonidas-from-XIV, Tarides)
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-orgd6950d0" class=3D"outline-4">
+<h4 id=3D"orgd6950d0">Ppxlib</h4>
+<div class=3D"outline-text-4" id=3D"text-orgd6950d0">
+<p>
+The ppxlib team has released versions 0.35.0 and 0.36.0!
+</p>
+
+<p>
+Ppxlib 0.35.0, released in February 2025, brings significant improvements f=
+or OCaml 5.3 compatibility by allowing ppx rewriters to operate on files co=
+ntaining the new effect syntax. While ppx extensions and effect syntax can =
+coexist, developers should note that rewriters might encounter errors when =
+processing effect syntax nodes in extension payloads or generated code. The=
+ release introduces a new <code>--use-compiler-pp</code> driver flag, usefu=
+l for preserving effect syntax when outputting source code instead of marsh=
+alled AST. This update also removes support for compilers older than 4.08.
+</p>
+
+<p>
+The latest ppxlib 0.36.0, released in March 2025, updates the internal AST =
+to target OCaml 5.2, enabling ppx authors to leverage features from this ve=
+rsion while maintaining compatibility with OCaml 4.08.0 and newer. This rel=
+ease includes notable changes to the representation of functions. Thus, pac=
+kage authors are strongly encouraged to consult <a href=3D"https://github.c=
+om/ocaml-ppx/ppxlib/wiki/Upgrading-to-ppxlib-0.36.0">the upgrade guide</a> =
+as many ppxes may break.
+</p>
+
+<p>
+Other improvements include fixing a bug in <code>loc_of_attribute</code>, a=
+dding support for the <code>[@@@expand_inline]</code> transformation and fl=
+oating attribute context-free transformations, and introducing a <code>-rai=
+se-embedded-errors</code> flag to the driver.
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/changelog/2025-03-05-ppxlib-0.36.0">Releas=
+e of ppxlib 0.36.0</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-02-04-ppxlib-0.35.0">Releas=
+e of ppxlib 0.35.0</a></li>
+<li><a href=3D"https://github.com/ocaml-ppx/ppxlib/wiki/Upgrading-to-ppxlib=
+-0.36.0">Upgrade guide for the OCaml 5.3 release of ppxlib</a></li>
+</ul>
+
+<p>
+<b>Maintained by:</b> Patrick Ferris (<a href=3D"https://github.com/patrico=
+ferris">@patricoferris</a>)
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org1c60492" class=3D"outline-4">
+<h4 id=3D"org1c60492">OCaml Infrastructure</h4>
+<div class=3D"outline-text-4" id=3D"text-org1c60492">
+<p>
+The OCaml infrastructure team has upgraded their OBuilder workers for FreeB=
+SD from version 14.1 to 14.2, which directly impacts two key continuous int=
+egration services:
+</p>
+
+<ol class=3D"org-ol">
+<li><b>OCaml-CI</b> (<a href=3D"https://ocaml.ci.dev">ocaml.ci.dev</a>) - T=
+his service automatically tests OCaml projects hosted on GitHub, and will n=
+ow test against FreeBSD 14.2 instead of 14.1. Projects using this CI servic=
+e will automatically be tested against the newer FreeBSD version.</li>
+<li><b>opam-repo-CI</b> (<a href=3D"https://opam.ci.ocaml.org">opam.ci.ocam=
+l.org</a>) - This service tests pull requests to the opam package repositor=
+y, and will also now test against FreeBSD 14.2 rather than 14.1.</li>
+</ol>
+
+<p>
+With the release of <code>ocaml-version</code> 4.0.0, the OCaml version con=
+sidered "recent" has been raised from 4.02 to 4.08. This change affects mul=
+tiple services that use this definition to determine which OCaml versions t=
+o test against:
+</p>
+
+<ol class=3D"org-ol">
+<li><b>OCaml-CI</b> - Will adjust which OCaml compiler versions are tested =
+by default for projects</li>
+<li><b>opam-repo-CI</b> - Will modify its testing matrix for packages in th=
+e opam repository</li>
+<li><b>Docker base image builder</b> - Will only build images for OCaml 4.0=
+8 and newer</li>
+</ol>
+
+<p>
+As these services update, testing on older OCaml releases (versions 4.02 th=
+rough 4.07) will be gradually removed. Package maintainers should consider =
+upgrading projects still using pre-4.08 OCaml versions to OCaml 4.08 or hig=
+her.
+</p>
+
+<p>
+Apart from this, at the end of April 2025, registry.ci.dev, opam-repo-ci, O=
+Caml-CI and get.dune.build were moved from Equinix Hosting to hosting at th=
+e Cambridge University Computer Lab, because of the <a href=3D"https://depl=
+oy.equinix.com/blog/sunsetting-equinix-metal/">sunset of the Equinix Metal =
+platform</a>.
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://www.tunbury.org/ocaml-ci/">"Moving OCaml-CI" on tunb=
+ury.org</a></li>
+<li><a href=3D"https://www.tunbury.org/equinix-moves/">"Equinix Moves" on t=
+unbury.org</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-03-26-freebsd-14.2">OCaml I=
+nfrastructure: FreeBSD 14.2 Upgrade</a></li>
+<li><a href=3D"https://ocaml.org/changelog/2025-03-24-recent-ocaml-versions=
+">OCaml Infrastructure: OCaml-version 4.0.0 released</a></li>
+</ul>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgd2ef50c"></a>WIP: Odoc 3 on OCaml-Docs-CI<br />
+<div class=3D"outline-text-5" id=3D"text-orgd2ef50c">
+<p>
+The OCaml documentation pages provided through the <a href=3D"https://ocaml=
+.org/packages">OCaml.org package area</a> are scheduled to receive signific=
+ant updates with the release of odoc 3. To enable odoc 3 and all of its new=
+ features on OCaml.org, we are overhauling the docs-ci pipeline that powers=
+ documentation on ocaml.org. The improved pipeline addresses dependency com=
+plexities by using a new tool (<a href=3D"https://github.com/jonludlam/opam=
+h">https://github.com/jonludlam/opamh</a>) that archives and restores opam =
+packages, eliminating redundant builds of packages like dune that previousl=
+y occurred thousands of times. The underlying infrastructure is also being =
+upgraded, with plans to migrate docs-ci to a new blade server.
+</p>
+
+<p>
+<b>Notable Activity</b>
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://jon.recoil.org/blog/2025/04/ocaml-docs-ci-and-odoc-3=
+.html">"OCaml-Docs-CI and Odoc 3" on Jon Ludlam's blog</a></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+</div>
+<div id=3D"outline-container-orgbfa8d3c" class=3D"outline-3">
+<h3 id=3D"orgbfa8d3c">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-orgbfa8d3c">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2025-05-08-tarides-at-bob-konferenz=
+-2025">Tarides at BOB Konferenz 2025</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org6412e61" class=3D"outline-2">
+<h2 id=3D"org6412e61">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org6412e61">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org2031ff3">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
