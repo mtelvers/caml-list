@@ -1,0 +1,1173 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=YAZH5UH5;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=sFaqp6H2;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id A675E400A5
+	for <caml-list@tunbury.org>; Tue, 20 May 2025 11:52:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=mSm1flAAtYD+ZYR/V0jqvD4y1jQdAjrT71M0YNVmt/o=;
+  b=YAZH5UH5WlcjxQTSQDopIiVXuNHPx23p8kT0ztxtoA77rV7QoJ8Q6jSo
+   eu8oWdF6Xiu9awNl7v4VT09QMcdjdWHgMxl2rQxUOzSQMs21lcfejMfW/
+   lKAgcvn/ZOaGiV/GS/lmEyVGRhu7OnMeYJeXivCoufGsC7nwJmsjz6y8s
+   Q=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.15,302,1739833200"; 
+   d="scan'208,217";a="222963416"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 20 May 2025 13:52:43 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id B050CE0CD7; Tue, 20 May 2025 13:52:42 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 45217E0131
+	for <caml-list@sympa.inria.fr>; Tue, 20 May 2025 13:52:35 +0200 (CEST)
+IronPort-SDR: 682c6d02_kGjcGSwEnTTAJU8hH+DUXrNtUwEJuggoLBkYohDiFv3/JA+
+ JEW1O4pJEibNgC4ywLsSQOoW+eNdz+IOfZLKSAw==
+X-IPAS-Result: =?us-ascii?q?A0GnBgBrbCxohSIeaIFagl6BP1soGQFkWjMHCEmEVYNPj?=
+ =?us-ascii?q?iKcRIFpgUIjFAEDAQ0uARsEAQIEAQEDAQIBhQACFos5Ah8GAQQ0EwECBAEBA?=
+ =?us-ascii?q?QEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEBAUBJhXsNSQEBBAsBgWoZO?=
+ =?us-ascii?q?HGBJQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QIMAQJcQAkKEwEBJgMPGBQPAwkLAQYDAgQNATUDARMBEhoBgg9YAYIfA0oDB?=
+ =?us-ascii?q?QwGP5NTm0t6gTKBAYIMAQEGgQg+AgECCQIFAQ4JJtoJgWUJgUmFbYJJGgEqS?=
+ =?us-ascii?q?GsChEgJhDMnD4FVRIFKgQaBPm+CPwsXAQEBAVw7ERQBAQJLCQmDHIJpghgXg?=
+ =?us-ascii?q?QIUHVlKgQs3HV6BZ4MlBBFVLz2HEkWCDneJeoFHSzMsAVUTFwsHBWGBCAMqN?=
+ =?us-ascii?q?DFuMh2CDYUZgg+CB4kJhEorT4UigSaDGUADC209NxQblz0cJRqDIA4+Al8HI?=
+ =?us-ascii?q?gUIDAgOAgRQBCMKDAcDGREMFxsQHwsNLZJXJQOPe44Vk1eBCjQHhB6BXgYMi?=
+ =?us-ascii?q?QaBJJYChASBV4s1DoZzG5FOZiKYXyKJXYEmCYJZlVEGAoVXgX8jgSsBGwIMB?=
+ =?us-ascii?q?zMaMEMNGoJACUYcD5FDXoE+gSaBdDuCZsAMQTUCAQE4AgcBCgEBAwmFYgEBg?=
+ =?us-ascii?q?wSCF4UxLAhrYAEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ vdALpT+6Im4xJht5YCr
+IronPort-HdrOrdr: A9a23:u3bME6PVrqauHsBcTvyjsMiBIKoaSvp037BL7TETdfUxSKalfq
+ +V8sjzuSWYtN9zYhEdcLK7WZVoKEm0nfVICOIqUotKMjOLhEKYaKlcqaHizzfjFyCWzJ8+6Y
+ 5QN45kBpnVBVh+5PyKhDVQ/uxQpeW6zA==
+X-Talos-CUID: 9a23:i0+CBmHQ9ZdbSA3EqmJV5U4uXZp9LUSH7ybiLWmUFWFQF7G8HAo=
+X-Talos-MUID: 9a23:Qao+BwgnHrLouTVQmdijecMpDMBFwPztLxk2vMs3hcvfLnNaBTWkpWHi
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,302,1739833200"; 
+   d="scan'208,217";a="222963373"
+X-MGA-submission: =?us-ascii?q?MDFzh5biyYLYcteNiLXFoZeKmeQhP5C9sTlUm2?=
+ =?us-ascii?q?wI8DZeZjEA/pBVU2el9hvtcj3BtX7Q6NObvMnfJJkzSmDgbngSXYi1kB?=
+ =?us-ascii?q?sSj/B9WGOVwBo5yIb9n0KDcwfkzpwpkmrSF08TnrrBttsOld7lNpZZJs?=
+ =?us-ascii?q?ZouDwJBJjJrYCcGnl7Rb8aEw=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2025 13:52:34 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id E1883564D83;
+	Tue, 20 May 2025 13:52:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1747741952;
+	bh=GmGMTuUUEsyFwZMz3OtO93pQgs30zF7P0BiACvurI08=;
+	h=From:To:Subject:Date:Message-ID;
+	b=sFaqp6H2jD+SwgUXXfBac1pBLPnRv44AvahhHZgD8iDJYpX/9nRmO8pWEdPo7DobL
+	 ggblPIcvGC4hWtI6DybR3jFStoPzuEP1ZFQ+hXzx+C5PPPspDj+zt7ikTGxvsGTRfZ
+	 KGkQ6IyhsToNjiN9zLu9Or6d8M11JrT5ZiyVN8Nc=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 20 May 2025 13:52:31 +0200
+Message-ID: <m2msb7cxds.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue May 20 13:52:33 2025 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.453587, queueID=54089564D85
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19324
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-05/m2msb7cxds.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+SGVsbG8NCg0KSGVyZSBpcyB0aGUgbGF0ZXN0IE9DYW1sIFdlZWtseSBOZXdzLCBmb3IgdGhlIHdl
+ZWsgb2YgTWF5IDEzIHRvIDIwLA0KMjAyNS4NCg0KVGFibGUgb2YgQ29udGVudHMNCuKUgOKUgOKU
+gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgA0KDQpTZW5kIHVzIFRh
+bGsgYW5kIFdvcmtzaG9wIFByb3Bvc2FscyBmb3IgRnVuIE9DYW1sIDIwMjUgaW4gV2Fyc2F3LCBT
+ZXB0ZW1iZXIgMTUrMTYNCkJsb2cgcG9zdDogVXNpbmcgbW9kZWwtYmFzZWQgdGVzdGluZyBvbiBh
+IE1pcmFnZSBmaWxlc3lzdGVtIGltcGxlbWVudGF0aW9uDQpWb2x1bnRlZXJzIHRvIHJldmlldyB0
+aGUgcmVsb2NhdGFibGUtT0NhbWwgd29yaz8NClBvcnRhYmxlIExvY2sgRGlyZWN0b3JpZXMgZm9y
+IER1bmUgUGFja2FnZSBNYW5hZ2VtZW50DQpPdGhlciBPQ2FtbCBOZXdzDQpPbGQgQ1dODQoNCg0K
+U2VuZCB1cyBUYWxrIGFuZCBXb3Jrc2hvcCBQcm9wb3NhbHMgZm9yIEZ1biBPQ2FtbCAyMDI1IGlu
+IFdhcnNhdywgU2VwdGVtYmVyIDE1KzE2DQrilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZANCg0KICBBcmNoaXZlOg0K
+ICA8aHR0cHM6Ly9kaXNjdXNzLm9jYW1sLm9yZy90L3NlbmQtdXMtdGFsay1hbmQtd29ya3Nob3At
+cHJvcG9zYWxzLWZvci1mdW4tb2NhbWwtMjAyNS1pbi13YXJzYXctc2VwdGVtYmVyLTE1LTE2LzE2
+NjQ2LzE+DQoNCg0KU2FiaW5lIFNjaG1hbHR6IGFubm91bmNlZA0K4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+DQoNCiAgSGkgZXZlcnlvbmUhDQoNCiAgRnVuIE9DYW1sIDIwMjUgaXMgYSAyIGRheXMgb3BlbiBz
+b3VyY2UgaGFja2luZyBldmVudCBkZWRpY2F0ZWQgdG8NCiAgT0NhbWwgZW50aHVzaWFzdHMgYW5k
+IHByb2Zlc3Npb25hbHMuIFdlIGZvY3VzIG9uIHRoZSBpbXBhY3QgYW5kDQogIHBvdGVudGlhbCBv
+ZiBPQ2FtbCBmb3Igc29sdmluZyByZWFsLXdvcmxkIHByb2JsZW1zIGFuZCBnZXQgdG9nZXRoZXIg
+aW4NCiAgV2Fyc2F3IGZvciBhIGNvbmZlcmVuY2UvaGFja2F0aG9uIG92ZXIgdHdvIGRheXM6DQoN
+CiAg4oCiIERheSAxIChNb25kYXksIFNlcHRlbWJlciAxNSk6IHRhbGtzICh3aGljaCBhcmUgbGl2
+ZS1zdHJlYW1lZCkgYW5kDQogICAgc29jaWFsaXppbmcvaGFja2luZy4NCiAg4oCiIERheSAyIChU
+dWVzZGF5LCBTZXB0ZW1iZXIgMTYpOiBXb3Jrc2hvcHMgYW5kIGhhY2tpbmcuDQoNCiAgVG9waWNz
+IHdl4oCZcmUgaW50ZXJlc3RlZCBpbjoNCg0KICDigKIgaG93IHlvdSB1c2UgT0NhbWwgaW4geW91
+ciBidXNpbmVzcyAvIGluIHlvdXIgcHJvamVjdHMNCiAg4oCiIE9DYW1sIGxpYnJhcmllcywgZnJh
+bWV3b3JrcywgYW5kIG90aGVyIE9wZW4gU291cmNlIHByb2plY3RzIGJ1aWx0IG9uDQogICAgT0Nh
+bWwNCiAg4oCiIGhhbmRzLW9uIGRlbW9uc3RyYXRpb25zIHRoYXQgZW5jb3VyYWdlIHBlb3BsZSB0
+byB0cnkgdGhpbmdzIG9uIHRoZQ0KICAgIHNlY29uZCBkYXkgb2YgdGhlIGV2ZW50IG9yIGF0IGhv
+bWUNCiAg4oCiIHNlZWluZyBhY3R1YWwgY29kZSBhbmQgcmVhc29uaW5nIGJlaGluZCBkZXNpZ24g
+ZGVjaXNpb25zDQogIOKAoiBleHBlcmllbmNlIHJlcG9ydHMNCg0KICBGb3IgbW9yZSBkZXRhaWxz
+LCBjaGVjayBvdXQgdGhlIHdlYnNpdGUgYW5kIHRoZSBDRlAgbGlua2VkIGZyb20gdGhlcmU6DQoN
+CiAgPGh0dHBzOi8vZnVuLW9jYW1sLmNvbT4NCg0KDQpCbG9nIHBvc3Q6IFVzaW5nIG1vZGVsLWJh
+c2VkIHRlc3Rpbmcgb24gYSBNaXJhZ2UgZmlsZXN5c3RlbSBpbXBsZW1lbnRhdGlvbg0K4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQDQoNCiAgQXJjaGl2
+ZToNCiAgPGh0dHBzOi8vZGlzY3Vzcy5vY2FtbC5vcmcvdC9ibG9nLXBvc3QtdXNpbmctbW9kZWwt
+YmFzZWQtdGVzdGluZy1vbi1hLW1pcmFnZS1maWxlc3lzdGVtLWltcGxlbWVudGF0aW9uLzE2NjY2
+LzE+DQoNCg0KZ2FzY2hlIGFubm91bmNlZA0K4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSA4pSADQoNCiAgSSBhbSBhdHRlbmRpbmcgdGhlIFtNaXJhZ2VPUyByZXRy
+ZWF0XSBpbiBNYXJyYWtlc2gsIHdpdGggaW4NCiAgcGFydGljdWxhcjoNCg0KICDigKIgTWluZHkg
+QHlvbWltb25vLCB3aG8gaW1wbGVtZW50ZWQgYSBzbWFsbCAoYnV0IG5vdCBzbyBzaW1wbGUpIGZp
+bGUNCiAgICBzeXN0ZW0gZm9yIE1pcmFnZSwgW0NoYW1lbG9uXQ0KICDigKIgQXJtYcOrbCBAYXJt
+YWVsLCB3aG8gaXMgaW50ZXJlc3RlZCBpbiB0ZXN0aW5nIGVmZmVjdGZ1bCwgY29uY3VycmVudA0K
+ICAgIGFuZC9vciBkaXN0cmlidXRlZCBzeXN0ZW1zDQoNCiAgQXJtYcOrbCBhbmQgbXlzZWxmIGRl
+Y2lkZWQgdG8gdHJ5IHRvIHVzZSBtb2RlbC1iYXNlZCB0ZXN0aW5nIG9uDQogIENoYW1lbG9uLg0K
+DQogIE5vdGU6IHRoaXMgaXMgYSBsb25nIGJsb2cgcG9zdCwgYW5kIHlvdSBzaG91bGQgZmVlbCBm
+cmVlIHRvIHNraXAgYXQNCiAgYW55IHBvaW50LiBJbiBwYXJ0aWN1bGFyLCBkbyBza2lwIHRoZSBj
+b2RlIHNlY3Rpb25zIGlmIHlvdSBkb24ndCBjYXJlDQogIGFib3V0IHRoZSBkZXRhaWxzLCB0aGV5
+IGFyZSBoZXJlIHRvIG1ha2UgdGhpbmdzIHByZWNpc2UgYnV0IG5vdA0KICBzdHJpY3RseSBuZWNl
+c3NhcnkuDQoNCiAgL0VkaXRvcuKAmXMgbm90ZTogdGhlIGJsb2cgcG9zdCBpcyB0b28gbG9uZyBm
+b3IgdGhpcyBuZXdzbGV0dGVyLiBQbGVhc2UNCiAgcmVhZCBpdCBbaGVyZV0uLw0KDQoNCltNaXJh
+Z2VPUyByZXRyZWF0XSA8aHR0cHM6Ly9yZXRyZWF0Lm1pcmFnZS5pby8+DQoNCltDaGFtZWxvbl0g
+PGh0dHBzOi8vZ2l0aHViLmNvbS95b21pbW9uby9jaGFtZWxvbi8+DQoNCltoZXJlXQ0KPGh0dHBz
+Oi8vZGlzY3Vzcy5vY2FtbC5vcmcvdC9ibG9nLXBvc3QtdXNpbmctbW9kZWwtYmFzZWQtdGVzdGlu
+Zy1vbi1hLW1pcmFnZS1maWxlc3lzdGVtLWltcGxlbWVudGF0aW9uLzE2NjY2LzE+DQoNCg0KVm9s
+dW50ZWVycyB0byByZXZpZXcgdGhlIHJlbG9jYXRhYmxlLU9DYW1sIHdvcms/DQrilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZANCg0KICBBcmNoaXZlOg0KICA8aHR0cHM6Ly9kaXNjdXNzLm9j
+YW1sLm9yZy90L3ZvbHVudGVlcnMtdG8tcmV2aWV3LXRoZS1yZWxvY2F0YWJsZS1vY2FtbC13b3Jr
+LzE2NjY3LzE+DQoNCg0KZ2FzY2hlIGFubm91bmNlZA0K4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA
+4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSADQoNCiAgSGkgZGlzY3VzcywNCg0KICBEYXZpZCBAZHJh
+MjcgQWxsc29wcCBoYXMgYmVlbiB3b3JraW5nIGZvciBhIGZldyB5ZWFycyBub3cgb24gbWFraW5n
+DQogIHRoZSBPQ2FtbCBjb21waWxlciByZWxvY2F0YWJsZS4NCg0KICBDdXJyZW50bHkgeW91IGNv
+bmZpZ3VyZSB0aGUgY29tcGlsZXIgdG8gYmUgaW5zdGFsbGVkIGF0IGEgY2VydGFpbg0KICBwYXRo
+LCBhbmQgdGhlIHJlc3VsdGluZyBwcm9ncmFtIGFuZCBjb25maWd1cmF0aW9uIGRlcGVuZCBvbiB0
+aGlzIHBhdGg7DQogIG1vdmluZyB0aGUgaW5zdGFsbGVkIHByZWZpeCB0byBhIGRpZmZlcmVudCBw
+bGFjZSB3aWxsIGJyZWFrIHZhcmlvdXMNCiAgdGhpbmdzLiBIYXZpbmcgYSByZWxvY2F0YWJsZSBj
+b21waWxlciBpcyBnb29kIGZvciBXaW5kb3dzIHN1cHBvcnQsIGZvcg0KICByZXByb2R1Y2libGUg
+YnVpbGRzLCBmb3IgY2FjaGluZywgZXRjLg0KDQogIEFuIGVhcmx5IHZlcnNpb24gb2YgdGhpcyB3
+b3JrIHdhcyBwcmVzZW50ZWQgYnkgRGF2aWQgYXQgdGhlIE9DYW1sDQogIGNvbXBpbGVyIHdvcmtz
+aG9wIDIwMjIsIGFuZCBpdCBpcyBkaXNjdXNzIGluIFthIHBhc3QgRGljdXNzIHRocmVhZF0uDQoN
+CiAgR29vZCBuZXdzISBUaGUgd29yayBpcyBub3cgaW4gYSBnb29kIGVub3VnaCBzaGFwZSB0aGF0
+IEBkcmEyNyBoYXMNCiAgc3RhcnRlZCB1cHN0cmVhbWluZyBwYXJ0cyBvZiBpdCDigJMgc3VibWl0
+dGluZyB0aGVtIHRvIHRoZSBjb21waWxlcg0KICBkaXN0cmlidXRpb24uIFRoZXJlIGlzIFthbiBS
+RkNdIHRoYXQgZGVzY3JpYmVzIHRoZSBkZXNpZ24sIGFuZCB3ZSBnb3QNCiAgW2EgZmlyc3QgUFJd
+IHRoYXQgaXMgYSB0ZXN0IGhhcm5lc3MgZm9yIHRoZSBmZWF0dXJlLCB3aXRoIG1hbnkgbW9yZSB0
+bw0KICBjb21lLg0KDQogIEJhZCBuZXdzOiB3ZSBkb24ndCBrbm93IHdobyB3b3VsZCBiZSBhdmFp
+bGFibGUgdG8gcmV2aWV3IHRob3NlIFBScyBhcw0KICB0aGV5IGNvbWUuIEBub2piIG1hZGUgYW4g
+ZWZmb3J0IHRvIHJldmlldyB0aGUgdGVzdCBoYXJuZXNzLCBidXQgaXMNCiAgYWxzbyB3b3JraW5n
+IG9uIHRvbnMgb2Ygb3RoZXIgc3R1ZmYgKHN1Y2ggYXM6IHRyeWluZyB0byBnZXQgc3RkbGliDQog
+IGNvbnRyaWJ1dGlvbnMgYWNyb3NzIHRoZSBmaW5pc2ggbGluZSkuIE15IHVuZGVyc3RhbmRpbmcg
+aXMgdGhhdA0KICBAUnVjaWtpciBpcyBub3QgYXZhaWxhYmxlIHRvIGRvIHRoaXMgd29yay4gVGhl
+cmUgaXMgYSByaXNrIHRoYXQgdGhlDQogIHdvcmsgaXMgaGVsZCBiYWNrIGR1ZSB0byB0aGUgYWJz
+ZW5jZSBvZiBtb3RpdmF0ZWQgcmV2aWV3ZXJzIHRvIGxvb2sgYXQNCiAgaXQuDQoNCiAgV291bGQg
+YW55b25lIGFyb3VuZCBiZSBpbnRlcmVzdGVkIGluIGhlbHBpbmcgcmV2aWV3IHRoaXMgd29yaz8g
+SWYgc28sDQogIEknbSBoYXBweSB0byBwb3N0IGxpbmtzIHRvIGZ1cnRoZXIgUFJzIGFzIHRoZXkg
+Y29tZS4NCg0KICBJbiBteSBleHBlcmllbmNlLCBQUnMgYnkgQGRyYTI3IHRvdWNoIGEgdmFyaWVk
+IG51bWJlciBvZiBvYnNjdXJlDQogIHRvcGljcyB0aGF0ICpubyBvbmUqIGV4Y2VwdCBtYXliZSBo
+aW1zZWxmIGlzIGFuIGV4cGVydCBhYm91dCDigJMgZGVlcA0KICBzdHVmZiBhYm91dCBob3cgdGhl
+IGNvbXBpbGVyIHdvcmsgdGhhdCBtb3N0IG9mIHVzIGFyZSBoYXBweSB0byBpZ25vcmUNCiAgYmVj
+YXVzZSBpdCB1c3VhbGx5IHN0YXlzIG91dCBvZiB0aGUgd2F5LiBPbmUgdHlwaWNhbCBleGFtcGxl
+LCBJDQogIHN1c3BlY3QsIGlzIFsjMTM3MjggOiBBZGQgYFN5cy5ydW50aW1lX2V4ZWN1dGFibGUn
+IGFuZA0KICBgY2FtbF9zeXNfcHJvY19zZWxmX2V4ZSddICh3aGljaCBpcyBub3QgbWVyZ2VkLCBu
+b3QgbG9va2luZyBmb3INCiAgcmV2aWV3ZXJzKS4gSWYgeW91IGZpbmQgdGhpcyBQUiBzdXBlci1v
+YnNjdXJlLCB3ZWxjb21lIHRvIHRoZSBjbHViLCBJDQogIGRvbid0IHVuZGVyc3RhbmQgYW55dGhp
+bmcgZWl0aGVyLiBCdXQgaWYgeW91IGFsc28gZmluZCBpdA0KICAqaW50ZXJlc3RpbmcqLCB5b3Ug
+bWF5IGJlIGV4Y2VsbGVudCB2b2x1bnRlZXIgbWF0ZXJpYWwgdG8gcmV2aWV3IG1vcmUNCiAgUFJz
+IG9uIHRoaXMuDQoNCiAgTm90ZTogdGhlIGNvbnRyaWJ1dGlvbiBydWxlcyBmb3IgY29tcGlsZXIg
+UFJzIGlzIHRoYXQgZWFjaCBQUiBtdXN0IGJlDQogIGFwcHJvdmVkIGJ5IHNvbWVvbmUgd2l0aCBj
+b21taXQgcmlnaHRzIChhIGNvbXBpbGVyIG1haW50YWluZXIpIHRvIGdldA0KICBtZXJnZWQuIEJ5
+IGl0c2VsZiwgYW4gYXBwcm92YWwgZnJvbSBhbm90aGVyIGNvbnRyaWJ1dG9yIGRvZXMgbm90DQog
+IHN1ZmZpY2UuIEJ1dCBpdCBpcyBjZXJ0YWlubHkgcG9zc2libGUgZm9yIG1haW50YWluZXJzIHRv
+IGdpdmUgYXBwcm92YWwNCiAgb24gYmVoYWxmIG9mIGFub3RoZXIgcmV2aWV3IOKAkyB3ZSBkbyBp
+dCBpbiBwcmFjdGljZS4gSWYgeW91IHJldmlldyBhIFBSDQogIChhYm91dCB0aGlzIG9yIGFueXRo
+aW5nIGVsc2UpIGFuZCB5b3UgZmVlbCBjb25maWRlbnQgdGhhdCBpdCBpcyBva2F5DQogIHRvIG1l
+cmdlIGl0LCBwbGVhc2UgZmVlbCBmcmVlIHRvIGV4cGxpY2l0bHkgImFwcHJvdmUiIGl0IHRocm91
+Z2ggdGhlDQogIGdpdGh1YiBpbnRlcmZhY2UuDQoNCg0KW2EgcGFzdCBEaWN1c3MgdGhyZWFkXQ0K
+PGh0dHBzOi8vZGlzY3Vzcy5vY2FtbC5vcmcvdC9yZWxvY2F0YWJsZS1jb21waWxlci13b3JrLzEx
+MjE4Pg0KDQpbYW4gUkZDXSA8aHR0cHM6Ly9naXRodWIuY29tL29jYW1sL1JGQ3MvcHVsbC81Mz4N
+Cg0KW2EgZmlyc3QgUFJdIDxodHRwczovL2dpdGh1Yi5jb20vb2NhbWwvb2NhbWwvcHVsbC8xNDAx
+ND4NCg0KWyMxMzcyOCA6IEFkZCBgU3lzLnJ1bnRpbWVfZXhlY3V0YWJsZScgYW5kIGBjYW1sX3N5
+c19wcm9jX3NlbGZfZXhlJ10NCjxodHRwczovL2dpdGh1Yi5jb20vb2NhbWwvb2NhbWwvcHVsbC8x
+MzcyOD4NCg0KDQpEYXZpZCBBbGxzb3BwIGFkZGVkDQrilIDilIDilIDilIDilIDilIDilIDilIDi
+lIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIANCg0KICAgICAgICBoYXMgYmVlbiB3b3Jr
+aW5nIGZvciBhIGZldyB5ZWFycyBub3cgb24gbWFraW5nIHRoZSBPQ2FtbA0KICAgICAgICBjb21w
+aWxlciByZWxvY2F0YWJsZS4NCg0KICBKdXN0IHRvIG1ha2UgaXQgc291bmQgYSBsaXR0bGUgbGVz
+cyBIZXJjdWxlYW4sIEkgaGF2ZW7igJl0IGJlZW4gd29ya2luZw0KICBfc29saWRseV8gb24gaXQg
+8J+YiiBUaGVyZSB3ZXJlIGEgZmV3IE9DYW1sIDUuMCBhbmQgV2luZG93cyBvcGFtDQogIDIuMi1z
+aGFwZWQgZGl2ZXJzaW9ucyBvbiB0aGUgd2F54oCmDQoNCiAgSW4gYWRkaXRpb24gdG8gdGhlIGFs
+cmVhZHkgb3BlbmVkIHRlc3QgaGFybmVzcywgdGhlcmXigJlzIGEgZHJhZnQgKHdpdGgNCiAgZXhw
+bGFuYXRvcnkgdGV4dCkgb2YgdGhlIGZpcnN0IG9mIHRoZSBtYWluIFBScyBhdA0KICA8aHR0cHM6
+Ly9naXRodWIuY29tL2RyYTI3L29jYW1sL3B1bGwvMTgzPiBhbmQgYSBkcmFmdCBvZiB0aGUgc2Vj
+b25kDQogIChjdXJyZW50bHkgd2l0aG91dCBleHBsYW5hdG9yeSB0ZXh0LCBhbHRob3VnaCB0aGF0
+IHdpbGwgYmUgdGhlcmUgYnkNCiAgbmV4dCB3ZWVrKSBhdCA8aHR0cHM6Ly9naXRodWIuY29tL2Ry
+YTI3L29jYW1sL3B1bGwvMTYyPi4gVGhlIHRoaXJkIGlzDQogIHN0aWxsIGF3YWl0aW5nIGEgc21h
+bGwgYW1vdW50IG9mIHRpZHlpbmcgKHdoaWNoIHdpbGwgaG9wZWZ1bGx5IGFsc28gYmUNCiAgZG9u
+ZSBieSB0aGUgZW5kIG9mIG5leHQgd2VlayDwn6W1KQ0KDQoNClBvcnRhYmxlIExvY2sgRGlyZWN0
+b3JpZXMgZm9yIER1bmUgUGFja2FnZSBNYW5hZ2VtZW50DQrilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZANCg0KICBBcmNoaXZlOg0KICA8aHR0cHM6Ly9kaXNjdXNz
+Lm9jYW1sLm9yZy90L3BvcnRhYmxlLWxvY2stZGlyZWN0b3JpZXMtZm9yLWR1bmUtcGFja2FnZS1t
+YW5hZ2VtZW50LzE2NjY5LzE+DQoNCg0KU3RldmUgU2hlcnJhdHQgYW5ub3VuY2VkDQrilIDilIDi
+lIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDi
+lIDilIDilIANCg0KICBXZSd2ZSByZWNlbnRseSBtYWRlIGEgY2hhbmdlIHRvIGhvdyBsb2NrIGRp
+cmVjdG9yaWVzIHdvcmsgaW4gdGhlIFtEdW5lDQogIERldmVsb3BlciBQcmV2aWV3XS4NCg0KICBQ
+cmV2aW91c2x5IHdoZW4gRHVuZSB3b3VsZCBzb2x2ZSBkZXBlbmRlbmNpZXMgZm9yIGEgcHJvamVj
+dCBhbmQNCiAgZ2VuZXJhdGUgYSBsb2NrIGRpcmVjdG9yeSwgdGhlIGxvY2sgZGlyZWN0b3J5IHdv
+dWxkIGJlIHNwZWNpYWxpemVkIGZvcg0KICB0aGUgY29tcHV0ZXIgd2hlcmUgaXQgd2FzIGdlbmVy
+YXRlZCwgd2l0aCBubyBndWFyYW50ZWUgaXQgd291bGQgd29yaw0KICBvbiBhIGRpZmZlcmVudCBj
+b21wdXRlci4gVGhpcyBwb3NlZCBhIHByb2JsZW0gZm9yIGNoZWNraW5nIGxvY2sNCiAgZGlyZWN0
+b3JpZXMgaW50byB2ZXJzaW9uIGNvbnRyb2wgZm9yIHByb2plY3RzIHdpdGggbXVsdGlwbGUNCiAg
+ZGV2ZWxvcGVycywgc2luY2Ugb25lIGRldmVsb3BlciBtaWdodCBsb2NrIHRoZSBwcm9qZWN0IG9u
+IHRoZWlyIE1hYywNCiAgc2F5LCBvbmx5IGZvciBhbm90aGVyIGRldmVsb3BlciBvbiBMaW51eCB0
+byBiZSB1bmFibGUgdG8gYnVpbGQgaXQgZHVlDQogIHRvIGl0cyBNYWNPUy1zcGVjaWZpYyBsb2Nr
+IGRpcmVjdG9yeS4NCg0KICBUaGlzIHBvc3QgaXMgdG8gYW5ub3VuY2UgdGhhdCBEdW5lIG5vdyBz
+dXBwb3J0cyBnZW5lcmF0aW5nIC9wb3J0YWJsZS8NCiAgbG9jayBkaXJlY3RvcmllczsgYSBsb2Nr
+IGRpcmVjdG9yeSBnZW5lcmF0ZWQgb24gb25lIGNvbXB1dGVyIHdpbGwgbm93DQogIGNvbnRhaW4g
+YSBkZXBlbmRlbmN5IHNvbHV0aW9uIGZvciBhIHJhbmdlIG9mIGRpZmZlcmVudCBjb21wdXRlcnMs
+DQogIG1ha2luZyBpdCBzYWZlIHRvIGNoZWNrIGxvY2sgZGlyZWN0b3JpZXMgaW50byB2ZXJzaW9u
+IGNvbnRyb2wuDQoNCg0KW0R1bmUgRGV2ZWxvcGVyIFByZXZpZXddIDxodHRwczovL3ByZXZpZXcu
+ZHVuZS5idWlsZC8+DQoNClRlY2huaWNhbCBEZXRhaWxzDQrilYzilYzilYzilYzilYzilYzilYzi
+lYzilYzilYzilYzilYzilYzilYzilYzilYzilYwNCg0KICBJbiBPcGFtIHRoZSBkZXBlbmRlbmNp
+ZXMgb2YgYSBwYWNrYWdlIGNhbiBiZSBkaWZmZXJlbnQgZGVwZW5kaW5nIG9uDQogIHByb3BlcnRp
+ZXMgb2YgdGhlIGNvbXB1dGVyIHdoZXJlIHRoZSBwYWNrYWdlIGlzIGJlaW5nIGluc3RhbGxlZC4g
+QQ0KICBwYWNrYWdlIG1pZ2h0IGhhdmUgYSBkaWZmZXJlbnQgc2V0IG9mIGRlcGVuZGVuY2llcyB3
+aGVuIGJlaW5nDQogIGluc3RhbGxlZCBvbiBNYWNPUyB2ZXJzZXMgTGludXggdmVyc2VzIFdpbmRv
+d3MsIG9yIHRoZSBkZXBlbmRlbmNpZXMNCiAgbWlnaHQgdmFyeSBkZXBlbmRpbmcgb24gdGhlIENQ
+VSBhcmNoaXRlY3R1cmUuIEl0J3MgZXZlbiBwb3NzaWJsZQ0KICAodGhvdWdoIHF1aXRlIHJhcmUg
+aW4gcHJhY3RpY2UpIGZvciB0aGUgZGVwZW5kZW5jaWVzIG9mIGEgcGFja2FnZSB0bw0KICB2YXJ5
+IGJldHdlZW4gb3BlcmF0aW5nIHN5c3RlbSBkaXN0cmlidXRpb25zLCBvciBldmVuIG9wZXJhdGlu
+ZyBzeXN0ZW0NCiAgdmVyc2lvbnMuDQoNCiAgVGhpcyBleHByZXNzaXZlIHBvd2VyIG1ha2VzIE9w
+YW0gdmVyeSBmbGV4aWJsZSBhcyBpdCBhbGxvd3MgcGFja2FnZXMNCiAgdG8gYmUgc3BlY2lhbGl6
+ZWQgZm9yIHRoZSBlbnZpcm9ubWVudCB3aGVyZSB0aGV5IHdpbGwgYmUNCiAgaW5zdGFsbGVkLiBU
+aGUgZHJhd2JhY2sgb2YgdGhpcyBhcHByb2FjaCBpcyB0aGF0IHRoZXJlIG1pZ2h0IG5vdCBiZSBh
+DQogIHNpbmdsZSBzb2x1dGlvbiB0byBhIGRlcGVuZGVuY3kgcHJvYmxlbSB0aGF0IHdvcmtzIGV2
+ZXJ5d2hlcmUuIEVhY2gNCiAgY29tYmluYXRpb24gb2YgT1MvYXJjaGl0ZWN0dXJlL2Rpc3Ryby92
+ZXJzaW9uIGNvdWxkLCBpbiB0aGVvcnksDQogIHJlcXVpcmUgYSBkaWZmZXJlbnQgZGVwZW5kZW5j
+eSBzb2x1dGlvbi4gVGhlcmUgYXJlIHdheSB0b28gbWFueQ0KICBjb21iaW5hdGlvbnMgb2YgdGhv
+c2UgcHJvcGVydGllcyB0byBydW4gRHVuZSdzIGRlcGVuZGVuY3kgc29sdmVyIG9uY2UNCiAgZm9y
+IGVhY2ggY29tYmluYXRpb24gaW4gYSByZWFzb25hYmxlIGFtb3VudCBvZiB0aW1lLiBJbnN0ZWFk
+IHdlDQogIGVsZWN0ZWQgdG8gY29tcHJvbWlzZSBhbmQgaGF2ZSBEdW5lIG9ubHkgZ2VuZXJhdGUg
+YSBzb2x1dGlvbiBmb3INCiAgY29tbW9uIHBsYXRmb3JtcyBieSBkZWZhdWx0LCB3aGlsZSBhbGxv
+d2luZyB1c2VycyB0byBzcGVjaWZ5IGEgY3VzdG9tDQogIGxpc3Qgb2YgcGxhdGZvcm1zIHRvIHNv
+bHZlIGZvciBpbiB0aGVpciBgZHVuZS13b3Jrc3BhY2UnIGZpbGUuDQoNCiAgTG9ja2ZpbGVzIG5v
+dyBsb29rIGEgbGl0dGxlIGRpZmZlcmVudCB0byBhY2NvdW50IGZvciB0aGUgZmFjdCB0aGF0DQog
+IHRoZXkgbm93IGNvbnRhaW4gbXVsdGlwbGUgZGlmZmVyZW50IHBsYXRmb3JtLXNwZWNpZmljIGRl
+cGVuZGVuY3kNCiAgc29sdXRpb25zLiBGb3IgZXhhbXBsZSwgZm9ybWVybHksIHRoZSBsb2NrZmls
+ZSBmb3IgdGhlDQogIGBvY2FtbC1jb21waWxlcicgcGFja2FnZSBvbiBhbiB4ODYgbWFjaGluZSBy
+dW5uaW5nIFdpbmRvd3MsIHlvdSBtaWdodA0KICBoYXZlIGhhZCBhIGBkZXBlbmRzJyBmaWVsZCBs
+aWtlOg0KDQogIOKUjOKUgOKUgOKUgOKUgA0KICDilIIgKGRlcGVuZHMgYXJjaC14ODZfNjQgc3lz
+dGVtLW1pbmd3IG1pbmd3LXc2NC1zaGltcyBmbGV4ZGxsKQ0KICDilJTilIDilIDilIDilIANCg0K
+ICBNb3N0IG9mIHRoZXNlIGRlcGVuZGVuY2llcyBhcmUgc3BlY2lmaWMgdG8gV2luZG93czsgaXQn
+cyB1bmxpa2VseSB0aGF0DQogIHlvdSdsbCBiZSBhYmxlIHRvIGluc3RhbGwgYW55IG9mIHRoZXNl
+IGRlcGVuZGVuY2llcyBvbiBMaW51eCBvciBNYWNPUy4NCg0KICBXaXRoIHRoZSBwb3J0YWJsZSBs
+b2NrIGRpcmVjdG9yaWVzIGZlYXR1cmUgZW5hYmxlZCwgdGhpcyBmaWVsZCBub3cNCiAgbWlnaHQg
+bG9vayBsaWtlOg0KDQogIOKUjOKUgOKUgOKUgOKUgA0KICDilIIgKGRlcGVuZHMNCiAg4pSCICAo
+Y2hvaWNlDQogIOKUgiAgICgoKChhcmNoIHg4Nl82NCkNCiAg4pSCICAgICAgKG9zIGxpbnV4KSkN
+CiAg4pSCICAgICAoKGFyY2ggYXJtNjQpDQogIOKUgiAgICAgIChvcyBsaW51eCkpDQogIOKUgiAg
+ICAgKChhcmNoIHg4Nl82NCkNCiAg4pSCICAgICAgKG9zIG1hY29zKQ0KICDilIIgICAgICAob3Mt
+ZGlzdHJpYnV0aW9uIGhvbWVicmV3KQ0KICDilIIgICAgICAob3MtZmFtaWx5IGhvbWVicmV3KSkN
+CiAg4pSCICAgICAoKGFyY2ggYXJtNjQpDQogIOKUgiAgICAgIChvcyBtYWNvcykNCiAg4pSCICAg
+ICAgKG9zLWRpc3RyaWJ1dGlvbiBob21lYnJldykNCiAg4pSCICAgICAgKG9zLWZhbWlseSBob21l
+YnJldykpKQ0KICDilIIgICAgKCkpDQogIOKUgiAgICgoKChhcmNoIHg4Nl82NCkNCiAg4pSCICAg
+ICAgKG9zIHdpbjMyKQ0KICDilIIgICAgICAob3MtZGlzdHJpYnV0aW9uIGN5Z3dpbikNCiAg4pSC
+ICAgICAgKG9zLWZhbWlseSB3aW5kb3dzKSkpDQogIOKUgiAgICAoYXJjaC14ODZfNjQgc3lzdGVt
+LW1pbmd3IG1pbmd3LXc2NC1zaGltcyBmbGV4ZGxsKSkNCiAg4pSCICAgKCgoKGFyY2ggYXJtNjQp
+DQogIOKUgiAgICAgIChvcyB3aW4zMikNCiAg4pSCICAgICAgKG9zLWRpc3RyaWJ1dGlvbiBjeWd3
+aW4pDQogIOKUgiAgICAgIChvcy1mYW1pbHkgd2luZG93cykpKQ0KICDilIIgICAgKHN5c3RlbS1t
+aW5ndyBtaW5ndy13NjQtc2hpbXMgZmxleGRsbCkpKSkNCiAg4pSU4pSA4pSA4pSA4pSADQoNCiAg
+VGhpcyBuZXcgc3ludGF4IGlzIHNpbWlsYXIgdG8gYSBtYXRjaC1zdGF0ZW1lbnQsIGxpc3Rpbmcg
+dGhlDQogIGRlcGVuZGVuY2llcyBmb3IgZWFjaCBwbGF0Zm9ybSBmb3Igd2hpY2ggRHVuZSdzIHNv
+bHZlciByYW4uIFlvdSBjYW4NCiAgY2hhbmdlIHRoZSBwbGF0Zm9ybXMgRHVuZSB3aWxsIHNvbHZl
+IGZvciBieSBhZGRpbmcgc29tZXRoaW5nIGxpa2UgdGhpcw0KICB0byBgZHVuZS13b3Jrc3BhY2Un
+Og0KDQogIOKUjOKUgOKUgOKUgOKUgA0KICDilIIgKGxvY2tfZGlyDQogIOKUgiAgKHNvbHZlX2Zv
+cl9wbGF0Zm9ybXMNCiAg4pSCICAgKChhcmNoIGFybTY0KQ0KICDilIIgICAgKG9zIG9wZW5ic2Qp
+KQ0KICDilIIgICAoKGFyY2ggeDg2XzMyKQ0KICDilIIgICAgKG9zIHdpbjMyKSkpKQ0KICDilJTi
+lIDilIDilIDilIANCg0KICBBZnRlciBydW5uaW5nIGBkdW5lIHBrZyBsb2NrJyBhZ2FpbiwgdGhl
+IGxvY2tmaWxlIGZvciBgb2NhbWwtY29tcGlsZXInDQogIHdpbGwgYmUgdXBkYXRlZCB3aXRoIHRo
+ZXNlIGRlcGVuZGVuY2llczoNCg0KICDilIzilIDilIDilIDilIANCiAg4pSCIChkZXBlbmRzDQog
+IOKUgiAgKGNob2ljZQ0KICDilIIgICAoKCgoYXJjaCBhcm02NCkgKG9zIG9wZW5ic2QpKSkgKCkp
+DQogIOKUgiAgICgoKChhcmNoIHg4Nl8zMikNCiAg4pSCICAgICAgKG9zIHdpbjMyKSkpDQogIOKU
+giAgICAoc3lzdGVtLW1pbmd3IG9jYW1sLW9wdGlvbi1ieXRlY29kZS1vbmx5IGZsZXhkbGwpKSkp
+DQogIOKUlOKUgOKUgOKUgOKUgA0KDQogIEEgZmV3IG90aGVyIGZpZWxkcyBvZiBsb2NrZmlsZXMg
+bm93IGFsc28gdXNlIHRoZSBuZXcgc3ludGF4LiBEdW5lDQogIGxvY2tmaWxlcyBjb250YWluIHRo
+ZSBjb21tYW5kcyBuZWVkZWQgdG8gYnVpbGQgYW5kIGluc3RhbGwgZWFjaA0KICBwYWNrYWdlLCBh
+cyB3ZWxsIGFzIHRoZSBuYW1lcyBvZiBhbnkgc3lzdGVtIHBhY2thZ2VzIG5lZWRlZCBieSB0aGUN
+CiAgT3BhbSBwYWNrYWdlLCBhbmQgZWFjaCBvZiB0aGVzZSBmaWVsZHMgY2FuIGFsc28gaGF2ZSBw
+bGF0Zm9ybS1zcGVjaWZpYw0KICB2YWx1ZXMuDQoNCiAgTG9ja2ZpbGUgbmFtZXMgbm93IGluY2x1
+ZGUgdGhlIHZlcnNpb24gbnVtYmVyIG9mIHRoZSBwYWNrYWdlLiBUaGUNCiAgYG9jYW1sLWNvbXBp
+bGVyJyBwYWNrYWdlIHVzZWQgdG8gaGF2ZSBhIGxvY2tmaWxlIG5hbWVkDQogIGBvY2FtbC1jb21w
+aWxlci5wa2cnIGJ1dCBub3cgaGFzIGEgbmFtZSBsaWtlDQogIGBvY2FtbC1jb21waWxlci41LjMu
+MC5wa2cnIGluc3RlYWQuIFRoaXMgaXMgYmVjYXVzZSBpdCdzIHBvc3NpYmxlIHRoYXQNCiAgZGlm
+ZmVyZW50IHBsYXRmb3JtcyBtYXkgcmVxdWlyZSBkaWZmZXJlbnQgdmVyc2lvbnMgb2YgdGhlIHNh
+bWUgcGFja2FnZQ0KICBpbiB0aGUgZGVwZW5kZW5jeSBzb2x1dGlvbiwgc28gdGhlIGxvY2sgZGly
+ZWN0b3J5IG5lZWRzIHRvIGJlIGFibGUgdG8NCiAgY29udGFpbiBtdWx0aXBsZSBsb2NrZmlsZXMg
+Zm9yIHRoZSBzYW1lIHBhY2thZ2Ugd2l0aG91dCB0aGVtIGNvbGxpZGluZw0KICBvbiBmaWxlbmFt
+ZS4NCg0KDQpIb3cgZG8gSSBnZXQgaXQ/DQrilYzilYzilYzilYzilYzilYzilYzilYzilYzilYzi
+lYzilYzilYzilYzilYzilYwNCg0KICBUaGlzIGZlYXR1cmUgaXMgbGl2ZSBpbiB0aGUgbGF0ZXN0
+IHZlcnNpb24gb2YgdGhlIFtEdW5lIERldmVsb3Blcg0KICBQcmV2aWV3XS4gRm9sbG93IHRoZSBp
+bnN0cnVjdGlvbnMgb24gdGhhdCBwYWdlIHRvIGluc3RhbGwgYSB2ZXJzaW9uIG9mDQogIER1bmUg
+d2l0aCB0aGlzIGZlYXR1cmUuIFdpdGggcG9ydGFibGUgbG9jayBkaXJlY3RvcmllcyBlbmFibGVk
+LCBEdW5lDQogIHdpbGwgdGVtcG9yYXJpbHkgcmVtYWluIGJhY2t3YXJkcyBjb21wYXRpYmxlIHdp
+dGggdGhlIG9yaWdpbmFsIGxvY2sNCiAgZGlyZWN0b3J5IGZvcm1hdCwgdGhvdWdoIHN1cHBvcnQg
+d2lsbCBsaWtlbHkgYmUgZHJvcHBlZCBhdCBzb21lDQogIHBvaW50LiBHZW5lcmF0ZSBhIG5ldyBs
+b2NrIGRpcmVjdG9yeSBieSBydW5uaW5nIGBkdW5lIHBrZw0KICBsb2NrJy4gWW91J2xsIGtub3cg
+eW91ciBsb2NrIGRpcmVjdG9yeSBpcyBwb3J0YWJsZSBpZiBlYWNoIGZpbGUgaW5zaWRlDQogIGl0
+IGhhcyBhIHZlcnNpb24gbnVtYmVyIGluIGl0cyBmaWxlbmFtZS4NCg0KICBIYXBweSByZXByb2R1
+Y2libGUgYnVpbGRpbmchDQoNCg0KW0R1bmUgRGV2ZWxvcGVyIFByZXZpZXddIDxodHRwczovL3By
+ZXZpZXcuZHVuZS5idWlsZC8+DQoNCg0KT3RoZXIgT0NhbWwgTmV3cw0K4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQDQoNCkZyb20gdGhlIG9jYW1sLm9yZyBi
+bG9nDQrilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDi
+lIDilIDilIDilIDilIDilIANCg0KICBIZXJlIGFyZSBsaW5rcyBmcm9tIG1hbnkgT0NhbWwgYmxv
+Z3MgYWdncmVnYXRlZCBhdCBbdGhlIG9jYW1sLm9yZw0KICBibG9nXS4NCg0KICDigKIgW1RoZSB3
+ZWVrIHRoYXQgd2FzIC0gMjAyNSB3MjBdDQogIOKAoiBbT0NhbWwgV2ViIERldmVsb3BtZW50OiBF
+c3NlbnRpYWwgVG9vbHMgYW5kIExpYnJhcmllcyBpbiAyMDI1XQ0KICDigKIgW1RoZSB3ZWVrIHRo
+YXQgd2FzIC0gMjAyNSB3MTldDQoNCg0KW3RoZSBvY2FtbC5vcmcgYmxvZ10gPGh0dHBzOi8vb2Nh
+bWwub3JnL2Jsb2cvPg0KDQpbVGhlIHdlZWsgdGhhdCB3YXMgLSAyMDI1IHcyMF0NCjxodHRwczov
+L3d3dy5kcmEyNy51ay9ibG9nL3dlZWstdGhhdC13YXMvMjAyNS8wNS8xOC93dHctMjAuaHRtbD4N
+Cg0KW09DYW1sIFdlYiBEZXZlbG9wbWVudDogRXNzZW50aWFsIFRvb2xzIGFuZCBMaWJyYXJpZXMg
+aW4gMjAyNV0NCjxodHRwczovL3RhcmlkZXMuY29tL2Jsb2cvMjAyNS0wNS0xNS1vY2FtbC13ZWIt
+ZGV2ZWxvcG1lbnQtZXNzZW50aWFsLXRvb2xzLWFuZC1saWJyYXJpZXMtaW4tMjAyNT4NCg0KW1Ro
+ZSB3ZWVrIHRoYXQgd2FzIC0gMjAyNSB3MTldDQo8aHR0cHM6Ly93d3cuZHJhMjcudWsvYmxvZy93
+ZWVrLXRoYXQtd2FzLzIwMjUvMDUvMDkvd3R3LTE5Lmh0bWw+DQoNCg0KT2xkIENXTg0K4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQDQoNCiAgSWYgeW91IGhhcHBlbiB0byBtaXNzIGEgQ1dOLCB5b3UgY2Fu
+IFtzZW5kIG1lIGEgbWVzc2FnZV0gYW5kIEknbGwgbWFpbA0KICBpdCB0byB5b3UsIG9yIGdvIHRh
+a2UgYSBsb29rIGF0IFt0aGUgYXJjaGl2ZV0gb3IgdGhlIFtSU1MgZmVlZCBvZiB0aGUNCiAgYXJj
+aGl2ZXNdLg0KDQogIElmIHlvdSBhbHNvIHdpc2ggdG8gcmVjZWl2ZSBpdCBldmVyeSB3ZWVrIGJ5
+IG1haWwsIHlvdSBtYXkgc3Vic2NyaWJlDQogIHRvIHRoZSBbY2FtbC1saXN0XS4NCg0KICBbQWxh
+biBTY2htaXR0XQ0KDQoNCltzZW5kIG1lIGEgbWVzc2FnZV0gPG1haWx0bzphbGFuLnNjaG1pdHRA
+cG9seXRlY2huaXF1ZS5vcmc+DQoNClt0aGUgYXJjaGl2ZV0gPGh0dHBzOi8vYWxhbi5wZXRpdGVw
+b21tZS5uZXQvY3duLz4NCg0KW1JTUyBmZWVkIG9mIHRoZSBhcmNoaXZlc10gPGh0dHBzOi8vYWxh
+bi5wZXRpdGVwb21tZS5uZXQvY3duL2N3bi5yc3M+DQoNCltjYW1sLWxpc3RdIDxodHRwczovL3N5
+bXBhLmlucmlhLmZyL3N5bXBhL2luZm8vY2FtbC1saXN0Pg0KDQpbQWxhbiBTY2htaXR0XSA8aHR0
+cHM6Ly9hbGFuLnBldGl0ZXBvbW1lLm5ldC8+DQoNCg==
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-05-20 Tue 13:51 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.05.13.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.05.27.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of May 13 to 20, 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Send us Talk and Workshop Proposals for Fun OCaml 2025 i=
+n Warsaw, September 15+16</a></li>
+<li><a href=3D"#2">Blog post: Using model-based testing on a Mirage filesys=
+tem implementation</a></li>
+<li><a href=3D"#3">Volunteers to review the relocatable-OCaml work?</a></li>
+<li><a href=3D"#4">Portable Lock Directories for Dune Package Management</a=
+></li>
+<li><a href=3D"#5">Other OCaml News</a></li>
+<li><a href=3D"#org2ee8563">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Send us Talk and Workshop Proposals for Fun OCaml 2025 in Wars=
+aw, September 15+16</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/send-us-talk-and-workshop-p=
+roposals-for-fun-ocaml-2025-in-warsaw-september-15-16/16646/1">https://disc=
+uss.ocaml.org/t/send-us-talk-and-workshop-proposals-for-fun-ocaml-2025-in-w=
+arsaw-september-15-16/16646/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgfed5160" class=3D"outline-3">
+<h3 id=3D"orgfed5160">Sabine Schmaltz announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgfed5160">
+<p>
+Hi everyone!
+</p>
+
+<p>
+Fun OCaml 2025 is a 2 days open source hacking event dedicated to OCaml ent=
+husiasts and professionals. We focus on the impact and potential of OCaml f=
+or solving real-world problems and get together in Warsaw for a conference/=
+hackathon over two days:
+</p>
+
+<ul class=3D"org-ul">
+<li>Day 1 (Monday, September 15): talks (which are live-streamed) and socia=
+lizing/hacking.</li>
+<li>Day 2 (Tuesday, September 16): Workshops and hacking.</li>
+</ul>
+
+<p>
+Topics we=E2=80=99re interested in:
+</p>
+
+<ul class=3D"org-ul">
+<li>how you use OCaml in your business / in your projects</li>
+<li>OCaml libraries, frameworks, and other Open Source projects built on OC=
+aml</li>
+<li>hands-on demonstrations that encourage people to try things on the seco=
+nd day of the event or at home</li>
+<li>seeing actual code and reasoning behind design decisions</li>
+<li>experience reports</li>
+</ul>
+
+<p>
+For more details, check out the website and the CFP linked from there:
+</p>
+
+<p>
+<a href=3D"https://fun-ocaml.com">https://fun-ocaml.com</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Blog post: Using model-based testing on a Mirage filesystem im=
+plementation</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/blog-post-using-model-based=
+-testing-on-a-mirage-filesystem-implementation/16666/1">https://discuss.oca=
+ml.org/t/blog-post-using-model-based-testing-on-a-mirage-filesystem-impleme=
+ntation/16666/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org9d71e2d" class=3D"outline-3">
+<h3 id=3D"org9d71e2d">gasche announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9d71e2d">
+<p>
+I am attending the <a href=3D"https://retreat.mirage.io/">MirageOS retreat<=
+/a> in Marrakesh, with in particular:
+</p>
+
+<ul class=3D"org-ul">
+<li>Mindy @yomimono, who implemented a small (but not so simple) file syste=
+m for Mirage, <a href=3D"https://github.com/yomimono/chamelon/">Chamelon</a=
+></li>
+<li>Arma=C3=ABl @armael, who is interested in testing effectful, concurrent=
+ and/or distributed systems</li>
+</ul>
+
+<p>
+Arma=C3=ABl and myself decided to try to use model-based testing on Chamelo=
+n.
+</p>
+
+<p>
+Note: this is a long blog post, and you should feel free to skip at any poi=
+nt. In particular, do skip the code sections if you don't care about the de=
+tails, they are here to make things precise but not strictly necessary.
+</p>
+
+<p>
+<i>Editor=E2=80=99s note: the blog post is too long for this newsletter. Pl=
+ease read it <a href=3D"https://discuss.ocaml.org/t/blog-post-using-model-b=
+ased-testing-on-a-mirage-filesystem-implementation/16666/1">here</a>.</i>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Volunteers to review the relocatable-OCaml work?</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/volunteers-to-review-the-re=
+locatable-ocaml-work/16667/1">https://discuss.ocaml.org/t/volunteers-to-rev=
+iew-the-relocatable-ocaml-work/16667/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgad227f9" class=3D"outline-3">
+<h3 id=3D"orgad227f9">gasche announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgad227f9">
+<p>
+Hi discuss,
+</p>
+
+<p>
+David @dra27 Allsopp has been working for a few years now on making the OCa=
+ml compiler relocatable.
+</p>
+
+<p>
+Currently you configure the compiler to be installed at a certain path, and=
+ the resulting program and configuration depend on this path; moving the in=
+stalled prefix to a different place will break various things. Having a rel=
+ocatable compiler is good for Windows support, for reproducible builds, for=
+ caching, etc.
+</p>
+
+<p>
+An early version of this work was presented by David at the OCaml compiler =
+workshop 2022, and it is discuss in <a href=3D"https://discuss.ocaml.org/t/=
+relocatable-compiler-work/11218">a past Dicuss thread</a>.
+</p>
+
+<p>
+Good news! The work is now in a good enough shape that @dra27 has started u=
+pstreaming parts of it &#x2013; submitting them to the compiler distributio=
+n. There is <a href=3D"https://github.com/ocaml/RFCs/pull/53">an RFC</a> th=
+at describes the design, and we got <a href=3D"https://github.com/ocaml/oca=
+ml/pull/14014">a first PR</a> that is a test harness for the feature, with =
+many more to come.
+</p>
+
+<p>
+Bad news: we don't know who would be available to review those PRs as they =
+come. @nojb made an effort to review the test harness, but is also working =
+on tons of other stuff (such as: trying to get stdlib contributions across =
+the finish line). My understanding is that @Rucikir is not available to do =
+this work. There is a risk that the work is held back due to the absence of=
+ motivated reviewers to look at it.
+</p>
+
+<p>
+Would anyone around be interested in helping review this work? If so, I'm h=
+appy to post links to further PRs as they come.
+</p>
+
+<p>
+In my experience, PRs by @dra27 touch a varied number of obscure topics tha=
+t <b>no one</b> except maybe himself is an expert about &#x2013; deep stuff=
+ about how the compiler work that most of us are happy to ignore because it=
+ usually stays out of the way. One typical example, I suspect, is <a href=
+=3D"https://github.com/ocaml/ocaml/pull/13728">#13728 : Add <code>Sys.runti=
+me_executable</code> and <code>caml_sys_proc_self_exe</code></a> (which is =
+not merged, not looking for reviewers). If you find this PR super-obscure, =
+welcome to the club, I don't understand anything either. But if you also fi=
+nd it <b>interesting</b>, you may be excellent volunteer material to review=
+ more PRs on this.
+</p>
+
+<p>
+Note: the contribution rules for compiler PRs is that each PR must be appro=
+ved by someone with commit rights (a compiler maintainer) to get merged. By=
+ itself, an approval from another contributor does not suffice. But it is c=
+ertainly possible for maintainers to give approval on behalf of another rev=
+iew &#x2013; we do it in practice. If you review a PR (about this or anythi=
+ng else) and you feel confident that it is okay to merge it, please feel fr=
+ee to explicitly "approve" it through the github interface.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org8ee774b" class=3D"outline-3">
+<h3 id=3D"org8ee774b">David Allsopp added</h3>
+<div class=3D"outline-text-3" id=3D"text-org8ee774b">
+<blockquote>
+<p>
+has been working for a few years now on making the OCaml compiler relocatab=
+le.
+</p>
+</blockquote>
+
+<p>
+Just to make it sound a little less Herculean, I haven=E2=80=99t been worki=
+ng <span class=3D"underline">solidly</span> on it =F0=9F=98=8A There were a=
+ few OCaml 5.0 and Windows opam 2.2-shaped diversions on the way=E2=80=A6
+</p>
+
+<p>
+In addition to the already opened test harness, there=E2=80=99s a draft (wi=
+th explanatory text) of the first of the main PRs at <a href=3D"https://git=
+hub.com/dra27/ocaml/pull/183">https://github.com/dra27/ocaml/pull/183</a> a=
+nd a draft of the second (currently without explanatory text, although that=
+ will be there by next week) at <a href=3D"https://github.com/dra27/ocaml/p=
+ull/162">https://github.com/dra27/ocaml/pull/162</a>. The third is still aw=
+aiting a small amount of tidying (which will hopefully also be done by the =
+end of next week =F0=9F=A5=B5)
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Portable Lock Directories for Dune Package Management</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/portable-lock-directories-f=
+or-dune-package-management/16669/1">https://discuss.ocaml.org/t/portable-lo=
+ck-directories-for-dune-package-management/16669/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgd7aec30" class=3D"outline-3">
+<h3 id=3D"orgd7aec30">Steve Sherratt announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd7aec30">
+<p>
+We've recently made a change to how lock directories work in the <a href=3D=
+"https://preview.dune.build/">Dune Developer Preview</a>.
+</p>
+
+<p>
+Previously when Dune would solve dependencies for a project and generate a =
+lock directory, the lock directory would be specialized for the computer wh=
+ere it was generated, with no guarantee it would work on a different comput=
+er. This posed a problem for checking lock directories into version control=
+ for projects with multiple developers, since one developer might lock the =
+project on their Mac, say, only for another developer on Linux to be unable=
+ to build it due to its MacOS-specific lock directory.
+</p>
+
+<p>
+This post is to announce that Dune now supports generating <i>portable</i> =
+lock directories; a lock directory generated on one computer will now conta=
+in a dependency solution for a range of different computers, making it safe=
+ to check lock directories into version control.
+</p>
+</div>
+<div id=3D"outline-container-orgacc2b56" class=3D"outline-4">
+<h4 id=3D"orgacc2b56">Technical Details</h4>
+<div class=3D"outline-text-4" id=3D"text-orgacc2b56">
+<p>
+In Opam the dependencies of a package can be different depending on propert=
+ies of the computer where the package is being installed. A package might h=
+ave a different set of dependencies when being installed on MacOS verses Li=
+nux verses Windows, or the dependencies might vary depending on the CPU arc=
+hitecture. It's even possible (though quite rare in practice) for the depen=
+dencies of a package to vary between operating system distributions, or eve=
+n operating system versions.
+</p>
+
+<p>
+This expressive power makes Opam very flexible as it allows packages to be =
+specialized for the environment where they will be installed. The drawback =
+of this approach is that there might not be a single solution to a dependen=
+cy problem that works everywhere. Each combination of OS/architecture/distr=
+o/version could, in theory, require a different dependency solution. There =
+are way too many combinations of those properties to run Dune's dependency =
+solver once for each combination in a reasonable amount of time. Instead we=
+ elected to compromise and have Dune only generate a solution for common pl=
+atforms by default, while allowing users to specify a custom list of platfo=
+rms to solve for in their <code>dune-workspace</code> file.
+</p>
+
+<p>
+Lockfiles now look a little different to account for the fact that they now=
+ contain multiple different platform-specific dependency solutions. For exa=
+mple, formerly, the lockfile for the <code>ocaml-compiler</code> package on=
+ an x86 machine running Windows, you might have had a <code>depends</code> =
+field like:
+</p>
+
+<pre class=3D"example" id=3D"org96e8d59">
+(depends arch-x86_64 system-mingw mingw-w64-shims flexdll)
+</pre>
+
+<p>
+Most of these dependencies are specific to Windows; it's unlikely that you'=
+ll be able to install any of these dependencies on Linux or MacOS.
+</p>
+
+<p>
+With the portable lock directories feature enabled, this field now might lo=
+ok like:
+</p>
+
+<pre class=3D"example" id=3D"orge96e4a2">
+(depends
+ (choice
+  ((((arch x86_64)
+     (os linux))
+    ((arch arm64)
+     (os linux))
+    ((arch x86_64)
+     (os macos)
+     (os-distribution homebrew)
+     (os-family homebrew))
+    ((arch arm64)
+     (os macos)
+     (os-distribution homebrew)
+     (os-family homebrew)))
+   ())
+  ((((arch x86_64)
+     (os win32)
+     (os-distribution cygwin)
+     (os-family windows)))
+   (arch-x86_64 system-mingw mingw-w64-shims flexdll))
+  ((((arch arm64)
+     (os win32)
+     (os-distribution cygwin)
+     (os-family windows)))
+   (system-mingw mingw-w64-shims flexdll))))
+</pre>
+
+<p>
+This new syntax is similar to a match-statement, listing the dependencies f=
+or each platform for which Dune's solver ran. You can change the platforms =
+Dune will solve for by adding something like this to <code>dune-workspace</=
+code>:
+</p>
+
+<pre class=3D"example" id=3D"orgdad909e">
+(lock_dir
+ (solve_for_platforms
+  ((arch arm64)
+   (os openbsd))
+  ((arch x86_32)
+   (os win32))))
+</pre>
+
+<p>
+After running <code>dune pkg lock</code> again, the lockfile for <code>ocam=
+l-compiler</code> will be updated with these dependencies:
+</p>
+
+<pre class=3D"example" id=3D"org7af2daf">
+(depends
+ (choice
+  ((((arch arm64) (os openbsd))) ())
+  ((((arch x86_32)
+     (os win32)))
+   (system-mingw ocaml-option-bytecode-only flexdll))))
+</pre>
+
+<p>
+A few other fields of lockfiles now also use the new syntax. Dune lockfiles=
+ contain the commands needed to build and install each package, as well as =
+the names of any system packages needed by the Opam package, and each of th=
+ese fields can also have platform-specific values.
+</p>
+
+<p>
+Lockfile names now include the version number of the package. The <code>oca=
+ml-compiler</code> package used to have a lockfile named <code>ocaml-compil=
+er.pkg</code> but now has a name like <code>ocaml-compiler.5.3.0.pkg</code>=
+ instead. This is because it's possible that different platforms may requir=
+e different versions of the same package in the dependency solution, so the=
+ lock directory needs to be able to contain multiple lockfiles for the same=
+ package without them colliding on filename.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orgd5677b6" class=3D"outline-4">
+<h4 id=3D"orgd5677b6">How do I get it?</h4>
+<div class=3D"outline-text-4" id=3D"text-orgd5677b6">
+<p>
+This feature is live in the latest version of the <a href=3D"https://previe=
+w.dune.build/">Dune Developer Preview</a>. Follow the instructions on that =
+page to install a version of Dune with this feature. With portable lock dir=
+ectories enabled, Dune will temporarily remain backwards compatible with th=
+e original lock directory format, though support will likely be dropped at =
+some point. Generate a new lock directory by running <code>dune pkg lock</c=
+ode>. You'll know your lock directory is portable if each file inside it ha=
+s a version number in its filename.
+</p>
+
+<p>
+Happy reproducible building!
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+</div>
+<div id=3D"outline-container-org4db2039" class=3D"outline-3">
+<h3 id=3D"org4db2039">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org4db2039">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://www.dra27.uk/blog/week-that-was/2025/05/18/wtw-20.ht=
+ml">The week that was - 2025 w20</a></li>
+<li><a href=3D"https://tarides.com/blog/2025-05-15-ocaml-web-development-es=
+sential-tools-and-libraries-in-2025">OCaml Web Development: Essential Tools=
+ and Libraries in 2025</a></li>
+<li><a href=3D"https://www.dra27.uk/blog/week-that-was/2025/05/09/wtw-19.ht=
+ml">The week that was - 2025 w19</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org2ee8563" class=3D"outline-2">
+<h2 id=3D"org2ee8563">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org2ee8563">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgfad1120">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
