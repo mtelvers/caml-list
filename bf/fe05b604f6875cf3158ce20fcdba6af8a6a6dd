@@ -1,0 +1,1901 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=hHOfPluk;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=TBvNMhCd;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id D662440068
+	for <caml-list@tunbury.org>; Tue, 27 May 2025 09:22:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=kQjXlTXOxEY/IzOmdS/gUVmPmFFcZYJ02LDEo+Su3u8=;
+  b=hHOfPlukv6UFCL1oaQUSTMudOawZxncDgPT4wq9J2UBM3dpdbZE8+jRx
+   k4lUep64dOWQ4VT754CwEI+3vWp2JbvCGPp0C7h0pTwg0Bjh+oxsXVMeF
+   tm7ZjMv25IhflL/1D+Go3itBqe6CWqhnv+/EZxqH3aCEHg22WLyNSCeCw
+   M=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.15,318,1739833200"; 
+   d="scan'208,217";a="224095407"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 27 May 2025 11:22:24 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 5026AE0CCE; Tue, 27 May 2025 11:22:24 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 0E23EE0131
+	for <caml-list@sympa.inria.fr>; Tue, 27 May 2025 11:22:21 +0200 (CEST)
+IronPort-SDR: 6835844b_EM2EOALBqE3cFwnK/QbxB/w81rSnelmneIrRsiuw/3W8oKF
+ QYntWIAWcyBkGxoAoPmL8wjoVLZ7QUq5L9Ewh0g==
+X-IPAS-Result: =?us-ascii?q?A0G6CQCVgzVojyIeaIFaHgE8DAILgWqBP1soGQFkWhEiB?=
+ =?us-ascii?q?whJhFWBY4FsjiKCQAGPCoY1gTuDCYFpgREDGBYFHhQBAwENLgEbBAECBAEBA?=
+ =?us-ascii?q?wECAUOBSYFaVEYCi1MCHwYBBDQTAQIEAQEBAQMCAwEBAQEBARABAQUBAQECA?=
+ =?us-ascii?q?QECBAYBAhABAQEBAQE5BUmFQQEGATINSQEBAQMBCgGBalFBMGUJBgEBAQEBA?=
+ =?us-ascii?q?QEBAScBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAggEAYEeAQgEBhMBASYSGCMDFAEGAwIRATUXARIaghBYAYIiSgMFDAaTM?=
+ =?us-ascii?q?JtLen8zgQGCDAEBBoEIPgEBAgoBBgEOCSbaCYFLGgmBSYVtgkkaAQUlSGsCh?=
+ =?us-ascii?q?EgJggCBFCR7Jw+BVUSBSoFzAVBvgVJ4FwEBAQEBF0REHAEBCAk8CYMlgmmCE?=
+ =?us-ascii?q?RdEPhQdJhIrQIELUYEIhCyBPhKDQYI/IIEtRYIOJ1CKNoFHSzMsAVUTFwsHB?=
+ =?us-ascii?q?VuBCAMqNDFuMh2CDYUZghKCB4kBhEkrT4UigSaDd0ADC209NxQbl2ocJhqBP?=
+ =?us-ascii?q?oE8JAIIBjgGAQENHx8UAQIEAxEOBQgMCA4CIg0hCA4LCgUFCwgDBRQRCAQJD?=
+ =?us-ascii?q?gQhBgEBEgUGCwYHFAgRA5JlAhUdDQN0nHCTVx1tNAeEHoFeBgyJB4EmlgKEB?=
+ =?us-ascii?q?IFXizWYamYimGEigjaHJ4EmCYFvHkwWlUEEBAsNDwqFIIF/I4ErAR0MBzMaM?=
+ =?us-ascii?q?EMNEYIVAQEBMQkKPBwPiniBLIFbLhaBEgEJgkJBfYEmgXQ7xSUDQTUCAQE4A?=
+ =?us-ascii?q?gcBCgEBAwmFYgEBaYIbghduhCYygUsBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ tVhD7bSyahFxI1sNGWq9Dg0
+IronPort-HdrOrdr: A9a23:v6f0Cagx/t03ULGzSI+IgwnDxHBQXucji2hC6mlwRA09TyX4rb
+ HMoB1/73XJYVkqNk3I9ersBEDiexPhHPxOgLX5VI3KNGLbUQCTQ72Kg7GP/xTQXwXAssRd2a
+ 1jf6UWMqyTMXFKyeDg7k2dG9YkqeP3lJxAaN2uqktQcQ==
+X-Talos-CUID: 9a23:P7auiWxtUGbU6LCbEtJwBgVIMOw/SWXwxUvaYHD7LWVnQeGyTFKfrfY=
+X-Talos-MUID: 9a23:rF5KaAgQu9QFPy/vNfmd4MMpMMRT3YP1Nwc3g642gsCudhNwOAudtWHi
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.15,318,1739833200"; 
+   d="scan'208,217";a="224095379"
+X-MGA-submission: =?us-ascii?q?MDEztRq2szLppnPUqHD5Q6o+Yi7bxnoOiDcb/B?=
+ =?us-ascii?q?ptm30D1fVRwLYOieKk8OOQwPYr6uiNt/g4tbsNrCBQ48TiwhhieOdcYx?=
+ =?us-ascii?q?ty3Kgkb0A3bxVsM7YRcLWcPg+QjzQFrVfsW2ii2tY2g0tCN2NUvQkVN1?=
+ =?us-ascii?q?tNl7zqNwiWZjVGtpFbJZG1qA=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2025 11:22:19 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id EECE7564B7B;
+	Tue, 27 May 2025 11:22:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1748337738;
+	bh=YWf9AXPyfVSzQ6AMp5gObj5TgP6hnyJe3VRxULEaJ1c=;
+	h=From:To:Subject:Date:Message-ID;
+	b=TBvNMhCd5mGGnkbqA3oaAZD0SW4jypMIK67P7iqNE1Xm+Uytq9/p0En3mJvOlz6jn
+	 0vV/CJtXAhFiAiuVfDUI5LyYkBuHNJzWiqoirBNxryK1u3DQwIp6pLyDaRxiNb8xG0
+	 4yagO0zZSNGVB9fwCJrMqBUuU84eISrqsmmSOdUk=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 27 May 2025 11:22:17 +0200
+Message-ID: <m2msaymmra.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue May 27 11:22:18 2025 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.499968, queueID=89EFF564B7C
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19326
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-05/m2msaymmra.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of May 20 to 27,
+2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+nanoev 0.1
+15th MirageOS retreat May 13th - 20th
+MlFront_Signify 2.3.1 - OpenBSD-compatible signify
+Opam 103: Bootstrapping a New OCaml Project with opam, by OCamlPro
+Retirement of Multicore CI Pipelines
+Dune 3.19
+Wrote a Record/Replay Debugging tutorial
+A no-maths guide to monads
+macOS Metal Framework bindings for compute applications
+Other OCaml News
+Old CWN
+
+
+nanoev 0.1
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-nanoev-0-1/16682/1>
+
+
+Simon Cruanes announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello,
+
+  I'm happy to announce the first release of [nanoev], yet another event
+  loop abstraction. My goal with it is to have a narrow-waist interface
+  between event loops (for now, `select' and `poll') and various
+  abstractions built directly on top (for now using `picos'), without
+  tying the event loop abstraction itself to a particular scheduler. The
+  core interface for the event loop is basically:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 type t
+  =E2=94=82=20
+  =E2=94=82 val wakeup_from_outside : t -> unit
+  =E2=94=82=20
+  =E2=94=82 val step : t -> unit
+  =E2=94=82 (** Run one step of the event loop until something happens *)
+  =E2=94=82=20
+  =E2=94=82 val close : t -> Unix.file_descr -> unit
+  =E2=94=82 (** Close the file descriptor and clean it up *)
+  =E2=94=82=20
+  =E2=94=82 val max_fds : t -> int
+  =E2=94=82 (** Maximum number of file descriptors that can be observed at =
+once. *)
+  =E2=94=82=20
+  =E2=94=82 val on_readable :
+  =E2=94=82   t -> Unix.file_descr -> 'a -> 'b -> (closed:bool -> 'a -> 'b =
+-> unit) -> unit
+  =E2=94=82=20
+  =E2=94=82 val on_writable :
+  =E2=94=82   t -> Unix.file_descr -> 'a -> 'b -> (closed:bool -> 'a -> 'b =
+-> unit) -> unit
+  =E2=94=82=20
+  =E2=94=82 val run_after_s : t -> float -> 'a -> 'b -> ('a -> 'b -> unit) =
+-> unit
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  and nothing else. I've also started experimenting with using it to
+  drive [tiny_httpd].
+
+  =E2=80=A2 docs: <https://c-cube.github.io/nanoev/>
+  =E2=80=A2 release link: <https://github.com/c-cube/nanoev/releases/tag/v0=
+.1>
+
+
+[nanoev] <https://github.com/c-cube/nanoev>
+
+[tiny_httpd] <https://github.com/c-cube/tiny_httpd>
+
+
+15th MirageOS retreat May 13th - 20th
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-15th-mirageos-retreat-may-13th-20th/1608=
+5/2>
+
+
+Continuing this thread, gasche said
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80
+
+  I'm just back from the [Mirage retreat], an event where people
+  interested in [Mirage] meet for one week to work whatever they
+  want. This retreat was organized by Hannes Mehnert as all past
+  retreats, in Marrakech. Hannes ( @hannes ) asked participants to write
+  a blog post to spread the word =E2=80=93 hence this post.
+
+
+[Mirage retreat] <https://retreat.mirage.io/>
+
+[Mirage] <https://mirage.io/>
+
+a Mirage retreat, in general
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The retreat is unlike most other professional events that I attend,
+  typically academic conferences. We are hosted in a place that is
+  otherwise used as a hostel within the medina, the old city centre of
+  Marrakech. Bed comfort is minimal (a room of six people, two of them
+  snoring), but there are people on-site who prepare food and the food
+  is great. There is very little structure for the day: we had a meeting
+  every morning after breakfast to mention what we had done the day
+  before, and talk sessions in the evening (typically one or two talks
+  for around 40 minutes).
+
+  The participants come in all shapes, some are regular contributors to
+  the Mirage ecosystem and some (like me) know very little about
+  Mirage. Some (like me) are very familar with OCaml and others know
+  little about the language. Some people know about networking,
+  security, system administration, communication protocols. The lack of
+  structure encourages people to wander around, for example sitting
+  alongside someone doing something specific and precise, to try
+  something you and learn along. Last time I ended up writing bits of a
+  network driver in OCaml, despite knowing nothing about network
+  drivers; this time I worked on model-based testing of filesystems (see
+  <https://discuss.ocaml.org/t/blog-post-using-model-based-testing-on-a-mir=
+age-filesystem-implementation/16666>
+  ), despite knowing nothing about file system implementations.
+
+  Morocco has better network connectivity than during my first retreats,
+  but it remains somewhat flaky =E2=80=93 and our network-usage habits keep
+  increasing. In particular, I could not attend any online meeting, and
+  this was /very/ nice =E2=80=93 just like conferences, it is liberating to=
+ be
+  busy for one week uninterrupted. In the past I managed to adapt to
+  low-network usage fairly well. This time I noticed that I depend on
+  github a lot, and I don't know how to have a good offline or
+  network-restricted experience, to do code-reviews in particular. I
+  wish offline version-controlled tools for code-review and bugtracking
+  were more widely employed.
+
+  Overall I find this organization excellent: participants get a place
+  and time to learn from each other. I think it could potentially be
+  used for other topics. For example people mentioned that it could be
+  interesting to have a retreat focused on documentation in the OCaml
+  ecosystem, and I find the idea interesting.
+
+  (The rest of this post is basically a narrated version of my work log
+  for the week; please feel free to just skip it.)
+
+
+My OCaml-focused work
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  One of my projects for the week was to take the time to review large
+  pull-requests on the OCaml compiler that I wouldn't dare attacking
+  usually, because my agenda is perpetually full of other things. I did
+  a first round of review on [structured diagnostics], and additional
+  reads through most of the [modular explicits] pull request (PR). In
+  particular I wrote a small manual section for modular explicits,
+  submitted as a [separate PR]. I hope to have moved from "it would be
+  nice if these were reviewed /someday/" to a more short-term phase
+  where I try to get these past the finish line before moving to other
+  topics =E2=80=93 but we never know.
+
+  I also went through the lists of PRs I had been assigned to, sometimes
+  a while ago. (OCaml triagers assign PRs to each other to keep track of
+  them and try to bring them to a decision, but in practice we often
+  forget to do this and they linger around.) This was fairly effective
+  and my stack of assigned PRs has been about cut in half:
+
+  =E2=80=A2 reviewed and merged:
+    =E2=81=83 `install_printer' cleanup (@pirbo) [#13969]
+    =E2=81=83 ocamltest C refactors (@MisterDA) [#13962]
+    =E2=81=83 format break hint fix (@Octachron) [#13853]
+    =E2=81=83 local structure items (@nojb) [#14009]
+    =E2=81=83 document `row_more' and `row_fixed' (@goldfirere) [#14023]
+  =E2=80=A2 closed:
+    =E2=81=83 immediacy computation revamp (@ccasin) [#11841]
+  =E2=80=A2 adopted and merged:
+    =E2=81=83 generational stack scanning (@xavierleroy) [#13594]
+    =E2=81=83 statmemprofs and bigarrays (@stedolan) [#13675]
+    =E2=81=83 recursive module error messages (@shivam-909) [#13608]
+  =E2=80=A2 adopted but not yet merged
+    =E2=81=83 distinguish two kinds of mutexes (@gasche) [#13716] (needs a
+      review)
+    =E2=81=83 source locations in implementations and interfaces (@malekbr)
+      [#12654] (needs a review)
+
+  A few of those PRs I "adopted", that is, I took control of the PR as
+  the submitter would to rebase the PR and resubmit. In some cases this
+  was mostly to apply my own review comments (sometimes someone else's),
+  the change were minor and I could merge quickly. In some cases the
+  changes were more invasive, and I would ask for another review. In one
+  case I got stuck and wasn't sure how to rebase, so I asked the
+  original author.
+
+  "Adopting" PRs in this way is a new process to me, I generally try to
+  guide the authors through making all the changes themselves. I wanted
+  to go through my stack faster, and in some cases I knew that the
+  authors were unresponsive and unavailable to make those changes. I
+  found it fun, but it is probably best reserved to this situation where
+  authors are unavailable.
+
+
+[structured diagnostics] <https://github.com/ocaml/ocaml/pull/13766>
+
+[modular explicits] <https://github.com/ocaml/ocaml/pull/13275>
+
+[separate PR] <https://github.com/ocaml/ocaml/pull/14048>
+
+[#13969] <https://github.com/ocaml/ocaml/pull/13969>
+
+[#13962] <https://github.com/ocaml/ocaml/pull/13962>
+
+[#13853] <https://github.com/ocaml/ocaml/pull/13853>
+
+[#14009] <https://github.com/ocaml/ocaml/pull/14009>
+
+[#14023] <https://github.com/ocaml/ocaml/pull/14023>
+
+[#11841] <https://github.com/ocaml/ocaml/pull/11841>
+
+[#13594] <https://github.com/ocaml/ocaml/pull/13594>
+
+[#13675] <https://github.com/ocaml/ocaml/pull/13675>
+
+[#13608] <https://github.com/ocaml/ocaml/pull/13608>
+
+[#13716] <https://github.com/ocaml/ocaml/pull/13716>
+
+[#12654] <https://github.com/ocaml/ocaml/pull/12654>
+
+
+Side errands
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  I worked on a race between domain-termination and compaction:
+  [#14025]. I decided to try to make Dune more pleasant for building the
+  OCaml compiler, and sent a draft/RFC PR at [dune#11819]. I heard a
+  remark that it's painful not to be able to use lazy thunks anymore for
+  library initialization code (lazy thunks are not concurrency-safe in
+  OCaml 5); I tried to think about why this is hard to fall asleep again
+  after a snoring attack, and ended up writing [#14043] instead. I
+  motivated myself into [asking for volunteers] to review the
+  Relocatable Compiler work.
+
+  I also participated as a speaker to two talk sessions in the
+  evening. I did a short demo of [Monolith] and model-based testing in
+  general =E2=80=93 that was before we decided to use it on a Mirage
+  filesystem. I talked about the OCaml Software Foundation and recent
+  discussions around improving the security of the OCaml ecosystem.
+
+
+[#14025] <https://github.com/ocaml/ocaml/pull/14025>
+
+[dune#11819] <https://github.com/ocaml/dune/pull/11819>
+
+[#14043] <https://github.com/ocaml/ocaml/pull/14043>
+
+[asking for volunteers]
+<https://discuss.ocaml.org/t/volunteers-to-review-the-relocatable-ocaml-wor=
+k/16667/>
+
+[Monolith] <https://gitlab.inria.fr/fpottier/monolith>
+
+
+MlFront_Signify 2.3.1 - OpenBSD-compatible signify
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-mlfront-signify-2-3-1-openbsd-compatible=
+-signify/16683/1>
+
+
+jbeckford announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  I am pleased to announce the new package `MlFront_Signify' is
+  available in opam.
+
+  `signify' was created by OpenBSD for maintainers to sign distributions
+  and for users to verify those distributions. That is described in
+  [signify: Securing OpenBSD From Us To You] and the [signify manpage].
+
+  `MlFront_Signify' is compatible with `signify'. The C code comes from
+  firmware update code for the embedded Linux router distribution
+  OpenWrt (much easier to build using OCaml tools compared to OpenBSD
+  code). The _executable_ `mlfront-signify' has most of the same CLI
+  options as OpenBSD `signify' and includes the same trivial tests as
+  `signify', but on Unix you should just use your package manager's
+  `signify'. The main contribution of `MlFront_Signify' is the OCaml
+  _library_ that is documented at:
+  =E2=80=A2 <https://dkml.gitlab.io/build-tools/MlFront/MlFront_Signify/MlF=
+ront_Signify/Signify/index.html>
+
+  I used it with
+  <https://discuss.ocaml.org/t/ann-combining-llvm-mc-lld-precompiled-c-and-=
+bytecode/16675?u=3Djbeckford>
+  to perform auto-upgrades. A few MlFront packages participate:
+  =E2=80=A2 `MlFront_Signify' to verify a potential upgrade
+  =E2=80=A2 `MlFront_ZipFile' to unpack a verified upgrade
+  =E2=80=A2 `MlFront_Cache' to provide an immutable store where multiple
+    versions can co-exist
+
+  In particular, the `SHA256.sig' file in the file listing
+  <https://github.com/diskuv/dkcoder/releases/tag/2.3.202505202143> was
+  created using `MlFront_Signify' with the `SHA256' checksum file as
+  input. That serves the same purpose as
+  <https://cdn.openbsd.org/pub/OpenBSD/snapshots/arm64/SHA256.sig>.
+
+  /MlFront_ZipFile has an important bugfix so please upgrade it to 2.3.1
+  as well./
+
+  Thanks to the Mirage project where I use its `mirage-crypto-rng'
+  secure random generator!
+
+  Enjoy.
+
+
+[signify: Securing OpenBSD From Us To You]
+<https://www.openbsd.org/papers/bsdcan-signify.html>
+
+[signify manpage] <https://man.openbsd.org/signify>
+
+
+Opam 103: Bootstrapping a New OCaml Project with opam, by OCamlPro
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/blog-opam-103-bootstrapping-a-new-ocaml-proj=
+ect-with-opam-by-ocamlpro/16686/1>
+
+
+OCamlPro announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80
+
+  *Greetings Cameleers,*
+
+  We=E2=80=99re back with a new installment in our `opam deep-dives' series!
+
+  [*Opam 103: Bootstrapping a New OCaml Project with opam*]
+
+  This time, we=E2=80=99re taking a step back to focus on a beginner-friend=
+ly
+  guide to setting up a toy OCaml project with `opam', `dune',
+  `cmdliner', and `alcotest'.
+
+  This article is aimed at newer members of the ecosystem who may be
+  wondering:
+
+  =E2=80=A2 How do I structure an OCaml project from scratch?
+  =E2=80=A2 How to best use opam in my dev workflow?
+  =E2=80=A2 How do I write a minimal `.opam' file?
+  =E2=80=A2 What about a fully fledged one?
+
+  We walk through the `opam' rationale and offer guidance for building
+  your first opam-compliant package =E2=80=94 the kind you can confidently =
+pin
+  and use locally before getting to publishing it.
+
+  As always, we hope this piece serves as a helpful reference for those
+  onboarding into the `opam' and the OCaml ecosystem and getting their
+  first taste of the tooling.
+
+  :link: Check out the other `opam deep-dives' articles on
+  <https://ocamlpro.com/blog/>
+
+  Feel free to share feedback or thoughts right here in this thread!
+
+  Thank you all for your time, and until next time, *The OCamlPro Team*
+
+
+[*Opam 103: Bootstrapping a New OCaml Project with opam*]
+<https://ocamlpro.com/blog/2025_04_29_opam_103_starting_new_project/>
+
+
+Retirement of Multicore CI Pipelines
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/retirement-of-multicore-ci-pipelines/16691/1>
+
+
+Mark Elvers announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We believe that the two OCurrent pipelines setup for testing OCaml
+  multicore have now served their purpose and will be retired.
+
+  =E2=80=A2 [https://ocaml-multicoretests.ci.dev:8100]
+  =E2=80=A2 [https://ocaml-multicore.ci.dev:8100]
+
+  Please let me know if you still feel these have value.
+
+
+[https://ocaml-multicoretests.ci.dev:8100]
+<https://ocaml-multicoretests.ci.dev:8100>
+
+[https://ocaml-multicore.ci.dev:8100]
+<https://ocaml-multicore.ci.dev:8100>
+
+
+Dune 3.19
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-3-19/16693/1>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The Dune team is happy to announce the release of dune `3.19.0'
+  :smile:
+
+  This release contains some important bug fixes along with some
+  improvements for the `foreign_library' stanza. It introduces support
+  for concurrent builds through the RPC server.
+
+  If you encounter a problem with this release, you can report it on the
+  [ocaml/dune] repository.
+
+
+[ocaml/dune] <https://github.com/ocaml/dune/issues>
+
+Changelog
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C
+
+=E2=97=8A Fixed
+
+  =E2=80=A2 Fixed a bug that was causing cram tests attached to multiple al=
+iases
+    to be run multiple times. (#11547, @Alizter)
+  =E2=80=A2 Fix: pass pkg-config (extra) args in all pkgconfig invocations.=
+ A
+    missing =E2=80=93personality flag would result in pkgconf not finding
+    libraries in some contexts. (#11619, @MisterDA)
+  =E2=80=A2 Fix: Evaluate `enabled_if' when computing the stubs for stanzas=
+ such
+    as `foreign_library' (#11707, @Alizter, @rgrinberg)
+  =E2=80=A2 Fix $ dune describe pp for libraries in the presence of
+       `(include_subdirs unqualified)' (#11729, fixes #10999,
+       @rgrinberg)
+  =E2=80=A2 Fix `$ dune subst' in sub directories of a git repository (#117=
+60,
+    fixes #11045, @Richard-Degenne)
+  =E2=80=A2 Fix a crash involving `Path.drop_prefix' when using Melange on
+    Windows (#11767, @nojb)
+
+
+=E2=97=8A Added
+
+  =E2=80=A2 Added detection and warning for common typos in package depende=
+ncy
+    constraints (#11600, fixes #11575, @kemsguy7)
+  =E2=80=A2 Added `(extra_objects)' field to `(foreign_library)' stanza with
+    `(:include)' support.  (#11683, @Alizter)
+
+
+=E2=97=8A Changed
+
+  =E2=80=A2 Allow build RPC messages to be handled by dune's RPC server in =
+eager
+    watch mode (#11622, @gridbugs)
+  =E2=80=A2 Allow concurrent build with RPC server (#11712, @gridbugs)
+
+
+Wrote a Record/Replay Debugging tutorial
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/tutorial-wrote-a-record-replay-debugging-tut=
+orial/16709/1>
+
+
+Sid Kshatriya announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I've written a *tutorial* on Record/Replay debugging. If you're
+  interested in reverse debugging please check it out [here].
+
+  You can do Record/Replay style debugging of your `ocamlc.opt' compiled
+  executables. You will be able to place breakpoints on all symbols
+  exposed by the `ocaml.opt' compiler =E2=80=93 this includes C functions +
+  OCaml functions from your OCaml program and do things like
+  reverse-continue.
+
+  For more context please see an announcement I made a couple of months
+  ago:
+  <https://discuss.ocaml.org/t/ann-a-tool-to-reverse-debug-ocaml-other-bina=
+ry-runs/16366/1>
+
+  (What's new in this new discuss.ocaml.org post is to give focus to the
+  tutorial I've very recently written)
+
+  *How can `rr' / _Software Counters_ mode `rr' help me in OCaml if I'm
+   not interested in gdb style debugging the OCaml executables ?*
+
+  There are some other useful things that `rr' can do for OCaml-ers.
+
+  *Here is one:* Let's say you want to know what programs have been
+   executed when you compile a ocaml program via dune.
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ dune init project hello_world
+  =E2=94=82 $ cd hello_world/
+  =E2=94=82 $ rr record -W -- dune b
+  =E2=94=82 rr: Saving execution to trace directory `/home/sidk/.local/shar=
+e/rr/dune-5'.
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Now run `rr ps'. You will get the exact invocations of all the
+  programs that `dune build' triggered ! This takes you all the way down
+  to showing you `ld' and `ar' invocations !
+
+  Very useful when you want to know what happened in the whole process
+  tree.
+
+  /editor=E2=80=99s note: please follow the post link to see this big termi=
+nal
+  output./
+
+
+[here]
+<https://github.com/sidkshatriya/me/blob/master/009-rr-on-aarch64.md>
+
+
+A no-maths guide to monads
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/blog-a-no-maths-guide-to-monads/16712/1>
+
+
+Rapha=C3=ABl Proust announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Prompted by someone complaining online about Haskell documentation, I
+  wrote a zero-maths guide to monads (in OCaml, but it applies somewhat
+  more broadly, it's just OCaml has nice binding opearators):
+
+  <https://raphael-proust.gitlab.io/code/no-maths-guide-to-monads.html>
+
+
+macOS Metal Framework bindings for compute applications
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-macos-metal-framework-bindings-for-compu=
+te-applications/16713/1>
+
+
+Lukasz Stafiniak announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  Hi!
+
+  I'm happy to announce the `metal' package with bindings to the Metal
+  framework, with a relatively broad coverage except it _does not_ cover
+  anything graphics or UI related.
+
+  =E2=80=A2 Hosted on GitHub: [lukstafi/ocaml-metal: OCaml bindings to Apple
+    Metal for general compute applications]
+  =E2=80=A2 API documentation: [Metal (metal.Metal)]
+  =E2=80=A2 Released to the repository: [metal 0.1.0 (latest) =C2=B7 OCaml =
+Package]
+  =E2=80=A2 Example usage: [ocannl/arrayjit/lib/metal_backend.ml at master =
+=C2=B7
+    ahrefs/ocannl]
+
+  Enjoy!
+
+  P.S. Disclaimer: code contains AI slop (and likely also my own
+  errors). It's my first major employment of / "collaboration" with
+  Large Language Models and I leaned into accepting choices made by the
+  models.
+
+
+[lukstafi/ocaml-metal: OCaml bindings to Apple Metal for general compute
+applications] <https://github.com/lukstafi/ocaml-metal>
+
+[Metal (metal.Metal)]
+<https://lukstafi.github.io/ocaml-metal/metal/Metal/index.html>
+
+[metal 0.1.0 (latest) =C2=B7 OCaml Package]
+<https://ocaml.org/p/metal/latest>
+
+[ocannl/arrayjit/lib/metal_backend.ml at master =C2=B7 ahrefs/ocannl]
+<https://github.com/ahrefs/ocannl/blob/master/arrayjit/lib/metal_backend.ml>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [The origin of the pipeline operator (`|>`)]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[The origin of the pipeline operator (`|>`)]
+<https://batsov.com/articles/2025/05/22/the-origin-of-the-pipeline-operator=
+/>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-05-27 Tue 11:21 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.05.20.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.06.03.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of May 20 to 27, 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">nanoev 0.1</a></li>
+<li><a href=3D"#2">15th MirageOS retreat May 13th - 20th</a></li>
+<li><a href=3D"#3">MlFront_Signify 2.3.1 - OpenBSD-compatible signify</a></=
+li>
+<li><a href=3D"#4">Opam 103: Bootstrapping a New OCaml Project with opam, b=
+y OCamlPro</a></li>
+<li><a href=3D"#5">Retirement of Multicore CI Pipelines</a></li>
+<li><a href=3D"#6">Dune 3.19</a></li>
+<li><a href=3D"#7">Wrote a Record/Replay Debugging tutorial</a></li>
+<li><a href=3D"#8">A no-maths guide to monads</a></li>
+<li><a href=3D"#9">macOS Metal Framework bindings for compute applications<=
+/a></li>
+<li><a href=3D"#10">Other OCaml News</a></li>
+<li><a href=3D"#org7066a1f">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">nanoev 0.1</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-nanoev-0-1/16682/1">htt=
+ps://discuss.ocaml.org/t/ann-nanoev-0-1/16682/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgf60038e" class=3D"outline-3">
+<h3 id=3D"orgf60038e">Simon Cruanes announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgf60038e">
+<p>
+Hello,
+</p>
+
+<p>
+I'm happy to announce the first release of <a href=3D"https://github.com/c-=
+cube/nanoev">nanoev</a>, yet another event loop abstraction. My goal with i=
+t is to have a narrow-waist interface between event loops (for now, <code>s=
+elect</code> and <code>poll</code>) and various abstractions built directly=
+ on top (for now using <code>picos</code>), without tying the event loop ab=
+straction itself to a particular scheduler. The core interface for the even=
+t loop is basically:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #000000; font-weig=
+ht: bold;">type</span> <span style=3D"color: #444fcf;">t</span>
+
+<span style=3D"color: #000000; font-weight: bold;">val</span> <span style=
+=3D"color: #a7601f;">wakeup_from_outside</span> : t -&gt; unit
+
+<span style=3D"color: #000000; font-weight: bold;">val</span> <span style=
+=3D"color: #a7601f;">step</span> : t -&gt; unit
+<span style=3D"color: #4f677f; font-style: italic;">(** Run one step of the=
+ event loop until something happens *)</span>
+
+<span style=3D"color: #000000; font-weight: bold;">val</span> <span style=
+=3D"color: #a7601f;">close</span> : t -&gt; <span style=3D"color: #444fcf;"=
+>Unix.</span>file_descr -&gt; unit
+<span style=3D"color: #4f677f; font-style: italic;">(** Close the file desc=
+riptor and clean it up *)</span>
+
+<span style=3D"color: #000000; font-weight: bold;">val</span> <span style=
+=3D"color: #a7601f;">max_fds</span> : t -&gt; int
+<span style=3D"color: #4f677f; font-style: italic;">(** Maximum number of f=
+ile descriptors that can be observed at once. *)</span>
+
+<span style=3D"color: #000000; font-weight: bold;">val</span> <span style=
+=3D"color: #a7601f;">on_readable</span> :
+  t -&gt; <span style=3D"color: #444fcf;">Unix.</span>file_descr -&gt; 'a -=
+&gt; 'b -&gt; (closed:<span style=3D"color: #444fcf;">bool -&gt; 'a -&gt; '=
+b -&gt; unit</span>) -&gt; unit
+
+<span style=3D"color: #000000; font-weight: bold;">val</span> <span style=
+=3D"color: #a7601f;">on_writable</span> :
+  t -&gt; <span style=3D"color: #444fcf;">Unix.</span>file_descr -&gt; 'a -=
+&gt; 'b -&gt; (closed:<span style=3D"color: #444fcf;">bool -&gt; 'a -&gt; '=
+b -&gt; unit</span>) -&gt; unit
+
+<span style=3D"color: #000000; font-weight: bold;">val</span> <span style=
+=3D"color: #a7601f;">run_after_s</span> : t -&gt; float -&gt; 'a -&gt; 'b -=
+&gt; ('a -&gt; 'b -&gt; unit) -&gt; unit
+</code></pre>
+</div>
+
+<p>
+and nothing else. I've also started experimenting with using it to drive <a=
+ href=3D"https://github.com/c-cube/tiny_httpd">tiny_httpd</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li>docs: <a href=3D"https://c-cube.github.io/nanoev/">https://c-cube.githu=
+b.io/nanoev/</a></li>
+<li>release link: <a href=3D"https://github.com/c-cube/nanoev/releases/tag/=
+v0.1">https://github.com/c-cube/nanoev/releases/tag/v0.1</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">15th MirageOS retreat May 13th - 20th</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-15th-mirageos-retreat-m=
+ay-13th-20th/16085/2">https://discuss.ocaml.org/t/ann-15th-mirageos-retreat=
+-may-13th-20th/16085/2</a>
+</p>
+</div>
+<div id=3D"outline-container-orgb86d70f" class=3D"outline-3">
+<h3 id=3D"orgb86d70f">Continuing this thread, gasche said</h3>
+<div class=3D"outline-text-3" id=3D"text-orgb86d70f">
+<p>
+I'm just back from the <a href=3D"https://retreat.mirage.io/">Mirage retrea=
+t</a>, an event where people interested in <a href=3D"https://mirage.io/">M=
+irage</a> meet for one week to work whatever they want. This retreat was or=
+ganized by Hannes Mehnert as all past retreats, in Marrakech. Hannes ( @han=
+nes ) asked participants to write a blog post to spread the word &#x2013; h=
+ence this post.
+</p>
+</div>
+<div id=3D"outline-container-org1ed4c66" class=3D"outline-4">
+<h4 id=3D"org1ed4c66">a Mirage retreat, in general</h4>
+<div class=3D"outline-text-4" id=3D"text-org1ed4c66">
+<p>
+The retreat is unlike most other professional events that I attend, typical=
+ly academic conferences. We are hosted in a place that is otherwise used as=
+ a hostel within the medina, the old city centre of Marrakech. Bed comfort =
+is minimal (a room of six people, two of them snoring), but there are peopl=
+e on-site who prepare food and the food is great. There is very little stru=
+cture for the day: we had a meeting every morning after breakfast to mentio=
+n what we had done the day before, and talk sessions in the evening (typica=
+lly one or two talks for around 40 minutes).
+</p>
+
+<p>
+The participants come in all shapes, some are regular contributors to the M=
+irage ecosystem and some (like me) know very little about Mirage. Some (lik=
+e me) are very familar with OCaml and others know little about the language=
+. Some people know about networking, security, system administration, commu=
+nication protocols. The lack of structure encourages people to wander aroun=
+d, for example sitting alongside someone doing something specific and preci=
+se, to try something you and learn along. Last time I ended up writing bits=
+ of a network driver in OCaml, despite knowing nothing about network driver=
+s; this time I worked on model-based testing of filesystems (see <a href=3D=
+"https://discuss.ocaml.org/t/blog-post-using-model-based-testing-on-a-mirag=
+e-filesystem-implementation/16666">https://discuss.ocaml.org/t/blog-post-us=
+ing-model-based-testing-on-a-mirage-filesystem-implementation/16666</a> ), =
+despite knowing nothing about file system implementations.
+</p>
+
+<p>
+Morocco has better network connectivity than during my first retreats, but =
+it remains somewhat flaky &#x2013; and our network-usage habits keep increa=
+sing. In particular, I could not attend any online meeting, and this was <i=
+>very</i> nice &#x2013; just like conferences, it is liberating to be busy =
+for one week uninterrupted. In the past I managed to adapt to low-network u=
+sage fairly well. This time I noticed that I depend on github a lot, and I =
+don't know how to have a good offline or network-restricted experience, to =
+do code-reviews in particular. I wish offline version-controlled tools for =
+code-review and bugtracking were more widely employed.
+</p>
+
+<p>
+Overall I find this organization excellent: participants get a place and ti=
+me to learn from each other. I think it could potentially be used for other=
+ topics. For example people mentioned that it could be interesting to have =
+a retreat focused on documentation in the OCaml ecosystem, and I find the i=
+dea interesting.
+</p>
+
+<p>
+(The rest of this post is basically a narrated version of my work log for t=
+he week; please feel free to just skip it.)
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org5dceedb" class=3D"outline-4">
+<h4 id=3D"org5dceedb">My OCaml-focused work</h4>
+<div class=3D"outline-text-4" id=3D"text-org5dceedb">
+<p>
+One of my projects for the week was to take the time to review large pull-r=
+equests on the OCaml compiler that I wouldn't dare attacking usually, becau=
+se my agenda is perpetually full of other things. I did a first round of re=
+view on <a href=3D"https://github.com/ocaml/ocaml/pull/13766">structured di=
+agnostics</a>, and additional reads through most of the <a href=3D"https://=
+github.com/ocaml/ocaml/pull/13275">modular explicits</a> pull request (PR).=
+ In particular I wrote a small manual section for modular explicits, submit=
+ted as a <a href=3D"https://github.com/ocaml/ocaml/pull/14048">separate PR<=
+/a>. I hope to have moved from "it would be nice if these were reviewed <i>=
+someday</i>" to a more short-term phase where I try to get these past the f=
+inish line before moving to other topics &#x2013; but we never know.
+</p>
+
+<p>
+I also went through the lists of PRs I had been assigned to, sometimes a wh=
+ile ago. (OCaml triagers assign PRs to each other to keep track of them and=
+ try to bring them to a decision, but in practice we often forget to do thi=
+s and they linger around.) This was fairly effective and my stack of assign=
+ed PRs has been about cut in half:
+</p>
+
+<ul class=3D"org-ul">
+<li>reviewed and merged:
+<ul class=3D"org-ul">
+<li><code>install_printer</code> cleanup (@pirbo) <a href=3D"https://github=
+.com/ocaml/ocaml/pull/13969">#13969</a></li>
+<li>ocamltest C refactors (@MisterDA) <a href=3D"https://github.com/ocaml/o=
+caml/pull/13962">#13962</a></li>
+<li>format break hint fix (@Octachron) <a href=3D"https://github.com/ocaml/=
+ocaml/pull/13853">#13853</a></li>
+<li>local structure items (@nojb) <a href=3D"https://github.com/ocaml/ocaml=
+/pull/14009">#14009</a></li>
+<li>document <code>row_more</code> and <code>row_fixed</code> (@goldfirere)=
+ <a href=3D"https://github.com/ocaml/ocaml/pull/14023">#14023</a></li>
+</ul></li>
+<li>closed:
+<ul class=3D"org-ul">
+<li>immediacy computation revamp (@ccasin) <a href=3D"https://github.com/oc=
+aml/ocaml/pull/11841">#11841</a></li>
+</ul></li>
+<li>adopted and merged:
+<ul class=3D"org-ul">
+<li>generational stack scanning (@xavierleroy) <a href=3D"https://github.co=
+m/ocaml/ocaml/pull/13594">#13594</a></li>
+<li>statmemprofs and bigarrays (@stedolan) <a href=3D"https://github.com/oc=
+aml/ocaml/pull/13675">#13675</a></li>
+<li>recursive module error messages (@shivam-909) <a href=3D"https://github=
+.com/ocaml/ocaml/pull/13608">#13608</a></li>
+</ul></li>
+<li>adopted but not yet merged
+<ul class=3D"org-ul">
+<li>distinguish two kinds of mutexes (@gasche) <a href=3D"https://github.co=
+m/ocaml/ocaml/pull/13716">#13716</a> (needs a review)</li>
+<li>source locations in implementations and interfaces (@malekbr) <a href=
+=3D"https://github.com/ocaml/ocaml/pull/12654">#12654</a> (needs a review)<=
+/li>
+</ul></li>
+</ul>
+
+<p>
+A few of those PRs I "adopted", that is, I took control of the PR as the su=
+bmitter would to rebase the PR and resubmit. In some cases this was mostly =
+to apply my own review comments (sometimes someone else's), the change were=
+ minor and I could merge quickly. In some cases the changes were more invas=
+ive, and I would ask for another review. In one case I got stuck and wasn't=
+ sure how to rebase, so I asked the original author.
+</p>
+
+<p>
+"Adopting" PRs in this way is a new process to me, I generally try to guide=
+ the authors through making all the changes themselves. I wanted to go thro=
+ugh my stack faster, and in some cases I knew that the authors were unrespo=
+nsive and unavailable to make those changes. I found it fun, but it is prob=
+ably best reserved to this situation where authors are unavailable.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orga70b40a" class=3D"outline-4">
+<h4 id=3D"orga70b40a">Side errands</h4>
+<div class=3D"outline-text-4" id=3D"text-orga70b40a">
+<p>
+I worked on a race between domain-termination and compaction: <a href=3D"ht=
+tps://github.com/ocaml/ocaml/pull/14025">#14025</a>. I decided to try to ma=
+ke Dune more pleasant for building the OCaml compiler, and sent a draft/RFC=
+ PR at <a href=3D"https://github.com/ocaml/dune/pull/11819">dune#11819</a>.=
+ I heard a remark that it's painful not to be able to use lazy thunks anymo=
+re for library initialization code (lazy thunks are not concurrency-safe in=
+ OCaml 5); I tried to think about why this is hard to fall asleep again aft=
+er a snoring attack, and ended up writing <a href=3D"https://github.com/oca=
+ml/ocaml/pull/14043">#14043</a> instead. I motivated myself into <a href=3D=
+"https://discuss.ocaml.org/t/volunteers-to-review-the-relocatable-ocaml-wor=
+k/16667/">asking for volunteers</a> to review the Relocatable Compiler work.
+</p>
+
+<p>
+I also participated as a speaker to two talk sessions in the evening. I did=
+ a short demo of <a href=3D"https://gitlab.inria.fr/fpottier/monolith">Mono=
+lith</a> and model-based testing in general &#x2013; that was before we dec=
+ided to use it on a Mirage filesystem. I talked about the OCaml Software Fo=
+undation and recent discussions around improving the security of the OCaml =
+ecosystem.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">MlFront_Signify 2.3.1 - OpenBSD-compatible signify</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-mlfront-signify-2-3-1-o=
+penbsd-compatible-signify/16683/1">https://discuss.ocaml.org/t/ann-mlfront-=
+signify-2-3-1-openbsd-compatible-signify/16683/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org4fc752a" class=3D"outline-3">
+<h3 id=3D"org4fc752a">jbeckford announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org4fc752a">
+<p>
+I am pleased to announce the new package <code>MlFront_Signify</code> is av=
+ailable in opam.
+</p>
+
+<p>
+<code>signify</code> was created by OpenBSD for maintainers to sign distrib=
+utions and for users to verify those distributions. That is described in <a=
+ href=3D"https://www.openbsd.org/papers/bsdcan-signify.html">signify: Secur=
+ing OpenBSD From Us To You</a> and the <a href=3D"https://man.openbsd.org/s=
+ignify">signify manpage</a>.
+</p>
+
+<p>
+<code>MlFront_Signify</code> is compatible with <code>signify</code>. The C=
+ code comes from firmware update code for the embedded Linux router distrib=
+ution OpenWrt (much easier to build using OCaml tools compared to OpenBSD c=
+ode). The <span class=3D"underline">executable</span> <code>mlfront-signify=
+</code> has most of the same CLI options as OpenBSD <code>signify</code> an=
+d includes the same trivial tests as <code>signify</code>, but on Unix you =
+should just use your package manager's <code>signify</code>. The main contr=
+ibution of <code>MlFront_Signify</code> is the OCaml <span class=3D"underli=
+ne">library</span> that is documented at:
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://dkml.gitlab.io/build-tools/MlFront/MlFront_Signify/M=
+lFront_Signify/Signify/index.html">https://dkml.gitlab.io/build-tools/MlFro=
+nt/MlFront_Signify/MlFront_Signify/Signify/index.html</a></li>
+</ul>
+
+<p>
+I used it with <a href=3D"https://discuss.ocaml.org/t/ann-combining-llvm-mc=
+-lld-precompiled-c-and-bytecode/16675?u=3Djbeckford">https://discuss.ocaml.=
+org/t/ann-combining-llvm-mc-lld-precompiled-c-and-bytecode/16675?u=3Djbeckf=
+ord</a> to perform auto-upgrades. A few MlFront packages participate:
+</p>
+<ul class=3D"org-ul">
+<li><code>MlFront_Signify</code> to verify a potential upgrade</li>
+<li><code>MlFront_ZipFile</code> to unpack a verified upgrade</li>
+<li><code>MlFront_Cache</code> to provide an immutable store where multiple=
+ versions can co-exist</li>
+</ul>
+
+<p>
+In particular, the <code>SHA256.sig</code> file in the file listing <a href=
+=3D"https://github.com/diskuv/dkcoder/releases/tag/2.3.202505202143">https:=
+//github.com/diskuv/dkcoder/releases/tag/2.3.202505202143</a> was created u=
+sing <code>MlFront_Signify</code> with the <code>SHA256</code> checksum fil=
+e as input. That serves the same purpose as <a href=3D"https://cdn.openbsd.=
+org/pub/OpenBSD/snapshots/arm64/SHA256.sig">https://cdn.openbsd.org/pub/Ope=
+nBSD/snapshots/arm64/SHA256.sig</a>.
+</p>
+
+<p>
+<i>MlFront_ZipFile has an important bugfix so please upgrade it to 2.3.1 as=
+ well.</i>
+</p>
+
+<p>
+Thanks to the Mirage project where I use its <code>mirage-crypto-rng</code>=
+ secure random generator!
+</p>
+
+<p>
+Enjoy.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Opam 103: Bootstrapping a New OCaml Project with opam, by OCam=
+lPro</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/blog-opam-103-bootstrapping=
+-a-new-ocaml-project-with-opam-by-ocamlpro/16686/1">https://discuss.ocaml.o=
+rg/t/blog-opam-103-bootstrapping-a-new-ocaml-project-with-opam-by-ocamlpro/=
+16686/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org8b3a07f" class=3D"outline-3">
+<h3 id=3D"org8b3a07f">OCamlPro announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8b3a07f">
+<p>
+<b>Greetings Cameleers,</b>
+</p>
+
+<p>
+We=E2=80=99re back with a new installment in our <code>opam deep-dives</cod=
+e> series!
+</p>
+
+<p>
+<a href=3D"https://ocamlpro.com/blog/2025_04_29_opam_103_starting_new_proje=
+ct/"><b>Opam 103: Bootstrapping a New OCaml Project with opam</b></a>
+</p>
+
+<p>
+This time, we=E2=80=99re taking a step back to focus on a beginner-friendly=
+ guide to setting up a toy OCaml project with <code>opam</code>, <code>dune=
+</code>, <code>cmdliner</code>, and <code>alcotest</code>.
+</p>
+
+<p>
+This article is aimed at newer members of the ecosystem who may be wonderin=
+g:
+</p>
+
+<ul class=3D"org-ul">
+<li>How do I structure an OCaml project from scratch?</li>
+<li>How to best use opam in my dev workflow?</li>
+<li>How do I write a minimal <code>.opam</code> file?</li>
+<li>What about a fully fledged one?</li>
+</ul>
+
+<p>
+We walk through the <code>opam</code> rationale and offer guidance for buil=
+ding your first opam-compliant package =E2=80=94 the kind you can confident=
+ly pin and use locally before getting to publishing it.
+</p>
+
+<p>
+As always, we hope this piece serves as a helpful reference for those onboa=
+rding into the <code>opam</code> and the OCaml ecosystem and getting their =
+first taste of the tooling.
+</p>
+
+<p>
+:link: Check out the other <code>opam deep-dives</code> articles on <a href=
+=3D"https://ocamlpro.com/blog/">https://ocamlpro.com/blog/</a>
+</p>
+
+<p>
+Feel free to share feedback or thoughts right here in this thread!
+</p>
+
+<p>
+Thank you all for your time, and until next time,
+<b>The OCamlPro Team</b>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Retirement of Multicore CI Pipelines</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/retirement-of-multicore-ci-=
+pipelines/16691/1">https://discuss.ocaml.org/t/retirement-of-multicore-ci-p=
+ipelines/16691/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org39317da" class=3D"outline-3">
+<h3 id=3D"org39317da">Mark Elvers announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org39317da">
+<p>
+We believe that the two OCurrent pipelines setup for testing OCaml multicor=
+e have now served their purpose and will be retired.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml-multicoretests.ci.dev:8100">https://ocaml-mult=
+icoretests.ci.dev:8100</a></li>
+<li><a href=3D"https://ocaml-multicore.ci.dev:8100">https://ocaml-multicore=
+.ci.dev:8100</a></li>
+</ul>
+
+<p>
+Please let me know if you still feel these have value.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Dune 3.19</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-3-19/16693/1">http=
+s://discuss.ocaml.org/t/ann-dune-3-19/16693/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgb69a88e" class=3D"outline-3">
+<h3 id=3D"orgb69a88e">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgb69a88e">
+<p>
+The Dune team is happy to announce the release of dune <code>3.19.0</code> =
+:smile:
+</p>
+
+<p>
+This release contains some important bug fixes along with some improvements=
+ for the <code>foreign_library</code> stanza. It introduces support for con=
+current builds through the RPC server.
+</p>
+
+<p>
+If you encounter a problem with this release, you can report it on the <a h=
+ref=3D"https://github.com/ocaml/dune/issues">ocaml/dune</a> repository.
+</p>
+</div>
+<div id=3D"outline-container-orga99080e" class=3D"outline-4">
+<h4 id=3D"orga99080e">Changelog</h4>
+<div class=3D"outline-text-4" id=3D"text-orga99080e">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org5b55a9d"></a>Fixed<br />
+<div class=3D"outline-text-5" id=3D"text-org5b55a9d">
+<ul class=3D"org-ul">
+<li>Fixed a bug that was causing cram tests attached to multiple aliases to=
+ be run multiple
+times. (#11547, @Alizter)</li>
+<li>Fix: pass pkg-config (extra) args in all pkgconfig invocations. A missi=
+ng &#x2013;personality
+flag would result in pkgconf not finding libraries in some contexts. (#1161=
+9, @MisterDA)</li>
+<li>Fix: Evaluate <code>enabled_if</code> when computing the stubs for stan=
+zas such as
+<code>foreign_library</code> (#11707, @Alizter, @rgrinberg)</li>
+<li>Fix $ dune describe pp for libraries in the presence of <code>(include_=
+subdirs
+   unqualified)</code> (#11729, fixes #10999, @rgrinberg)</li>
+<li>Fix <code>$ dune subst</code> in sub directories of a git repository (#=
+11760, fixes
+#11045, @Richard-Degenne)</li>
+<li>Fix a crash involving <code>Path.drop_prefix</code> when using Melange =
+on Windows
+(#11767, @nojb)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgb955190"></a>Added<br />
+<div class=3D"outline-text-5" id=3D"text-orgb955190">
+<ul class=3D"org-ul">
+<li>Added detection and warning for common typos in package dependency
+constraints (#11600, fixes #11575, @kemsguy7)</li>
+<li>Added <code>(extra_objects)</code> field to <code>(foreign_library)</co=
+de> stanza with <code>(:include)</code> support.
+(#11683, @Alizter)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgb41d2e0"></a>Changed<br />
+<div class=3D"outline-text-5" id=3D"text-orgb41d2e0">
+<ul class=3D"org-ul">
+<li>Allow build RPC messages to be handled by dune's RPC server in eager wa=
+tch
+mode (#11622, @gridbugs)</li>
+<li>Allow concurrent build with RPC server (#11712, @gridbugs)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Wrote a Record/Replay Debugging tutorial</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/tutorial-wrote-a-record-rep=
+lay-debugging-tutorial/16709/1">https://discuss.ocaml.org/t/tutorial-wrote-=
+a-record-replay-debugging-tutorial/16709/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org9b185ff" class=3D"outline-3">
+<h3 id=3D"org9b185ff">Sid Kshatriya announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9b185ff">
+<p>
+I've written a <b>tutorial</b> on Record/Replay debugging. If you're intere=
+sted in reverse debugging please check it out <a href=3D"https://github.com=
+/sidkshatriya/me/blob/master/009-rr-on-aarch64.md">here</a>.
+</p>
+
+<p>
+You can do Record/Replay style debugging of your <code>ocamlc.opt</code> co=
+mpiled executables. You will be able to place breakpoints on all symbols ex=
+posed by the <code>ocaml.opt</code> compiler &#x2013; this includes C funct=
+ions + OCaml functions from your OCaml program and do things like reverse-c=
+ontinue.
+</p>
+
+<p>
+For more context please see an announcement I made a couple of months ago:
+<a href=3D"https://discuss.ocaml.org/t/ann-a-tool-to-reverse-debug-ocaml-ot=
+her-binary-runs/16366/1">https://discuss.ocaml.org/t/ann-a-tool-to-reverse-=
+debug-ocaml-other-binary-runs/16366/1</a>
+</p>
+
+<p>
+(What's new in this new discuss.ocaml.org post is to give focus to the tuto=
+rial I've very recently written)
+</p>
+
+<p>
+<b>How can <code>rr</code> / <span class=3D"underline">Software Counters</s=
+pan> mode <code>rr</code> help me in OCaml if I'm not interested in gdb sty=
+le debugging the OCaml executables ?</b>
+</p>
+
+<p>
+There are some other useful things that <code>rr</code> can do for OCaml-er=
+s.
+</p>
+
+<p>
+<b>Here is one:</b> Let's say you want to know what programs have been exec=
+uted when you compile a ocaml program via dune.
+</p>
+
+<pre class=3D"example" id=3D"orgbdb9dad">
+$ dune init project hello_world
+$ cd hello_world/
+$ rr record -W -- dune b
+rr: Saving execution to trace directory `/home/sidk/.local/share/rr/dune-5'.
+</pre>
+
+<p>
+Now run <code>rr ps</code>. You will get the exact invocations of all the p=
+rograms that <code>dune build</code> triggered ! This takes you all the way=
+ down to showing you <code>ld</code> and <code>ar</code> invocations !
+</p>
+
+<p>
+Very useful when you want to know what happened in the whole process tree.
+</p>
+
+<p>
+<i>editor=E2=80=99s note: please follow the post link to see this big termi=
+nal output.</i>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">A no-maths guide to monads</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/blog-a-no-maths-guide-to-mo=
+nads/16712/1">https://discuss.ocaml.org/t/blog-a-no-maths-guide-to-monads/1=
+6712/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org440cbe4" class=3D"outline-3">
+<h3 id=3D"org440cbe4">Rapha=C3=ABl Proust announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org440cbe4">
+<p>
+Prompted by someone complaining online about Haskell documentation, I wrote=
+ a zero-maths guide to monads (in OCaml, but it applies somewhat more broad=
+ly, it's just OCaml has nice binding opearators):
+</p>
+
+<p>
+<a href=3D"https://raphael-proust.gitlab.io/code/no-maths-guide-to-monads.h=
+tml">https://raphael-proust.gitlab.io/code/no-maths-guide-to-monads.html</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">macOS Metal Framework bindings for compute applications</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-macos-metal-framework-b=
+indings-for-compute-applications/16713/1">https://discuss.ocaml.org/t/ann-m=
+acos-metal-framework-bindings-for-compute-applications/16713/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org9a29c6a" class=3D"outline-3">
+<h3 id=3D"org9a29c6a">Lukasz Stafiniak announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9a29c6a">
+<p>
+Hi!
+</p>
+
+<p>
+I'm happy to announce the <code>metal</code> package with bindings to the M=
+etal framework, with a relatively broad coverage except it <span class=3D"u=
+nderline">does not</span> cover anything graphics or UI related.
+</p>
+
+<ul class=3D"org-ul">
+<li>Hosted on GitHub: <a href=3D"https://github.com/lukstafi/ocaml-metal">l=
+ukstafi/ocaml-metal: OCaml bindings to Apple Metal for general compute appl=
+ications</a></li>
+<li>API documentation: <a href=3D"https://lukstafi.github.io/ocaml-metal/me=
+tal/Metal/index.html">Metal (metal.Metal)</a></li>
+<li>Released to the repository: <a href=3D"https://ocaml.org/p/metal/latest=
+">metal 0.1.0 (latest) =C2=B7 OCaml Package</a></li>
+<li>Example usage: <a href=3D"https://github.com/ahrefs/ocannl/blob/master/=
+arrayjit/lib/metal_backend.ml">ocannl/arrayjit/lib/metal_backend.ml at mast=
+er =C2=B7 ahrefs/ocannl</a></li>
+</ul>
+
+<p>
+Enjoy!
+</p>
+
+<p>
+P.S. Disclaimer: code contains AI slop (and likely also my own errors). It'=
+s my first major employment of / "collaboration" with Large Language Models=
+ and I leaned into accepting choices made by the models.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-10" class=3D"outline-2">
+<h2 id=3D"10">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-10">
+</div>
+<div id=3D"outline-container-org5dd0e5c" class=3D"outline-3">
+<h3 id=3D"org5dd0e5c">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org5dd0e5c">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://batsov.com/articles/2025/05/22/the-origin-of-the-pip=
+eline-operator/">The origin of the pipeline operator (`|&gt;`)</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org7066a1f" class=3D"outline-2">
+<h2 id=3D"org7066a1f">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org7066a1f">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org59d5f47">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
