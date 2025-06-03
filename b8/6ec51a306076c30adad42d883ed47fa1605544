@@ -1,0 +1,354 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=v2+Ms6eW;
+	dkim=pass (1024-bit key; secure) header.d=mail.quaesituri.org header.i=@mail.quaesituri.org header.a=rsa-sha256 header.s=mail header.b=CpZIv7f2;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 3D56C400A3
+	for <caml-list@tunbury.org>; Tue,  3 Jun 2025 09:23:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:mime-version:to:references:from:
+   in-reply-to:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=i8HAiV3RypL6m644aK7y2wwi+ypVoeQjgs3WavWkilo=;
+  b=v2+Ms6eWj9bb+kbLlIxo/zsnxoM0WE7k96I1gRa6RuqEAdDz8v8g98fq
+   d3TrTeyWauTgeA/0SwTZ3I0npzDnL0SqGbqKLMADyhNot1HxkMX9pGbaX
+   ++DErWiTBczvS3YSr84gxtQ3ObKG+NZaF4ldR/NQ6TH6ZwSYkRYjdHQDs
+   c=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=pass (signature verified) header.i=@mail.quaesituri.org
+X-IronPort-AV: E=Sophos;i="6.16,205,1744063200"; 
+   d="scan'208,217";a="225026962"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 03 Jun 2025 11:23:15 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id E2759E0AF1; Tue,  3 Jun 2025 11:23:14 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id ABE5AE0131
+	for <caml-list@sympa.inria.fr>; Tue,  3 Jun 2025 11:23:11 +0200 (CEST)
+IronPort-SDR: 683ebefe_+EEUlTob2QSR5/Y38MMgNIzYzULsksFNqSgKJCMr+UiiSEB
+ aP76lWLP4UU7N4N3buZNQPtYc6Lnuas1qA9GsCQ==
+X-IPAS-Result: =?us-ascii?q?A0GNBACtvT5o/5qjd6hQCh0CAgkUBQWCFIJEgQBaMwQLS?=
+ =?us-ascii?q?YRViHuHMQEGgT4DhDuHOZQhDwEDAQ0xIAQBAQSFAwKLXx8HAQQ0EwECBAEBA?=
+ =?us-ascii?q?QEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQKBChOFew2CW4JRLIELAQEBAgEjB?=
+ =?us-ascii?q?BkBATgPC0ICAlYbAQGCfgGCIQInJAOvYH8zgQGCDAEBBt4HCYFJiFABKoEzA?=
+ =?us-ascii?q?oQNRIQzQn2BEIE8C4J4PoQWhAiCaYIvgQIUHYlwlkBSciIDFw8zLAFVExcLB?=
+ =?us-ascii?q?wWBJkMDgQ8jSwUtHYINhRkfgXOBXAMDFg8BgiSBXhyEYoRJK0+DJIF+ZUGDY?=
+ =?us-ascii?q?SEGa0ACAQttPTcJCxsGmCYRC0CDcFg1ghiUNrJ7giWCAKFYBhMvhASTWjOST?=
+ =?us-ascii?q?5kDozM/JoUggX8mgVlNJxEaIYJnCUYDGQ+XNMBLQTU8AgcBCgEBAwmQS4FLA?=
+ =?us-ascii?q?QE?=
+IronPort-PHdr: A9a23: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
+ TOSEkulJymKmiLoSw21MKdLli7JZHRj
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:VOcqJKCQaUfEO0DlHemm55DYdb4zR+YMi2TDsHoddfU1SKClfq
+ +V/cjzuSWE7Qr5O0tOpTn/Asm9qBrnnPYfi7X5W43SODUPIQCTXeZfBODZsl/d8kPFh41gPN
+ 9bHZRDNA==
+X-Talos-CUID: 9a23:pQMWRm6d0a3r5UgBwdsst3NMAO4FaSfmk0zQKFXpCH1gdby+YArF
+X-Talos-MUID: 9a23:dR+/nQRZ5N28ejIjRXTPoQ46Oedv45iWGUwPiIkFotGpDDZ/bmI=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.16,205,1744063200"; 
+   d="scan'208,217";a="118079845"
+X-MGA-submission: =?us-ascii?q?MDHhRci4MnHjKYT5HZuPWk0mL0kr+lCIm4wLKa?=
+ =?us-ascii?q?562yz7yh9pjnrcftHYMs2KUV83wcbdg5NbHrFZWpXBc5VadabhfhiJ24?=
+ =?us-ascii?q?NprPow9bTRk+hjNn75fajGweP3PcZ1CJ79fYBHV/2ORyQhoysZprKjJ1?=
+ =?us-ascii?q?c9SXcbKmhg7uRsaqzJ5rsWpQ=3D=3D?=
+Received: from quaesituri.org (HELO mail.quaesituri.org) ([168.119.163.154])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2025 11:23:09 +0200
+Received: from [128.93.64.106] (cadillac.paris.inria.fr [128.93.64.106])
+	by mail.quaesituri.org (Postfix) with ESMTPSA id A8B7C9F938
+	for <caml-list@inria.fr>; Tue, 03 Jun 2025 11:23:08 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.quaesituri.org A8B7C9F938
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mail.quaesituri.org;
+	s=mail; t=1748942588;
+	bh=i8HAiV3RypL6m644aK7y2wwi+ypVoeQjgs3WavWkilo=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=CpZIv7f2QtwotPIkAu0RmEMk8GdfUikBkwf5ABKGUmHLuMhXTgCo5CU5pr8xAjqYu
+	 4dOBVDuN0LZVwrVILBaI9B4f3ZEYL9efzunIbm2anrz3nkGfX0ueQebIjThLNiDS0d
+	 WILiP9YkBsHAYADB53ORSIqt2QKz7m167SnJUs3Y=
+Content-Type: multipart/alternative;
+ boundary="------------rea6kTVuL0Q0J2bT0j10jr9n"
+Message-ID: <62c6640c-d06c-4103-b479-5dace4b5cfaf@polychoron.fr>
+Date: Tue, 3 Jun 2025 11:23:08 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+To: caml-list@inria.fr
+References: <26E93D7A-BAF3-46FB-8CAF-8DA7F7DEAF6B@mpi-sws.org>
+Content-Language: en-US
+From: Florian Angeletti <octa@polychoron.fr>
+In-Reply-To: <26E93D7A-BAF3-46FB-8CAF-8DA7F7DEAF6B@mpi-sws.org>
+Subject: Re: [Caml-list] Warning 69 (unused record fields) and polymorphic
+ reads
+Reply-To: Florian Angeletti <octa@polychoron.fr>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19334
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-06/62c6640c-d06c-4103-b479-5dace4b5cfaf%40polychoron.fr>
+
+This is a multi-part message in MIME format.
+--------------rea6kTVuL0Q0J2bT0j10jr9n
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+Those warnings can be suppressed on the type definition by adding a 
+`@@warning` attribute
+
+    module M: sig type t end = struct
+       type t = { x:int; y:int } [@@warning "-unused-field"]
+    end
+
+With this attribute, the compiler will not register those fields for the 
+usage checker and thus no unused
+warning fields will be emitted for the fields `x` and `y`
+
+For this specific warning, the compiler even supports disabling the 
+usage checker field-by-field.
+For instance, this code will only disable the warning for the `M.x` 
+field, and thus warns
+
+    module M: sig type t end = struct
+       type t = { x:int[@warning "-unused-field"] ; y:int }
+    end
+
+  that the field `y` is being unused while omitting the check for the  
+field `x`.
+
+— Florian.
+
+Le 03/06/2025 à 11:11, Andreas Rossberg a écrit :
+> Today, I ran into a slight annoyance with warning 69 (unused record fields). Obviously, the warning does not consider uses of polymorphic operators like `=` or `compare`, which technically are reads of the fields. Unfortunately, it turns out that there are reasonable use cases where these are the _only_ reads, resulting in bogus warnings.
+>
+> There probably isn't much that can be done about it(?), since such access could hide in any polymorphic function invocation. Hence I didn’t file a bug. But for the record, I thought I'll show the counter example anyway.
+>
+> Consider code that implements some processing akin to SQL `group by`, as in:
+> ```
+> SELECT artist, album, COUNT(*), SUM(time), ... FROM Tracks GROUP BY artist, album;
+> ```
+> Intuitively, this extracts all known albums from a list of track (song) meta data, and computes their total running time, among other values.
+>
+> Here is a sketch of how to achieve something similar in OCaml:
+> ```
+> module GroupKey =
+>     struct
+>        type t = {artist : string; title : string}
+>        let compare = compare
+>     end
+> module GroupMap = Map.Make(GroupKey)
+>
+> type track = ...
+> type acc = ...  (* result type *)
+> val empty_acc : acc
+> val accumulate : entry -> acc -> acc  (* combine result *)
+>
+> let albums =
+>     tracks
+>     |> List.fold_left (fun map (entry : track) ->
+>           let group = {artist = entry.artist; title = entry.title} in
+>           let acc = Option.value (GroupMap.find_opt group map) ~default: empty_acc in
+>           GroupMap.add group (accumulate acc entry) map
+>        ) GroupMap.empty
+>     |> GroupMap.bindings |> List.map snd
+> ```
+> The only purpose of the `GroupKey.t` type in this code is to identify entries belonging to the same group. Its fields are read implicitly by `GroupMap.find/add`, which invokes `compare` on them. Yet, this code produces warnings that `artist` and `title` are never read, which technically isn’t quite correct.
+>
+> In my actual code, the key record has more fields, which is why I didn’t want to replace it with a tuple.
+>
+> Perhaps there is some annotation magic I’m missing that could be applied to the type definition to suppress the warning?
+>
+> /Andreas
+>
+
+--------------rea6kTVuL0Q0J2bT0j10jr9n
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    Those warnings can be suppressed on the type definition by adding a
+    `@@warning` attribute<br>
+    <blockquote>module M: sig type t end = struct<br>
+        type t = { <a class="moz-txt-link-freetext" href="x:int">x:int</a>; <a class="moz-txt-link-freetext" href="y:int">y:int</a> } [@@warning "-unused-field"]<br>
+      end<br>
+    </blockquote>
+    With this attribute, the compiler will not register those fields for
+    the usage checker and thus no unused<br>
+    warning fields will be emitted for the fields `x` and `y`<br>
+    <br>
+    For this specific warning, the compiler even supports disabling the
+    usage checker field-by-field.<br>
+    For instance, this code will only disable the warning for the `M.x`
+    field, and thus warns<br>
+    <blockquote>module M: sig type t end = struct<br>
+        type t = { <a class="moz-txt-link-freetext" href="x:int">x:int</a>[@warning "-unused-field"] ; <a class="moz-txt-link-freetext" href="y:int">y:int</a> }<br>
+      end<br>
+    </blockquote>
+     that the field `y` is being unused while omitting the check for
+    the  field `x`.<br>
+    <br>
+    — Florian.<br>
+    <br>
+    <div class="moz-cite-prefix">Le 03/06/2025 à 11:11, Andreas Rossberg
+      a écrit :<br>
+    </div>
+    <blockquote type="cite"
+      cite="mid:26E93D7A-BAF3-46FB-8CAF-8DA7F7DEAF6B@mpi-sws.org">
+      <pre wrap="" class="moz-quote-pre">Today, I ran into a slight annoyance with warning 69 (unused record fields). Obviously, the warning does not consider uses of polymorphic operators like `=` or `compare`, which technically are reads of the fields. Unfortunately, it turns out that there are reasonable use cases where these are the _only_ reads, resulting in bogus warnings.
+
+There probably isn't much that can be done about it(?), since such access could hide in any polymorphic function invocation. Hence I didn’t file a bug. But for the record, I thought I'll show the counter example anyway.
+
+Consider code that implements some processing akin to SQL `group by`, as in:
+```
+SELECT artist, album, COUNT(*), SUM(time), ... FROM Tracks GROUP BY artist, album;
+```
+Intuitively, this extracts all known albums from a list of track (song) meta data, and computes their total running time, among other values.
+
+Here is a sketch of how to achieve something similar in OCaml:
+```
+module GroupKey =
+   struct
+      type t = {artist : string; title : string}
+      let compare = compare
+   end
+module GroupMap = Map.Make(GroupKey)
+
+type track = ...
+type acc = ...  (* result type *)
+val empty_acc : acc
+val accumulate : entry -&gt; acc -&gt; acc  (* combine result *)
+
+let albums =
+   tracks
+   |&gt; List.fold_left (fun map (entry : track) -&gt;
+         let group = {artist = entry.artist; title = entry.title} in
+         let acc = Option.value (GroupMap.find_opt group map) ~default: empty_acc in
+         GroupMap.add group (accumulate acc entry) map
+      ) GroupMap.empty
+   |&gt; GroupMap.bindings |&gt; List.map snd
+```
+The only purpose of the `GroupKey.t` type in this code is to identify entries belonging to the same group. Its fields are read implicitly by `GroupMap.find/add`, which invokes `compare` on them. Yet, this code produces warnings that `artist` and `title` are never read, which technically isn’t quite correct.
+
+In my actual code, the key record has more fields, which is why I didn’t want to replace it with a tuple.
+
+Perhaps there is some annotation magic I’m missing that could be applied to the type definition to suppress the warning?
+
+/Andreas
+
+</pre>
+    </blockquote>
+    <br>
+  </body>
+</html>
+
+--------------rea6kTVuL0Q0J2bT0j10jr9n--
