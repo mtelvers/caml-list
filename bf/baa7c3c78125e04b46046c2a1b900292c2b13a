@@ -1,0 +1,569 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=Ftt4nwqA;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=JvR8JUkn;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id A9FF54009D
+	for <caml-list@tunbury.org>; Tue, 17 Jun 2025 13:19:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=TqFyO47iX+HOigPWRxLRm43ENnqB0Gkn5fao+tgFYiE=;
+  b=Ftt4nwqAnIyUpE3vSD/mZVC/WMGISDQPFcyV47oo5qxq8EsGRxI2fNqp
+   k2/nyW0Wxo+21vTyiuxMdA9UHTXzVr2yEofA0+vk1HyJbXNftGvE37MJ7
+   6Mc45kpMvo3FaI5uvMkff0mJDysFeRUxtB0GZnajW4WMQ+PqN5gpzVQPi
+   E=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.16,243,1744063200"; 
+   d="scan'208,217";a="227639665"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Jun 2025 15:19:34 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id D32E4E0CD9; Tue, 17 Jun 2025 15:19:33 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 1F29AE0131
+	for <caml-list@sympa.inria.fr>; Tue, 17 Jun 2025 15:19:28 +0200 (CEST)
+IronPort-SDR: 68516b5f_8E7ctYcFeopSpDmdB8L7R+dI8mAu5m3gETlwjWCuSR0dIKn
+ tO9WH9T9cywGLl/YWAJjkqAMU7q/jUwdB9OopEA==
+X-IPAS-Result: =?us-ascii?q?A0EZBQCValFogSndVdFaHgE8DAILhAQogQBZNAQLSYRVg?=
+ =?us-ascii?q?SOOLTOBbotvgiyJKYd6AxgWJwIPAQMBDT0UBAEBAwSCDIJ0i2kCHgcBBDQTA?=
+ =?us-ascii?q?QIEAQEBAQMCAwEBAQEBARABAQUBAQECAQECBAYBAhABASIZBw47hXsNgkWBQ?=
+ =?us-ascii?q?mECBQM7AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBBQIIB?=
+ =?us-ascii?q?R8/ASAEEwsGHQEbDAUHBgMBEQMNNwIjAREBBQE1FgyCCFmCIQEGEAEDDiQDE?=
+ =?us-ascii?q?ZQ0jRyCJIEFQos+gRUFAhaBAYINBoFHBdkTChkoDW0DgWICBxSBNYR2KU4Og?=
+ =?us-ascii?q?jkdAYFdAg6Df4N9eieBA4ElgRU1ggWDeAwLAgIYgXODLoJpBIIkgQIUgkuHV?=
+ =?us-ascii?q?IofdotTJggHFwMHBwkFBBwGBQUCPwkFAQ8SAwQDBAQBAgsJCgkDAwIOAggDA?=
+ =?us-ascii?q?ggGGQE/EgQTCg0LBwUfCgIMEQooIhIrCgECAVo0AQgGAgIEBAIEDAIJAgIFB?=
+ =?us-ascii?q?wIRAwQBAQgCAi0DAQMZCAkIAgsFFA0IAwMDBgoJAQoHCRABAgIQAwICAgIGB?=
+ =?us-ascii?q?woDAhMKBQYGAgoHDQwSAgMJBgMFCgMHBAoNAhUCFQUeAggJDhECBRIDDgUDA?=
+ =?us-ascii?q?gIRBAIDAwUDAQcBFQgQAgICAgUCBRgRDQQDAwMCCAEEFAYDCQglGwkBAwkDA?=
+ =?us-ascii?q?gMECAMDAwIGDAwCAQcIAwMGCwgJBgMCBwgZAwUEAwcFCyECBgMCBAUEAQUCE?=
+ =?us-ascii?q?w0CAxkCBgMGEQkNBggHCQMHAQEBAgICCAEGBQ8CAwQCBQQEAQESBgIBAwICA?=
+ =?us-ascii?q?wQJAQICCgIICgEJEwQDCAMDAwMDBQICChEFBQIBBQoTDAoGAwYDBAICAgoBB?=
+ =?us-ascii?q?wIDAwMHAQscAgEDAgIFAgIBBQMCAgYEAwIBAQkCAwIIAQICAQICAgQBBwENA?=
+ =?us-ascii?q?QECBAICMgIBAwgGAQEOAgYCAgECAgIEAgQBCAsEBQ0BAQIBAgIBAQEEAQgDA?=
+ =?us-ascii?q?QECAgMDBQMFCA8NAQEXCx0DBAUCAgEBAQISAgIBBwECAQEDGQIBAwMEAQsCA?=
+ =?us-ascii?q?QEEHgQWAgICAgQDAgMCAgsRAiUBAgMGEwIEAgECAgUFBQEDBBEQCQMCBQQCA?=
+ =?us-ascii?q?gYCBA4CBwQCGgQCAgEDBAYDAQIIAgIHBAQGAwIBAgIHGQIWAQIBAQICAgQCA?=
+ =?us-ascii?q?gIJCgQFBAMEAwICAgEMAwECAwICAgIBAwICAQEDAQUGDQISAgEDDwgEAgIHA?=
+ =?us-ascii?q?gIhDwsBAgEBBgYDAwMKAwEKAQIBAQYCAQISBQICAgQBAgIGBCUBAgECAQEBB?=
+ =?us-ascii?q?QIBAgECBAIHAgECAwgBBQIGAQICCQECAQICAgECAQECBgIBEQQBAgICAgIDA?=
+ =?us-ascii?q?QMGAgICAgICCQICAgIFAgUDAgMBBgIFAgMDAgIDBAMJAwMIAwYEAgMBAQECA?=
+ =?us-ascii?q?QICAgECAQUCAwkBAQMCAQICAgIDBgIFBQEDCwUEBwEBAgEDBQMDBAMGAQwEA?=
+ =?us-ascii?q?wICBAICAgICBAIBBQMDAgIFAQsBAgQCAQMDAwQEAwECAgoMAgQBAQEBAgECA?=
+ =?us-ascii?q?goDAgUBAQMDAREDBAEGBQUGAgcJAwICBAIDAgQDCQQCBwMDAgICAQELAgIBA?=
+ =?us-ascii?q?gEBAwMHBhABAgICAQ8CAwMEAw8GAwUJAQMHAQEBAQECFAMCBAURBgQCAQEeA?=
+ =?us-ascii?q?RYCBwEEAyceAgICBwECAgICAwICAwMDAQIBAQIDBQEDAgIDAgECAQYCAwMDA?=
+ =?us-ascii?q?gUDAQ4CAgMBAwEGBAQCBwECAgIOAQMCAgkCBwoIAgETEwICAgIBAgIBAgcBA?=
+ =?us-ascii?q?QIDAgUFCAIBAQECAgMCCwICAQIBAgIDAgMCBgEJBAQGAQIBAQUEAwkBAgMkA?=
+ =?us-ascii?q?wMEBQMCAgICAgUEAgQDGQINBgEEAwUDBQMIAwYCAgMPAxoCCQMjDwMLCQgTP?=
+ =?us-ascii?q?QELBzIENgEUFAcrIV+YIINxK28RDwETfgcFFxcCBBcmBQECCgxLknILsysHh?=
+ =?us-ascii?q?B6BZII3iAKVUDOLGZ9IiAORARuNbIYMgU2CMIs5GhOFMREkEoFJI4FcMxojg?=
+ =?us-ascii?q?QGCNglGAxkPV5FKgmSCL7JDA0QyPAIHAQoBAQMJkDyBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ 9V030UDOQ==
+IronPort-HdrOrdr: A9a23:revAj6prCPFs7pKdoIdnM/MaV5oGeYIsimQD101hICG9E/bo7v
+ xG+c5w6faaskdyZJhNo6HiBEDiexPhHPxOkO0s1N6ZNWGMhILCFvAE0WKN+UyHJwTOssBYkY
+ hte7VjE9HrZGIK6PrS0U2XF5IPzrC8n5xARt2z856ud2xXgm1bgTuRwzz7LnFL
+X-Talos-CUID: 9a23:K35tgm6HO2VsFQSN3Nss/2wmKscHeVPmk1SLLGugMXZPRuTNVgrF
+X-Talos-MUID: 9a23:Fcr6+gonw87iKOBPvqEezzZsPegwv6ueM0MEzJM5vNWmcn1JPyjI2Q==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.16,243,1744063200"; 
+   d="scan'208,217";a="119276371"
+X-MGA-submission: =?us-ascii?q?MDH+X9wp9jbGNoKq2EQ+mt1zh/5c4ygzwA9er8?=
+ =?us-ascii?q?iu7Guzjop7AhzAyTWgpxfL4CmYGIFLnnZbb3bAClb2Ikx2J50dABAaR7?=
+ =?us-ascii?q?dKx/Raiy6B0Qny9n4M5lPHJKtyG09rBPZ+tvvbdHX6RXljgOfYiqCSg7?=
+ =?us-ascii?q?ftoX/3HnIjWGW7X1hA52iNFg=3D=3D?=
+Received: from mail-wr1-f41.google.com ([209.85.221.41])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2025 15:19:27 +0200
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-3a503d9ef59so4834065f8f.3
+        for <caml-list@inria.fr>; Tue, 17 Jun 2025 06:19:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1750166366; x=1750771166; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=TqFyO47iX+HOigPWRxLRm43ENnqB0Gkn5fao+tgFYiE=;
+        b=JvR8JUknim6b1txTHVqVEwOeUTa7jv1bUxi6eZk+ko3ya/COtM0YgiX1luOU9B/F1c
+         cDivd+ZAyj8QtDWxmSzgOHQQzRApS6CQYNmgWyGf1pi/ca87nZAh4OxyEzbd4psrpFjL
+         QPypSLoY2oeJJbq/uMIByw59fSWYKy3aWcCgh2QpUp4Ko/yYqyHxkAwQxFq7XG1lihAO
+         W3zjwxaQcb8zcQCin6fjiy4TsGPIX1wWzEBRBv10H+eXdtPVQuzH1FvklHieGMCv1tzf
+         qqnTPheSqqbAvu2PFtpCZ4285gTOtN605S6xAgJsPqyze9RmmIyK5UxfhjHcjToCn3Wy
+         Lefw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750166366; x=1750771166;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TqFyO47iX+HOigPWRxLRm43ENnqB0Gkn5fao+tgFYiE=;
+        b=n4UrwyfZ3W0GTdrftfmN9VhB4agfqdDy74C63OO9fUKiMlbY8Sny3ARf8JCzKMLBNn
+         f1c0ngzFZrZ+Ded3OAgNCGq+TFvWwhVZAl9MGBCZbNyDU7m8bst2ANJfbCqPL4tTTLWY
+         MSfdQZGooIzCfQGoaRZfZfpjTP+L7Me/fEt3qSbPOQuHcp2aOvxKVF6rigwmGGS9HppD
+         pQdViqMOxVb7OpVLwMFHiT6wuEy7tRwJxGHSncvemgtg9d0nqhRaY7AJLwgGX90GK5tm
+         EtlU4iDkTHwNsJG96JojPjl6lRxN7mYjSz0f4xiob+FHYChUCkQ6+llfkj/VsyUN/bfb
+         PfNw==
+X-Gm-Message-State: AOJu0YxGDqclFi3/thWRU52bEm+VzaMi5COAza/qwEDZNQN8YELLupAI
+	0EOw7EGi1epwXCSzw/svCAhMYm+b189R25uR2+0szIrvt3tEWVXU23eHbF5dMIwDWARXVV0EZLw
+	sqA+UqKxTbGZHdjwVQs1Jrm+bhBafo+xvK6ve
+X-Gm-Gg: ASbGnct/BsT6AhPh7wDh76dfy4Ro21Y29oR7zPKTZi67pRMjqrnk6DEw5tc15HnnY5j
+	SPL4ki9Krbkbc8yLFczaTuzpjyCp/XJYibpaptSBMG13afEDm/Cv4E4tRj/NAfe4zjHE2tN26cT
+	lVRzH61UNdMLVjeHnzfkviVVGUkaCh6Gi7BI+scgiYd22cSwbk0Dyi
+X-Google-Smtp-Source: AGHT+IEryUR+zaQxooOmDXAro8JAaB/bp4gAJQn+A6V3UJDhhfNPwWMe0nL09JUkp9z3zkrGJiTlj/L6kczA9n5GSD8=
+X-Received: by 2002:a05:6000:200d:b0:3a3:5ae4:6e81 with SMTP id
+ ffacd0b85a97d-3a57238b515mr10397712f8f.8.1750166366280; Tue, 17 Jun 2025
+ 06:19:26 -0700 (PDT)
+MIME-Version: 1.0
+From: Ouadie Khebbeb <ouadie.khebbeb.tmp@gmail.com>
+Date: Tue, 17 Jun 2025 15:19:15 +0200
+X-Gm-Features: AX0GCFtqsm_jHlQgq1cI2sORMxA-99MA3cjQ1APU-v7wCBmnyozY-Cp3Qn76dCM
+Message-ID: <CALqNa20HyUvZDWQTRypuzJb6UO6CE=hTH+qQDNPrHDPuX37hbA@mail.gmail.com>
+To: caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="0000000000008f65570637c45c68"
+Subject: [Caml-list] DataMod 2025 - First Call for Papers
+Reply-To: Ouadie Khebbeb <ouadie.khebbeb.tmp@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19343
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-06/CALqNa20HyUvZDWQTRypuzJb6UO6CE%3DhTH%2BqQDNPrHDPuX37hbA%40mail.gmail.com>
+
+--0000000000008f65570637c45c68
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+DataMod 2025 - 13th International Symposium "From Data to Models and Back"
+Toledo, Spain, 10-11 November 2025
+
+Website: https://datamod-symposium.github.io/DataMod-2025/
+
+DataMod 2025 is a satellite event of the 23rd International Conference of
+Software Engineering and Formal Methods (SEFM 2025):
+https://sefm-conference.github.io/2025/
+
+---------------------------------------------------------------------------=
+-----
+Abstract submission deadline (optional):   22 August 2025
+Paper submission deadline:                 29 August 2025
+---------------------------------------------------------------------------=
+-----
+
+CONTEXT & OBJECTIVES
+
+DataMod 2025 aims at bringing together practitioners and researchers from
+academia, industry and research institutions interested in the combined
+computational modelling methods with data-driven techniques from the areas
+of knowledge management, data mining and machine learning. Modelling
+methodologies of interest include automata, agents, Petri nets, process
+algebras and rewriting systems. Application domains include social systems,
+ecology, biology, medicine, smart cities, governance, security, education,
+software engineering, and any other field that deals with complex systems
+and large amounts of data.
+
+Papers can present research results in any of the themes of interest for th=
+e
+symposium, as well as application experiences, tools and promising
+preliminary
+ideas. Papers dealing with synergistic approaches that integrate modelling
+and
+knowledge management/discovery, or that exploit knowledge
+management/discovery
+to develop/synthesise system models are especially welcome.
+
+Authors are invited to submit original research or tool papers on any
+relevant
+topic. These can either be normal or short papers. Short papers can discuss
+new
+ideas which are at an early stage of development and which have not yet bee=
+n
+thoroughly evaluated.
+
+TOPICS
+
+Modelling and analysis methodologies include:
+- Agent-based Methodologies
+- Automata-based Notations
+- Big Data Analytics
+- Cellular Automata
+- Classification
+- Clustering, Segmentation and Profiling
+- Conformance Analysis
+- Constraint Programming
+- Data Mining
+- Differential Equations
+- Game Theory
+- Machine Learning
+- Membrane Systems
+- Network Theory and Analysis
+- Ontologies
+- Optimisation Modelling
+- Petri Nets
+- Process Calculi
+- Process Mining
+- Rewriting Systems
+- Spatio-temporal Data Analysis/Mining
+- Statistical Model Checking
+- Text Mining
+- Topological Data Analysis
+
+Application domains include:
+- Biology
+- Brain Data and Simulation
+- Business Process Management
+- Climate Change
+- Cybersecurity
+- Ecology
+- Education
+- Environmental Risk Assessment and Management
+- Enterprise Architectures
+- Epidemiology
+- Genetics and Genomics
+- Governance
+- HCI and Human Behaviour
+- Open Source Software Development and Communities
+- Pharmacology
+- Resilience Engineering
+- Safety and Security Risk Assessment
+- Social Good
+- Social Software Engineering
+- Social Systems
+- Sustainable Development
+- Threat Modelling and Analysis
+- Urban Ecology
+- Smart Cities and Smart Lands
+
+Synergistic approaches include:
+
+(1) Use of modelling methods and notations in a knowledge
+   management/discovery context
+(2) Development and use of common modelling and knowledge
+   management/discovery frameworks to explore and understand complex
+   systems from the application domains of interest
+
+SUBMISSION AND PUBLICATION
+
+All contributions in the form of either
+
+- regular (research, tool or position) paper, up to 16 pages (excluding
+references)
+- short (research, tool or position) paper, up to 8 pages (excluding
+references)
+
+will be reviewed by three members of the Program Committee.  Authors are
+invited
+to submit their contributions via Easychair
+https://easychair.org/conferences/?conf=3Ddatamod2025
+
+In addition, presentation reports will be considered having the following
+form:
+
+- presentation report, up to 4 pages
+
+Presentation reports concern recent or ongoing work on relevant topics and
+ideas, for timely discussion and feedback at the workshop. There is no
+restriction as to previous/future publication of the contents of a
+presentation. Typically, a presentation is based on a paper which recently
+appeared (or which is going to appear) in the proceedings of another
+recognised
+conference, or which has not yet been submitted. Presentation reports will
+receive a lightweight review to establish their relevance for DataMod.
+
+Authors are invited to submit their presentation report via Easychair
+https://easychair.org/conferences/?conf=3Ddatamod2025
+
+All papers should be written in English and formatted according to the LNCS
+style. Paper formatting guidelines according to LNCS style are available
+here:
+http://www.springer.com/lncs
+
+Detailed information on the submission procedure and format are available
+on the
+symposium web page: https://datamod2025.github.io/
+
+Accepted papers (both regular and short) will be included in a dedicated
+LNCS
+post-proceedings volume published by Springer after the Symposium. Conditio=
+n
+for inclusion in the proceedings is that at least one of the co-authors
+attends
+and presents the paper at the Symposium.
+
+
+IMPORTANT DATES
+
+Abstract Submission deadline (optional):   22 August 2025
+Paper Submission deadline:                 29 August 2025
+Notification:                              30 September 2025
+Revised Version:                           7 October 2025
+Symposium:                                 10-11 November 2025
+
+
+KEYNOTE SPEAKERS
+
+* TBA
+
+PROGRAM CO-CHAIRS
+
+* Livia Lestingi, Politecnico di Milano, Italy
+* Gwen Sala=C3=BCn, Universit=C3=A9 Grenoble Alpes, France
+
+PROGRAM COMMITTEE
+
+* Oana Andrei, University of Glasgow
+* Kyungmin Bae, Pohang University of Science and Technology (POSTECH)
+* Juliana Bowles, School of Computer Science, University of St Andrews
+* Giovanna Broccia, ISTI-CNR, FMT Lab
+* Antonio Cerone, Nazarbayev University
+* Robert Claris=C3=B3, Universitat Oberta de Catalunya
+* Carla Ferreira, Universidade NOVA de Lisboa
+* Marc Frappier, Universit=C3=A9 de Sherbrooke
+* Elisa Gonzalez Boix, Vrije Universiteit Brussel
+* Riccardo Guidotti, University of Pisa
+* Alexander Kocian, University of Pisa
+* Ricardo M. Czekster, Aston University
+* Jos=C3=A9 Machado, University of Minho, DI, ALGORITMI/LASI
+* Paolo Milazzo, Dipartimento di Informatica - Universit=C3=A0 di Pisa
+* Pedro Ribeiro, University of York
+* Arpit Sharma, Indian Institute of Science Education and Research
+* Volker Stolz, H=C3=B8gskulen p=C3=A5 Vestlandet
+* Martin Tappler, TU Wien
+* Thais Webber, Aston University
+* Lina Ye, CentraleSup=C3=A9lec, LMF, University Paris-Saclay, France
+
+CONTACT
+
+> All inquiries should be sent to datamod2025@easychair.org
+
+--0000000000008f65570637c45c68
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">DataMod 2025 - 13th International Symposium &quot;From Dat=
+a to Models and Back&quot;<br>Toledo, Spain, 10-11 November 2025<br><br>Web=
+site: <a href=3D"https://datamod-symposium.github.io/DataMod-2025/">https:/=
+/datamod-symposium.github.io/DataMod-2025/</a><br><br>DataMod 2025 is a sat=
+ellite event of the 23rd International Conference of<br>Software Engineerin=
+g and Formal Methods (SEFM 2025):<br><a href=3D"https://sefm-conference.git=
+hub.io/2025/">https://sefm-conference.github.io/2025/</a><br><br>----------=
+----------------------------------------------------------------------<br>A=
+bstract submission deadline (optional): =C2=A0 22 August 2025<br>Paper subm=
+ission deadline: =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 29=
+ August 2025<br>-----------------------------------------------------------=
+---------------------<br><br>CONTEXT &amp; OBJECTIVES<br><br>DataMod 2025 a=
+ims at bringing together practitioners and researchers from <br>academia, i=
+ndustry and research institutions interested in the combined <br>computatio=
+nal modelling methods with data-driven techniques from the areas <br>of kno=
+wledge management, data mining and machine learning. Modelling <br>methodol=
+ogies of interest include automata, agents, Petri nets, process <br>algebra=
+s and rewriting systems. Application domains include social systems, <br>ec=
+ology, biology, medicine, smart cities, governance, security, education, <b=
+r>software engineering, and any other field that deals with complex systems=
+ <br>and large amounts of data.<br><br>Papers can present research results =
+in any of the themes of interest for the<br>symposium, as well as applicati=
+on experiences, tools and promising preliminary<br>ideas. Papers dealing wi=
+th synergistic approaches that integrate modelling and<br>knowledge managem=
+ent/discovery, or that exploit knowledge management/discovery<br>to develop=
+/synthesise system models are especially welcome.<br><br>Authors are invite=
+d to submit original research or tool papers on any relevant<br>topic. Thes=
+e can either be normal or short papers. Short papers can discuss new<br>ide=
+as which are at an early stage of development and which have not yet been<b=
+r>thoroughly evaluated.<br><br>TOPICS<br><br>Modelling and analysis methodo=
+logies include:<br>- Agent-based Methodologies<br>- Automata-based Notation=
+s<br>- Big Data Analytics<br>- Cellular Automata<br>- Classification<br>- C=
+lustering, Segmentation and Profiling<br>- Conformance Analysis<br>- Constr=
+aint Programming<br>- Data Mining<br>- Differential Equations<br>- Game The=
+ory<br>- Machine Learning<br>- Membrane Systems<br>- Network Theory and Ana=
+lysis<br>- Ontologies<br>- Optimisation Modelling<br>- Petri Nets<br>- Proc=
+ess Calculi<br>- Process Mining<br>- Rewriting Systems<br>- Spatio-temporal=
+ Data Analysis/Mining<br>- Statistical Model Checking<br>- Text Mining<br>-=
+ Topological Data Analysis<br><br>Application domains include:<br>- Biology=
+<br>- Brain Data and Simulation<br>- Business Process Management<br>- Clima=
+te Change<br>- Cybersecurity<br>- Ecology<br>- Education<br>- Environmental=
+ Risk Assessment and Management<br>- Enterprise Architectures<br>- Epidemio=
+logy<br>- Genetics and Genomics<br>- Governance<br>- HCI and Human Behaviou=
+r<br>- Open Source Software Development and Communities<br>- Pharmacology<b=
+r>- Resilience Engineering<br>- Safety and Security Risk Assessment<br>- So=
+cial Good<br>- Social Software Engineering<br>- Social Systems<br>- Sustain=
+able Development<br>- Threat Modelling and Analysis<br>- Urban Ecology<br>-=
+ Smart Cities and Smart Lands<br><br>Synergistic approaches include:<br><br=
+>(1) Use of modelling methods and notations in a knowledge<br>=C2=A0 =C2=A0=
+management/discovery context<br>(2) Development and use of common modelling=
+ and knowledge<br>=C2=A0 =C2=A0management/discovery frameworks to explore a=
+nd understand complex<br>=C2=A0 =C2=A0systems from the application domains =
+of interest<br><br>SUBMISSION AND PUBLICATION<br><br>All contributions in t=
+he form of either<br><br>- regular (research, tool or position) paper, up t=
+o 16 pages (excluding<br>references)<br>- short (research, tool or position=
+) paper, up to 8 pages (excluding references)<br><br>will be reviewed by th=
+ree members of the Program Committee.=C2=A0 Authors are invited<br>to submi=
+t their contributions via Easychair<br><a href=3D"https://easychair.org/con=
+ferences/?conf=3Ddatamod2025">https://easychair.org/conferences/?conf=3Ddat=
+amod2025</a><br><br>In addition, presentation reports will be considered ha=
+ving the following form:<br><br>- presentation report, up to 4 pages<br><br=
+>Presentation reports concern recent or ongoing work on relevant topics and=
+<br>ideas, for timely discussion and feedback at the workshop. There is no<=
+br>restriction as to previous/future publication of the contents of a<br>pr=
+esentation. Typically, a presentation is based on a paper which recently<br=
+>appeared (or which is going to appear) in the proceedings of another recog=
+nised<br>conference, or which has not yet been submitted. Presentation repo=
+rts will<br>receive a lightweight review to establish their relevance for D=
+ataMod.<br><br>Authors are invited to submit their presentation report via =
+Easychair<br><a href=3D"https://easychair.org/conferences/?conf=3Ddatamod20=
+25">https://easychair.org/conferences/?conf=3Ddatamod2025</a><br><br>All pa=
+pers should be written in English and formatted according to the LNCS<br>st=
+yle. Paper formatting guidelines according to LNCS style are available here=
+:<br><a href=3D"http://www.springer.com/lncs">http://www.springer.com/lncs<=
+/a><br><br>Detailed information on the submission procedure and format are =
+available on the<br>symposium web page: <a href=3D"https://datamod2025.gith=
+ub.io/">https://datamod2025.github.io/</a><br><br>Accepted papers (both reg=
+ular and short) will be included in a dedicated LNCS<br>post-proceedings vo=
+lume published by Springer after the Symposium. Condition<br>for inclusion =
+in the proceedings is that at least one of the co-authors attends<br>and pr=
+esents the paper at the Symposium.<br><br><br>IMPORTANT DATES<br><br>Abstra=
+ct Submission deadline (optional): =C2=A0 22 August 2025<br>Paper Submissio=
+n deadline: =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 29 Augu=
+st 2025<br>Notification: =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A030 September 2025<br=
+>Revised Version: =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 7 October 2025<br>Symposium: =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 10-11 November 2025<br><br><br>KEYNOTE SPEAKERS=
+<br><br>* TBA<br><br>PROGRAM CO-CHAIRS<br><br>* Livia Lestingi, Politecnico=
+ di Milano, Italy<br>* Gwen Sala=C3=BCn, Universit=C3=A9 Grenoble Alpes, Fr=
+ance<br><br>PROGRAM COMMITTEE<br><br>* Oana Andrei, University of Glasgow<b=
+r>* Kyungmin Bae, Pohang University of Science and Technology (POSTECH)<br>=
+* Juliana Bowles, School of Computer Science, University of St Andrews<br>*=
+ Giovanna Broccia, ISTI-CNR, FMT Lab<br>* Antonio Cerone, Nazarbayev Univer=
+sity<br>* Robert Claris=C3=B3, Universitat Oberta de Catalunya<br>* Carla F=
+erreira, Universidade NOVA de Lisboa<br>* Marc Frappier, Universit=C3=A9 de=
+ Sherbrooke<br>* Elisa Gonzalez Boix, Vrije Universiteit Brussel<br>* Ricca=
+rdo Guidotti, University of Pisa<br>* Alexander Kocian, University of Pisa<=
+br>* Ricardo M. Czekster, Aston University<br>* Jos=C3=A9 Machado, Universi=
+ty of Minho, DI, ALGORITMI/LASI<br>* Paolo Milazzo, Dipartimento di Informa=
+tica - Universit=C3=A0 di Pisa<br>* Pedro Ribeiro, University of York<br>* =
+Arpit Sharma, Indian Institute of Science Education and Research<br>* Volke=
+r Stolz, H=C3=B8gskulen p=C3=A5 Vestlandet<br>* Martin Tappler, TU Wien<br>=
+* Thais Webber, Aston University<br>* Lina Ye, CentraleSup=C3=A9lec, LMF, U=
+niversity Paris-Saclay, France<br><br>CONTACT<br><br>&gt; All inquiries sho=
+uld be sent to <a href=3D"mailto:datamod2025@easychair.org">datamod2025@eas=
+ychair.org</a><br></div>
+
+--0000000000008f65570637c45c68--
