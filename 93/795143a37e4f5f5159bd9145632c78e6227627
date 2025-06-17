@@ -1,0 +1,1250 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=LdrTAhj/;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=bIscZB9Z;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 6645E40066
+	for <caml-list@tunbury.org>; Tue, 17 Jun 2025 06:44:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=oiaOvAYGG+k7qxMuaFW6CgU0kGctNUE23PUqoqtVheg=;
+  b=LdrTAhj/xpOFB/2WtREeQvRyX+LKTYDDA32CaCVfSt6iPu8rezFgAJRv
+   uxP+3TIfYV5GMnJG1wVoTZDwUBs8MIVQ9Rz1tNy8Sll4qk9nsgWtn2uMU
+   4Rzu0V0x34i3FyqWasfu1wl4ckFNyeEBz5UohJjlH/634KP4yAEMEhY+z
+   0=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.16,242,1744063200"; 
+   d="scan'208,217";a="227510694"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Jun 2025 08:44:43 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id A11C2E01A8; Tue, 17 Jun 2025 08:44:42 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id CE5B1E0131
+	for <caml-list@sympa.inria.fr>; Tue, 17 Jun 2025 08:44:38 +0200 (CEST)
+IronPort-SDR: 68510ed5_sL+8WL4pWthzKW+DI9iHOT0VH3VPMhsWr/MzOHCmCySGfg1
+ bByQbsRqPjdOsMTE+CFR9m88746hcZUy0ajvoNA==
+X-IPAS-Result: =?us-ascii?q?A0H7VACvDVFojyIeaIFaFgUBAQEBPAEBAQMDAQEBAgEBA?=
+ =?us-ascii?q?QUBAQGBagGBPhsCAQFkGQFmWhABASEHCEkEhBU8g0+OIoEWkDWISoIvgWmBQ?=
+ =?us-ascii?q?iMVAQMBDRQCAQIOBwEVCgECBAEBAwECAYUAAotnAh8GAQQ0EwECBAEBAQEDA?=
+ =?us-ascii?q?gMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAQEBAQEBOQVJhUwvDUkBAQQLAYFqG?=
+ =?us-ascii?q?ThxgSUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QECDAEHBVIBMREGChMBATgYIwMQBAEGAwIRATUXARIUBoJoAYIhAksDBAEMB?=
+ =?us-ascii?q?pRImxQ3eoEygQGCDAEBBoEIPgIQAxgm2gqBZQmBRwIBAQEBhWmCShoBKkhrA?=
+ =?us-ascii?q?oRIhDwnD4FVRIEVgnIHb4JDBxcCAQGBHx0BAU0JgyWCaYIoRD4UHYEjgQuBW?=
+ =?us-ascii?q?W2DPoFQg0KCX4EtRYIxjEmBRCIDJjMsAVUTFwsHBVuBCAMqNDFuMh2CDYUZg?=
+ =?us-ascii?q?hKCBIkEhEkrT4UhgSaDXxETcQ8GXEADC209NxQbmG4cKBqDIwIOgSATPgYBA?=
+ =?us-ascii?q?QUVBgIuCBopJwMIGx0tCzqSRDkDKnexUzQHhB6BXgYMiQeBJpYDhVulBiKYY?=
+ =?us-ascii?q?iKJXQqBHAmBbx5MiHaMYgIVhUKBUi0jgVwzGjBDgmcJRhwPVo0gAQEBhCiBP?=
+ =?us-ascii?q?oMaO7JDA0E1AgEBOAIHAQoBAQMJhUUdAQGDBIIXhT1qYQEB?=
+IronPort-PHdr: A9a23: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
+ QAIY5w6eAPl8QMkOP7mSDo=
+IronPort-Data: A9a23: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
+ tVgD7XSyqhIxIC9FYB6ETk0xq8=
+IronPort-HdrOrdr: A9a23:J/S06qi2J955poAtFC0ZhGlGHXBQXucji2hC6mlwRA09TyX4rb
+ HMoB1/73XJYVkqNk3I9ersBEDiexPhHPxOgLX5VI3KNGLbUQCTQ72Kg7GP/xTQXwXAssRd2a
+ 1jf6UWMqyTMXFKyeDg7k2dG9YkqeP3lJxAaN2uqktQcQ==
+X-Talos-CUID: =?us-ascii?q?9a23=3AwohtZmi/JUixADHOn2msdQQoDDJuK0HP3mveKG2?=
+ =?us-ascii?q?CUmNiELSlUxi2o/JlnJ87?=
+X-Talos-MUID: 9a23:R91bBQsKRnLVoZTJMM2nvWEla9tO/Y2VU00At7BZnO69CSlXNGLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.16,242,1744063200"; 
+   d="scan'208,217";a="119223384"
+X-MGA-submission: =?us-ascii?q?MDF8fpSSPZLbSmOJqMJpvvUbJ1htRXMgaUbymQ?=
+ =?us-ascii?q?1t11dW5WHX6ZNcwEOO01itWQYq0u9f9y5NL6XAMnUAVoBuATw0rAntmE?=
+ =?us-ascii?q?rvdCM/WOr14n2VJZtjm9pxKTEOXLPNJReqpN5Nir7xgnysmrafhZAMF8?=
+ =?us-ascii?q?ctKYOjgC6UU+nMR9YQrBApCA=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2025 08:44:38 +0200
+Received: from TM.local (unknown [92.182.5.89])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id C2D57564BE6;
+	Tue, 17 Jun 2025 08:44:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1750142675;
+	bh=ords9jzJcCujEnjpWlKqWdRpcosgjEJ8uhQPiiL8ABs=;
+	h=From:To:Subject:Date:Message-ID;
+	b=bIscZB9ZKpMZeqC7/yaxLzErTk+EhWGnHsoW76hEhhoE1LAuPRuuz7aIfutRYQ5PQ
+	 5L2Q8gewPgBWNErT3aKArP5yS4Ai/OOkFzLZaFbxsJTLD488Csth7XQC108REMpKMl
+	 HHC3G0axKHGFO5nCtM4HcVVrRKVgRZHxPyiom/4M=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 17 Jun 2025 08:44:35 +0200
+Message-ID: <m2bjqmdfzg.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Jun 17 08:44:36 2025 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.075256, queueID=62D36564BF7
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19342
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-06/m2bjqmdfzg.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of June 10 to 17,
+2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Help Test the New Odoc-3-Powered Package Documentation Pages
+Dune 3.19
+CFP - JFLA 2026 - Journ=C3=A9es Francophones des Langages Applicatifs
+Other OCaml News
+Old CWN
+
+
+Help Test the New Odoc-3-Powered Package Documentation Pages
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/help-test-the-new-odoc-3-powered-package-doc=
+umentation-pages/16795/1>
+
+
+Paul-Elliot announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We're in the process of deploying odoc 3 on the package documentation
+  pipeline that underpins the package documentation pages at
+  <https://ocaml.org/packages>.
+
+  We've prepared [a patch for OCaml.org] that renders the packages'
+  documentation pages with the new odoc 3 features. Before deploying
+  this on the production version of the OCaml.org website, we're looking
+  for community feedback on the updated package documentation pages now
+  available on staging.ocaml.org :tada:.
+
+  Some of the new odoc 3 features benefit all packages!
+  =E2=80=A2 The docs CI is now using a new driver, with *many more docs bei=
+ng
+    built*. Compare the docs for yojson in the [old] and [new] CI!
+  =E2=80=A2 The docs now features a *"source" link* next to most items, tak=
+ing
+    you to a rendered version of the source code. For instance, if you
+    wonder how the [`List.sort_uniq'] function is implemented, click on
+    the source link next to it!
+  =E2=80=A2 The *sidebar and breadcrumbs*, which were previously hacked tog=
+ether
+    by ocaml.org, are now properly generated by odoc. Compare odoc's
+    [old] and [new] sidebar!
+  =E2=80=A2 The URL layout has been updated to include the library names, w=
+ith
+    redirections to avoid dead links.
+
+  Some other new features opens new possibility for documentation
+  authors! They are mostly unused as their support is so recent, but you
+  can test then on odoc's docs:
+  =E2=80=A2 Ocaml.org now allows to reference other packages modules and pa=
+ges!
+    For instance, `odoc-driver''s doc, in [its introduction], references
+    a page from sherlodoc's doc! It's as simple as [this syntax].
+  =E2=80=A2 Medias, such as images, finally work on ocaml.org. This requires
+    using the special syntax that is so new that, currently, only odoc's
+    cheatsheet is [using]. But since we made sure to be compatible with
+    odig's convention, images now work for several packages: compare
+    Vg's tutorial [before] and [after]!
+
+  How to help:
+  =E2=80=A2 Test browsing package documentation on staging.ocaml.org
+  =E2=80=A2 Report any bugs you encounter (even if it's just a small visual
+    issue)
+
+  Your testing helps ensure a smooth transition when these improvements
+  go live. Thanks for helping us!
+
+  The ocaml.org and odoc maintainers
+
+
+[a patch for OCaml.org] <https://github.com/ocaml/ocaml.org/pull/3124>
+
+[old] <https://ocaml.org/p/yojson/latest>
+
+[new] <https://staging.ocaml.org/p/yojson/latest>
+
+[`List.sort_uniq']
+<https://staging.ocaml.org/p/ocaml-compiler/5.3.0/doc/stdlib/Stdlib/List/in=
+dex.html#val-sort_uniq>
+
+[old] <https://ocaml.org/p/odoc/latest/doc/index.html>
+
+[new] <https://staging.ocaml.org/p/odoc/latest/doc/index.html>
+
+[its introduction]
+<https://staging.ocaml.org/p/odoc-driver/latest/doc/index.html#introduction>
+
+[this syntax]
+<https://github.com/ocaml/odoc/blob/master/doc/driver/index.mld#L20>
+
+[using]
+<https://staging.ocaml.org/p/odoc/3.0.0/doc/cheatsheet.html#:~:text=3D{imag=
+e!>
+
+[before] <https://ocaml.org/p/vg/0.9.5/doc/tutorial.html>
+
+[after] <https://staging.ocaml.org/p/vg/0.9.5/doc/tutorial.html>
+
+
+Dune 3.19
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-3-19/16693/2>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The Dune Team is glad to announce the release of Dune `3.19.1'
+  :vulcan_salute:
+
+  This patch release contains a fix reverting some regressions on how
+  `dune exec' handles processes. It restores the previous behaviour.
+
+  If you encounter a problem with this release, you can report it on the
+  [ocaml/dune] repository.
+
+
+[ocaml/dune] <https://github.com/ocaml/dune/issues>
+
+Changelog
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C
+
+=E2=97=8A Fixed
+
+  =E2=80=A2 Revert changes in `dune exec' behaviour introduced in
+    3.19.0. (#11879, fixes #11870, #11867 and #11881, @Alizter)
+
+
+CFP - JFLA 2026 - Journ=C3=A9es Francophones des Langages Applicatifs
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/cfp-jfla-2026-journees-francophones-des-lang=
+ages-applicatifs/16804/1>
+
+
+Marie Kerjean announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  This message is intentionally written in French. It is a call for
+  papers for the =E2=80=9CFrancophone Days on Functional Languages=E2=80=9D=
+ to be held
+  at the end of January 2026 in the Northern Vosges. Papers can be
+  written in English, but the presentations themselves are expected to
+  be given in French.
+
+  Merci de faire circuler : premier appel =C3=A0 communications
+
+  JFLA 2026 : Journ=C3=A9es Francophones des Langages Applicatifs
+  <http://jfla.inria.fr/jfla2026.html>
+
+  27 janvier au 30 janvier 2026
+
+  H=C3=B4tellerie du Couvent
+
+  Les 37=C3=A8mes Journ=C3=A9es Francophones des Langages Applicatifs (JFLA=
+) se
+  tiendront dans les Vosges du Nord, =C3=A0 Oberbronn (Bas-Rhin), du mardi =
+27
+  janvier 2026 au vendredi 30 janvier 2026.
+
+  Les JFLA r=C3=A9unissent concepteur=C2=B7rices, utilisateur=C2=B7rices et
+  th=C3=A9oricien=C2=B7nes ; elles ont pour ambition de couvrir les domaine=
+s des
+  langages applicatifs, de la preuve formelle, de la v=C3=A9rification de
+  programmes, et des objets math=C3=A9matiques qui sous-tendent ces
+  outils. Ces domaines doivent =C3=AAtre pris au sens large : nous souhaito=
+ns
+  promouvoir les ponts entre les diff=C3=A9rentes th=C3=A9matiques.
+
+  =E2=80=A2 Langages fonctionnels et applicatifs : s=C3=A9mantique, compila=
+tion,
+    optimisation, typage, extensions =C3=A0 d'autres paradigmes.
+
+  =E2=80=A2 Assistants de preuve : impl=C3=A9mentation, nouvelles tactiques,
+    d=C3=A9veloppements pr=C3=A9sentant un int=C3=A9r=C3=AAt th=C3=A9orique=
+, technique ou
+    m=C3=A9thodologique.
+
+  =E2=80=A2 Logique, correspondance preuve-programme, r=C3=A9alisabilit=C3=
+=A9, extraction
+    de programmes, mod=C3=A8les.
+
+  =E2=80=A2 Sp=C3=A9cification, prototypage, d=C3=A9veloppements formels d'=
+algorithmes.
+
+  =E2=80=A2 V=C3=A9rification de programmes ou de mod=C3=A8les, v=C3=A9rifi=
+cation d=C3=A9ductive,
+    interpr=C3=A9tation abstraite, raffinement.
+
+  =E2=80=A2 Utilisation industrielle des langages fonctionnels et applicati=
+fs,
+    ou des m=C3=A9thodes issues de la communaut=C3=A9 scientifique. Outils =
+et
+    plateformes pour le web.
+
+  =E2=80=A2 Enseignement ou diffusion des langages fonctionnels et
+    applicatifs. Environnements et m=C3=A9thodes de d=C3=A9veloppement, ret=
+ours
+    d'exp=C3=A9rience.
+
+  Les articles soumis aux JFLA sont relus par au moins deux personnes
+  s'ils sont accept=C3=A9s, et au moins trois personnes s'ils sont rejet=C3=
+=A9s.
+  Les critiques du comit=C3=A9 de programme sont toujours bienveillantes et
+  la plupart du temps encourageantes et constructives, m=C3=AAme en cas de
+  rejet.
+
+  Il n'y a donc pas de raison de ne pas soumettre aux JFLA !
+
+  DATES IMPORTANTES
+
+  /!\ Attention : les dates limites sont fermes et d=C3=A9finitives.  Il n'y
+      aura pas d'extension. /!\
+
+  =E2=80=A2 Soumission des r=C3=A9sum=C3=A9s et articles : 16 octobre 2025,=
+ GMT+2
+  =E2=80=A2 Notification aux auteurs et autrices : 2 d=C3=A9cembre 2025, GM=
+T+2
+  =E2=80=A2 Version finale des articles : 16 d=C3=A9cembre 2025, GMT+2
+
+  SOUMISSIONS
+
+  Nous acceptons deux types de soumissions :
+
+  =E2=80=A2 Article de recherche (18 pages max.) portant sur des travaux
+    originaux. Nous acceptons des travaux en cours, pour lesquels
+    l'aspect recherche n'est pas enti=C3=A8rement finalis=C3=A9. Nous encou=
+rageons
+    aussi la soumission d'articles pr=C3=A9sentant avec =C3=A9l=C3=A9gance =
+un r=C3=A9sultat
+    connu sous un angle nouveau.
+
+  =E2=80=A2 Article court (9 pages max.) d=C3=A9crivant un probl=C3=A8me pa=
+rticulier, les
+    pistes en cours d'investigation, et visant =C3=A0 rechercher de l'aide =
+de
+    la part de la communaut=C3=A9. Les articles courts peuvent =C3=A9galeme=
+nt
+    pr=C3=A9senter de mani=C3=A8re synth=C3=A9tique et coh=C3=A9rente des r=
+=C3=A9sultats d=C3=A9j=C3=A0
+    publi=C3=A9s. Enfin, ils peuvent pr=C3=A9senter un outil logiciel dont
+    l'expos=C3=A9 constituera une d=C3=A9monstration.
+
+  CONSIGNES AUX AUTEURS ET AUTRICES
+
+  Les articles peuvent =C3=AAtre r=C3=A9dig=C3=A9s en fran=C3=A7ais ou en a=
+nglais.
+
+  La forme de l'article doit =C3=AAtre soign=C3=A9e, et le contenu r=C3=A9d=
+ig=C3=A9 de
+  mani=C3=A8re structur=C3=A9e et claire.
+
+  Le style LaTeX jflart doit imp=C3=A9rativement =C3=AAtre utilis=C3=A9 sans
+  modification de la mise en page. Le style LaTeX et sa documentation
+  sont disponibles depuis le site web de la conf=C3=A9rence.
+
+  Les limites de pages sont strictes. Les r=C3=A9f=C3=A9rences bibliographi=
+ques ne
+  sont pas comptabilis=C3=A9es dans la limite de pages. Les annexes aux
+  articles ne sont pas autoris=C3=A9es.
+
+  Les auteurs et autrices peuvent soumettre du mat=C3=A9riel suppl=C3=A9men=
+taire,
+  s=C3=A9par=C3=A9 de l'article soumis, sous forme de texte (version longue=
+, sans
+  limite de pages) et/ou de d=C3=A9veloppement logiciel. L'=C3=A9valuation =
+de ce
+  mat=C3=A9riel suppl=C3=A9mentaire est =C3=A0 la discr=C3=A9tion du comit=
+=C3=A9 de
+  programme. Les articles soumis doivent donc =C3=AAtre auto-contenus et
+  =C3=A9valuables sans ce mat=C3=A9riel suppl=C3=A9mentaire.
+
+  Les soumissions parall=C3=A8les dans d'autres conf=C3=A9rences, journaux =
+ou
+  workshops avec actes ne sont pas autoris=C3=A9es.
+
+  Les membres du comit=C3=A9 de programme sont autoris=C3=A9s =C3=A0 soumet=
+tre un
+  article. Les pr=C3=A9sidentes du comit=C3=A9 ne le sont pas.
+
+  Les articles doivent =C3=AAtre soumis via le site :
+  <https://jfla2026.hotcrp.com>
+
+  L'=C3=A9valuation des articles suit un processus en simple-aveugle : les
+  rapports des articles sont anonymes, mais pas les auteurs et autrices.
+
+  Les articles accept=C3=A9s seront publi=C3=A9s dans les actes de la conf=
+=C3=A9rence,
+  sur HAL, et les auteurs et autrices en donneront une pr=C3=A9sentation lo=
+rs
+  des journ=C3=A9es. Les pr=C3=A9sentations seront, de pr=C3=A9f=C3=A9rence=
+, donn=C3=A9es en
+  fran=C3=A7ais.
+
+  Marie KERJEAN et Yannick ZAKOWSKI JFLA 2026
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Introducing OxCaml]
+  =E2=80=A2 [Under the hood with Apple's new Containerization framework]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Introducing OxCaml] <https://blog.janestreet.com/introducing-oxcaml/>
+
+[Under the hood with Apple's new Containerization framework]
+<https://anil.recoil.org/notes/apple-containerisation>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-06-17 Tue 08:43 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.06.10.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.06.24.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of June 10 to 17, 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Help Test the New Odoc-3-Powered Package Documentation P=
+ages</a></li>
+<li><a href=3D"#2">Dune 3.19</a></li>
+<li><a href=3D"#3">CFP - JFLA 2026 - Journ=C3=A9es Francophones des Langage=
+s Applicatifs</a></li>
+<li><a href=3D"#4">Other OCaml News</a></li>
+<li><a href=3D"#orgbb10b3f">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Help Test the New Odoc-3-Powered Package Documentation Pages</=
+h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/help-test-the-new-odoc-3-po=
+wered-package-documentation-pages/16795/1">https://discuss.ocaml.org/t/help=
+-test-the-new-odoc-3-powered-package-documentation-pages/16795/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org30fca7d" class=3D"outline-3">
+<h3 id=3D"org30fca7d">Paul-Elliot announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org30fca7d">
+<p>
+We're in the process of deploying odoc 3 on the package documentation pipel=
+ine that underpins the package documentation pages at <a href=3D"https://oc=
+aml.org/packages">https://ocaml.org/packages</a>.
+</p>
+
+<p>
+We've prepared <a href=3D"https://github.com/ocaml/ocaml.org/pull/3124">a p=
+atch for OCaml.org</a> that renders the packages' documentation pages with =
+the new odoc 3 features. Before deploying this on the production version of=
+ the OCaml.org website, we're looking for community feedback on the updated=
+ package documentation pages now available on staging.ocaml.org :tada:.
+</p>
+
+<p>
+Some of the new odoc 3 features benefit all packages!
+</p>
+<ul class=3D"org-ul">
+<li>The docs CI is now using a new driver, with <b>many more docs being bui=
+lt</b>. Compare the docs for yojson in the <a href=3D"https://ocaml.org/p/y=
+ojson/latest">old</a> and <a href=3D"https://staging.ocaml.org/p/yojson/lat=
+est">new</a> CI!</li>
+<li>The docs now features a <b>"source" link</b> next to most items, taking=
+ you to a rendered version of the source code. For instance, if you wonder =
+how the <a href=3D"https://staging.ocaml.org/p/ocaml-compiler/5.3.0/doc/std=
+lib/Stdlib/List/index.html#val-sort_uniq"><code>List.sort_uniq</code></a> f=
+unction is implemented, click on the source link next to it!</li>
+<li>The <b>sidebar and breadcrumbs</b>, which were previously hacked togeth=
+er by ocaml.org, are now properly generated by odoc. Compare odoc's <a href=
+=3D"https://ocaml.org/p/odoc/latest/doc/index.html">old</a> and <a href=3D"=
+https://staging.ocaml.org/p/odoc/latest/doc/index.html">new</a> sidebar!</l=
+i>
+<li>The URL layout has been updated to include the library names, with redi=
+rections to avoid dead links.</li>
+</ul>
+
+<p>
+Some other new features opens new possibility for documentation authors! Th=
+ey are mostly unused as their support is so recent, but you can test then o=
+n odoc's docs:
+</p>
+<ul class=3D"org-ul">
+<li>Ocaml.org now allows to reference other packages modules and pages! For=
+ instance, <code>odoc-driver</code>'s doc, in <a href=3D"https://staging.oc=
+aml.org/p/odoc-driver/latest/doc/index.html#introduction">its introduction<=
+/a>, references a page from sherlodoc's doc! It's as simple as <a href=3D"h=
+ttps://github.com/ocaml/odoc/blob/master/doc/driver/index.mld#L20">this syn=
+tax</a>.</li>
+<li>Medias, such as images, finally work on ocaml.org. This requires using =
+the special syntax that is so new that, currently, only odoc's cheatsheet i=
+s <a href=3D"https://staging.ocaml.org/p/odoc/3.0.0/doc/cheatsheet.html#:~:=
+text=3D%7Bimage!">using</a>. But since we made sure to be compatible with o=
+dig's convention, images now work for several packages: compare Vg's tutori=
+al <a href=3D"https://ocaml.org/p/vg/0.9.5/doc/tutorial.html">before</a> an=
+d <a href=3D"https://staging.ocaml.org/p/vg/0.9.5/doc/tutorial.html">after<=
+/a>!</li>
+</ul>
+
+<p>
+How to help:
+</p>
+<ul class=3D"org-ul">
+<li>Test browsing package documentation on staging.ocaml.org</li>
+<li>Report any bugs you encounter (even if it's just a small visual issue)<=
+/li>
+</ul>
+
+<p>
+Your testing helps ensure a smooth transition when these improvements go li=
+ve. Thanks for helping us!
+</p>
+
+<p>
+The ocaml.org and odoc maintainers
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Dune 3.19</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-3-19/16693/2">http=
+s://discuss.ocaml.org/t/ann-dune-3-19/16693/2</a>
+</p>
+</div>
+<div id=3D"outline-container-org859a1d0" class=3D"outline-3">
+<h3 id=3D"org859a1d0">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org859a1d0">
+<p>
+The Dune Team is glad to announce the release of Dune <code>3.19.1</code> :=
+vulcan_salute:=20
+</p>
+
+<p>
+This patch release contains a fix reverting some regressions on how <code>d=
+une exec</code>
+handles processes. It restores the previous behaviour.
+</p>
+
+<p>
+If you encounter a problem with this release, you can report it on the <a h=
+ref=3D"https://github.com/ocaml/dune/issues">ocaml/dune</a> repository.
+</p>
+</div>
+<div id=3D"outline-container-orged225e9" class=3D"outline-4">
+<h4 id=3D"orged225e9">Changelog</h4>
+<div class=3D"outline-text-4" id=3D"text-orged225e9">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org1b23621"></a>Fixed<br />
+<div class=3D"outline-text-5" id=3D"text-org1b23621">
+<ul class=3D"org-ul">
+<li>Revert changes in <code>dune exec</code> behaviour introduced in 3.19.0=
+. (#11879, fixes #11870, #11867 and #11881, @Alizter)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">CFP - JFLA 2026 - Journ=C3=A9es Francophones des Langages Appl=
+icatifs</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/cfp-jfla-2026-journees-fran=
+cophones-des-langages-applicatifs/16804/1">https://discuss.ocaml.org/t/cfp-=
+jfla-2026-journees-francophones-des-langages-applicatifs/16804/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org6732c3b" class=3D"outline-3">
+<h3 id=3D"org6732c3b">Marie Kerjean announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org6732c3b">
+<p>
+This message is intentionally written in French. It is a call for papers fo=
+r the
+=E2=80=9CFrancophone Days on Functional Languages=E2=80=9D to be held at th=
+e end of January 2026
+in the Northern Vosges. Papers can be written in English, but the presentat=
+ions
+themselves are expected to be given in French.
+</p>
+
+<p>
+Merci de faire circuler : premier appel =C3=A0 communications
+</p>
+
+<p>
+JFLA 2026 : Journ=C3=A9es Francophones des Langages Applicatifs
+<a href=3D"http://jfla.inria.fr/jfla2026.html">http://jfla.inria.fr/jfla202=
+6.html</a>
+</p>
+
+<p>
+27 janvier au 30 janvier 2026
+</p>
+
+<p>
+H=C3=B4tellerie du Couvent
+</p>
+
+<p>
+Les 37=C3=A8mes Journ=C3=A9es Francophones des Langages Applicatifs (JFLA) =
+se tiendront
+dans les Vosges du Nord, =C3=A0 Oberbronn (Bas-Rhin), du mardi 27 janvier 2=
+026 au
+vendredi 30 janvier 2026.
+</p>
+
+<p>
+Les JFLA r=C3=A9unissent concepteur=C2=B7rices, utilisateur=C2=B7rices et t=
+h=C3=A9oricien=C2=B7nes ;
+elles ont pour ambition de couvrir les domaines des langages applicatifs, d=
+e la
+preuve formelle, de la v=C3=A9rification de programmes, et des objets math=
+=C3=A9matiques
+qui sous-tendent ces outils. Ces domaines doivent =C3=AAtre pris au sens la=
+rge : nous
+souhaitons promouvoir les ponts entre les diff=C3=A9rentes th=C3=A9matiques.
+</p>
+
+<ul class=3D"org-ul">
+<li>Langages fonctionnels et applicatifs : s=C3=A9mantique, compilation, op=
+timisation,
+typage, extensions =C3=A0 d'autres paradigmes.</li>
+
+<li>Assistants de preuve : impl=C3=A9mentation, nouvelles tactiques, d=C3=
+=A9veloppements
+pr=C3=A9sentant un int=C3=A9r=C3=AAt th=C3=A9orique, technique ou m=C3=A9th=
+odologique.</li>
+
+<li>Logique, correspondance preuve-programme, r=C3=A9alisabilit=C3=A9, extr=
+action de
+programmes, mod=C3=A8les.</li>
+
+<li>Sp=C3=A9cification, prototypage, d=C3=A9veloppements formels d'algorith=
+mes.</li>
+
+<li>V=C3=A9rification de programmes ou de mod=C3=A8les, v=C3=A9rification d=
+=C3=A9ductive,
+interpr=C3=A9tation abstraite, raffinement.</li>
+
+<li>Utilisation industrielle des langages fonctionnels et applicatifs,
+ou des m=C3=A9thodes issues de la communaut=C3=A9 scientifique. Outils et
+plateformes pour le web.</li>
+
+<li>Enseignement ou diffusion des langages fonctionnels et
+applicatifs. Environnements et m=C3=A9thodes de d=C3=A9veloppement, retours
+d'exp=C3=A9rience.</li>
+</ul>
+
+<p>
+Les articles soumis aux JFLA sont relus par au moins deux personnes s'ils s=
+ont
+accept=C3=A9s, et au moins trois personnes s'ils sont rejet=C3=A9s.  Les cr=
+itiques du
+comit=C3=A9 de programme sont toujours bienveillantes et la plupart du temps
+encourageantes et constructives, m=C3=AAme en cas de rejet.
+</p>
+
+<p>
+Il n'y a donc pas de raison de ne pas soumettre aux JFLA !
+</p>
+
+<p>
+DATES IMPORTANTES
+</p>
+
+<p>
+/!\ Attention : les dates limites sont fermes et d=C3=A9finitives.
+    Il n'y aura pas d'extension. /!\
+</p>
+
+<ul class=3D"org-ul">
+<li>Soumission des r=C3=A9sum=C3=A9s et articles : 16 octobre 2025, GMT+2</=
+li>
+<li>Notification aux auteurs et autrices : 2 d=C3=A9cembre 2025, GMT+2</li>
+<li>Version finale des articles : 16 d=C3=A9cembre 2025, GMT+2</li>
+</ul>
+
+<p>
+SOUMISSIONS
+</p>
+
+<p>
+Nous acceptons deux types de soumissions :
+</p>
+
+<ul class=3D"org-ul">
+<li>Article de recherche (18 pages max.) portant sur des travaux originaux.=
+ Nous
+acceptons des travaux en cours, pour lesquels l'aspect recherche n'est pas
+enti=C3=A8rement finalis=C3=A9. Nous encourageons aussi la soumission d'art=
+icles
+pr=C3=A9sentant avec =C3=A9l=C3=A9gance un r=C3=A9sultat connu sous un angl=
+e nouveau.</li>
+
+<li>Article court (9 pages max.) d=C3=A9crivant un probl=C3=A8me particulie=
+r, les pistes en
+cours d'investigation, et visant =C3=A0 rechercher de l'aide de la part de =
+la
+communaut=C3=A9. Les articles courts peuvent =C3=A9galement pr=C3=A9senter =
+de mani=C3=A8re
+synth=C3=A9tique et coh=C3=A9rente des r=C3=A9sultats d=C3=A9j=C3=A0 publi=
+=C3=A9s. Enfin, ils peuvent
+pr=C3=A9senter un outil logiciel dont l'expos=C3=A9 constituera une d=C3=A9=
+monstration.</li>
+</ul>
+
+<p>
+CONSIGNES AUX AUTEURS ET AUTRICES
+</p>
+
+<p>
+Les articles peuvent =C3=AAtre r=C3=A9dig=C3=A9s en fran=C3=A7ais ou en ang=
+lais.
+</p>
+
+<p>
+La forme de l'article doit =C3=AAtre soign=C3=A9e, et le contenu r=C3=A9dig=
+=C3=A9 de mani=C3=A8re
+structur=C3=A9e et claire.
+</p>
+
+<p>
+Le style LaTeX jflart doit imp=C3=A9rativement =C3=AAtre utilis=C3=A9 sans =
+modification de la
+mise en page. Le style LaTeX et sa documentation sont disponibles depuis le=
+ site
+web de la conf=C3=A9rence.
+</p>
+
+<p>
+Les limites de pages sont strictes. Les r=C3=A9f=C3=A9rences bibliographiqu=
+es ne sont pas
+comptabilis=C3=A9es dans la limite de pages. Les annexes aux articles ne so=
+nt pas
+autoris=C3=A9es.
+</p>
+
+<p>
+Les auteurs et autrices peuvent soumettre du mat=C3=A9riel suppl=C3=A9menta=
+ire, s=C3=A9par=C3=A9 de
+l'article soumis, sous forme de texte (version longue, sans limite de pages)
+et/ou de d=C3=A9veloppement logiciel. L'=C3=A9valuation de ce mat=C3=A9riel=
+ suppl=C3=A9mentaire est
+=C3=A0 la discr=C3=A9tion du comit=C3=A9 de programme. Les articles soumis =
+doivent donc =C3=AAtre
+auto-contenus et =C3=A9valuables sans ce mat=C3=A9riel suppl=C3=A9mentaire.
+</p>
+
+<p>
+Les soumissions parall=C3=A8les dans d'autres conf=C3=A9rences, journaux ou=
+ workshops avec
+actes ne sont pas autoris=C3=A9es.
+</p>
+
+<p>
+Les membres du comit=C3=A9 de programme sont autoris=C3=A9s =C3=A0 soumettr=
+e un article. Les
+pr=C3=A9sidentes du comit=C3=A9 ne le sont pas.
+</p>
+
+<p>
+Les articles doivent =C3=AAtre soumis via le site :
+<a href=3D"https://jfla2026.hotcrp.com">https://jfla2026.hotcrp.com</a>
+</p>
+
+<p>
+L'=C3=A9valuation des articles suit un processus en simple-aveugle : les ra=
+pports
+des articles sont anonymes, mais pas les auteurs et autrices.
+</p>
+
+<p>
+Les articles accept=C3=A9s seront publi=C3=A9s dans les actes de la conf=C3=
+=A9rence, sur HAL,
+et les auteurs et autrices en donneront une pr=C3=A9sentation lors des jour=
+n=C3=A9es. Les
+pr=C3=A9sentations seront, de pr=C3=A9f=C3=A9rence, donn=C3=A9es en fran=C3=
+=A7ais.
+</p>
+
+<p>
+Marie KERJEAN et Yannick ZAKOWSKI
+JFLA 2026
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+</div>
+<div id=3D"outline-container-org73b279d" class=3D"outline-3">
+<h3 id=3D"org73b279d">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org73b279d">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://blog.janestreet.com/introducing-oxcaml/">Introducing=
+ OxCaml</a></li>
+<li><a href=3D"https://anil.recoil.org/notes/apple-containerisation">Under =
+the hood with Apple's new Containerization framework</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-orgbb10b3f" class=3D"outline-2">
+<h2 id=3D"orgbb10b3f">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-orgbb10b3f">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orge6a4acf">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
