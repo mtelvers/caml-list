@@ -1,0 +1,2328 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=fCeX9Krn;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=WNsKfbZx;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 09E14400A2
+	for <caml-list@tunbury.org>; Tue,  8 Jul 2025 12:45:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=CDQ6shqn2fn/x8zjx29cyg0dbKsiAwoGOE+Hbte8+zg=;
+  b=fCeX9Krn179csau+EsAi/2omwKFCa9tXfk6k+9pni6by4TPNyIvkyAZj
+   WTPK1X/ha6xVM8OD9ylL2UpqLcGvPXM/zGUg3kwNkixhOZA8wuwJnBS5U
+   LsG5S93YmwkurqkfXwMa99MeNG28CEXij9WiuGVnYbxLCs4CFwg5nd1CA
+   o=;
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.16,297,1744063200"; 
+   d="scan'208,217";a="230817275"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 08 Jul 2025 14:45:44 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id D8E58E0AF6; Tue,  8 Jul 2025 14:45:43 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 339DCE0157
+	for <caml-list@sympa.inria.fr>; Tue,  8 Jul 2025 14:45:42 +0200 (CEST)
+IronPort-SDR: 686d12f3_VAplU53yArwVJzlB2XlJ4bWcjDuWTwJ1FE7gUCFqUnOfRjU
+ 33cqEC6wrvPBxcpNAi7z3ZD7XehRXdRkAeNISzw==
+X-IPAS-Result: =?us-ascii?q?A0EvBQCSEm1odyIeaIFSCIQdWygZAWAGWjMHCEkDhBY8g?=
+ =?us-ascii?q?WOBbI4igRaKUYVkiEqCMIFpgUIjFQEDAQ0uARsEAQIEAQEDAQIBggyBPYE3A?=
+ =?us-ascii?q?ot8Ah8GAQQ0EwECBAEBAQEDAgMBAQEBAQEQAQEFAQEBAgEBAgQGAQIQAUNJh?=
+ =?us-ascii?q?XsNgkUZOEEwdAEBAQEBAQEBAScBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAgwBAoEADg4BCAQGEwEBKQEBAQMDBhgUDwMQB?=
+ =?us-ascii?q?AEGAwIRARAlAwETARIUBoJpgh8CAhYDMgMEAQwGkw2aeho3en8zgQFXgTUBA?=
+ =?us-ascii?q?QaBCD4DCwICAw8uAdkQDW6BG0oJgUmFbYJGBBoBKkhrAoRICYQzJw+BVUSBF?=
+ =?us-ascii?q?YIoSgdvgUJdIAsXAQEBAVxEBAQBAQ0EAgEaDyQJgyWCaYIRFUQ+FB2BDYESg?=
+ =?us-ascii?q?nKBQGESgSpDghoEgVyEO4ZmgUQiAyYzLAFVExcLBwVbgQgDKjQxbjIdgSeGe?=
+ =?us-ascii?q?4QqK0+FEIEZg1QRE20PBoEdgSJAAwttPTcUG5JgGSkacAIBgUklDjgGKwMED?=
+ =?us-ascii?q?A8NCAIRAQYOBQEFDhAGAiACDSUDASMWBwMFDwEEDwIHAQ0FCRUBBiMFBgkCC?=
+ =?us-ascii?q?wItA5JBCAwlAwYkAgF0jWl4oW8dMD00B4QfgV4GDIkIgSaOMoEKgnKDV4QET?=
+ =?us-ascii?q?YEKiziHApJPIphkIoI2hycKgRwJgW9qhAiRVQIRAwYEhTmBfyM8MHAzGjBDg?=
+ =?us-ascii?q?mcJRhwPiACFfy4WgRIBAQIEAYJDQX2BJnopUTuCZrcMQTUCAQEKLgIHAQoBA?=
+ =?us-ascii?q?QMJhUUdAQGIDYFDCAEB?=
+IronPort-PHdr: A9a23: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
+ 0EWsRQK4xgPxNYYQw==
+IronPort-Data: A9a23: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
+ wQ=
+IronPort-HdrOrdr: A9a23:2gxonqGgk3UMYqDkpLqE1ceALOsnbusQ8zAXPiFKOH9om6mj/f
+ xG88506faZslsssRIb+exoWpPgfZq0z/ccirX5Vo3MYOCJggeVBbAnxbSn6TztES/z+4dmpM
+ VdWpk7Lsb/SXxzjcOS2njdLz/M+qjjzJyV
+X-Talos-CUID: 9a23:yqipImxjXQHUxJg1d+/9BgUEPtsZI1LFwk3RLmy/BUtQE7S4TUKfrfY=
+X-Talos-MUID: 9a23:nAkF9Ah89FyjRtTRnSfhccMpKuhF+ICJUlE0gL45muuOGSd6AmqmpWHi
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.16,297,1744063200"; 
+   d="scan'208,217";a="120944667"
+X-MGA-submission: =?us-ascii?q?MDEJrsQGywEo7GgfV4Mjh04DlO208e6G9qFHuX?=
+ =?us-ascii?q?mmzYOrNWEEffkPDfdSW+4TwtEnxpyCACR6Ai1VuI8Ytli6PZQ/UMuP1N?=
+ =?us-ascii?q?k7Y5WVS/M/GEGOfv1zFCYfNFJjlVOU/5pmL9c77vamg9239iRsl5y7W6?=
+ =?us-ascii?q?ZyulEOhILDecs2pbrUrujI+w=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2025 14:45:40 +0200
+Received: from TM.local (unknown [82.66.240.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 6B59D564E70;
+	Tue,  8 Jul 2025 14:45:38 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1751978738;
+	bh=eZ4ag0Dh7yN9DLS4w6VmpATithEBbgfaovMHr+U2lO0=;
+	h=From:To:Subject:Date:Message-ID;
+	b=WNsKfbZxspbJKq72NwpHeHAY4RR7cI4LGLq8eFOGcNKLVEd45g5ikHVdSgf74WdhG
+	 6ttAzxYNgybweXUjPaEQh+k3yLmniQdgsV3mxJ62hQHWf0x58Or6SBUmAJzHqPkLU7
+	 oJ2LKocKB3JwTybZVTsolIf3Cn6chsJEoSGfEe+U=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 08 Jul 2025 14:45:36 +0200
+Message-ID: <m234b6x34f.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Jul  8 14:45:39 2025 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.499962, queueID=AAD0F564E71
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19350
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-07/m234b6x34f.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of July 01 to 08,
+2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+OCaml security team
+Dockerfile for building an OPAM application, with dune/apt/opam caching
+opam 2.4.0~rc1
+Js_of_ocaml 6.1.0 / Wasm_of_ocaml
+Announcing Raven: Scientific Computing for OCaml (Alpha Release)
+Slipshow!
+Other OCaml News
+Old CWN
+
+
+OCaml security team
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-ocaml-security-team/16902/1>
+
+
+Hannes Mehnert announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Dear everyone,
+
+  We are starting an effort to push security into OCaml. This is based
+  on discussions in the OCaml Software Foundation with industry
+  partners. The main goal is to have best practises similar to those of
+  other programming language ecosystems.
+
+
+Reporting security issues
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  This entails a point of contact for the security team - which deals
+  with communication between the person who found a security-relevant
+  problem in OCaml software (named "reporter"), who can then contact us
+  - the security team - instead of using a public bug tracker, and the
+  upstream OCaml developer(s).
+
+  We, the security team, will establish the three-way communication, and
+  since we have a documented security disclosure process (which will be
+  published soon), we will guide everyone through the process and ensure
+  that timelines are met, CVE numbers are assigned, =E2=80=A6
+
+
+Team composition
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The OCaml security team currently consists of individual security
+  experts and individuals representing company sponsors of the OCaml
+  Software Foundation. Individual members participating on a personal
+  capacity may be compensated for their time from the OCaml Software
+  Foundation.
+
+  The team currently consists of 7 members
+  =E2=80=A2 Hannes Mehnert <https://github.com/hannesm> - individual, chair
+  =E2=80=A2 Mindy <https://github.com/yomimono> - individual
+  =E2=80=A2 Joe <https://github.com/cfcs> - individual
+  =E2=80=A2 Edwin T=C3=B6r=C3=B6k <https://github.com/edwintorok> - individ=
+ual
+  =E2=80=A2 Nicol=C3=A1s Ojeda B=C3=A4r <https://github.com/nojb> - LexiFi
+  =E2=80=A2 Louis Roch=C3=A9 <https://github.com/khady> - ahrefs
+  =E2=80=A2 Maxim Grankin <https://github.com/maxim092001> - Bloomberg
+
+  We're in the process to formalise the responsibilities of the team,
+  our proposed disclosure process, and how to join & leave the team.
+
+
+Funding for security actions
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+  In complement to the security disclosure process, we will accept
+  funding requests for projects that make OCaml more secure (including
+  guidelines how to develop OCaml in a secure way/what are common
+  pitfalls; static analysis; dissemination tools; =E2=80=A6). The OCaml Sof=
+tware
+  Foundation will provide funding for these security actions. After this
+  summer we will discuss this in more depth with the community.
+
+
+Next steps
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C
+
+  We will setup a website (similar to
+  <https://www.haskell.org/security/> has) soon, and provide an email
+  address for contacting us - security At ocamlDoT org is forwarding to
+  our team. We plan to setup a mailing list for security announcements.
+
+  But more on that at a later point, this brief post is mainly about the
+  fact that this team starts to exist now, and is working on improving
+  the security story of OCaml.
+
+  If you have any questions for now, please feel free to discuss them in
+  this announcement. Please be aware that it is vacation time soon, so
+  we may not be very responsive.
+
+
+Dockerfile for building an OPAM application, with dune/apt/opam caching
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/dockerfile-for-building-an-opam-application-=
+with-dune-apt-opam-caching/16906/1>
+
+
+Edwin T=C3=B6r=C3=B6k announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I was writing some dockerfiles for building some OCaml applications
+  recently, and realized that it is possible to write a Dockerfile that
+  can build almost arbitrary Opam applications without even having to
+  hardcode the package name.
+
+  I used `ocaml-dockerfile' to generate it (only the OS and OCaml
+  version is hardcoded), so I thought I'd share it, it should work with
+  both Podman and Docker:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 # syntax=3Ddocker/dockerfile:1
+  =E2=94=82=20
+  =E2=94=82 FROM ocaml/opam:debian-12-ocaml-4.14
+  =E2=94=82=20
+  =E2=94=82 # Update the opam repository (otherwise lockfile may contain a =
+version we don't know about)
+  =E2=94=82 RUN git -C /home/opam/opam-repository pull origin master && opa=
+m-2.3 update
+  =E2=94=82=20
+  =E2=94=82 # Enable the dune cache in copy mode
+  =E2=94=82 # (hardlink mode would fail with EXDEV if cache is on separate =
+disk/partition)
+  =E2=94=82 # This caches the build of opam dependencies using dune and the=
+ main application
+  =E2=94=82 ENV DUNE_CACHE=3D"enabled" DUNE_CACHE_STORAGE_MODE=3D"copy"
+  =E2=94=82=20
+  =E2=94=82 # `apt` in containers is usually configured to always clean up =
+after operations
+  =E2=94=82 # When we have a cache mount for the APT package cache we don't=
+ want to clean up, since the cache would be ineffective.
+  =E2=94=82 # Also change OPAM to use the 0install solver, this is faster, =
+especially when a lockfile is present.
+  =E2=94=82 RUN sudo rm -f /etc/apt/apt.conf.d/docker-clean && \
+  =E2=94=82   opam-2.3 option solver=3Dbuiltin-0install
+  =E2=94=82=20
+  =E2=94=82 # Use a workdir outside of $HOME, to avoid having .opam as a su=
+bdir of the build
+  =E2=94=82 WORKDIR /app
+  =E2=94=82 # Copy dependency definitions first. See https://docs.docker.co=
+m/build/cache/optimize/#order-your-layers
+  =E2=94=82 COPY [ "*.opam", "*.opam.locked", "." ]
+  =E2=94=82=20
+  =E2=94=82 # Install and cache system packages required by the build
+  =E2=94=82 # The cache is locked, so multiple container builds will wait h=
+ere
+  =E2=94=82 # (apt would have a lock but it is stored outside of the cache =
+dir, so we cannot rely on it to prevent concurrent accesses)
+  =E2=94=82 # A cache id is used, so that different distros would have diff=
+erent cache folders
+  =E2=94=82 RUN --mount=3Dtype=3Dcache,id=3D/var/cache/apt#debian-12;amd64,=
+target=3D/var/cache/apt,sharing=3Dlocked \
+  =E2=94=82     --mount=3Dtype=3Dcache,id=3D/var/lib/apt#debian-12;amd64,ta=
+rget=3D/var/lib/apt,sharing=3Dlocked \
+  =E2=94=82     sudo apt-get update -y && \
+  =E2=94=82     opam-2.3 install --locked --with-test . --depext-only
+  =E2=94=82=20
+  =E2=94=82 # Download and cache opam package dependencies
+  =E2=94=82 # The cache is locked, so multiple container builds will wait h=
+ere
+  =E2=94=82 # To minimize the time the lock is held the actual package inst=
+allations are done as a separate step
+  =E2=94=82 RUN --mount=3Dtype=3Dcache,target=3D/home/opam/.opam/download-c=
+ache,sharing=3Dlocked,uid=3D1000,gid=3D1000 \
+  =E2=94=82     opam-2.3 install --locked --with-test . --download-only
+  =E2=94=82=20
+  =E2=94=82 # Install (cached) downloaded opam dependencies
+  =E2=94=82 # The download cache is mounted readonly and shared, multiple c=
+ontainer builds can proceed in parallel.
+  =E2=94=82 # The dune cache is mounted RW.
+  =E2=94=82 # Multiple concurrent builds will use the same cache, but dune =
+must already be able to cope with this
+  =E2=94=82 # A cache id is used, so that different distros would have diff=
+erent cache folders (it is unlikely that dune caches would be sharable acro=
+ss distros)
+  =E2=94=82 RUN --mount=3Dtype=3Dcache,target=3D/home/opam/.opam/download-c=
+ache,readonly,sharing=3Dshared,uid=3D1000,gid=3D1000 \
+  =E2=94=82     --mount=3Dtype=3Dcache,target=3D/home/opam/.cache/dune,shar=
+ing=3Dshared,uid=3D1000,gid=3D1000 \
+  =E2=94=82     opam-2.3 install --locked --with-test . --deps-only
+  =E2=94=82=20
+  =E2=94=82 # Copy actual application source code
+  =E2=94=82 COPY [ ".", "." ]
+  =E2=94=82=20
+  =E2=94=82 # Build and install application code, using dune cache.
+  =E2=94=82 RUN --mount=3Dtype=3Dcache,target=3D/home/opam/.cache/dune,shar=
+ing=3Dshared,uid=3D1000,gid=3D1000 \
+  =E2=94=82     opam-2.3 install --locked --with-test .
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It avoids some common pitfalls:
+  =E2=80=A2 disable cleanup of APT downloaded packages (otherwise caching is
+    ineffective)
+  =E2=80=A2 enables the opam download cache too which is stored in a
+    non-standard location (`~/.opam/download-cache' instead of
+    `~/.cache/opam')
+  =E2=80=A2 avoids EXDEV from dune cached builds during opam dependency
+    installations by enabling dune cache copy mode
+  =E2=80=A2 uses opam-2.3 explicitly, since the default opam in the Dockerh=
+ub
+    images is quite old (luckily opam-2.3 is already there, just needs
+    to be invoked explicitly)
+  =E2=80=A2 sets the default solver to 0install. This seems to be needed to
+    speed up `opam install' even when `--locked' is used and no
+    dependency resolution is needed. Otherwise it was spending 4s
+    checking the solver request.
+  =E2=80=A2 sets appropriate uid in cache mounts to avoid permission issues
+
+  Caveats:
+  =E2=80=A2 if you use git submodules then you have to add `.git' to your
+    `.dockerignore'. Otherwise opam pinning will fail, since `.git' is a
+    file referencing a git dir in a parent dir that is not mounted
+    inside the docker build environment
+  =E2=80=A2 maybe =E2=80=93dev should be used if you intend to use the cont=
+ainer for
+    developing the opam application. Although in that case you might
+    also want to preinstall some useful tools like `lsp', and
+    `ocamlformat'.
+
+  Eventually I hope this can be simplified using Dune's new package
+  management feature.
+
+
+opam 2.4.0~rc1
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-opam-2-4-0-rc1/16910/1>
+
+
+Kate announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hi everyone,
+
+  We are happy to announce the first release candidate of opam 2.4.0.
+
+  This is hopefully the first and last release candidate for opam 2.4,
+  so we invite users to test it to spot previously unnoticed bugs as we
+  soon head to the stable release.
+
+
+Changes
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 :woman_scientist: Fix a regression in `opam switch create <vers=
+ion>'
+    not working when all compilers of that version are flagged with
+    `avoid-version'. This would have prevented users to use commands
+    such as `opam switch create 5.4.0~alpha1' ([#6563]).
+
+  =E2=80=A2 :high_speed_train: Improve performance of `opam update' for use=
+rs of
+    local repositories that happen to be git repositories (for example
+    if you've ever used `opam repository add --kind local' or
+    similar). In particular the new OCaml implementation of patch, does
+    not scan those VCS directories anymore, which made opam use a lot of
+    RAM unnecessarily ([#6560]).
+
+  :open_book: You can read our [blog post] to read about the other more
+  minor changes, and for even more details you can take a look at the
+  [release note] or the [changelog].
+
+
+[#6563] <https://github.com/ocaml/opam/issues/6563>
+
+[#6560] <https://github.com/ocaml/opam/issues/6560>
+
+[blog post] <https://opam.ocaml.org/blog/opam-2-4-0-rc1/>
+
+[release note] <https://github.com/ocaml/opam/releases/tag/2.4.0-rc1>
+
+[changelog] <https://github.com/ocaml/opam/blob/2.4.0-rc1/CHANGES>
+
+
+Try it!
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The upgrade instructions are unchanged:
+
+  For Unix systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 bash -c "sh <(curl -fsSL https://opam.ocaml.org/install.sh) --v=
+ersion 2.4.0~rc1"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  or from PowerShell for Windows systems
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 Invoke-Expression "& { $(Invoke-RestMethod https://opam.ocaml.o=
+rg/install.ps1) } -Version 2.4.0~rc1"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Please report any issues to the [bug-tracker].
+
+  Happy hacking, <> <> The opam team <> <> :camel:
+
+
+[bug-tracker] <https://github.com/ocaml/opam/issues>
+
+
+Js_of_ocaml 6.1.0 / Wasm_of_ocaml
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-js-of-ocaml-6-1-0-wasm-of-ocaml/16912/1>
+
+
+Hhugo announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I=E2=80=99m pleased to announce the joint release of js_of_ocaml 6.1.0 and
+  wasm_of_ocaml.
+
+  Js_of_ocaml is a compiler from OCaml bytecode to JavaScript. It makes
+  it possible to run pure OCaml programs in JavaScript environment like
+  browsers and Node.js.
+
+  [Wasm_of_ocaml] is a compiler from OCaml bytecode to WebAssembly. It
+  is highly compatible with Js_of_ocaml, so you can compile your
+  programs with wasm_of_ocaml instead of js_of_ocaml and experience
+  overall better performance.
+
+  Most significant changes:
+
+  =E2=80=A2 A lot of effort was spent on optimizing compilation speed and
+    compile-time memory usage. we're seeing up to 4x compilation speed
+    improvement in some cases.
+
+  See the [Changelog] for other changes.
+
+
+[Wasm_of_ocaml]
+<https://opam.ocaml.org/packages/wasm_of_ocaml-compiler/>
+
+[Changelog]
+<https://github.com/ocsigen/js_of_ocaml/blob/master/CHANGES.md>
+
+
+Announcing Raven: Scientific Computing for OCaml (Alpha Release)
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/announcing-raven-scientific-computing-for-oc=
+aml-alpha-release/16913/1>
+
+
+Thibaut Mattio announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I'm excited to announce the alpha release of [Raven], a modern
+  scientific computing ecosystem for OCaml.
+
+
+[Raven] <https://github.com/raven-ml/raven>
+
+What is Raven?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Raven is a collection of libraries and tools for numerical computing
+  and machine learning, including:
+
+  =E2=80=A2 *Nx:* Multi-dimensional arrays with NumPy-like operations and
+     pluggable backends (now pure OCaml, C FFI, Metal, next CUDA,
+     WebGPU, etc.) - our equivalent of NumPy
+  =E2=80=A2 *Rune:* Automatic differentiation and device placement, building
+     toward JIT compilation - our equivalent of Jax
+  =E2=80=A2 *Kaun:* Deep learning framework inspired by [Flax]/[PyTorch], b=
+uilt
+     on Rune
+  =E2=80=A2 *Sowilo:* Computer vision library with differentiable operation=
+s,
+     build on Rune
+  =E2=80=A2 *Hugin:* Plotting library for data visualization - our equivale=
+nt of
+     matplotlib
+  =E2=80=A2 *Quill:* Markdown-first interactive notebooks - very different =
+from
+     Jupyter, but our answer to interactive notebooks
+
+  The ecosystem is designed to work together seamlessly, with Nx as the
+  foundation, Rune providing differentiable computation, and
+  domain-specific libraries building on top.
+
+
+[Flax] <https://github.com/google/flax>
+
+[PyTorch] <https://pytorch.org/>
+
+
+Getting Started
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Install Raven via opam:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam install raven
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here's a quick example showcasing automatic differentiation with Rune:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 open Rune
+  =E2=94=82=20
+  =E2=94=82 (* Define a simple neural network layer *)
+  =E2=94=82 let layer ~w ~b x =3D add (matmul x w) b
+  =E2=94=82=20
+  =E2=94=82 (* Compute mean squared error loss *)
+  =E2=94=82 let mse_loss ~w ~b x y =3D
+  =E2=94=82   let pred =3D layer ~w ~b x in
+  =E2=94=82   let diff =3D sub pred y in
+  =E2=94=82   mean (mul diff diff)
+  =E2=94=82=20
+  =E2=94=82 let result =3D
+  =E2=94=82   (* Choose device - Rune.ocaml, Rune.c, Rune.metal *)
+  =E2=94=82   let dev =3D Rune.c in
+  =E2=94=82=20
+  =E2=94=82   (* Initialize parameters on the device *)
+  =E2=94=82   let w =3D randn dev float32 [| 3; 2 |] in
+  =E2=94=82   let b =3D zeros dev float32 [| 2 |] in
+  =E2=94=82   let x =3D randn dev float32 [| 10; 3 |] in
+  =E2=94=82   let y =3D randn dev float32 [| 10; 2 |] in
+  =E2=94=82=20
+  =E2=94=82   (* Compute loss and gradients *)
+  =E2=94=82   let loss, grad_w =3D value_and_grad (fun w -> mse_loss ~w ~b =
+x y) w in
+  =E2=94=82   Printf.printf "Loss: %g\n" (unsafe_get [] loss);
+  =E2=94=82   grad_w
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 val result : (float, Rune.float32_elt, [ `c ]) Rune.t =3D
+  =E2=94=82   [[-1.74967, 0.863766],
+  =E2=94=82    [-0.140407, -0.269364],
+  =E2=94=82    [0.593187, 0.0197736]]
+  =E2=94=82 Loss: 2.13033
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  For more examples and detailed documentation, visit [raven-ml.dev].
+
+
+[raven-ml.dev] <https://raven-ml.dev/>
+
+
+Why Raven?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C
+
+  Today's machine learning ecosystem is converging on frameworks built
+  atop ML compilers: high-level Python APIs that build computation
+  graphs, then JIT compile them for performance.
+
+  In parallel, [JAX] and [Flax] have gained popularity with their
+  functional APIs. For instance, JAX uses function transformations
+  (grad, jit, vmap) to implements its core features.
+
+  This is a landscape where OCaml has natural advantages. OCaml excels
+  at building compilers, which includes ML compilers, and as a
+  functional language, it's a more natural fit for functional ML APIs
+  than Python with JAX.
+
+  Given these technical advantages, Python's dominance comes down to
+  developer experience: the massive ecosystem and excellent prototyping
+  ergonomics. We believe that with the right tooling, OCaml can match
+  Python's productivity for prototyping and exploratory work. And the
+  ecosystem gap doesn't have any fundamental challenge: we "just" need
+  to write a lot of code.
+
+  If Raven succeeds, we believe it will offer a much more compelling
+  alternative to Python: a language that enables rapid prototyping while
+  eliminating the gap between exploration and production. You'll move
+  from local development to production without switching languages,
+  without separate teams, without maintaining two stacks.
+
+
+[JAX] <https://github.com/google/jax>
+
+[Flax] <https://github.com/google/flax>
+
+
+Technical Highlights: Rune's autodiff engine
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C
+
+  One interesting aspect of Raven is Rune's implementation of automatic
+  differentiation using OCaml's effects system. As far as we know, this
+  is the first production-scale autodiff engine built on effects,
+  drawing on research by [Jesse Sigal] and earlier work by [KC
+  Sivaramakrishnan].
+
+  The architecture follows a modular design:
+  =E2=80=A2 Pluggable backends in Nx allow implementation for different har=
+dware
+  =E2=80=A2 Rune implements an Nx backend that raises effects for all
+    operations.
+  =E2=80=A2 These effects are either caught by an effect handler (e.g. grad,
+    jit), or, if unhandled, executed eagerly
+  =E2=80=A2 This allows for composable effects handlers (e.g. grad (grad f)=
+, jit
+    (grad f), etc.)
+
+
+[Jesse Sigal] <https://effect-handlers.org/talks/ml-2024-talk.pdf>
+
+[KC Sivaramakrishnan]
+<https://github.com/ocaml-multicore/effects-examples/blob/master/algorithmi=
+c_differentiation.ml>
+
+
+Technical Highlights: Quill Notebooks
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Quill reimagines interactive notebooks with a [Typora]like
+  experience. Markdown renders live as you write, switching to raw
+  markdown when you focus on a section for editing. This creates a
+  natural writing experience where code blocks integrate naturally into
+  your document.
+
+  The result is a distraction-free notebook environmnet, that
+  prioritizes focused writing, while still providing full editor
+  features within code blocks (coming soon =E2=84=A2!).
+
+  While still early, we're excited to see how the community reacts to
+  Quill when it is stable enough for daily use - we really think it has
+  the potential to offer a much better notebook experience for teaching,
+  reading, and other workflows.
+
+
+[Typora] <https://typora.io/>
+
+
+Current Status
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  This is an alpha release. APIs are stabilizing but may still
+  change. Things will break - this is expected at this stage! If you
+  encounter bugs, please open an issue on GitHub; community feedback is
+  invaluable to get to a stable release.
+
+  We're currently focused on:
+  =E2=80=A2 Stabilizing core APIs for the 1.0 release
+  =E2=80=A2 Writing documentation and user guides
+  =E2=80=A2 Supporting early users adoption (FFT, linear algebra, CUDA back=
+end)
+
+  Post-Alpha priorities include JIT compilation and stable Quill
+  environment.
+
+
+Building a Community
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  One bet we're taking with Raven is that it will allow a scientific and
+  ML community in OCaml to flourish. As of now, it's still largely a
+  one-person project. While I'm committed to its development, we really
+  need to see the development of a larger community for a project of
+  this size to survive.
+
+  If you're interested in the project, the best thing you can do is to
+  engage=E2=80=94whether by opening issues, reaching out, or
+  contributing. Alongside reaching a first stable release, building a
+  community is Raven's main priority from now on, so any kind of
+  contribution or engagement will be deeply appreciated. If there's
+  anything I can do to make Raven more welcoming and approachable, let
+  me know.
+
+  I've always believed that the best way to grow OCaml adoption is to
+  provide killer apps for specific use cases (just like Rails did for
+  Ruby). Raven's not quite there yet in terms of advantages over Python,
+  but it can get there, and if that's something you'd like to contribute
+  to, please reach out\!
+
+
+Getting Involved
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Here are immediate ways to contribute as we work toward a stable
+  release:
+
+  *For users:*
+  =E2=80=A2 Try the libraries with your workflows and report issues
+  =E2=80=A2 Share feedback on API design and usability
+  =E2=80=A2 Help test on different platforms and configurations
+
+  *For contributors:*
+  =E2=80=A2 Optimize eager execution backends while we build JIT compilation
+  =E2=80=A2 Add missing NumPy/Jax/Flax operations to Nx/Rune/Kaun
+  =E2=80=A2 Contribute examples and documentation
+
+  Don't hesitate to reach out if you'd like to be involved closely with
+  the core development:
+  =E2=80=A2 JIT compilation
+  =E2=80=A2 Stabilize Quill (many bugs to fix!)
+  =E2=80=A2 New libraries
+
+  *Resources:*
+  =E2=80=A2 GitHub: <https://github.com/raven-ml/raven>
+  =E2=80=A2 Documentation: <https://raven-ml.dev/docs/>
+  =E2=80=A2 Contact: thibaut.mattio@gmail.com
+
+
+Acknowledgments
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  I'd like to thank our early contributors and testers who have helped
+  shape Raven:
+  =E2=80=A2 @axrwl
+  =E2=80=A2 @gabyfle
+  =E2=80=A2 @hesterjeng
+  =E2=80=A2 @ghennequin
+  =E2=80=A2 @kayceesrk
+  =E2=80=A2 @blueavee
+
+  Special thanks to our GitHub sponsors for their support:
+  =E2=80=A2 @daemonfire300
+  =E2=80=A2 @gabyfle
+  =E2=80=A2 @sabine
+
+  Your feedback, contributions and support have been invaluable in
+  getting Raven to this alpha release - thank you\!
+
+
+Supporting Raven's Development
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  As Raven grows, I'm looking for sustainable ways to continue
+  dedicating time to the project. If you're an industrial user
+  interested in using Raven for your machine learning or scientific
+  computing needs, I'd love to talk about how we can work together.
+
+  For individuals who want to support the project, I have a [GitHub
+  Sponsors page]. Any contribution, no matter the size, is deeply
+  appreciated and helps ensure Raven's continued development.
+
+
+[GitHub Sponsors page] <https://github.com/sponsors/tmattio>
+
+
+Slipshow!
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-slipshow/16337/8>
+
+
+Continuing this thread, Paul-Elliot announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80
+
+  Let's continue with a new release in this Slipshow thread. It's my
+  _ginormous pleasure_ to announce the [opam release] of:
+
+
+[opam release] <https://github.com/ocaml/opam-repository/pull/28128>
+
+Slipshow v0.3.0: The return of the subslips
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C
+
+  As you can see, a crucial improvement is that releases are now
+  named. Semver is boring, let's add a bit of fun in a serious world.
+
+  The release name subtly suggests that subslips are back. Yes, subslips
+  are back! Slipshow allows your presentation to be visually
+  organized. Subslips are slips that are inside a slip. You can then
+  "enter" it, go through it, and exit it to go back to the original
+  slip.
+
+  But a gif is worth a ginormous word, so here it is:
+
+  [A demo of slipshow entering subslips]
+
+  To obtain a similar effect, using the new release, you can simply do:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 We will discuss three topics:
+  =E2=94=82=20
+  =E2=94=82 {style=3D"display:flex" children:slip}
+  =E2=94=82 ----
+  =E2=94=82 # Topic 1
+  =E2=94=82=20
+  =E2=94=82 Content of the first topic
+  =E2=94=82=20
+  =E2=94=82 ---
+  =E2=94=82 # Topic 2
+  =E2=94=82=20
+  =E2=94=82 Content of the second topic
+  =E2=94=82=20
+  =E2=94=82 ---
+  =E2=94=82 # Topic 3
+  =E2=94=82=20
+  =E2=94=82 Content of the third topic
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  If you want to separate the source in multiple file, it's easy:
+  `{include src=3D"file/to/include.md"}'. And did you notice that `---'
+  now act as group separators? At this point, let me just output the
+  changelog (highligting some of them):
+
+
+[A demo of slipshow entering subslips]
+<https://github.com/user-attachments/assets/540b7e3b-a930-4444-ab12-e2cdd2f=
+dc55e>
+
+=E2=97=8A Compiler
+
+  =E2=80=A2 *Fix file watching issues* by vendoring a (modified) irmin-watc=
+her,
+    and watching all files the presentation depends on (images, themes,
+    =E2=80=A6) (#113)
+  =E2=80=A2 Adds a favicon to the presentation file (*Slipshow now has a lo=
+go!*)
+    (#115)
+  =E2=80=A2 Fix missing attributes on images (#117)
+  =E2=80=A2 Fix missing mime type on images that made svg undisplayable (#1=
+20)
+  =E2=80=A2 Fix detection of math inside inline attributes (#124)
+  =E2=80=A2 *Add `--dimension' to specify the dimension of the presentation
+     (#131)*
+  =E2=80=A2 Add less boring name for versions (#132)
+
+
+=E2=97=8A Language
+
+  =E2=80=A2 *Add `{include src=3D"path/to/file.md"}' to include a file in a=
+nother
+     (#114)*
+  =E2=80=A2 Allow `pause' to have a target (#118)
+  =E2=80=A2 Remove the need for `step' to execute actions (#118)
+  =E2=80=A2 *Added support for subslips and slides (#118)*
+  =E2=80=A2 Added pause blocks (#127)
+  =E2=80=A2 *Use horizontal lines (`---') to group blocks (#129)*
+  =E2=80=A2 Pass attributes to children with `children:' (#130)
+  =E2=80=A2 Consistently remove the need for `-at-unpause' (#133)
+
+
+=E2=97=8A Engine
+
+  =E2=80=A2 Simplify table of content by removing preview (#118)
+  =E2=80=A2 *Fix wrong computation of location (#118, #119)*
+  =E2=80=A2 *Improve zooming behaviour (everywhere) and performance (on
+     chrome-based browsers=E2=80=A6) (#121)*
+    =E2=80=A2 If someone has some expertise on how to improve performance on
+      firefox, I'm interested!
+  =E2=80=A2 Add PageUp and PageDown as navigation keys, adding support for
+    pointers (#126)
+  =E2=80=A2 Do not act when control is pressed (#126)
+  =E2=80=A2 Fix wrong positioning on scaled slips (#128)
+
+
+=E2=97=8A Credits
+
+  Thanks to the NLNet foundation for supporting this project!
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Weeks 24-27]
+  =E2=80=A2 [The week that was - 2025 w27]
+  =E2=80=A2 [Improving Memory Profiler Visualisations for OCaml]
+  =E2=80=A2 [The Hell of Tetra Master]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Weeks 24-27] <https://jon.recoil.org/blog/2025/07/week27.html>
+
+[The week that was - 2025 w27]
+<https://www.dra27.uk/blog/week-that-was/2025/07/06/wtw-27.html>
+
+[Improving Memory Profiler Visualisations for OCaml]
+<https://tarides.com/blog/2025-07-04-improving-memory-profiler-visualisatio=
+ns-for-ocaml>
+
+[The Hell of Tetra Master]
+<https://xvw.lol/en/articles/tetra-master.html>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-07-08 Tue 14:44 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.07.01.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.07.15.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of July 01 to 08, 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">OCaml security team</a></li>
+<li><a href=3D"#2">Dockerfile for building an OPAM application, with dune/a=
+pt/opam caching</a></li>
+<li><a href=3D"#3">opam 2.4.0~rc1</a></li>
+<li><a href=3D"#4">Js_of_ocaml 6.1.0 / Wasm_of_ocaml</a></li>
+<li><a href=3D"#5">Announcing Raven: Scientific Computing for OCaml (Alpha =
+Release)</a></li>
+<li><a href=3D"#6">Slipshow!</a></li>
+<li><a href=3D"#7">Other OCaml News</a></li>
+<li><a href=3D"#org9245e80">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">OCaml security team</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocaml-security-team/169=
+02/1">https://discuss.ocaml.org/t/ann-ocaml-security-team/16902/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org3082235" class=3D"outline-3">
+<h3 id=3D"org3082235">Hannes Mehnert announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3082235">
+<p>
+Dear everyone,
+</p>
+
+<p>
+We are starting an effort to push security into OCaml. This is based on dis=
+cussions in the OCaml Software Foundation with industry partners. The main =
+goal is to have best practises similar to those of other programming langua=
+ge ecosystems.
+</p>
+</div>
+<div id=3D"outline-container-org2f31a4e" class=3D"outline-4">
+<h4 id=3D"org2f31a4e">Reporting security issues</h4>
+<div class=3D"outline-text-4" id=3D"text-org2f31a4e">
+<p>
+This entails a point of contact for the security team - which deals with co=
+mmunication between the person who found a security-relevant problem in OCa=
+ml software (named "reporter"), who can then contact us - the security team=
+ - instead of using a public bug tracker, and the upstream OCaml developer(=
+s).
+</p>
+
+<p>
+We, the security team, will establish the three-way communication, and sinc=
+e we have a documented security disclosure process (which will be published=
+ soon), we will guide everyone through the process and ensure that timeline=
+s are met, CVE numbers are assigned, &#x2026;
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org25236c0" class=3D"outline-4">
+<h4 id=3D"org25236c0">Team composition</h4>
+<div class=3D"outline-text-4" id=3D"text-org25236c0">
+<p>
+The OCaml security team currently consists of individual security experts a=
+nd individuals representing company sponsors of the OCaml Software Foundati=
+on. Individual members participating on a personal capacity may be compensa=
+ted for their time from the OCaml Software Foundation.
+</p>
+
+<p>
+The team currently consists of 7 members
+</p>
+<ul class=3D"org-ul">
+<li>Hannes Mehnert <a href=3D"https://github.com/hannesm">https://github.co=
+m/hannesm</a> - individual, chair</li>
+<li>Mindy <a href=3D"https://github.com/yomimono">https://github.com/yomimo=
+no</a> - individual</li>
+<li>Joe <a href=3D"https://github.com/cfcs">https://github.com/cfcs</a> - i=
+ndividual</li>
+<li>Edwin T=C3=B6r=C3=B6k <a href=3D"https://github.com/edwintorok">https:/=
+/github.com/edwintorok</a> - individual</li>
+<li>Nicol=C3=A1s Ojeda B=C3=A4r <a href=3D"https://github.com/nojb">https:/=
+/github.com/nojb</a> - LexiFi</li>
+<li>Louis Roch=C3=A9 <a href=3D"https://github.com/khady">https://github.co=
+m/khady</a> - ahrefs</li>
+<li>Maxim Grankin <a href=3D"https://github.com/maxim092001">https://github=
+.com/maxim092001</a> - Bloomberg</li>
+</ul>
+
+<p>
+We're in the process to formalise the responsibilities of the team, our pro=
+posed disclosure process, and how to join &amp; leave the team.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org2c76853" class=3D"outline-4">
+<h4 id=3D"org2c76853">Funding for security actions</h4>
+<div class=3D"outline-text-4" id=3D"text-org2c76853">
+<p>
+In complement to the security disclosure process, we will accept funding re=
+quests for projects that make OCaml more secure (including guidelines how t=
+o develop OCaml in a secure way/what are common pitfalls; static analysis; =
+dissemination tools; &#x2026;). The OCaml Software Foundation will provide =
+funding for these security actions. After this summer we will discuss this =
+in more depth with the community.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orgf22b51f" class=3D"outline-4">
+<h4 id=3D"orgf22b51f">Next steps</h4>
+<div class=3D"outline-text-4" id=3D"text-orgf22b51f">
+<p>
+We will setup a website (similar to <a href=3D"https://www.haskell.org/secu=
+rity/">https://www.haskell.org/security/</a> has) soon, and provide an emai=
+l address for contacting us - security At ocamlDoT org is forwarding to our=
+ team. We plan to setup a mailing list for security announcements.
+</p>
+
+<p>
+But more on that at a later point, this brief post is mainly about the fact=
+ that this team starts to exist now, and is working on improving the securi=
+ty story of OCaml.
+</p>
+
+<p>
+If you have any questions for now, please feel free to discuss them in this=
+ announcement. Please be aware that it is vacation time soon, so we may not=
+ be very responsive.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Dockerfile for building an OPAM application, with dune/apt/opa=
+m caching</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/dockerfile-for-building-an-=
+opam-application-with-dune-apt-opam-caching/16906/1">https://discuss.ocaml.=
+org/t/dockerfile-for-building-an-opam-application-with-dune-apt-opam-cachin=
+g/16906/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc78fb85" class=3D"outline-3">
+<h3 id=3D"orgc78fb85">Edwin T=C3=B6r=C3=B6k announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc78fb85">
+<p>
+I was writing some dockerfiles for building some OCaml applications recentl=
+y, and realized that it is possible to write a Dockerfile that can build al=
+most arbitrary Opam applications without even having to hardcode the packag=
+e name.
+</p>
+
+<p>
+I used <code>ocaml-dockerfile</code> to generate it (only the OS and OCaml =
+version is hardcoded), so I thought I'd share it, it should work with both =
+Podman and Docker:
+</p>
+
+<pre class=3D"example" id=3D"orgf051a01">
+# syntax=3Ddocker/dockerfile:1
+
+FROM ocaml/opam:debian-12-ocaml-4.14
+
+# Update the opam repository (otherwise lockfile may contain a version we d=
+on't know about)
+RUN git -C /home/opam/opam-repository pull origin master &amp;&amp; opam-2.=
+3 update
+
+# Enable the dune cache in copy mode
+# (hardlink mode would fail with EXDEV if cache is on separate disk/partiti=
+on)
+# This caches the build of opam dependencies using dune and the main applic=
+ation
+ENV DUNE_CACHE=3D"enabled" DUNE_CACHE_STORAGE_MODE=3D"copy"
+
+# `apt` in containers is usually configured to always clean up after operat=
+ions
+# When we have a cache mount for the APT package cache we don't want to cle=
+an up, since the cache would be ineffective.
+# Also change OPAM to use the 0install solver, this is faster, especially w=
+hen a lockfile is present.
+RUN sudo rm -f /etc/apt/apt.conf.d/docker-clean &amp;&amp; \
+  opam-2.3 option solver=3Dbuiltin-0install
+
+# Use a workdir outside of $HOME, to avoid having .opam as a subdir of the =
+build
+WORKDIR /app
+# Copy dependency definitions first. See https://docs.docker.com/build/cach=
+e/optimize/#order-your-layers
+COPY [ "*.opam", "*.opam.locked", "." ]
+
+# Install and cache system packages required by the build
+# The cache is locked, so multiple container builds will wait here
+# (apt would have a lock but it is stored outside of the cache dir, so we c=
+annot rely on it to prevent concurrent accesses)
+# A cache id is used, so that different distros would have different cache =
+folders
+RUN --mount=3Dtype=3Dcache,id=3D/var/cache/apt#debian-12;amd64,target=3D/va=
+r/cache/apt,sharing=3Dlocked \
+    --mount=3Dtype=3Dcache,id=3D/var/lib/apt#debian-12;amd64,target=3D/var/=
+lib/apt,sharing=3Dlocked \
+    sudo apt-get update -y &amp;&amp; \
+    opam-2.3 install --locked --with-test . --depext-only
+
+# Download and cache opam package dependencies
+# The cache is locked, so multiple container builds will wait here
+# To minimize the time the lock is held the actual package installations ar=
+e done as a separate step
+RUN --mount=3Dtype=3Dcache,target=3D/home/opam/.opam/download-cache,sharing=
+=3Dlocked,uid=3D1000,gid=3D1000 \
+    opam-2.3 install --locked --with-test . --download-only
+
+# Install (cached) downloaded opam dependencies
+# The download cache is mounted readonly and shared, multiple container bui=
+lds can proceed in parallel.
+# The dune cache is mounted RW.
+# Multiple concurrent builds will use the same cache, but dune must already=
+ be able to cope with this
+# A cache id is used, so that different distros would have different cache =
+folders (it is unlikely that dune caches would be sharable across distros)
+RUN --mount=3Dtype=3Dcache,target=3D/home/opam/.opam/download-cache,readonl=
+y,sharing=3Dshared,uid=3D1000,gid=3D1000 \
+    --mount=3Dtype=3Dcache,target=3D/home/opam/.cache/dune,sharing=3Dshared=
+,uid=3D1000,gid=3D1000 \
+    opam-2.3 install --locked --with-test . --deps-only
+
+# Copy actual application source code
+COPY [ ".", "." ]
+
+# Build and install application code, using dune cache.
+RUN --mount=3Dtype=3Dcache,target=3D/home/opam/.cache/dune,sharing=3Dshared=
+,uid=3D1000,gid=3D1000 \
+    opam-2.3 install --locked --with-test .
+</pre>
+
+<p>
+It avoids some common pitfalls:
+</p>
+<ul class=3D"org-ul">
+<li>disable cleanup of APT downloaded packages (otherwise caching is ineffe=
+ctive)</li>
+<li>enables the opam download cache too which is stored in a non-standard l=
+ocation (<code>~/.opam/download-cache</code> instead of <code>~/.cache/opam=
+</code>)</li>
+<li>avoids EXDEV from dune cached builds during opam dependency installatio=
+ns by enabling dune cache copy mode</li>
+<li>uses opam-2.3 explicitly, since the default opam in the Dockerhub image=
+s is quite old (luckily opam-2.3 is already there, just needs to be invoked=
+ explicitly)</li>
+<li>sets the default solver to 0install. This seems to be needed to speed u=
+p <code>opam install</code> even when <code>--locked</code> is used and no =
+dependency resolution is needed. Otherwise it was spending 4s checking the =
+solver request.</li>
+<li>sets appropriate uid in cache mounts to avoid permission issues</li>
+</ul>
+
+<p>
+Caveats:
+</p>
+<ul class=3D"org-ul">
+<li>if you use git submodules then you have to add <code>.git</code> to you=
+r <code>.dockerignore</code>. Otherwise opam pinning will fail, since <code=
+>.git</code> is a file referencing a git dir in a parent dir that is not mo=
+unted inside the docker build environment</li>
+<li>maybe &#x2013;dev should be used if you intend to use the container for=
+ developing the opam application. Although in that case you might also want=
+ to preinstall some useful tools like <code>lsp</code>, and <code>ocamlform=
+at</code>.</li>
+</ul>
+
+<p>
+Eventually I hope this can be simplified using Dune's new package managemen=
+t feature.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">opam 2.4.0~rc1</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-opam-2-4-0-rc1/16910/1"=
+>https://discuss.ocaml.org/t/ann-opam-2-4-0-rc1/16910/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgdb964d0" class=3D"outline-3">
+<h3 id=3D"orgdb964d0">Kate announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgdb964d0">
+<p>
+Hi everyone,
+</p>
+
+<p>
+We are happy to announce the first release candidate of opam 2.4.0.
+</p>
+
+<p>
+This is hopefully the first and last release candidate for opam 2.4, so we =
+invite users to test it to spot previously unnoticed bugs as we soon head t=
+o the stable release.
+</p>
+</div>
+<div id=3D"outline-container-orgcfa3d75" class=3D"outline-4">
+<h4 id=3D"orgcfa3d75">Changes</h4>
+<div class=3D"outline-text-4" id=3D"text-orgcfa3d75">
+<ul class=3D"org-ul">
+<li>:woman_scientist: Fix a regression in <code>opam switch create &lt;vers=
+ion&gt;</code> not working when all compilers of that version are flagged w=
+ith <code>avoid-version</code>. This would have prevented users to use comm=
+ands such as <code>opam switch create 5.4.0~alpha1</code> (<a href=3D"https=
+://github.com/ocaml/opam/issues/6563">#6563</a>).</li>
+
+<li>:high_speed_train: Improve performance of <code>opam update</code> for =
+users of local repositories that happen to be git repositories (for example=
+ if you've ever used <code>opam repository add --kind local</code> or simil=
+ar). In particular the new OCaml implementation of patch, does not scan tho=
+se VCS directories anymore, which made opam use a lot of RAM unnecessarily =
+(<a href=3D"https://github.com/ocaml/opam/issues/6560">#6560</a>).</li>
+</ul>
+
+<p>
+:open_book: You can read our <a href=3D"https://opam.ocaml.org/blog/opam-2-=
+4-0-rc1/">blog post</a> to read about the other more minor changes, and for=
+ even more details you can take a look at the <a href=3D"https://github.com=
+/ocaml/opam/releases/tag/2.4.0-rc1">release note</a> or the <a href=3D"http=
+s://github.com/ocaml/opam/blob/2.4.0-rc1/CHANGES">changelog</a>.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org079f7f4" class=3D"outline-4">
+<h4 id=3D"org079f7f4">Try it!</h4>
+<div class=3D"outline-text-4" id=3D"text-org079f7f4">
+<p>
+The upgrade instructions are unchanged:
+</p>
+
+<p>
+For Unix systems
+</p>
+<pre class=3D"example" id=3D"org1415c85">
+bash -c "sh &lt;(curl -fsSL https://opam.ocaml.org/install.sh) --version 2.=
+4.0~rc1"
+</pre>
+<p>
+or from PowerShell for Windows systems
+</p>
+<pre class=3D"example" id=3D"org6a9ba1c">
+Invoke-Expression "&amp; { $(Invoke-RestMethod https://opam.ocaml.org/insta=
+ll.ps1) } -Version 2.4.0~rc1"
+</pre>
+
+<p>
+Please report any issues to the <a href=3D"https://github.com/ocaml/opam/is=
+sues">bug-tracker</a>.
+</p>
+
+<p>
+Happy hacking,
+&lt;&gt; &lt;&gt; The opam team &lt;&gt; &lt;&gt; :camel:
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Js_of_ocaml 6.1.0 / Wasm_of_ocaml</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-js-of-ocaml-6-1-0-wasm-=
+of-ocaml/16912/1">https://discuss.ocaml.org/t/ann-js-of-ocaml-6-1-0-wasm-of=
+-ocaml/16912/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org8d7c667" class=3D"outline-3">
+<h3 id=3D"org8d7c667">Hhugo announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8d7c667">
+<p>
+I=E2=80=99m pleased to announce the joint release of js_of_ocaml 6.1.0 and =
+wasm_of_ocaml.
+</p>
+
+<p>
+Js_of_ocaml is a compiler from OCaml bytecode to JavaScript. It makes it po=
+ssible to run pure OCaml programs in JavaScript environment like browsers a=
+nd Node.js.
+</p>
+
+<p>
+<a href=3D"https://opam.ocaml.org/packages/wasm_of_ocaml-compiler/">Wasm_of=
+_ocaml</a> is a compiler from OCaml bytecode to WebAssembly. It is highly c=
+ompatible with Js_of_ocaml, so you can compile your programs with wasm_of_o=
+caml instead of js_of_ocaml and experience overall better performance.
+</p>
+
+<p>
+Most significant changes:
+</p>
+
+<ul class=3D"org-ul">
+<li>A lot of effort was spent on optimizing compilation speed and compile-t=
+ime memory usage. we're seeing up to 4x compilation speed improvement in so=
+me cases.</li>
+</ul>
+
+<p>
+See the <a href=3D"https://github.com/ocsigen/js_of_ocaml/blob/master/CHANG=
+ES.md">Changelog</a> for other changes.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Announcing Raven: Scientific Computing for OCaml (Alpha Releas=
+e)</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/announcing-raven-scientific=
+-computing-for-ocaml-alpha-release/16913/1">https://discuss.ocaml.org/t/ann=
+ouncing-raven-scientific-computing-for-ocaml-alpha-release/16913/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc22f80c" class=3D"outline-3">
+<h3 id=3D"orgc22f80c">Thibaut Mattio announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc22f80c">
+<p>
+I'm excited to announce the alpha release of <a href=3D"https://github.com/=
+raven-ml/raven">Raven</a>, a modern scientific computing ecosystem for OCam=
+l.
+</p>
+</div>
+<div id=3D"outline-container-orgbdb32ba" class=3D"outline-4">
+<h4 id=3D"orgbdb32ba">What is Raven?</h4>
+<div class=3D"outline-text-4" id=3D"text-orgbdb32ba">
+<p>
+Raven is a collection of libraries and tools for numerical computing and ma=
+chine learning, including:
+</p>
+
+<ul class=3D"org-ul">
+<li><b>Nx:</b> Multi-dimensional arrays with NumPy-like operations and plug=
+gable backends (now pure OCaml, C FFI, Metal, next CUDA, WebGPU, etc.) - ou=
+r equivalent of NumPy</li>
+<li><b>Rune:</b> Automatic differentiation and device placement, building t=
+oward JIT compilation - our equivalent of Jax</li>
+<li><b>Kaun:</b> Deep learning framework inspired by <a href=3D"https://git=
+hub.com/google/flax">Flax</a>/<a href=3D"https://pytorch.org/">PyTorch</a>,=
+ built on Rune</li>
+<li><b>Sowilo:</b> Computer vision library with differentiable operations, =
+build on Rune</li>
+<li><b>Hugin:</b> Plotting library for data visualization - our equivalent =
+of matplotlib</li>
+<li><b>Quill:</b> Markdown-first interactive notebooks - very different fro=
+m Jupyter, but our answer to interactive notebooks</li>
+</ul>
+
+<p>
+The ecosystem is designed to work together seamlessly, with Nx as the found=
+ation, Rune providing differentiable computation, and domain-specific libra=
+ries building on top.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org4c1095a" class=3D"outline-4">
+<h4 id=3D"org4c1095a">Getting Started</h4>
+<div class=3D"outline-text-4" id=3D"text-org4c1095a">
+<p>
+Install Raven via opam:
+</p>
+
+<pre class=3D"example" id=3D"org9254257">
+opam install raven
+</pre>
+
+<p>
+Here's a quick example showcasing automatic differentiation with Rune:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #000000; font-weig=
+ht: bold;">open </span><span style=3D"color: #444fcf;">Rune</span>
+
+<span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Define a simple neural network lay=
+er</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">layer</span> ~<span style=3D"color: #007a9f;">w</span>=
+ ~<span style=3D"color: #007a9f;">b</span> <span style=3D"color: #007a9f;">=
+x</span> =3D add (matmul x w) b
+
+<span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Compute mean squared error loss</s=
+pan><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #a7601f;">mse_loss</span> ~<span style=3D"color: #007a9f;">w</sp=
+an> ~<span style=3D"color: #007a9f;">b</span> <span style=3D"color: #007a9f=
+;">x</span> <span style=3D"color: #007a9f;">y</span> =3D
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">pred</span> =3D layer ~w ~b x <span style=3D"color: #0=
+00000; font-weight: bold;">in</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">diff</span> =3D sub pred y <span style=3D"color: #0000=
+00; font-weight: bold;">in</span>
+  mean (mul diff diff)
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">result</span> =3D
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Choose device - Rune.ocaml, Rune.c=
+, Rune.metal</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)<=
+/span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">dev</span> =3D <span style=3D"color: #444fcf;">Rune.</=
+span>c <span style=3D"color: #000000; font-weight: bold;">in</span>
+
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Initialize parameters on the devic=
+e</span><span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">w</span> =3D randn dev float32 [| 3; 2 |] <span style=
+=3D"color: #000000; font-weight: bold;">in</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">b</span> =3D zeros dev float32 [| 2 |] <span style=3D"=
+color: #000000; font-weight: bold;">in</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">x</span> =3D randn dev float32 [| 10; 3 |] <span style=
+=3D"color: #000000; font-weight: bold;">in</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">y</span> =3D randn dev float32 [| 10; 2 |] <span style=
+=3D"color: #000000; font-weight: bold;">in</span>
+
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">Compute loss and gradients</span><=
+span style=3D"color: #8f6f4a; font-style: italic;"> *)</span>
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">loss</span>, <span style=3D"color: #007a9f;">grad_w</s=
+pan> =3D value_and_grad (<span style=3D"color: #006f00; font-weight: bold;"=
+>fun</span> <span style=3D"color: #007a9f;">w</span> -&gt; mse_loss ~w ~b x=
+ y) w <span style=3D"color: #000000; font-weight: bold;">in</span>
+  <span style=3D"color: #444fcf;">Printf.</span>printf <span style=3D"color=
+: #ca3400;">"Loss: %g\n"</span> (unsafe_get <span style=3D"color: #242521; =
+background-color: #fcf7ef;">[]</span> loss);
+  grad_w
+</code></pre>
+</div>
+
+<pre class=3D"example" id=3D"org9ebf46f">
+val result : (float, Rune.float32_elt, [ `c ]) Rune.t =3D
+  [[-1.74967, 0.863766],
+   [-0.140407, -0.269364],
+   [0.593187, 0.0197736]]
+Loss: 2.13033
+</pre>
+
+<p>
+For more examples and detailed documentation, visit <a href=3D"https://rave=
+n-ml.dev/">raven-ml.dev</a>.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org55bb9d4" class=3D"outline-4">
+<h4 id=3D"org55bb9d4">Why Raven?</h4>
+<div class=3D"outline-text-4" id=3D"text-org55bb9d4">
+<p>
+Today's machine learning ecosystem is converging on frameworks built atop M=
+L compilers: high-level Python APIs that build computation graphs, then JIT=
+ compile them for performance.
+</p>
+
+<p>
+In parallel, <a href=3D"https://github.com/google/jax">JAX</a> and <a href=
+=3D"https://github.com/google/flax">Flax</a> have gained popularity with th=
+eir functional APIs. For instance, JAX uses
+function transformations (grad, jit, vmap) to implements its core features.
+</p>
+
+<p>
+This is a landscape where OCaml has natural advantages. OCaml excels at bui=
+lding compilers, which includes ML compilers, and as a functional language,=
+ it's a more natural fit for functional ML APIs than Python with JAX.
+</p>
+
+<p>
+Given these technical advantages, Python's dominance comes down to develope=
+r experience: the massive ecosystem and excellent prototyping ergonomics. W=
+e believe that with the right tooling, OCaml can match Python's productivit=
+y for prototyping and exploratory work. And the ecosystem gap doesn't have =
+any fundamental challenge: we "just" need to write a lot of code.
+</p>
+
+<p>
+If Raven succeeds, we believe it will offer a much more compelling alternat=
+ive to Python: a language that enables rapid prototyping while eliminating =
+the gap between exploration and production. You'll move from local developm=
+ent to production without switching languages, without separate teams, with=
+out maintaining two stacks.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org33ad714" class=3D"outline-4">
+<h4 id=3D"org33ad714">Technical Highlights: Rune's autodiff engine</h4>
+<div class=3D"outline-text-4" id=3D"text-org33ad714">
+<p>
+One interesting aspect of Raven is Rune's implementation of automatic diffe=
+rentiation using OCaml's effects system. As far as we know, this is the fir=
+st production-scale autodiff engine built on effects, drawing on research b=
+y <a href=3D"https://effect-handlers.org/talks/ml-2024-talk.pdf">Jesse Siga=
+l</a> and earlier work by <a href=3D"https://github.com/ocaml-multicore/eff=
+ects-examples/blob/master/algorithmic_differentiation.ml">KC Sivaramakrishn=
+an</a>.
+</p>
+
+<p>
+The architecture follows a modular design:
+</p>
+<ul class=3D"org-ul">
+<li>Pluggable backends in Nx allow implementation for different hardware</l=
+i>
+<li>Rune implements an Nx backend that raises effects for all operations.</=
+li>
+<li>These effects are either caught by an effect handler (e.g. grad, jit), =
+or, if unhandled, executed eagerly</li>
+<li>This allows for composable effects handlers (e.g. grad (grad f), jit (g=
+rad f), etc.)</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org9070570" class=3D"outline-4">
+<h4 id=3D"org9070570">Technical Highlights: Quill Notebooks</h4>
+<div class=3D"outline-text-4" id=3D"text-org9070570">
+<p>
+Quill reimagines interactive notebooks with a <a href=3D"https://typora.io/=
+">Typora</a>&#x00ad;like experience. Markdown renders live as you write, sw=
+itching to raw markdown when you focus on a section for editing. This creat=
+es a natural writing experience where code blocks integrate naturally into =
+your document.
+</p>
+
+<p>
+The result is a distraction-free notebook environmnet, that prioritizes foc=
+used writing, while still providing full editor features within code blocks=
+ (coming soon =E2=84=A2!).
+</p>
+
+<p>
+While still early, we're excited to see how the community reacts to Quill w=
+hen it is stable enough for daily use - we really think it has the potentia=
+l to offer a much better notebook experience for teaching, reading, and oth=
+er workflows.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org3cf574c" class=3D"outline-4">
+<h4 id=3D"org3cf574c">Current Status</h4>
+<div class=3D"outline-text-4" id=3D"text-org3cf574c">
+<p>
+This is an alpha release. APIs are stabilizing but may still change. Things=
+ will break - this is expected at this stage! If you encounter bugs, please=
+ open an issue on GitHub; community feedback is invaluable to get to a stab=
+le release.
+</p>
+
+<p>
+We're currently focused on:
+</p>
+<ul class=3D"org-ul">
+<li>Stabilizing core APIs for the 1.0 release</li>
+<li>Writing documentation and user guides</li>
+<li>Supporting early users adoption (FFT, linear algebra, CUDA backend)</li>
+</ul>
+
+<p>
+Post-Alpha priorities include JIT compilation and stable Quill environment.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org5283b17" class=3D"outline-4">
+<h4 id=3D"org5283b17">Building a Community</h4>
+<div class=3D"outline-text-4" id=3D"text-org5283b17">
+<p>
+One bet we're taking with Raven is that it will allow a scientific and ML c=
+ommunity in OCaml to flourish. As of now, it's still largely a one-person p=
+roject. While I'm committed to its development, we really need to see the d=
+evelopment of a larger community for a project of this size
+to survive.
+</p>
+
+<p>
+If you're interested in the project, the best thing you can do is to engage=
+=E2=80=94whether by opening issues, reaching out, or contributing. Alongsid=
+e reaching a first stable release, building a community is Raven's main pri=
+ority from now on, so any kind of contribution or engagement will be deeply=
+ appreciated. If there's anything I can do to make Raven more welcoming and=
+ approachable, let
+me know.
+</p>
+
+<p>
+I've always believed that the best way to grow OCaml adoption is to provide=
+ killer apps for specific use cases (just like Rails did for Ruby). Raven's=
+ not quite there yet in terms of advantages over Python, but it can get the=
+re, and if that's something you'd like to contribute to, please reach out\!
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org2c2b309" class=3D"outline-4">
+<h4 id=3D"org2c2b309">Getting Involved</h4>
+<div class=3D"outline-text-4" id=3D"text-org2c2b309">
+<p>
+Here are immediate ways to contribute as we work toward a stable release:
+</p>
+
+<p>
+<b>For users:</b>
+</p>
+<ul class=3D"org-ul">
+<li>Try the libraries with your workflows and report issues</li>
+<li>Share feedback on API design and usability</li>
+<li>Help test on different platforms and configurations</li>
+</ul>
+
+<p>
+<b>For contributors:</b>
+</p>
+<ul class=3D"org-ul">
+<li>Optimize eager execution backends while we build JIT compilation</li>
+<li>Add missing NumPy/Jax/Flax operations to Nx/Rune/Kaun</li>
+<li>Contribute examples and documentation</li>
+</ul>
+
+<p>
+Don't hesitate to reach out if you'd like to be involved closely with the c=
+ore development:
+</p>
+<ul class=3D"org-ul">
+<li>JIT compilation</li>
+<li>Stabilize Quill (many bugs to fix!)</li>
+<li>New libraries</li>
+</ul>
+
+<p>
+<b>Resources:</b>
+</p>
+<ul class=3D"org-ul">
+<li>GitHub: <a href=3D"https://github.com/raven-ml/raven">https://github.co=
+m/raven-ml/raven</a></li>
+<li>Documentation: <a href=3D"https://raven-ml.dev/docs/">https://raven-ml.=
+dev/docs/</a></li>
+<li>Contact: thibaut.mattio@gmail.com</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org3d3a1eb" class=3D"outline-4">
+<h4 id=3D"org3d3a1eb">Acknowledgments</h4>
+<div class=3D"outline-text-4" id=3D"text-org3d3a1eb">
+<p>
+I'd like to thank our early contributors and testers who have helped shape =
+Raven:
+</p>
+<ul class=3D"org-ul">
+<li>@axrwl</li>
+<li>@gabyfle</li>
+<li>@hesterjeng</li>
+<li>@ghennequin</li>
+<li>@kayceesrk</li>
+<li>@blueavee</li>
+</ul>
+
+<p>
+Special thanks to our GitHub sponsors for their support:
+</p>
+<ul class=3D"org-ul">
+<li>@daemonfire300</li>
+<li>@gabyfle</li>
+<li>@sabine</li>
+</ul>
+
+<p>
+Your feedback, contributions and support have been invaluable in getting Ra=
+ven to this alpha release - thank you\!
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org805a5bb" class=3D"outline-4">
+<h4 id=3D"org805a5bb">Supporting Raven's Development</h4>
+<div class=3D"outline-text-4" id=3D"text-org805a5bb">
+<p>
+As Raven grows, I'm looking for sustainable ways to continue dedicating tim=
+e to the project. If you're an industrial user interested in using Raven fo=
+r your machine learning or scientific computing needs, I'd love to talk abo=
+ut how we can work together.
+</p>
+
+<p>
+For individuals who want to support the project, I have a <a href=3D"https:=
+//github.com/sponsors/tmattio">GitHub Sponsors page</a>. Any contribution, =
+no matter the size, is deeply appreciated and helps ensure Raven's continue=
+d development.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Slipshow!</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-slipshow/16337/8">https=
+://discuss.ocaml.org/t/ann-slipshow/16337/8</a>
+</p>
+</div>
+<div id=3D"outline-container-org5f88180" class=3D"outline-3">
+<h3 id=3D"org5f88180">Continuing this thread, Paul-Elliot announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org5f88180">
+<p>
+Let's continue with a new release in this Slipshow thread. It's my <span cl=
+ass=3D"underline">ginormous pleasure</span> to announce the <a href=3D"http=
+s://github.com/ocaml/opam-repository/pull/28128">opam release</a> of:
+</p>
+</div>
+<div id=3D"outline-container-org01cf246" class=3D"outline-4">
+<h4 id=3D"org01cf246">Slipshow v0.3.0: The return of the subslips</h4>
+<div class=3D"outline-text-4" id=3D"text-org01cf246">
+<p>
+As you can see, a crucial improvement is that releases are now named. Semve=
+r is boring, let's add a bit of fun in a serious world.
+</p>
+
+<p>
+The release name subtly suggests that subslips are back. Yes, subslips are =
+back! Slipshow allows your presentation to be visually organized. Subslips =
+are slips that are inside a slip. You can then "enter" it, go through it, a=
+nd exit it to go back to the original slip.
+</p>
+
+<p>
+But a gif is worth a ginormous word, so here it is:
+</p>
+
+<p>
+<a href=3D"https://github.com/user-attachments/assets/540b7e3b-a930-4444-ab=
+12-e2cdd2fdc55e">A demo of slipshow entering subslips</a>
+</p>
+
+<p>
+To obtain a similar effect, using the new release, you can simply do:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-md"><code>We will discuss three topics:
+
+{style=3D"display:flex" children:slip}
+----
+# Topic 1
+
+Content of the first topic
+
+---
+# Topic 2
+
+Content of the second topic
+
+---
+# Topic 3
+
+Content of the third topic
+</code></pre>
+</div>
+
+<p>
+If you want to separate the source in multiple file, it's easy: <code>{incl=
+ude src=3D"file/to/include.md"}</code>. And did you notice that <code>---</=
+code> now act as group separators? At this point, let me just output the ch=
+angelog (highligting some of them):
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgb6415e1"></a>Compiler<br />
+<div class=3D"outline-text-5" id=3D"text-orgb6415e1">
+<ul class=3D"org-ul">
+<li><b>Fix file watching issues</b> by vendoring a (modified) irmin-watcher=
+, and watching
+all files the presentation depends on (images, themes, &#x2026;) (#113)</li>
+<li>Adds a favicon to the presentation file (<b>Slipshow now has a logo!</b=
+>) (#115)</li>
+<li>Fix missing attributes on images (#117)</li>
+<li>Fix missing mime type on images that made svg undisplayable (#120)</li>
+<li>Fix detection of math inside inline attributes (#124)</li>
+<li><b>Add <code>--dimension</code> to specify the dimension of the present=
+ation (#131)</b></li>
+<li>Add less boring name for versions (#132)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org97ac000"></a>Language<br />
+<div class=3D"outline-text-5" id=3D"text-org97ac000">
+<ul class=3D"org-ul">
+<li><b>Add <code>{include src=3D"path/to/file.md"}</code> to include a file=
+ in another (#114)</b></li>
+<li>Allow <code>pause</code> to have a target (#118)</li>
+<li>Remove the need for <code>step</code> to execute actions (#118)</li>
+<li><b>Added support for subslips and slides (#118)</b></li>
+<li>Added pause blocks (#127)</li>
+<li><b>Use horizontal lines (<code>---</code>) to group blocks (#129)</b></=
+li>
+<li>Pass attributes to children with <code>children:</code> (#130)</li>
+<li>Consistently remove the need for <code>-at-unpause</code> (#133)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org0d86ca6"></a>Engine<br />
+<div class=3D"outline-text-5" id=3D"text-org0d86ca6">
+<ul class=3D"org-ul">
+<li>Simplify table of content by removing preview (#118)</li>
+<li><b>Fix wrong computation of location (#118, #119)</b></li>
+<li><b>Improve zooming behaviour (everywhere) and performance (on chrome-ba=
+sed browsers&#x2026;) (#121)</b>
+<ul class=3D"org-ul">
+<li>If someone has some expertise on how to improve performance on firefox,=
+ I'm interested!</li>
+</ul></li>
+<li>Add PageUp and PageDown as navigation keys, adding support for pointers=
+ (#126)</li>
+<li>Do not act when control is pressed (#126)</li>
+<li>Fix wrong positioning on scaled slips (#128)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgdb536d7"></a>Credits<br />
+<div class=3D"outline-text-5" id=3D"text-orgdb536d7">
+<p>
+Thanks to the NLNet foundation for supporting this project!
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+</div>
+<div id=3D"outline-container-org57b6598" class=3D"outline-3">
+<h3 id=3D"org57b6598">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org57b6598">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://jon.recoil.org/blog/2025/07/week27.html">Weeks 24-27=
+</a></li>
+<li><a href=3D"https://www.dra27.uk/blog/week-that-was/2025/07/06/wtw-27.ht=
+ml">The week that was - 2025 w27</a></li>
+<li><a href=3D"https://tarides.com/blog/2025-07-04-improving-memory-profile=
+r-visualisations-for-ocaml">Improving Memory Profiler Visualisations for OC=
+aml</a></li>
+<li><a href=3D"https://xvw.lol/en/articles/tetra-master.html">The Hell of T=
+etra Master</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org9245e80" class=3D"outline-2">
+<h2 id=3D"org9245e80">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org9245e80">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org97833b7">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
