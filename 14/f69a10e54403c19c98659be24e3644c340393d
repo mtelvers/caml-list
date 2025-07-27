@@ -1,0 +1,486 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=PJOFboHN;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20230601 header.b=FsHBAHCR;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id E9D58400A3
+	for <caml-list@tunbury.org>; Sun, 27 Jul 2025 14:57:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:sender:from:date:message-id:to:
+   content-transfer-encoding:subject:reply-to:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=eNFgASaZ3ltziRxJ9Ldw9x22yjm1me7IFU4Ju64RF/E=;
+  b=PJOFboHN0sGfiKbkXoqaExPdyJtuZDCe7axWO09h5kdyx6i9Oy64Ok//
+   jP5Dm72Mk9JdcLzppSL7X/3HG7eP4lskgtaIHOKtmKLLqAKo4dUJiyWPR
+   VlI9JcDXOP1CSqRszQci6xCaHGiUvQUx8dvDKHq3XuEdmCr6zdGDBE5c0
+   E=;
+X-CSE-ConnectionGUID: 450Vq4g3QpqBDUKwghWFAg==
+X-CSE-MsgGUID: w4IqYKnLToqy5OkiTE1Lkw==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@gmail.com
+X-IronPort-AV: E=Sophos;i="6.16,339,1744063200"; 
+   d="scan'208";a="233263794"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 27 Jul 2025 16:57:01 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id D6D2AE0CDC; Sun, 27 Jul 2025 16:57:00 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 570B5E0171
+	for <caml-list@sympa.inria.fr>; Sun, 27 Jul 2025 16:56:58 +0200 (CEST)
+X-CSE-ConnectionGUID: y7NB3+GSRd+rqLQ1q0Zc9Q==
+X-CSE-MsgGUID: Qcu+k/dKRwKEPACGQJt/iA==
+IronPort-SDR: 68863e39_NrYzX4MW9yl2LPXATxbZ08mya8Dzkye+yot7I1LNqXBa6nw
+ nuIdpIgXQ8cr/AVm9bQmvw3slxBvtmGYmH0ZMpQ==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0FOCgC7PIZofDSnVdFagQmBVYJCgQBZNAQLSYRVg0+MA?=
+ =?us-ascii?q?YIhgRaKYYVWjhAWJwIPAQMBDT0UBAEBAwEDhQCMGwIeBwEENBMBAgQBAQEBA?=
+ =?us-ascii?q?wIDAQEBAQEBAQEBDQEBBQEBAQIBAQIEBgECEAEBIhkHDhIphXsNSQEMAQgBg?=
+ =?us-ascii?q?Xs7cV4DAgUDOgEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEFAg0HGBEuOAsGHQEbCwEMBgMNBRAPAiYCIwERAQUBIhMJEQiCYYIhAQYQA?=
+ =?us-ascii?q?QMyAxGlbYIkgQVCiz6BFQUCFoEBgg0GgQnZVgoZKA1xgWECBxSBBy4BhHUpX?=
+ =?us-ascii?q?II5HQGBbYN/g316J4EYgRCBFTWCPYF7gVwEGIEdAQM6g0aCaQSCIoECFIJyh?=
+ =?us-ascii?q?0pshUSCAQEChiUmCAEGFwMHBwkFBBwGBQUCPwkGBQoSAwQDBAQBAgsTCQMDA?=
+ =?us-ascii?q?g4CCAMCCAYZAT8SBBMKDQsHBR8KAgwRCigiEisKAQIBWjQBCAYCAgQEAgQMA?=
+ =?us-ascii?q?gkCAgUHAhEDBAEBCAICLQMBAxkICQgCCwUUGAwLBzIDEAEECQwBAQIEAgIdA?=
+ =?us-ascii?q?gEDCAYBAQ0CAwICAQICBAIEBgcECAEBAgECAgEBAQQBBwEBAgIDAwUDBQMIG?=
+ =?us-ascii?q?QEVCRUDBAUCAhICAgEHAQIBAQMZAgEDAwQBCwIBAQQbBBUCFAIkAhkCAQUFB?=
+ =?us-ascii?q?QEDBAsQCQMCBQQCAgYCBA4CBwICGgQCAgEDBAYDAQIIAgIHBAQGAwECAgcXA?=
+ =?us-ascii?q?hUBAgEDAgIJCgQFBAMEAwICAgEMAwECAwICAQIBAQMBBQYNEgIBAw8IBAICB?=
+ =?us-ascii?q?wICIRkBAgEBBgYDAwMKAwEKAQEGAgECEgUCAgIEAQICBgQlAQIBAgEBAQUCA?=
+ =?us-ascii?q?QIBAgQCBwIBAgMIAQUCBgECAgkBAgECAgIBAgEBAgYCAREEAQICAgICAwEDB?=
+ =?us-ascii?q?gICAgICAgkCAgICBQIFAwIDBQIFAgMDAgIDBAMJAwMIAwYEAgMBAQECAQICA?=
+ =?us-ascii?q?gECAQUCAwkBAQMCAQICAgIDBgIFBQEDCwwBAQIBAwUDAwQDBgEOBAMCBAICA?=
+ =?us-ascii?q?gIEAgEFAwMCBQELAQIEAgEDAwMEBAMBAgIKDAIEAQEBAQIBAgIKAwIFAQMDA?=
+ =?us-ascii?q?REDBAEGBQUGAgcJAwICAwIDAgQDBQQEAgQDAwICAgEBCgICAQIBAQMDBwYQA?=
+ =?us-ascii?q?QICAgEPAgMDBAMEBgMFCQEDBwEBAQEBAhQDAgQFEQgCAQEeARYCBwEEAyceA?=
+ =?us-ascii?q?gIGAgICAgMCAgMDAwECAQEDBQEDAgMCAQIBBgIDAwMFAwEOAgIDAQMBBgQEA?=
+ =?us-ascii?q?gcBAgICDgEDAgIJAgcJCAIBExMCAgICAQICAQIHAQECAwIFBQgCAQEBAgIDA?=
+ =?us-ascii?q?gsCAgECAQICAwIDAgYBCQQEBgECAQEFBAMJAQIDJAMDBAUDAgICAgcCBAMZA?=
+ =?us-ascii?q?g0GAQQDBQUDCAMGAgIDDwMHBgcCBwQCBAICAg4CAwMHBQICAwEBDAQHAgMCA?=
+ =?us-ascii?q?hIDAQEBAg8CAgIMAQEEAgICBQIfCg4CBwoCAQMBAQoCBAIEAwIKAgYCBAMFA?=
+ =?us-ascii?q?gIBBAMCCAIBAgIBAggDAgcDAgMCAQ8ZAwIBAwoCBgUECAICAwMDBAICAgkBA?=
+ =?us-ascii?q?wYBAQEBAgICAgMCAgUGEgIJAyMPAwsJCBM9AQsHMgQ2ARQUByshX5JVg38BD?=
+ =?us-ascii?q?yEOIwETPEIMFw4LBA4FHwEPAxYFRpJaJSaSBIE1n1kHAYQejB6CWJJ6M4QEg?=
+ =?us-ascii?q?VeLPJhtZ4gDkQOMXYErlTQuAhOFMREkEoFJI4FcMxojgQGCNglGAxkPMSaNY?=
+ =?us-ascii?q?YNphROCI0u5PCgyPAIHAQoBAQMJh1aHd3gBASYHBYFLAQE?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ tVgD7XSyqhIxIC9FYB6ETk0xq8=
+IronPort-HdrOrdr: A9a23:1q+XVaHQpVl+s8DXpLqEL8eALOsnbusQ8zAXPidKOGBom62j5r
+ 2TdZEgvyMc5wxhP03I9erwXJVoIkmsl6Kdg7NhRYtKNTOO0ADJXeJfBKTZsljd8kbFh5VgPM
+ lbAtJDIey1I1w/osrz/RWiH8xI+qj/zImYwcnbi1liJDsEV0ii1WtE48Sgf3FedU1pA5w2EZ
+ bZ3MZBqja6PVwKc8XTPAhiYwEOnbP2fVvdACI7Ow==
+X-Talos-CUID: 9a23:vPiqsG4gZE0HeFwcrNss5REyMJtmXUbnwDTKOmuBUH8xerbEcArF
+X-Talos-MUID: 9a23:1/BnRgvwKzXSx5U3LM2nvTp/d8Qv74eUF2MgqbwtlPCmKWtxEmLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.16,339,1744063200"; 
+   d="scan'208";a="233263775"
+X-MGA-submission: =?us-ascii?q?MDEhdAH11RqGl/pcKyA2XDpHNoFlVQTU9Up2ky?=
+ =?us-ascii?q?Pb+jiV52A8uzLfTHxBDuvJKqtIgzhBrckgymVHwfNExidmnauWaLOkGM?=
+ =?us-ascii?q?rT0NGrFwVMkvp1jodr85Lb4cmzVFczTFzekV559GOvdTRNqdXh4NOSLd?=
+ =?us-ascii?q?tY1vDVIHEiu6qRLc+NvzQqqA=3D=3D?=
+Received: from mail-lf1-f52.google.com ([209.85.167.52])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2025 16:56:57 +0200
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-553be4d2fbfso3603105e87.0
+        for <caml-list@inria.fr>; Sun, 27 Jul 2025 07:56:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1753628217; x=1754233017; darn=inria.fr;
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=eNFgASaZ3ltziRxJ9Ldw9x22yjm1me7IFU4Ju64RF/E=;
+        b=FsHBAHCRQev48zpO4/+loCsif7HhkZXRO+VKhhRpAFXsj+z9uXGah+nDS+fP1MXhRj
+         IZnnQ0NxUo2q9XEdwDOKGlc4iItcblyCFZDwfhOsYDQbcNWo6SOwGbPQ+kA38s7rueJ4
+         qjsv3qqCA1ylXBSPCtwWNgJvGKuDNMbPBDdPof0q3yDvO7v2iPo0RJvio4PMoHfRh7Q2
+         C8m3gg+9T3jQjesr1tIHoJYX8cnnsuurwydwd+9QnXq08pTEE1L8zDZ4v83lJ0Clk31M
+         8Seg3ixrPR3UHjl8Qsw4s5pScvDsy8wNntv9WwJ0czwDq3T7eZyXrZRbkXBzYih4JN9z
+         260g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1753628217; x=1754233017;
+        h=content-transfer-encoding:to:subject:message-id:date:from:sender
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eNFgASaZ3ltziRxJ9Ldw9x22yjm1me7IFU4Ju64RF/E=;
+        b=ar5HVDDDmQ3BmvGypKIXx2sIX6wRRV6I/NdnG8BqWE+cjbcscqGYRKUcJ7v1v+CzJy
+         /jzJjkBqBMlB++u2uejtwQvZGXhGDc8lgkp/k5cjO+NLelxsL57sbPFJJAqqP79+O+Vf
+         GVR7zyJUfuTQ4Cp4Pgc4uAzxr9sWO4y0TUjJWRo2WxPT7KM5YUN2VJ8IMvUYInrJh2HF
+         +CfnhkAu8TRuBNM7Id3rOwBMR/BZoekd1cmW2D1oa7LtRLatRq0osqsR0AOvgaWc5DGT
+         rNHuoynOltgDH+655J2BPUuVcLkOhLLnZvdD9QnOY+TsmmO1S9kKrP3sMmyw0vFDgd9J
+         mJrA==
+X-Gm-Message-State: AOJu0YwuyjRvkH28O5XagGlzNTwTT9DgaGZEQah4KazDWC8gfq7ZF5IX
+	OjDVjZXaHuEeMNNAQX7roC9KC6aT1t2JDpOIN0TqPTLh2zaqom8MYdKMOVibO89XCcvUg5LGF2D
+	3YVuK4JxmdEhUxfSDHpbgPh1Qoh0ETCzqvg==
+X-Gm-Gg: ASbGncsOzTpx9B4qXNyAsrGW9icNS+6kEKTJHKgmsR4tV2MWmwZp88LfBreN1wyoXD4
+	MX0Wn+Xt9D65eCCTzX0jcWOTb1tqAkJUT7NPZmNvsLiq7YcbY3m5wXkE6hpCVDoG0+P8SjnJKxX
+	SqNI/DJupXSnDP8LE5bNzVVKAE8VgOvBhXyr2HqgD5CgpITj2TUuwWVx0aJEgCoEv+a/ROkSEFz
+	E3eE394
+X-Google-Smtp-Source: AGHT+IEk0iH019a/Xe3y8HboQN9SFANvPHrYSWz2YVP9u+RFu4u+bbV/lx8FQJaVdFGM0mOOvy7oa5GSao9wAuYxAHM=
+X-Received: by 2002:a05:6512:2c96:b0:553:2fec:b139 with SMTP id
+ 2adb3069b0e04-55b5f403948mr2751756e87.24.1753628216288; Sun, 27 Jul 2025
+ 07:56:56 -0700 (PDT)
+Received: from 52669349336 named unknown by gmailapi.google.com with HTTPREST;
+ Sun, 27 Jul 2025 09:56:55 -0500
+Received: from 52669349336 named unknown by gmailapi.google.com with HTTPREST;
+ Sun, 27 Jul 2025 09:56:55 -0500
+MIME-Version: 1.0
+Sender: caml-list-request@inria.fr
+From: Mart Lubbers <ifl21.publicity@gmail.com>
+Date: Sun, 27 Jul 2025 09:56:55 -0500
+X-Google-Sender-Auth: kIa3rtNuhbnNrxCoTKICN9CVsCA
+X-Gm-Features: Ac12FXwx8rPg8O7pHm0wKT60B_vv9CZZLzwCXGaS0J1gkXPfoFCMc-GaMPt2xKw
+Message-ID: <CAGtcRvBzP5mDJsdyoUW0v2icDps-_Y52_+qrPaJBHsqnfnSgVw@mail.gmail.com>
+To: Caml-List <caml-list@inria.fr>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Caml-list] IFL 2025 - Call For Draft Papers (deadline extension)
+Reply-To: Mart Lubbers <ifl21.publicity@gmail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19355
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-07/CAGtcRvBzP5mDJsdyoUW0v2icDps-_Y52_%2BqrPaJBHsqnfnSgVw%40mail.gmail.com>
+
+Please, find below the call for draft papers for IFL 2025. The
+submission deadline has been extended to August 31. In this CFP we
+also include the announcement of our keynote speakers and of tutorials
+to be held on September 29 and 30, prior to IFL.
+
+Please forward this to anyone you think may be interested.
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+                                IFL 2025
+
+37th Symposium on Implementation and Application of Functional Languages
+
+
+                        Montevideo, Uruguay
+
+                        October 1-3, 2025
+
+                       https://www.fing.edu.uy/inco/congresos/ifl2025
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[NEWS: Extended deadline for draft paper submission, Keynote speakers,
+Tutorials]
+
+### Scope
+
+The goal of the IFL symposia is to bring together researchers actively
+engaged in the implementation and application of functional and
+function-based programming languages. IFL 2025 will be a venue for
+researchers to present and discuss new ideas and concepts, work in
+progress, and publication-ripe results related to the implementation
+and application of functional languages and function-based
+programming.
+
+### Topics of interest
+
+Topics of interest to IFL include, but are not limited to:
+
+- language concepts
+- type systems, type checking, type inferencing
+- compilation techniques
+- staged compilation
+- run-time function specialisation
+- run-time code generation
+- partial evaluation
+- (abstract) interpretation
+- meta-programming
+- generic programming
+- automatic program generation
+- array processing
+- concurrent/parallel programming
+- concurrent/parallel program execution
+- embedded systems
+- web applications
+- (embedded) domain specific languages
+- security
+- novel memory management techniques
+- run-time profiling performance measurements
+- debugging and tracing
+- virtual/abstract machine architectures
+- validation, verification of functional programs
+- tools and programming techniques
+
+### Keynote speakers
+
+- Roberto Ierusalimschy
+
+Departamento de Inform=C3=A1tica, PUC-Rio, R=C3=ADo de Janeiro, Brazil
+
+- Iv=C3=A1n P=C3=A9rez
+
+NASA Ames Research Center, California, USA
+
+### Tutorials
+
+On September 29 and 30, the two days prior to the symposium, four
+tutorials will be held:
+
+- Gradual typing
+=C3=89ric Tanter, University of Chile, Chile
+
+- Type Based Static Analysis
+Jurriaan Hage, Heriot-Watt University, UK
+
+- Development of dApps in the UTxO model
+TxPipe, Argentina
+
+- TBA
+
+
+### Peer-review process
+
+Differently from previous editions of IFL, IFL 2025 solicits two kinds
+of submissions:
+
+* Regular papers (12 pages excluding references)
+* Draft papers for presentations ('weak' limit between 5 and 15 pages)
+
+Regular papers will undergo a rigorous review by the program
+committee, and will be evaluated according to their correctness,
+novelty, originality, relevance, significance, and clarity. Regular
+papers can be: accepted for publication in the formal proceedings,
+accepted for presentation at the symposium or rejected.
+
+Draft papers will be screened to make sure that they are within the
+scope of IFL, and will be accepted for presentation or rejected
+accordingly.
+
+We require that at least one of the authors present the work at IFL 2025.
+
+Authors of accepted presentations will be given the opportunity to
+incorporate the feedback from discussions at the symposium and will be
+invited to submit a revised full article for the formal
+post-proceedings after the symposium. The program committee will
+evaluate these submissions according to their correctness, novelty,
+originality, relevance, significance, and clarity, and will thereby
+determine whether the paper is accepted or rejected.
+
+### Important dates
+
+Submission of regular papers:              June 23, 2025 (extended)
+Regular papers notification:               August 4, 2025
+Submission of draft papers:                August 31, 2025 (extended)
+Draft papers notification:                 September 4, 2025
+Deadline for early registration:           September 5, 2025
+Submission of pre-proceedings version:     September 8, 2025
+Pre-symposium tutorials                    September 29-30, 2025
+IFL Symposium:                             October 1-3, 2025
+Submission of papers for post-proceedings: December 15, 2025
+Notification of acceptance:                February 28, 2026
+Camera-ready version:                      March 30, 2026
+
+Deadlines are end of day Anywhere on Earth (UTC-12)
+(https://www.timeanddate.com/time/zones/aoe).
+
+### Submission details
+
+All contributions must be written in English. Papers must use the ACM
+two columns conference format, which can be found at:
+
+    http://www.acm.org/publications/proceedings-template
+
+Submit your draft paper here:
+
+    https://easychair.org/conferences/?conf=3Difl2025
+
+using the track [IFL 2025 - Draft papers].
+
+Important note to authors about the new ACM open access publishing
+model ACM has introduced a new open access publishing model for the
+International Conference Proceedings Series (ICPS). Authors based at
+institutions that are not yet part of the ACM Open program and do not
+qualify for a waiver will be required to pay an article processing
+charge (APC) to publish their ICPS article in the ACM Digital Library.
+To determine whether or not an APC will be applicable to your article,
+please follow the detailed guidance here:
+
+https://www.acm.org/publications/icps/author-guidance.
+
+Further information may be found on the ACM website, as follows:
+
+- Full details of the new ICPS publishing model:
+https://www.acm.org/publications/icps/faq
+
+- Full details of the ACM Open program:
+https://www.acm.org/publications/openaccess
+
+- Please direct all questions about the new model to icps-info@acm.org.
+
+### Peter Landin Prize
+
+The Peter Landin Prize is awarded to the best paper presented at the
+symposium every year. The honoured article is selected by the program
+committee based on the submissions received for the formal review
+process. The prize carries a cash award equivalent to 150 Euros.
+
+### Organisation
+
+PC Chairs:
+Alberto Pardo, Universidad de la Rep=C3=BAblica, Montevideo, Uruguay
+Marcos Viera, Universidad de la Rep=C3=BAblica, Montevideo, Uruguay
+
+Publicity Chair:
+Mart Lubbers, Radboud University, The Netherlands
+
+Local Chairs:
+Alberto Pardo, Universidad de la Rep=C3=BAblica, Montevideo, Uruguay
+Marcos Viera, Universidad de la Rep=C3=BAblica, Montevideo, Uruguay
+
+### Program committee:
+
+Matteo Cimini, University of Massachusetts Lowell
+Facundo Dom=C3=ADnguez, Tweag
+Jo=C3=A3o Paulo Fernandes, Universidade do Porto
+Jeremy Gibbons, Oxford University
+Jurriaan Hage, Heriot Watt University
+Jason Hemann, Seton Hall University
+Maja Hanne Kirkeby, Roskilde University
+Mart Lubbers, Radboud University
+Bruno C. D. S. Oliveira, The University of Hong Kong
+Rinus Plasmeijer, Radboud University
+Andre Rauber Du Bois, Universidade Federal de Pelotas
+Rodrigo Ribeiro, Universidade Federal de Ouro Preto
+Alejandro Russo, Chalmers University of Technology
+Jo=C3=A3o Saraiva, University of Minho
+Wenhao Tang, University of Edinburgh
+Zhixuan Yang, Imperial College London
+Brent Yorgey, Hendrix College
+Beta Ziliani, Manas.Tech
+Vikt=C3=B3ria Zs=C3=B3k, E=C3=B6tv=C3=B6s Lor=C3=A1nd University
+
+### Venue
+
+IFL 2025 will be held physically in Montevideo, Uruguay. See the
+website for more information.
+
+    https://www.fing.edu.uy/inco/congresos/ifl2025
+
+### Acknowledgments
+
+This call-for-papers is an adaptation and evolution of content from
+previous instances of IFL. We are grateful to prior organisers for
+their work, which is reused here.
