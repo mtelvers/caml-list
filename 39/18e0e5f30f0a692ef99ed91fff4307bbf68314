@@ -1,0 +1,856 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=mYQYfYc+;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=5C8GPhQH;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id D5FB140066
+	for <caml-list@tunbury.org>; Tue,  5 Aug 2025 08:18:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=gy3nM92DqJBhxwaUnifPdbQ/SJT2++AwU7RwgZoxl8g=;
+  b=mYQYfYc+m93VAlndyuouR5mgRgHdQ2Y9+nV9U1KOCI2jSpW5AlhndiLa
+   L+fzuSuh7g68UVjzFU+9IV00or4rAVNxY+6SLdIC1+fccfueNSeVVcfvV
+   1O4PfV4Y49z+NUCc2nV3BEE6+UzO4oWIIvZ8v405X0x9hKnyguhVMBUYt
+   o=;
+X-CSE-ConnectionGUID: HZyaCJJ3SzqM4KRIIhGUlg==
+X-CSE-MsgGUID: G9uFSlPdTkKFQCvIpLC7uA==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.17,265,1747692000"; 
+   d="scan'208,217";a="234200628"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 05 Aug 2025 10:18:05 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 8645DE0CD8; Tue,  5 Aug 2025 10:18:04 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id 3C5A2E0171
+	for <caml-list@sympa.inria.fr>; Tue,  5 Aug 2025 10:17:58 +0200 (CEST)
+X-CSE-ConnectionGUID: aNYg86dRS2So8t4/LaHnIQ==
+X-CSE-MsgGUID: Xyw1RhOtQNGjXkBjcD+2wA==
+IronPort-SDR: 6891be35_kiyCvjYOp0UEly/tlk5LKJmxpX+RLUpGQOMWhKiYS6L/ukF
+ AzE056IsWuQAJnrpH4Qhq5y7niUDDTvt1nG/rvQ==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0FmOwBGvZFojyIeaIFaGQEBAQEBATwBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QECAQEBAQEBAQEBAQGBaoE7GwIBAQEBAQFgGQFgBlozBwhJQx6DdINPhSyId?=
+ =?us-ascii?q?pQJhy+BEIJ6Ay4YIAEDAQ0UAgECDgcBBRoBAgQBAQMBAgGEOkYYjAcCHwYBB?=
+ =?us-ascii?q?DQTAQIEAQEBAQMCAwEBAQEBAQEBAQ0BAQUBAQECAQECBAYBAhABAQEBAQE5B?=
+ =?us-ascii?q?UmGTw2CRVFxgSUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQECCwEBBzxkChMBAS4KGCMDEAQHAwIEDQE1FwESGoJoAYIhAksDB?=
+ =?us-ascii?q?AEMBAKaPJtMeoEygQGCDAEBBoEIUwEOCdoxgRowGgmBRwIBAQEBAQEBAYVlg?=
+ =?us-ascii?q?koaASpIawKESAmEMycPgVVEgz1Rb4FQehcBAQEBGIEkAQEIRYMugmmCJoECF?=
+ =?us-ascii?q?B2BPoYbgy6FRIhygUQiAyYzLAFVExcLBwVbgQgDKjQxbjIdgSeFGIQoK0+FE?=
+ =?us-ascii?q?IEZg1MRE20PBoEVg3MuQAMLbT03FBuTRBcpGWqBcQ42CD5tDgIiNgkFKwwXK?=
+ =?us-ascii?q?wUEFhUfPQgDkkMkGCqddJRjNAeEH4FeBgyJCIEmjB+JZ4QEgVeLPIcCklIim?=
+ =?us-ascii?q?GQiiV2BJglggQ9rlWAThUaBfyOBKx4MBzMaMEOCMwEzCQo8HA+SIYE+gSaBO?=
+ =?us-ascii?q?zk7gmayPkE1AgEBBzECBwEKAQEDCYVFHQEBjDeBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:hfBQB6Enn5Xy05VRpLqE1ceALOsnbusQ8zAXPiFKOH9om6mj/f
+ xG88506faZslsssRIb+exoWpPgfZq0z/ccirX5Vo3MYOCJggeVBbAnxbSn6TztES/z+4dmpM
+ VdWpk7Lsb/SXxzjcOS2njdLz/M+qjjzJyV
+X-Talos-CUID: =?us-ascii?q?9a23=3AT64pSGiHQzY6DphVs5/hFhPjFzJue1vswyeOL3W?=
+ =?us-ascii?q?DU11uGKHJDnuZ2KVFqp87?=
+X-Talos-MUID: =?us-ascii?q?9a23=3Ac0S9Nw4H3kfnQ1eRb0lhSWlAxoxY8rv3MkAqjaw?=
+ =?us-ascii?q?glMu0NgZyMBve1iueF9o=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.17,265,1747692000"; 
+   d="scan'208,217";a="234200593"
+X-MGA-submission: =?us-ascii?q?MDH6s9MD2d+xozP+nH+a1pu2VYs7T85TUvj04H?=
+ =?us-ascii?q?KvXaMhi+8XbuW8w2GhIOoX8FfNFEEewcUwTdUOLVNTQjXqEcpuKBKVC/?=
+ =?us-ascii?q?hx3eKHBrOGHTfUEn6rHzxqet4WGLzWIqAdrqcwIAgGI9usGHDs+4s54T?=
+ =?us-ascii?q?cybtVfvdBSA8np2s0fyMAo8w=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2025 10:17:57 +0200
+Received: from TM.local (88-176-91-141.subs.proxad.net [88.176.91.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 4ACA8564DAB;
+	Tue,  5 Aug 2025 10:17:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1754381876;
+	bh=term9xV93AXytQJ6Fih9a7p/vaNibYQY1hRuVEzeKA0=;
+	h=From:To:Subject:Date:Message-ID;
+	b=5C8GPhQHi2YElW64J1ohtBQv95SSCQ3HHs4rsbgIIo8a7m/yyZ8TvohiPtRzrLAqv
+	 St00YXLr+Yt7mUERLCIF0GhbxC5xKygdGBDcHjgctaeOLhO9J+oZrmkSJsqYzGcfvs
+	 fu4TNXguVeUbx8WuyOKGl4odzUZyUaSzQmEMf9uY=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 05 Aug 2025 10:17:55 +0200
+Message-ID: <m27bzimbbg.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Aug  5 10:17:56 2025 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.498916, queueID=9BCF3564DAC
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19358
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-08/m27bzimbbg.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+SGVsbG8NCg0KSGVyZSBpcyB0aGUgbGF0ZXN0IE9DYW1sIFdlZWtseSBOZXdzLCBmb3IgdGhlIHdl
+ZWsgb2YgSnVseSAyOSB0byBBdWd1c3QNCjA1LCAyMDI1Lg0KDQpUYWJsZSBvZiBDb250ZW50cw0K
+4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSADQoNCk15
+IGZvdXJ0aCBPdXRyZWFjaHkgSW50ZXJuc2hpcCBCbG9nIHBvc3QNCnFjaGVjay1saW4gYW5kIHFj
+aGVjay1zdG0gMC4yDQpDUnMgV29ya2Zsb3dzOiBJbnZpdGF0aW9uIGZvciBFYXJseSBUZXN0aW5n
+IGFuZCBEaXNjdXNzaW9uDQpPQ2FtbCB2ZXJzaW9uIG9mIHRoZSAiQnVpbGQgc3lzdGVtcyDDoCBs
+YSBjYXJ0ZSIgcGFwZXINCkRyZWFtIGRldmVsb3BtZW50IG9wZW4gdmlkZW8gY2FsbA0KT3RoZXIg
+T0NhbWwgTmV3cw0KT2xkIENXTg0KDQoNCk15IGZvdXJ0aCBPdXRyZWFjaHkgSW50ZXJuc2hpcCBC
+bG9nIHBvc3QNCuKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKV
+kOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKV
+kOKVkOKVkOKVkOKVkOKVkA0KDQogIEFyY2hpdmU6DQogIDxodHRwczovL2Rpc2N1c3Mub2NhbWwu
+b3JnL3QvbXktZm91cnRoLW91dHJlYWNoeS1pbnRlcm5zaGlwLWJsb2ctcG9zdC8xNzAyNy8xPg0K
+DQoNCk1hdHRoZXcgSWR1bmdhZmEgYW5ub3VuY2VkDQrilIDilIDilIDilIDilIDilIDilIDilIDi
+lIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIANCg0K
+ICBIZWxsbyBldmVyeW9uZSEgSSd2ZSBqdXN0IHB1Ymxpc2hlZCBteSBmaXJzdCBtaWRwb2ludCBP
+dXRyZWFjaHkgYmxvZw0KICBwb3N0IGFib3V0IG15IHByb2dyZXNzIGNvbnRyaWJ1dGluZyB0byBE
+dW5lLiBZb3UgY2FuIHJlYWQgaXQgaGVyZToNCiAgPGh0dHBzOi8vbWVkaXVtLmNvbS9AbWF0dGlk
+dW5nYWZhL291dHJlYWNoeS1pbnRlcm5zaGlwLW1pZHBvaW50LXBvc3QtZjkzMzNjOWMzYzg2Pi4g
+U3RheQ0KICB0dW5lZCBmb3IgbW9yZSB1cGRhdGVzIQ0KDQoNCnFjaGVjay1saW4gYW5kIHFjaGVj
+ay1zdG0gMC4yDQrilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZANCg0KICBBcmNoaXZlOg0K
+ICA8aHR0cHM6Ly9kaXNjdXNzLm9jYW1sLm9yZy90L2Fubi1xY2hlY2stbGluLWFuZC1xY2hlY2st
+c3RtLTAtMi8xMjMwMS83Pg0KDQoNCkphbiBNaWR0Z2FhcmQgYW5ub3VuY2VkDQrilIDilIDilIDi
+lIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDi
+lIANCg0KICBWZXJzaW9uIDAuOSBvZiBgcWNoZWNrLWxpbicsIGBxY2hlY2stc3RtJywgYW5kDQog
+IGBxY2hlY2stbXVsdGljb3JldGVzdHMtdXRpbCcgaXMgbm93IGF2YWlsYWJsZSBmcm9tIHlvdXIg
+ZmF2b3JpdGUgb3BhbQ0KICByZXBvc2l0b3J5ISA6dGFkYToNCg0KICBUaGUgMC45IHJlbGVhc2Ug
+Y29udGFpbnMgYWRqdXN0bWVudHMgdG8gdGhlIHB1YmxpYyBpbnRlcmZhY2Ugb2YgYExpbicNCiAg
+aW4gb3JkZXIgdG8gbWFrZSBpdCBjb21wYXRpYmxlIHdpdGggYDUuNS4wK3RydW5rJyBhbmQgYWxz
+byBzd2l0Y2hlcw0KICB0aGUgYFV0aWwuUHAnIHByZXR0eSBwcmludGVycyB0byB1c2UgYFFDaGVj
+ay5QcmludCcgZm9yIGNvbnNpc3RlbmN5Og0KDQogIOKAoiBbIzU2Nl06IFVzZSBgUUNoZWNrLlBy
+aW50JyBjb21iaW5hdG9ycyBpbiBgVXRpbC5QcCcgdG9vIGZvcg0KICAgIGNvbnNpc3RlbmN5LCBl
+LmcuLCB0byBhdm9pZCB0aGF0IGBTVE0nIGFyZ3VtZW50IGFuZCByZXN1bHQgcHJpbnRlcg0KICAg
+IG91dHB1dHMgZGlmZmVyLg0KDQogIOKAoiBbIzU2Ml06IEZpeCB0aGUgYGludDMyJyBhbmQgYGlu
+dDY0JyBwcmludGVycyBpbiBib3RoIGBMaW4nIGFuZCBgU1RNJw0KICAgIHRvIGFkZCBtaXNzaW5n
+IGBsJyBhbmQgYEwnIHN1ZmZpeGVzIG9uIGxpdGVyYWxzLg0KDQogIOKAoiBbIzU2MF06IENoYW5n
+ZSBgTGluLntjb25zdHJ1Y3RpYmxlLGRlY29uc3RydWN0aWJsZX0nIGZyb20gYW4gZW1wdHkNCiAg
+ICB2YXJpYW50IHR5cGUgdG8gYW4gYWJzdHJhY3QgdHlwZSB0byBnZXQgYExpbicgY29tcGlsaW5n
+IG9uDQogICAgYDUuNS4wK3RydW5rJyBhZ2FpbiwgZHVlIHRvIFtvY2FtbC9vY2FtbCMxMzk5NF0g
+cmVtb3Zpbmcgc3BlY2lhbA0KICAgIGhhbmRsaW5nIG9mIGFic3RyYWN0IGFuZCBlbXB0eSB2YXJp
+YW50cyBkZWZpbmVkIGluIHRoZSBjdXJyZW50DQogICAgbW9kdWxlLg0KDQogIEhhcHB5IHRlc3Rp
+bmchIDpzbWlsZXk6DQoNCg0KWyM1NjZdIDxodHRwczovL2dpdGh1Yi5jb20vb2NhbWwtbXVsdGlj
+b3JlL211bHRpY29yZXRlc3RzL3B1bGwvNTY2Pg0KDQpbIzU2Ml0gPGh0dHBzOi8vZ2l0aHViLmNv
+bS9vY2FtbC1tdWx0aWNvcmUvbXVsdGljb3JldGVzdHMvcHVsbC81NjI+DQoNClsjNTYwXSA8aHR0
+cHM6Ly9naXRodWIuY29tL29jYW1sLW11bHRpY29yZS9tdWx0aWNvcmV0ZXN0cy9wdWxsLzU2MD4N
+Cg0KW29jYW1sL29jYW1sIzEzOTk0XSA8aHR0cHM6Ly9naXRodWIuY29tL29jYW1sL29jYW1sL3B1
+bGwvMTM5OTQ+DQoNCg0KQ1JzIFdvcmtmbG93czogSW52aXRhdGlvbiBmb3IgRWFybHkgVGVzdGlu
+ZyBhbmQgRGlzY3Vzc2lvbg0K4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQDQoNCiAgQXJjaGl2ZToNCiAgPGh0dHBzOi8vZGlzY3Vzcy5v
+Y2FtbC5vcmcvdC9jcnMtd29ya2Zsb3dzLWludml0YXRpb24tZm9yLWVhcmx5LXRlc3RpbmctYW5k
+LWRpc2N1c3Npb24vMTcwMzYvMT4NCg0KDQpNYXRoaWV1IEJhcmJpbiBhbm5vdW5jZWQNCuKUgOKU
+gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
+gOKUgOKUgOKUgA0KDQogIEkganVzdCBwdWJsaXNoZWQgYSBibG9nIHBvc3QgYWJvdXQgQ1JzIFdv
+cmtmbG93cywgYSBuZXcgb3BlbiBzb3VyY2UNCiAgdG9vbCBmb3IgbWFuYWdpbmcgY29kZSByZXZp
+ZXcgY29tbWVudHMgZW1iZWRkZWQgaW4gc291cmNlIGNvZGUsIHdpdGgNCiAgcmV1c2FibGUgR2l0
+SHViIEFjdGlvbnMgd29ya2Zsb3dzLiBJZiB5b3XigJlyZSBpbnRlcmVzdGVkIGluIHRyeWluZyBp
+dA0KICBvdXQgb3Igc2hhcmluZyBmZWVkYmFjaywgeW91IGNhbiByZWFkIG1vcmUgaGVyZToNCiAg
+PGh0dHBzOi8vbWJhcmJpbi5naXRodWIuaW8vY3JzL2Jsb2cvbGF1bmNoaW5nLWNycy13b3JrZmxv
+d3MvPi4NCg0KICBUaGFuayB5b3UhDQoNCg0KT0NhbWwgdmVyc2lvbiBvZiB0aGUgIkJ1aWxkIHN5
+c3RlbXMgw6AgbGEgY2FydGUiIHBhcGVyDQrilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDi
+lZDilZDilZDilZDilZANCg0KICBBcmNoaXZlOg0KICA8aHR0cHM6Ly9kaXNjdXNzLm9jYW1sLm9y
+Zy90L29jYW1sLXZlcnNpb24tb2YtdGhlLWJ1aWxkLXN5c3RlbXMtYS1sYS1jYXJ0ZS1wYXBlci8x
+NzA0Mi8xPg0KDQoNCmpiZWNrZm9yZCBhbm5vdW5jZWQNCuKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
+gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgA0KDQogIFRoZXJlIGlzIGEgZ3JlYXQg
+cGFwZXIgZGlzdGlsbGluZyBzZXZlcmFsIGRpZmZlcmVudCBidWlsZCBzeXN0ZW1zDQogIChNYWtl
+LCBFeGNlbCwgQmF6ZWwsIGV0Yy4pIGludG8gYSB1bmlmaWVkIGZyYW1ld29yay4gT25lIG9mIGl0
+cw0KICBhdXRob3JzIGlzIG9uIHRoZSBEdW5lIHRlYW0gKEkgdGhpbmspLiBJZiB5b3Ugd2FudCB0
+byB1bmRlcnN0YW5kIG9yDQogIHdyaXRlIGJ1aWxkIHN5c3RlbXMsIGl0IGlzIGEgZ29vZCByZWFk
+IGJlY2F1c2UgaXQgdXNlcyBsYW5ndWFnZSB0aGF0DQogIGNhbiBiZSB1bmRlcnN0b29kIGJ5IG5v
+bi1hY2FkZW1pY3M6DQoNCiAgPGh0dHBzOi8vd3d3LmNhbWJyaWRnZS5vcmcvY29yZS9qb3VybmFs
+cy9qb3VybmFsLW9mLWZ1bmN0aW9uYWwtcHJvZ3JhbW1pbmcvYXJ0aWNsZS9idWlsZC1zeXN0ZW1z
+LWEtbGEtY2FydGUtdGhlb3J5LWFuZC1wcmFjdGljZS8wOTdDRTUyQzc1MEU2OUJEMTZCNzhDMzE4
+NzU0QzdBND4NCg0KICBBbGwgb2YgaXRzIGV4YW1wbGVzIGFyZSBpbiBIYXNrZWxsIHNvIEkgd3Jv
+dGUgYSB2ZXJzaW9uIGluIE9DYW1sLiBNb3N0DQogIG9mIG15IE9DYW1sIHRyYW5zbGF0aW9uIHdh
+cyBhaWRlZCBieSB0aGUgRW5nbGlzaCBwYXJhZ3JhcGhzIHJhdGhlcg0KICB0aGFuIHRoZSBIYXNr
+ZWxsIGNvZGUgKHRoZSBsYXR0ZXIgd2FzIGhpZXJvZ2x5cGhpY3MgdG8NCiAgbWUpLiBSZWdhcmRs
+ZXNzLCBJ4oCZbSBmYWlybHkgc3VyZSBzb21lIG9mIHRoZSBjb25jZXB0cyBkb27igJl0IHRyYW5z
+bGF0ZQ0KICB0byBPQ2FtbCB3ZWxsLg0KDQogIElmIHlvdSBhcmUgaW50ZXJlc3RlZCBpbiBidWls
+ZCBzeXN0ZW1zLCB0aGUgZmlyc3QgcGxhY2UgdG8gc3RhcnQgaXMNCiAgdGhlIHRlc3QgZGlyZWN0
+b3J5DQogIDxodHRwczovL2dpdGxhYi5jb20vZGttbC9idWlsZC10b29scy9NbEZyb250Ly0vdHJl
+ZS9WMl80L3Rlc3RzL01sRnJvbnRfVGh1bms/cmVmX3R5cGU9aGVhZHM+DQogICh0aGUgYGFsYWNh
+cnRlXyoubWwnIG1vZHVsZXMpLiBUaGUgdGVzdHMgY29ycmVzcG9uZCB0byB0aGUgcGFwZXLigJlz
+DQogIHNlY3Rpb24gbnVtYmVycywgYWx0aG91Z2ggdGhlcmUgYXJlIGFsc28gYGFsYWNhcnRlX3gq
+Lm1sJyB0ZXN0cyB3aGVyZQ0KICBJIGV4dGVuZGVkIHRoZSBmcmFtZXdvcmsuIFRoZW4geW91IGNh
+biBzY2FuIHRoZSBzb3VyY2UgY29kZSBhdA0KICA8aHR0cHM6Ly9naXRsYWIuY29tL2RrbWwvYnVp
+bGQtdG9vbHMvTWxGcm9udC8tL3RyZWUvVjJfNC9zcmMvTWxGcm9udF9UaHVuaz9yZWZfdHlwZT1o
+ZWFkcz4NCiAgKHRoZSBgQnVpbGQqLm1sJyBhbmQgYFByb21pc2UubWwnIG1vZHVsZXMpLg0KDQog
+IFBScyB3ZWxjb21lIQ0KDQoNCkRyZWFtIGRldmVsb3BtZW50IG9wZW4gdmlkZW8gY2FsbA0K4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ
+4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQ4pWQDQoNCiAgQXJjaGl2ZToNCiAg
+PGh0dHBzOi8vZGlzY3Vzcy5vY2FtbC5vcmcvdC9kcmVhbS1kZXZlbG9wbWVudC1vcGVuLXZpZGVv
+LWNhbGwvMTcwNTMvMT4NCg0KDQpBbnRvbiBCYWNoaW4gYW5ub3VuY2VkDQrilIDilIDilIDilIDi
+lIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIANCg0K
+ICBHcmVldGluZ3MhDQoNCiAgV2UgYXJlIHBsYW5uaW5nIHRvIGhvc3QgdGhlIGZpcnN0IERyZWFt
+IGRldmVsb3BtZW50IHZpZGVvIGNhbGwgd2l0aA0KICBAc2FiaW5lIG9uIERpc2NvcmQgb24gRnJp
+ZGF5LCA4IEF1Z3VzdCwgYXQgOTowMCBBTSBCZXJsaW4gdGltZS4NCg0KICBQbGVhc2Ugam9pbiBb
+I3dlYmRldl0gb24gdGhlIE9DYW1sIERpc2NvcmQgaWYgeW914oCZZCBsaWtlIHRvDQogIHBhcnRp
+Y2lwYXRlLiBJIHdpbGwgaGFuZGxlIHF1ZXN0aW9ucyBhYm91dCBqb2luaW5nIHRoZSBtZWV0aW5n
+DQogIHRoZXJlLiBXZSB3aWxsIHByb2JhYmx5IHVzZSBvbmUgb2YgdGhlIHZvaWNlIGNoYXQgY2hh
+bm5lbHMgb24gdGhlDQogIHNlcnZlciAod2hpY2ggc3VwcG9ydHMgdmlkZW8pLg0KDQogIFRoZSB0
+b3BpYyBvZiB0aGUgbWVldGluZyB3aWxsIGJlIGRpc2N1c3Npbmcgb3BlbiBQUnMgYW5kIGdldHRp
+bmcgdGhlbQ0KICByZWFkeSBmb3IgbWVyZ2UgYnkgb3VyIGNvbGxlY3RpdmUgZWZmb3J0cywgYW5k
+IG5lZWRlZCBpbXByb3ZlbWVudHMuIFdlDQogIHdvdWxkIGxpa2UgdG8gcHV0IG9mZiBjb25jZXB0
+dWFsIGFuZCBzdHJhdGVnaWMgZGlzY3Vzc2lvbnMgdW50aWwgdGhlDQogIHZlcnkgZW5kIG9mIHRo
+ZSBtZWV0aW5nLCBvciB0byBhIGZ1dHVyZSBkYXRlLg0KDQogIEFuZCBwbGVhc2UgYmVhciB3aXRo
+IHVzIGFzIHdlIGZpZ3VyZSBvdXQgd2hhdCBwbGF0Zm9ybSBpcyBiZXN0IHRvIHVzZQ0KICBhbmQg
+aG93IHRvIHVzZSBpdCA6KSBXZSBjYW7igJl0IHByb21pc2UgdGhhdCB0aGUgZmlyc3QgbWVldGlu
+ZyB3aWxsIGdvDQogIHdpdGhvdXQgYW55IGlzc3VlcywgYnV0IHdlIHdpbGwgd29yayBvdXQgZXZl
+cnl0aGluZyBiYXNlZCBvbg0KICBleHBlcmllbmNlIDopDQoNCiAgSG9wZSB0byBzZWUgeW91IHRo
+ZXJlIQ0KDQoNClsjd2ViZGV2XQ0KPGh0dHBzOi8vZGlzY29yZC5jb20vY2hhbm5lbHMvNDM2NTY4
+MDYwMjg4MTcyMDQyLzQzOTA2Mjc0NDEwNTQ4NDI4OD4NCg0KDQpPdGhlciBPQ2FtbCBOZXdzDQri
+lZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZANCg0KRnJvbSB0
+aGUgb2NhbWwub3JnIGJsb2cNCuKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKU
+gOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgA0KDQogIEhlcmUgYXJlIGxpbmtzIGZyb20g
+bWFueSBPQ2FtbCBibG9ncyBhZ2dyZWdhdGVkIGF0IFt0aGUgb2NhbWwub3JnDQogIGJsb2ddLg0K
+DQogIOKAoiBbVXBjb21pbmcgT0NhbWwgRXZlbnRzXQ0KICDigKIgW0FkdmVudHVyZXMgd2l0aCBC
+dWlsZEtpdF0NCg0KDQpbdGhlIG9jYW1sLm9yZyBibG9nXSA8aHR0cHM6Ly9vY2FtbC5vcmcvYmxv
+Zy8+DQoNCltVcGNvbWluZyBPQ2FtbCBFdmVudHNdIDxodHRwczovL29jYW1sLm9yZy9ldmVudHM+
+DQoNCltBZHZlbnR1cmVzIHdpdGggQnVpbGRLaXRdDQo8aHR0cHM6Ly93d3cuZHJhMjcudWsvYmxv
+Zy9wbGF0Zm9ybS8yMDI1LzA3LzI5L3RhbWluZy1idWlsZGtpdC5odG1sPg0KDQoNCk9sZCBDV04N
+CuKVkOKVkOKVkOKVkOKVkOKVkOKVkA0KDQogIElmIHlvdSBoYXBwZW4gdG8gbWlzcyBhIENXTiwg
+eW91IGNhbiBbc2VuZCBtZSBhIG1lc3NhZ2VdIGFuZCBJJ2xsIG1haWwNCiAgaXQgdG8geW91LCBv
+ciBnbyB0YWtlIGEgbG9vayBhdCBbdGhlIGFyY2hpdmVdIG9yIHRoZSBbUlNTIGZlZWQgb2YgdGhl
+DQogIGFyY2hpdmVzXS4NCg0KICBJZiB5b3UgYWxzbyB3aXNoIHRvIHJlY2VpdmUgaXQgZXZlcnkg
+d2VlayBieSBtYWlsLCB5b3UgbWF5IHN1YnNjcmliZQ0KICB0byB0aGUgW2NhbWwtbGlzdF0uDQoN
+CiAgW0FsYW4gU2NobWl0dF0NCg0KDQpbc2VuZCBtZSBhIG1lc3NhZ2VdIDxtYWlsdG86YWxhbi5z
+Y2htaXR0QHBvbHl0ZWNobmlxdWUub3JnPg0KDQpbdGhlIGFyY2hpdmVdIDxodHRwczovL2FsYW4u
+cGV0aXRlcG9tbWUubmV0L2N3bi8+DQoNCltSU1MgZmVlZCBvZiB0aGUgYXJjaGl2ZXNdIDxodHRw
+czovL2FsYW4ucGV0aXRlcG9tbWUubmV0L2N3bi9jd24ucnNzPg0KDQpbY2FtbC1saXN0XSA8aHR0
+cHM6Ly9zeW1wYS5pbnJpYS5mci9zeW1wYS9pbmZvL2NhbWwtbGlzdD4NCg0KW0FsYW4gU2NobWl0
+dF0gPGh0dHBzOi8vYWxhbi5wZXRpdGVwb21tZS5uZXQvPg0KDQo=
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-08-05 Tue 10:17 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.07.29.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.08.12.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of July 29 to August 05,=
+ 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">My fourth Outreachy Internship Blog post</a></li>
+<li><a href=3D"#2">qcheck-lin and qcheck-stm 0.2</a></li>
+<li><a href=3D"#3">CRs Workflows: Invitation for Early Testing and Discussi=
+on</a></li>
+<li><a href=3D"#4">OCaml version of the "Build systems =C3=A0 la carte" pap=
+er</a></li>
+<li><a href=3D"#5">Dream development open video call</a></li>
+<li><a href=3D"#6">Other OCaml News</a></li>
+<li><a href=3D"#orgb0dfa74">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">My fourth Outreachy Internship Blog post</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/my-fourth-outreachy-interns=
+hip-blog-post/17027/1">https://discuss.ocaml.org/t/my-fourth-outreachy-inte=
+rnship-blog-post/17027/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org91822b6" class=3D"outline-3">
+<h3 id=3D"org91822b6">Matthew Idungafa announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org91822b6">
+<p>
+Hello everyone! I've just published my first midpoint Outreachy blog post a=
+bout my progress contributing to Dune. You can read it here: <a href=3D"htt=
+ps://medium.com/@mattidungafa/outreachy-internship-midpoint-post-f9333c9c3c=
+86">https://medium.com/@mattidungafa/outreachy-internship-midpoint-post-f93=
+33c9c3c86</a>. Stay tuned for more updates!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">qcheck-lin and qcheck-stm 0.2</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-qcheck-lin-and-qcheck-s=
+tm-0-2/12301/7">https://discuss.ocaml.org/t/ann-qcheck-lin-and-qcheck-stm-0=
+-2/12301/7</a>
+</p>
+</div>
+<div id=3D"outline-container-orga07d219" class=3D"outline-3">
+<h3 id=3D"orga07d219">Jan Midtgaard announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga07d219">
+<p>
+Version 0.9 of <code>qcheck-lin</code>, <code>qcheck-stm</code>, and <code>=
+qcheck-multicoretests-util</code> is now available from your favorite opam =
+repository! :tada:=20
+</p>
+
+<p>
+The 0.9 release contains adjustments to the public interface of <code>Lin</=
+code> in order to make it compatible with <code>5.5.0+trunk</code> and also=
+ switches the <code>Util.Pp</code> pretty printers to use <code>QCheck.Prin=
+t</code> for consistency:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml-multicore/multicoretests/pull/566">=
+#566</a>: Use <code>QCheck.Print</code> combinators in <code>Util.Pp</code>=
+ too for consistency, e.g., to avoid that <code>STM</code> argument and res=
+ult printer outputs differ.</li>
+
+<li><a href=3D"https://github.com/ocaml-multicore/multicoretests/pull/562">=
+#562</a>: Fix the <code>int32</code> and <code>int64</code> printers in bot=
+h <code>Lin</code> and <code>STM</code> to add missing <code>l</code> and <=
+code>L</code> suffixes on literals.</li>
+
+<li><a href=3D"https://github.com/ocaml-multicore/multicoretests/pull/560">=
+#560</a>: Change <code>Lin.{constructible,deconstructible}</code> from an e=
+mpty variant type
+to an abstract type to get <code>Lin</code> compiling on <code>5.5.0+trunk<=
+/code> again, due to <a href=3D"https://github.com/ocaml/ocaml/pull/13994">=
+ocaml/ocaml#13994</a> removing special handling of abstract and empty varia=
+nts defined in the current module.</li>
+</ul>
+
+<p>
+Happy testing! :smiley:
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">CRs Workflows: Invitation for Early Testing and Discussion</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/crs-workflows-invitation-fo=
+r-early-testing-and-discussion/17036/1">https://discuss.ocaml.org/t/crs-wor=
+kflows-invitation-for-early-testing-and-discussion/17036/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org46404e6" class=3D"outline-3">
+<h3 id=3D"org46404e6">Mathieu Barbin announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org46404e6">
+<p>
+I just published a blog post about CRs Workflows, a new open source tool fo=
+r managing code review comments embedded in source code, with reusable GitH=
+ub Actions workflows. If you=E2=80=99re interested in trying it out or shar=
+ing feedback, you can read more here: <a href=3D"https://mbarbin.github.io/=
+crs/blog/launching-crs-workflows/">https://mbarbin.github.io/crs/blog/launc=
+hing-crs-workflows/</a>.
+</p>
+
+<p>
+Thank you!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">OCaml version of the "Build systems =C3=A0 la carte" paper</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocaml-version-of-the-build-=
+systems-a-la-carte-paper/17042/1">https://discuss.ocaml.org/t/ocaml-version=
+-of-the-build-systems-a-la-carte-paper/17042/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org758c4b9" class=3D"outline-3">
+<h3 id=3D"org758c4b9">jbeckford announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org758c4b9">
+<p>
+There is a great paper distilling several different build systems (Make, Ex=
+cel, Bazel, etc.) into a unified framework. One of its authors is on the Du=
+ne team (I think). If you want to understand or write build systems, it is =
+a good read because it uses language that can be understood by non-academic=
+s:
+</p>
+
+<p>
+<a href=3D"https://www.cambridge.org/core/journals/journal-of-functional-pr=
+ogramming/article/build-systems-a-la-carte-theory-and-practice/097CE52C750E=
+69BD16B78C318754C7A4">https://www.cambridge.org/core/journals/journal-of-fu=
+nctional-programming/article/build-systems-a-la-carte-theory-and-practice/0=
+97CE52C750E69BD16B78C318754C7A4</a>
+</p>
+
+<p>
+All of its examples are in Haskell so I wrote a version in OCaml. Most of m=
+y OCaml translation was aided by the English paragraphs rather than the Has=
+kell code (the latter was hieroglyphics to me). Regardless, I=E2=80=99m fai=
+rly sure some of the concepts don=E2=80=99t translate to OCaml well.
+</p>
+
+<p>
+If you are interested in build systems, the first place to start is the tes=
+t directory <a href=3D"https://gitlab.com/dkml/build-tools/MlFront/-/tree/V=
+2_4/tests/MlFront_Thunk?ref_type=3Dheads">https://gitlab.com/dkml/build-too=
+ls/MlFront/-/tree/V2_4/tests/MlFront_Thunk?ref_type=3Dheads</a> (the <code>=
+alacarte_*.ml</code> modules). The tests correspond to the paper=E2=80=99s =
+section numbers, although there are also <code>alacarte_x*.ml</code> tests =
+where I extended the framework. Then you can scan the source code at <a hre=
+f=3D"https://gitlab.com/dkml/build-tools/MlFront/-/tree/V2_4/src/MlFront_Th=
+unk?ref_type=3Dheads">https://gitlab.com/dkml/build-tools/MlFront/-/tree/V2=
+_4/src/MlFront_Thunk?ref_type=3Dheads</a> (the <code>Build*.ml</code> and <=
+code>Promise.ml</code> modules).
+</p>
+
+<p>
+PRs welcome!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Dream development open video call</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/dream-development-open-vide=
+o-call/17053/1">https://discuss.ocaml.org/t/dream-development-open-video-ca=
+ll/17053/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgbe40b35" class=3D"outline-3">
+<h3 id=3D"orgbe40b35">Anton Bachin announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgbe40b35">
+<p>
+Greetings!
+</p>
+
+<p>
+We are planning to host the first Dream development video call with @sabine=
+ on Discord on Friday, 8 August, at 9:00 AM Berlin time.
+</p>
+
+<p>
+Please join <a href=3D"https://discord.com/channels/436568060288172042/4390=
+62744105484288">#webdev</a> on the OCaml Discord if you=E2=80=99d like to p=
+articipate. I will handle questions about joining the meeting there. We wil=
+l probably use one of the voice chat channels on the server (which supports=
+ video).
+</p>
+
+<p>
+The topic of the meeting will be discussing open PRs and getting them ready=
+ for merge by our collective efforts, and needed improvements. We would lik=
+e to put off conceptual and strategic discussions until the very end of the=
+ meeting, or to a future date.
+</p>
+
+<p>
+And please bear with us as we figure out what platform is best to use and h=
+ow to use it :) We can=E2=80=99t promise that the first meeting will go wit=
+hout any issues, but we will work out everything based on experience :)
+</p>
+
+<p>
+Hope to see you there!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+</div>
+<div id=3D"outline-container-orgce1dbb3" class=3D"outline-3">
+<h3 id=3D"orgce1dbb3">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-orgce1dbb3">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/events">Upcoming OCaml Events</a></li>
+<li><a href=3D"https://www.dra27.uk/blog/platform/2025/07/29/taming-buildki=
+t.html">Adventures with BuildKit</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-orgb0dfa74" class=3D"outline-2">
+<h2 id=3D"orgb0dfa74">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-orgb0dfa74">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org94ecee4">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
