@@ -1,0 +1,1285 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=qsxVTYVI;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=SWgxObgf;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 74BF240066
+	for <caml-list@tunbury.org>; Tue, 12 Aug 2025 15:32:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=3lUqQ5fK8VQqsrL3AMHwELIfxTMTr/LsvbJIrXRD5ps=;
+  b=qsxVTYVIQe18AY4vnP+4f9FZrjo+PJlcFsbRI1md9nNnsdVFqP7iMnWV
+   2pthT64xD/5QqMgJ4xyWQollD2AJjEOLiF1NEVjEUZrCiXtD4WLk9HRvP
+   KZPLFFg6HB4kAWy1mANOZiXxgCdq69OMzjTXbxsbRGmdlIW0e98wWjxBe
+   A=;
+X-CSE-ConnectionGUID: AVViLlwUShec2prs2RF09w==
+X-CSE-MsgGUID: HYXHxqzARq+j49BMsTe3AQ==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.17,284,1747692000"; 
+   d="scan'208,217";a="234876386"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 12 Aug 2025 17:32:40 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 2EA60E0CD5; Tue, 12 Aug 2025 17:32:40 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id EB29CE0171
+	for <caml-list@sympa.inria.fr>; Tue, 12 Aug 2025 17:32:37 +0200 (CEST)
+X-CSE-ConnectionGUID: fi/qeBQlSYCeqplKtKAhKQ==
+X-CSE-MsgGUID: NcA6JmXXRy6Wajv9DXkwmw==
+IronPort-SDR: 689b5e95_QDaV9zp3ngTKYCU4ye8k3X/qmmBWREnQgld2fbcdGwaC+8V
+ uiOJrNX0YJUeXSmhszW1jFbmjHMHkxagP34Ex6Q==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0HvQQBkXZtohSIeaIFSCBoBAQEBATwBAQEBAgIBAQEBA?=
+ =?us-ascii?q?gEBAQEDAQEBAYFoAoE7WygZAWZaMwcISYRVg0+FLIh2gkABmgeBVYElAzMeF?=
+ =?us-ascii?q?QEDAQ0UAgECDgcBFQoBAgQBAQMBAgFDg3dGjCUCHwYBBDEIDgECBAEBAQEDA?=
+ =?us-ascii?q?gMBAQEBAQEBAQENAQEFAQEBAgEBAgQGAQIQAQEBAUBJhk8NgkVRQRIedAEBA?=
+ =?us-ascii?q?QEBAQEBAQIBAQEiAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQIMAYEnChMBASsNGCMDEAQBBgMCEQE1FwESFAYBgmcBgh8CA?=
+ =?us-ascii?q?ksDBAEMBpMwm0x6gTKBAYIMAQEGgQhQAw8v2guBZAmBSQGFbIJKGgEqSGsCh?=
+ =?us-ascii?q?EiDHYEfJw+BVUSEDm+CShcBAQEBgSgPBQEBTYMugmmCJoECFB2BPoI+gjOBK?=
+ =?us-ascii?q?UOILIF3AYdAgUQiAyYzLAFVExcLBwVbgQgDKjQxbjIdgSeFGIQnK0+FEIEZg?=
+ =?us-ascii?q?1MRE2sPBoEVg2mBIEADC209NxQbk3MXKRlqgUMEKw4+Lh8VFBQFAQcUDgIiD?=
+ =?us-ascii?q?SkFCQsgMSZEBgsLLwOSf4EhnH2UYzQHhB+BXgYMiQiBJpYGhVukBoEKIphkI?=
+ =?us-ascii?q?oldgSYJgW9riHqBFIsWPDmFIIFqAjaBXDMaMCIhgmcJRhwPj1UBAoJJEIEug?=
+ =?us-ascii?q?SaBdDtarC9BNQIBATgCBwEKAQEDCYVFHQEBjDqBSwEB?=
+IronPort-PHdr: A9a23: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
+ Mycu8GG9gE=
+IronPort-Data: A9a23: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
+ 9Vn35Ty6Ilp5qycNH16BDjlI65Mb08=
+IronPort-HdrOrdr: A9a23:AriqOal1G/MBg7x1rgVii+cqA+vpDfIR3DAbv31ZSRFFG/Fw9v
+ re/8jzsCWftN9/Yh8dcLy7VZVoIkm9yXcW2+gs1N6ZNWGMhILCFu5fBOXZrwHIKmnXyap21K
+ trcaRyYeeAb2RSvILd+wf9N94hxbC8gcSVbArlvhJQcT0=
+X-Talos-CUID: =?us-ascii?q?9a23=3AWnlrmmg+nr7hm49p7nOc2TGA2TJufHya1Xr6Gku?=
+ =?us-ascii?q?DOE1kUaWRakOz0aNHqp87?=
+X-Talos-MUID: 9a23:M6oBIwXJ7Ly9TdDq/BnnrW9AMfdY2bXwN0kPj8Qqi8qbMDMlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.17,284,1747692000"; 
+   d="scan'208,217";a="234876360"
+X-URL-ContentFilter: 
+X-MGA-submission: =?us-ascii?q?MDHDWCcwYtEGTwfbhbpBdQkZ6S3DGCvd/2wp1R?=
+ =?us-ascii?q?TXeuIJxH92nfO25cwMJP7wrPmMD1Z2ZJj/g0c9Thpo+UtfHdBnVUu+ww?=
+ =?us-ascii?q?OYA/2Kd2gZcSIcsLFxn9TaO9DutWsKTx68POR8zHVP/86tUXIIwB1IyY?=
+ =?us-ascii?q?Uvch419ionlOqhckmxx7ZD1Q=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2025 17:32:37 +0200
+Received: from TM.local (cust-east-par-46-193-79-82.cust.wifirst.net [46.193.79.82])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id BFEDB564F05;
+	Tue, 12 Aug 2025 17:32:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1755012755;
+	bh=yHFLGDPqtWQRsgpbuuwzZ+fisHTVv+CXX9VZd/YAX4E=;
+	h=From:To:Subject:Date:Message-ID;
+	b=SWgxObgfebHomppXV4h0DVYRgClSZ9LAyoEOa3YyhzvV6Sr363kA7uMuB0ONDZYga
+	 sSA2kc2G3Z4DsdTagd0YjIX7lcUh/HyZzOAePBgMnkr9TMmIwSsC0Xl9uUGW469Ei6
+	 T0SmluFRc6QQeBSenPYcS3Zwq6B4QfSeC7dGJUIw=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 12 Aug 2025 17:32:34 +0200
+Message-ID: <m2ms84v9m5.fsf@petitepomme.net>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Aug 12 17:32:36 2025 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.491090, queueID=3897A564F06
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19360
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-08/m2ms84v9m5.fsf%40petitepomme.net>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of August 05 to 12,
+2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Slipshow!
+Miou, a simple scheduler for OCaml 5
+Dream development open video call
+Other OCaml News
+Old CWN
+
+
+Slipshow!
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-slipshow/16337/9>
+
+
+Paul-Elliot announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It is with some /bitter/ joy that I=E2=80=99m announcing the 0.4.1 versio=
+n of
+  Slipshow [on opam]:
+
+
+[on opam] <https://github.com/ocaml/opam-repository/pull/28181>
+
+The slides strike back
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The main improvements of this version are the introduction of
+  arguments to actions, a frontmatter, and improvements to slides.
+
+  All together, they allow to easily design presentations the slides
+  way:
+
+  <https://github.com/user-attachments/assets/844754a7-7731-45a8-8cc5-97a31=
+5d5cd92>
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 ---
+  =E2=94=82 toplevel-attributes: {children:slide children:enter=3D"~duratio=
+n:0"}
+  =E2=94=82 ---
+  =E2=94=82=20
+  =E2=94=82 # Slide 1
+  =E2=94=82=20
+  =E2=94=82 Content
+  =E2=94=82=20
+  =E2=94=82 ---
+  =E2=94=82=20
+  =E2=94=82 # Slide 2
+  =E2=94=82=20
+  =E2=94=82 Content
+  =E2=94=82=20
+  =E2=94=82 ---
+  =E2=94=82=20
+  =E2=94=82 # Slide 3
+  =E2=94=82=20
+  =E2=94=82 You get it
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  So, why =E2=80=9C=E2=80=8B/bitter/ joy=E2=80=9D?
+
+  I was reluctant to add good support for traditional slide-based
+  presentation. There are already very good and mature solutions for
+  this, including some with similar technical foundations as Slipshow. I
+  was more interested in developping the new things: Slips!
+
+  However, Slipshow starts to have useful features that competitor don=E2=
+=80=99t
+  always have (for instance: a self-contained html output! But more, and
+  more to come). Also, for people who already have slide-based
+  presentations, it makes it easier to migrate them, and use a single
+  tool for old and new presentations!
+
+  Finally, I wanted to make Slipshow a bit more versatile and added
+  attributes, frontmatter, and a new options: `toplevel-attributes'. The
+  proper slide support is actually just a nice consequence of this
+  versatility! =F0=9F=A5=B3
+
+  Here is the full changelog:
+
+  =E2=80=A2 Fix `children:' not working sometimes
+  =E2=80=A2 Add `--toplevel-attributes' to control the attributes on the
+    toplevel container
+  =E2=80=A2 Render slide titles as slide titles
+  =E2=80=A2 Add arguments to actions
+  =E2=80=A2 Add frontmatter
+
+    You can now do
+
+    =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+    =E2=94=82 ---
+    =E2=94=82 theme: vanier
+    =E2=94=82 dimension: 16:9
+    =E2=94=82 css: my_pres.css
+    =E2=94=82 ---
+    =E2=94=82=20
+    =E2=94=82 The content here.
+    =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+
+OCaml-specific notes on action arguments
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  In this release, I add the ability to give arguments to actions. For
+  instance, an action can be to focus on a specific element:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 {#my_element}
+  =E2=94=82 Some content
+  =E2=94=82=20
+  =E2=94=82 {focus=3D"my_element"}
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The "positional" arguments is the list of IDs that must be focused. To
+  add other kind of arguments , they need to be named:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 {#my_element}
+  =E2=94=82 Some content
+  =E2=94=82=20
+  =E2=94=82 {focus=3D"~duration:2 ~margin:5 my_element"}
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It was fun to integrate OCaml syntax in slipshow ;) This way, people
+  coming to OCaml after learning slipshow will feel familiar with the
+  syntax!
+
+
+Paul-Elliot later announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80
+
+  The Slipshow development intensifies=E2=80=A6 It is with external pleasure
+  that I announce the [0.5.0] release of slipshow [on opam].
+
+  Warning: External files have invaded our world! They raise dead
+  formats like PDF into the liveliness of Slipshow presentations!
+
+
+[0.5.0] <https://github.com/panglesd/slipshow/releases/tag/v0.5.0>
+
+[on opam] <https://github.com/ocaml/opam-repository/pull/28308>
+
+Slipshow 0.5.0: Plan 9 from External Files
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C
+
+  As subtly hinted by the title, this slipshow release focuses on the
+  integration of external files in a presentation. Rest assured, a
+  compiled Slipshow presentation stays a standalone HTML file!
+
+  In effect, you can now include PDFs, videos and audios files in your
+  presentations! Here is a demo:
+
+  <https://github.com/user-attachments/assets/bf7d5933-9b29-4e52-ac2a-c4a9a=
+87d9dc6>
+
+  With the simple source:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 {#title}
+  =E2=94=82 # Plan 9 from External Files
+  =E2=94=82=20
+  =E2=94=82 {pause play-media=3Dmp4}
+  =E2=94=82 ## Video demo
+  =E2=94=82=20
+  =E2=94=82 ![](plan9.mp4){#mp4 style=3D"width:100%"}
+  =E2=94=82=20
+  =E2=94=82 {pause up}
+  =E2=94=82=20
+  =E2=94=82 ## PDF demo
+  =E2=94=82=20
+  =E2=94=82 ![](plan9.pdf){#pdf}
+  =E2=94=82=20
+  =E2=94=82 {focus=3Dpdf}
+  =E2=94=82=20
+  =E2=94=82 {change-page=3D"~n:all pdf"}
+  =E2=94=82=20
+  =E2=94=82 {unfocus up=3Dtitle}
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here is the full changelog:
+
+
+=E2=97=8A Compiler
+
+  =E2=80=A2 Add support for pdfs
+  =E2=80=A2 Add support for audios and videos
+  =E2=80=A2 Fix `enter' action being added to blockquotes
+
+
+=E2=97=8A Language
+
+  =E2=80=A2 Add a carousel type and a `change-page' action
+  =E2=80=A2 Add a `play-media' action
+
+
+=E2=97=8A Engine
+
+  =E2=80=A2 Fix compatibility of slipshow and editable content
+  =E2=80=A2 Fix scroll bar appearing in drawing toolbox
+
+
+Miou, a simple scheduler for OCaml 5
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-miou-a-simple-scheduler-for-ocaml-5/1296=
+3/16>
+
+
+Calascibetta Romain announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I am pleased to announce the release of [miou.0.4.0], the
+  documentation was just updated [here] and the book to learn about Miou
+  is still available [here]. This version mainly consolidates our
+  experiments with other libraries, notably: [`ocaml-dns'],
+  [`happy-eyeballs'], [`mirage-crypto'], [`ocaml-tls'], [`httpcats'],
+  [`carton'], [`sendmail'] and [`caqti'].
+
+  This consolidation of the API allows us to go further and, in
+  particular, to start offering the [development of unikernels with
+  OCaml 5]. To this end, you can follow projects such as [miou-solo5] or
+  [chaos]. An overview is available [on my blog] (which presents the
+  latest Mirage retreat in May).
+
+  We would also like to continue improving [Vif] and [Hurl] ([a
+  tutorial] has just been published on this subject).
+
+  Other projects are still in the experimental phase, such as: [`notty'
+  / `nottui'], [`blaze'], [`multipart_form'] or [`awa-ssh'].
+
+  Finally, we would like to thank everyone who has participated directly
+  or indirectly in this project and to its integration into the OCaml
+  ecosystem.
+
+  Happy hacking!
+
+
+[miou.0.4.0] <https://github.com/robur-coop/miou>
+
+[here] <https://docs.osau.re>
+
+[here] <https://robur-coop.github.io/miou>
+
+[`ocaml-dns'] <https://github.com/mirage/ocaml-dns>
+
+[`happy-eyeballs'] <https://github.com/robur-coop/happy-eyeballs>
+
+[`mirage-crypto'] <https://github.com/mirage/mirage-crypto>
+
+[`ocaml-tls'] <https://github.com/mirleft/ocaml-tls>
+
+[`httpcats'] <https://github.com/robur-coop/httpcats>
+
+[`carton'] <https://github.com/robur-coop/carton>
+
+[`sendmail'] <https://github.com/mirage/colombe>
+
+[`caqti'] <https://github.com/paurkedal/ocaml-caqti>
+
+[development of unikernels with OCaml 5]
+<https://github.com/robur-coop/miou-solo5/blob/main/slides/retreat.md>
+
+[miou-solo5] <https://github.com/robur-coop/miou-solo5>
+
+[chaos] <https://git.robur.coop/robur/chaos>
+
+[on my blog] <https://blog.osau.re/articles/last_mirageos_retreat.html>
+
+[Vif] <https://github.com/robur-coop/vif>
+
+[Hurl] <https://github.com/robur-coop/hurl>
+
+[a tutorial] <https://robur-coop.github.io/vif/>
+
+[`notty' / `nottui'] <https://github.com/robur-coop/notty-miou>
+
+[`blaze'] <https://github.com/dinosaure/blaze>
+
+[`multipart_form'] <https://github.com/dinosaure/multipart_form>
+
+[`awa-ssh'] <https://github.com/mirage/awa-ssh>
+
+
+Dream development open video call
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/dream-development-open-video-call/17053/6>
+
+
+Continuing this thread, Anton Bachin announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  For those interested in minutes/notes, providing a brief summary
+  :slight_smile:
+
+  We had a chat about how to maintain Dream as a community, added
+  several people to the repo (master branch is locked for security), and
+  worked through what we can do immediately on several PRs. I showed how
+  I maintain Dream on those PRs, and several others contributed their
+  thoughts and ideas.
+
+  At the end we talked off-topic a bit about the future of Dream and
+  bigger projects in it and around it to tackle.
+
+  It=E2=80=99s difficult to write out minutes as it was a lot of detailed t=
+alk
+  and work =E2=80=93 adding specific people, dealing with specific issues. =
+One
+  can see the recent activity in the [Dream repo] to see our guinea pig
+  PRs :slight_smile:
+
+
+[Dream repo] <https://github.com/aantron/dream>
+
+
+Anton Bachin later added
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We=E2=80=99re going to have the next dev meeting this coming Friday, and
+  weekly thereafter.
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Upcoming OCaml Events]
+  =E2=80=A2 [Irmin Retrospective]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Upcoming OCaml Events] <https://ocaml.org/events>
+
+[Irmin Retrospective] <https://patrick.sirref.org/irmin-retro/>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-08-12 Tue 17:30 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.08.05.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.08.19.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of August 05 to 12, 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Slipshow!</a></li>
+<li><a href=3D"#2">Miou, a simple scheduler for OCaml 5</a></li>
+<li><a href=3D"#3">Dream development open video call</a></li>
+<li><a href=3D"#4">Other OCaml News</a></li>
+<li><a href=3D"#org7623507">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Slipshow!</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-slipshow/16337/9">https=
+://discuss.ocaml.org/t/ann-slipshow/16337/9</a>
+</p>
+</div>
+<div id=3D"outline-container-org4e09fa9" class=3D"outline-3">
+<h3 id=3D"org4e09fa9">Paul-Elliot announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org4e09fa9">
+<p>
+It is with some <i>bitter</i> joy that I=E2=80=99m announcing the 0.4.1 ver=
+sion of Slipshow <a href=3D"https://github.com/ocaml/opam-repository/pull/2=
+8181">on opam</a>:
+</p>
+</div>
+<div id=3D"outline-container-orgaebc37d" class=3D"outline-4">
+<h4 id=3D"orgaebc37d">The slides strike back</h4>
+<div class=3D"outline-text-4" id=3D"text-orgaebc37d">
+<p>
+The main improvements of this version are the introduction of arguments to =
+actions, a frontmatter, and improvements to slides.
+</p>
+
+<p>
+All together, they allow to easily design presentations the slides way:
+</p>
+
+<p>
+<a href=3D"https://github.com/user-attachments/assets/844754a7-7731-45a8-8c=
+c5-97a315d5cd92">https://github.com/user-attachments/assets/844754a7-7731-4=
+5a8-8cc5-97a315d5cd92</a>
+</p>
+
+<pre class=3D"example" id=3D"org658e59f">
+---
+toplevel-attributes: {children:slide children:enter=3D"~duration:0"}
+---
+
+# Slide 1
+
+Content
+
+---
+
+# Slide 2
+
+Content
+
+---
+
+# Slide 3
+
+You get it
+</pre>
+
+<p>
+So, why =E2=80=9C=E2=80=8B<i>bitter</i> joy=E2=80=9D?
+</p>
+
+<p>
+I was reluctant to add good support for traditional slide-based presentatio=
+n. There are already very good and mature solutions for this, including som=
+e with similar technical foundations as Slipshow. I was more interested in =
+developping the new things: Slips!
+</p>
+
+<p>
+However, Slipshow starts to have useful features that competitor don=E2=80=
+=99t always have (for instance: a self-contained html output! But more, and=
+ more to come). Also, for people who already have slide-based presentations=
+, it makes it easier to migrate them, and use a single tool for old and new=
+ presentations!
+</p>
+
+<p>
+Finally, I wanted to make Slipshow a bit more versatile and added attribute=
+s, frontmatter, and a new options: <code>toplevel-attributes</code>. The pr=
+oper slide support is actually just a nice consequence of this versatility!=
+ =F0=9F=A5=B3
+</p>
+
+<p>
+Here is the full changelog:
+</p>
+
+<ul class=3D"org-ul">
+<li>Fix <code>children:</code> not working sometimes</li>
+<li>Add <code>--toplevel-attributes</code> to control the attributes on the=
+ toplevel
+container</li>
+<li>Render slide titles as slide titles</li>
+<li>Add arguments to actions</li>
+<li><p>
+Add frontmatter=20
+</p>
+
+<p>
+You can now do
+</p>
+
+<pre class=3D"example" id=3D"org506f311">
+---
+theme: vanier
+dimension: 16:9
+css: my_pres.css
+---
+
+The content here.
+</pre></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-orgd018a52" class=3D"outline-4">
+<h4 id=3D"orgd018a52">OCaml-specific notes on action arguments</h4>
+<div class=3D"outline-text-4" id=3D"text-orgd018a52">
+<p>
+In this release, I add the ability to give arguments to actions. For instan=
+ce, an action can be to focus on a specific element:
+</p>
+
+<pre class=3D"example" id=3D"orgeeabb88">
+{#my_element}
+Some content
+
+{focus=3D"my_element"}
+</pre>
+
+<p>
+The "positional" arguments is the list of IDs that must be focused. To add =
+other kind of arguments , they need to be named:
+</p>
+
+<pre class=3D"example" id=3D"org3b50eac">
+{#my_element}
+Some content
+
+{focus=3D"~duration:2 ~margin:5 my_element"}
+</pre>
+
+<p>
+It was fun to integrate OCaml syntax in slipshow ;) This way, people coming=
+ to OCaml after learning slipshow will feel familiar with the syntax!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org83983d9" class=3D"outline-3">
+<h3 id=3D"org83983d9">Paul-Elliot later announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org83983d9">
+<p>
+The Slipshow development intensifies&#x2026; It is with external pleasure t=
+hat I announce the <a href=3D"https://github.com/panglesd/slipshow/releases=
+/tag/v0.5.0">0.5.0</a> release of slipshow <a href=3D"https://github.com/oc=
+aml/opam-repository/pull/28308">on opam</a>.
+</p>
+
+<p>
+Warning: External files have invaded our world! They raise dead formats lik=
+e PDF into the liveliness of Slipshow presentations!
+</p>
+</div>
+<div id=3D"outline-container-orgc5b99ae" class=3D"outline-4">
+<h4 id=3D"orgc5b99ae">Slipshow 0.5.0: Plan 9 from External Files</h4>
+<div class=3D"outline-text-4" id=3D"text-orgc5b99ae">
+<p>
+As subtly hinted by the title, this slipshow release focuses on the integra=
+tion of external files in a presentation. Rest assured, a compiled Slipshow=
+ presentation stays a standalone HTML file!
+</p>
+
+<p>
+In effect, you can now include PDFs, videos and audios files in your presen=
+tations! Here is a demo:
+</p>
+
+<p>
+<a href=3D"https://github.com/user-attachments/assets/bf7d5933-9b29-4e52-ac=
+2a-c4a9a87d9dc6">https://github.com/user-attachments/assets/bf7d5933-9b29-4=
+e52-ac2a-c4a9a87d9dc6</a>
+</p>
+
+<p>
+With the simple source:
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-md"><code>{#title}
+# Plan 9 from External Files
+
+{pause play-media=3Dmp4}
+## Video demo
+
+![](plan9.mp4){#mp4 style=3D"width:100%"}
+
+{pause up}
+
+## PDF demo
+
+![](plan9.pdf){#pdf}
+
+{focus=3Dpdf}
+
+{change-page=3D"~n:all pdf"}
+
+{unfocus up=3Dtitle}
+</code></pre>
+</div>
+
+<p>
+Here is the full changelog:
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org395ab4a"></a>Compiler<br />
+<div class=3D"outline-text-5" id=3D"text-org395ab4a">
+<ul class=3D"org-ul">
+<li>Add support for pdfs</li>
+<li>Add support for audios and videos</li>
+<li>Fix <code>enter</code> action being added to blockquotes</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org60e49d3"></a>Language<br />
+<div class=3D"outline-text-5" id=3D"text-org60e49d3">
+<ul class=3D"org-ul">
+<li>Add a carousel type and a <code>change-page</code> action</li>
+<li>Add a <code>play-media</code> action</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org55e0bd4"></a>Engine<br />
+<div class=3D"outline-text-5" id=3D"text-org55e0bd4">
+<ul class=3D"org-ul">
+<li>Fix compatibility of slipshow and editable content</li>
+<li>Fix scroll bar appearing in drawing toolbox</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Miou, a simple scheduler for OCaml 5</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-miou-a-simple-scheduler=
+-for-ocaml-5/12963/16">https://discuss.ocaml.org/t/ann-miou-a-simple-schedu=
+ler-for-ocaml-5/12963/16</a>
+</p>
+</div>
+<div id=3D"outline-container-org9111a11" class=3D"outline-3">
+<h3 id=3D"org9111a11">Calascibetta Romain announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9111a11">
+<p>
+I am pleased to announce the release of <a href=3D"https://github.com/robur=
+-coop/miou">miou.0.4.0</a>, the documentation was just updated <a href=3D"h=
+ttps://docs.osau.re">here</a> and the book to learn about Miou is still ava=
+ilable <a href=3D"https://robur-coop.github.io/miou">here</a>. This version=
+ mainly consolidates our experiments with other libraries, notably: <a href=
+=3D"https://github.com/mirage/ocaml-dns"><code>ocaml-dns</code></a>, <a hre=
+f=3D"https://github.com/robur-coop/happy-eyeballs"><code>happy-eyeballs</co=
+de></a>, <a href=3D"https://github.com/mirage/mirage-crypto"><code>mirage-c=
+rypto</code></a>, <a href=3D"https://github.com/mirleft/ocaml-tls"><code>oc=
+aml-tls</code></a>, <a href=3D"https://github.com/robur-coop/httpcats"><cod=
+e>httpcats</code></a>, <a href=3D"https://github.com/robur-coop/carton"><co=
+de>carton</code></a>, <a href=3D"https://github.com/mirage/colombe"><code>s=
+endmail</code></a> and <a href=3D"https://github.com/paurkedal/ocaml-caqti"=
+><code>caqti</code></a>.
+</p>
+
+<p>
+This consolidation of the API allows us to go further and, in particular, t=
+o start offering the <a href=3D"https://github.com/robur-coop/miou-solo5/bl=
+ob/main/slides/retreat.md">development of unikernels with OCaml 5</a>. To t=
+his end, you can follow projects such as <a href=3D"https://github.com/robu=
+r-coop/miou-solo5">miou-solo5</a> or <a href=3D"https://git.robur.coop/robu=
+r/chaos">chaos</a>. An overview is available <a href=3D"https://blog.osau.r=
+e/articles/last_mirageos_retreat.html">on my blog</a> (which presents the l=
+atest Mirage retreat in May).
+</p>
+
+<p>
+We would also like to continue improving <a href=3D"https://github.com/robu=
+r-coop/vif">Vif</a> and <a href=3D"https://github.com/robur-coop/hurl">Hurl=
+</a> (<a href=3D"https://robur-coop.github.io/vif/">a tutorial</a> has just=
+ been published on this subject).
+</p>
+
+<p>
+Other projects are still in the experimental phase, such as: <a href=3D"htt=
+ps://github.com/robur-coop/notty-miou"><code>notty</code> / <code>nottui</c=
+ode></a>, <a href=3D"https://github.com/dinosaure/blaze"><code>blaze</code>=
+</a>, <a href=3D"https://github.com/dinosaure/multipart_form"><code>multipa=
+rt_form</code></a> or <a href=3D"https://github.com/mirage/awa-ssh"><code>a=
+wa-ssh</code></a>.
+</p>
+
+<p>
+Finally, we would like to thank everyone who has participated directly or i=
+ndirectly in this project and to its integration into the OCaml ecosystem.
+</p>
+
+<p>
+Happy hacking!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Dream development open video call</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/dream-development-open-vide=
+o-call/17053/6">https://discuss.ocaml.org/t/dream-development-open-video-ca=
+ll/17053/6</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc434fb1" class=3D"outline-3">
+<h3 id=3D"orgc434fb1">Continuing this thread, Anton Bachin announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc434fb1">
+<p>
+For those interested in minutes/notes, providing a brief summary :slight_sm=
+ile:=20
+</p>
+
+<p>
+We had a chat about how to maintain Dream as a community, added several peo=
+ple to the repo (master branch is locked for security), and worked through =
+what we can do immediately on several PRs. I showed how I maintain Dream on=
+ those PRs, and several others contributed their thoughts and ideas.
+</p>
+
+<p>
+At the end we talked off-topic a bit about the future of Dream and bigger p=
+rojects in it and around it to tackle.
+</p>
+
+<p>
+It=E2=80=99s difficult to write out minutes as it was a lot of detailed tal=
+k and work =E2=80=93 adding specific people, dealing with specific issues. =
+One can see the recent activity in the <a href=3D"https://github.com/aantro=
+n/dream">Dream repo</a> to see our guinea pig PRs :slight_smile:
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orgf90248d" class=3D"outline-3">
+<h3 id=3D"orgf90248d">Anton Bachin later added</h3>
+<div class=3D"outline-text-3" id=3D"text-orgf90248d">
+<p>
+We=E2=80=99re going to have the next dev meeting this coming Friday, and we=
+ekly thereafter.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+</div>
+<div id=3D"outline-container-org073e711" class=3D"outline-3">
+<h3 id=3D"org073e711">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org073e711">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/events">Upcoming OCaml Events</a></li>
+<li><a href=3D"https://patrick.sirref.org/irmin-retro/">Irmin Retrospective=
+</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org7623507" class=3D"outline-2">
+<h2 id=3D"org7623507">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org7623507">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgfbafbf6">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
