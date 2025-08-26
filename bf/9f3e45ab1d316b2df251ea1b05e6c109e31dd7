@@ -1,0 +1,508 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=LguJAApI;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=a3T5HF0R;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id D80B240085
+	for <caml-list@tunbury.org>; Tue, 26 Aug 2025 09:16:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=flYqft6lf2lS8wONhUMpPSZRRD9FJ9oKCB9qsBoKpVw=;
+  b=LguJAApIUZkTE61UgDCN2w/AtrM4zqIUIvCc5e4yeIkQm2H2WrM3fkgh
+   8ekFK7xAbxTvfE6R+C+blR4/Cafxw0UyaWTymrp+hVi/PWRzV8HflT7wc
+   Er+1qDIthlrsBf+CEKzkpQuX6XAd1EXUY9h9F2W0/zLnO+gIzJ9DyY1qn
+   Y=;
+X-CSE-ConnectionGUID: gBieqTrZSXSgBeZfnvxG9Q==
+X-CSE-MsgGUID: tS43QHr2TySt1THRDyskqw==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@acm.org
+X-IronPort-AV: E=Sophos;i="6.18,214,1751234400"; 
+   d="scan'208,217";a="236116636"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 26 Aug 2025 11:16:09 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id AB547E0B0D; Tue, 26 Aug 2025 11:16:08 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id D6C28E0172
+	for <caml-list@sympa.inria.fr>; Tue, 26 Aug 2025 11:16:03 +0200 (CEST)
+X-CSE-ConnectionGUID: DO5EMkxvT3Sz7tn1fXVASQ==
+X-CSE-MsgGUID: U2Jaz1IjRB+G8w/PLSFWsw==
+IronPort-SDR: 68ad7b53_ujV/F84+u1K+QskyGXvHiub29etiV1rw9Pb6ROYIOy2+F3i
+ q7gc7/vPAliVyR59hWuzmlzln8tVEf3ZVA0HWJg==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0H6AQDFeq1ojwYDWcdahRxAAUBaMwcISQMBhFGBI4Isj?=
+ =?us-ascii?q?iKRTYV5iBc1Cg8BAwENLgEFHQQBAQMBA4FLAUCBPYE3jCgCHwYBBDQTAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBAQEBAQ0BAQUBAQECAQECBAYBAhABAQEBAQE5BQ47hk8NR?=
+ =?us-ascii?q?oIVO3FeBQg6AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQETAg0HVwEhBQEQCwYdA?=
+ =?us-ascii?q?QEkBwcGJTcCIwUBDAEFAT0agmABgiMBBEoDEawlgQVCikR6gTKBAYIMAQEGg?=
+ =?us-ascii?q?Qg+Bdw9CYFJiFABgV4CDoN+hHcnG4INEoEDNYQ4gVwBBIE0VoMugmmCJoEWg?=
+ =?us-ascii?q?VWRYRKGbSYmAwcHDitGDgEhAyYzLAFVExcLBwVbgQgBAgGBDm4yHYEnhQ6EH?=
+ =?us-ascii?q?ytPhQKBGYNTJGsPBoEVg2GCckADC2ILPTcUG0yUYYJ5LjEFKGNPDDYMJQ8NT?=
+ =?us-ascii?q?g4OL6UmoRGEJoRwhy6NPYgWM4QEgVeLPIZHO5JSmQaLJYJjiRCMUgITGIUZE?=
+ =?us-ascii?q?QoagVsjgVxNMAg7MQaCMAlGAxkPjX85AoNnaoQptSA0NQIGNAIHAQoBAQMJk?=
+ =?us-ascii?q?Wo0gUsBAQ?=
+IronPort-PHdr: A9a23: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
+ 9gSHht2CExHwPtKmw0uJa0lcsEt
+IronPort-Data: A9a23:Xaq1xahDGVPFGdjbh2XmccF6X161nhQKZh0ujC45NGQN5FlHY01je
+ htvCGnSaauDYWHyed12PdmwphkDucLVnd9qQAJorn88EyNjpJueD7x1DG+gZnLIdpWroGFPt
+ phFNIGYdKjYaleG+39B55C49SEUOZmgH+e6VaidfHgsGGeIcQ954Tp7gek1n4V0ttawBgKJq
+ LvartbWULOf82cc3lk8teTa+HuDgNyo4GlF5gxkOKgR1LPjvyB94Kw3dfnZw0TQGdE88t6SH
+ 47r0Ly/92XFyBYhYvvNuqr7aEADXonJNgGIjHdMM4D66vSVjnFaPg4TbZLwWG8P49m7t4gZJ
+ OZl6fRcfTwU0pjkw4zxZfX3/xZWZsWq8JefSZS2XFf6I0fuKxMAyN02ZK060BFxFk+azgii+
+ NRBQA3hYCxviMqa5++Wb+p8mPh4F9u0IIVGtEFe5ArgWKNOrZDrG80m5PcAhGx2g8FHW/PXZ
+ s4DbidzYVLGbgEn1lU/UcNv2rf5wCK5LVW0q3rNzUYzy2vayQFg2b3kGNPef5qNX8o9ckOw/
+ DmYpj2nX0BLXDCZ4Qff0Hu+387Npwm4d9INU4WczdBVm0LGkwT/DzVNCAHl+qjh4qKkYPpUI
+ kkQvy4vtrQa712uVtC7XhuioXfCsAR0ZjZLO7Vis0eIy6OS5g+YAnIDUyJMLtorqKfaWADGy
+ HeluI7EID9/roHOcmDC6rHNowOMEBMseDpqiTA/cSMJ5NzqoYcWhx3JT8p+HKPdsjETMWytq
+ 9xthHVg74j/nfI2O7OHEUcrag9AS7CRFlVz4wTeGGes7wdjY5O5asqu5ESzARd8wGSxEQDpU
+ JsswZH2AAUy4XelyHPlrAIlQO7B2hp9GGeA6WOD5rF4n9hXx1atfJpL/BZ1L1pzP8APdFfBO
+ RCO51oNusANYSr3Nsebhr5d7ex3kMAM8vy4CJjpgiZmOPCdiSfcpH40DaJu9zqw+KTTrU3PE
+ czGK5j3XC5y5VVP0DqxQu4GmbZtjiI5xWXIQpazwA6gzKLWZXieD9843KimMIgEAFe/iFyNq
+ b53bpLSoz0GCbGWSneMq+Y7cwtVRUXX8Liq8KS7gMbfeVI+QAnMypb5ndscRmCSt/8MyryXp
+ yjkBhAwJZiWrSSvFDhmo0tLMNvHNauTZ1piVcD1FQf3iyoQcsy04b0BdpA6W7Ai+aYxhbR3V
+ vQJMYHISPhGVj2NqXxXYIjfvb5SUk2hpTuPGC65Pxk5XZprHDLS9vHeIwDAySgpDwiMj/UYn
+ YGO7A3gbKA4d1xQN/qOMPOL5HGtjEcZg9N3DhfpIMEMWUDC87pKCi3Wj903EptUNB+Y5D271
+ hmXMzgct+Lis484y/iXpKGm/qOCMfpyIVpeJEbftY2JDCj9+nH5551tS8OKQGztb3z186Cce
+ ull9fHwH/kZllJssYAnMbJU4Y8hxtno/Zl28x9FGSjVUlGVFb9QGHmK8s1RvKlrxLUCmw+XW
+ FqKy+ZKK4eyJ8LpP14AFjULNt3Z+6kvpQDTyvApLGHRxix9puOHWHoPGSi8snVWKb8tPb41x
+ eskhtUt1DW+rRgXKfeDsDFf8jWdD34HUph/jKogPq3QtlMJxG1BMLvmMQ2nxLGUat5JDFsmH
+ S/MuorGmIZn5xTjd1gdKCHz+NRz1LU0hQBy7V4dJl62tMLPqd0p0TZwrzkmbARn4S9W8uB0O
+ 01HHl9RIPyWzgw1mPl8W3unHlAYCDKk50b09QMolXLYfWasRGfiPG0wAsfT3UE7okZ3XClXw
+ 6Gc80nhCQ3VRcDW2jAgfGJcsNnhcIBBzRLDk8WZAMi1JZk2Tj77iKuIZ2BTiR/YLe4upU/A/
+ 89Gwf1RbPDlCCsuvKELMYmW+rAOQhSiJmYZY/VA/rsMLF7MagOJxjmCBECgSPxjf8WQ3xeDN
+ PVvAcZTWzCV9iWE9GkbDJFRBY5Epqci4d5ad477IWIDjaCkkQNol5Dt7Qn7un4gRoR/sMQ6K
+ 76JTQm4LE6ruSJ2lVPO/e5+AUjpRfkfZQb54vK5z/VRKbIHr9NXUB8T1pmagiyrFTVJrjyou
+ DHNXav099BZ6J9NmtLsG5pTBg/vJtLUUv+JwT+JsN9PTI3uNOnMvThItFLiNAVyFpkSUuRRi
+ r6inoPW3kTEnbBuSEHfucCLOJdo7PWIfth8E5zIPkgBuBCdSenQ4xcn0EKpG6xjyd9yyJGue
+ FqlVZGWa9UQZeZ4+FRUTCpvSzAmFKX9a/bblxOX9vijJEAU7l3aEYmB63TsUGB8cx0IMb3YD
+ ivfma6nxvJcnbR2KC40PdNUKL4mHwa7QoojTcP7iheABGrxgl+ihKrrpSB91R71UEu7AOTIy
+ rObYCPhdSaCmrDCl/BYlI1Qgic5LlhAhcsIQ0ZM3OIu1h6bCjcKI91IZN9CQttRnzfp3Z71W
+ CDVYSFwQW/hVDBDalPn7M6lQg6bAfcUN8zkIiAyuXmZcDqyGJjKFY4JGv2MOJuqUmCLICCbx
+ dAiFrnYZkDqhJRoTKAW7/2/m+B62v6cwH8Ukaw4u9KnGA4QWN3my1Q4dDehlwSeey0OqKkPD
+ WE+QCZDWk7TpYvZD5N7Y3AMcP0GlGqH8tjrBBtjBP7WsIDdy/dPoBE61ycfzZVbBPk3yHUyq
+ b8biodDD616GpDehEfxh+8UvA==
+IronPort-HdrOrdr: A9a23:d5SibKjKfYmhGqDP7Wvsb7i0jnBQXg0ji2hC6mlwRA09TyX4rb
+ HVoB1/73XJYVkqKRUdcLy7Scy9qBDnhPxICOsqTM6ftWDd0QPCQO4N0WKI+UyZJ8SRzJ8n6Y
+ 5QN4Z7TPL9BUVnlsrhiTPIderIA+PnzImYwcnbx3dpCSdwa69h6A99TiKWCFd/SgUDJbdRLu
+ v62iOKnVqdkL0sH6eG76Y+MtT+mw==
+X-Talos-CUID: 9a23:qSfdCWNjxhRLUu5DdA462WsXCt4ZKUbPk2vWekGIN09ScejA
+X-Talos-MUID: 9a23:Pm35twWOwmdzqCLq/AK2pjhwbeZq2Y7tJxAS1q0igOe7LjMlbg==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.18,214,1751234400"; 
+   d="scan'208,217";a="236116599"
+X-MGA-submission: =?us-ascii?q?MDFe+14IeWg6K2H+ydu4cwD2Sj1TbUy8vGoDLl?=
+ =?us-ascii?q?gSd+3nbRmTvI2/E3Hy0tqDD/fGuY5nj4yg0RhfMUaiewOTorH+jh5Mbj?=
+ =?us-ascii?q?MdJ89ZYYDwEA8PPuVLh3UYVQaRbWo6CluTOUrmbehFr2a5QXXmV2feA5?=
+ =?us-ascii?q?50glnIvMlSlUYgC9w2Y8xvPw=3D=3D?=
+Received: from 003.mia.mailroute.net ([199.89.3.6])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2025 11:16:02 +0200
+Received: from localhost (localhost [127.0.0.1])
+	by 003.mia.mailroute.net (Postfix) with ESMTP id 4cB28K19Cyzlgqyh
+	for <caml-list@inria.fr>; Tue, 26 Aug 2025 09:16:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
+	content-type:content-type:subject:subject:message-id:date:date
+	:from:from:mime-version:received:received:received; s=mr01; t=
+	1756199760; x=1758791761; bh=flYqft6lf2lS8wONhUMpPSZRRD9FJ9oKCB9
+	qsBoKpVw=; b=a3T5HF0RJiPdQx3Ox1a271s6mdHJEqm7+TSmYTunoVYJNVxLqy0
+	qTSmiRX2GUQnrjSSLVvEdeKppcxMfaw+LdZuQ3Wa7YCSY+YK9G/XpR7QW6B6z/bV
+	syNGzlmBeFqHLUzq0pb6ObuSXdr/82M1QhBS36X3Q5rRxEi4/NY0urnDx5k1x63F
+	6ix3695HZQbCfBZ+xSrfJxWrI1qhiCYjgmDfiy2epyCzpFARCae4U9XkAeLDzNDE
+	8pK2Rli7iH0gPZoJzPHrSH6b+oDyudAuh3GUyMPQKg9lzR+uPcESgp23SlllmAD6
+	SIPaSZnPfTPAMCg+p9zoUQMV7D8mgcGMtPA==
+X-Virus-Scanned: by MailRoute
+Received: from 003.mia.mailroute.net ([127.0.0.1])
+ by localhost (003.mia [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
+ id 5Ks5AqO908Op for <caml-list@inria.fr>;
+ Tue, 26 Aug 2025 09:16:00 +0000 (UTC)
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kameyama@acm.org)
+	by 003.mia.mailroute.net (Postfix) with ESMTPSA id 4cB28J2ZSXzlgqyG
+	for <caml-list@inria.fr>; Tue, 26 Aug 2025 09:15:58 +0000 (UTC)
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-55f4969c95aso1501357e87.0
+        for <caml-list@inria.fr>; Tue, 26 Aug 2025 02:15:58 -0700 (PDT)
+X-Gm-Message-State: AOJu0YybNTUpSM2Rjy3eo3y869K+urwhHde4QYUt4Er3OhNalIGoCo4a
+	4uJYfLjHjbG+1pQ9lleFczBTS008kOpMdBlWTzuqI0lcibGpl5OQoVoHHnJI3idDRLw+NaNnDJj
+	1/gTC1ocuFuv6/p89iAGoEmHK0UpaacM=
+X-Google-Smtp-Source: AGHT+IGgdA0hnkb5oYWHviDbvUTRJ4y5oxNVCgs2v1Plbpvro3NghUXPyGMLrhB4wlUumKpCksJNRlez5ioS1PeEdAg=
+X-Received: by 2002:a05:6512:615:20b0:55f:34e8:b1a6 with SMTP id
+ 2adb3069b0e04-55f34e8ca61mr2548455e87.57.1756199756695; Tue, 26 Aug 2025
+ 02:15:56 -0700 (PDT)
+MIME-Version: 1.0
+From: Yukiyoshi Kameyama <kameyama@acm.org>
+Date: Tue, 26 Aug 2025 18:15:38 +0900
+X-Gmail-Original-Message-ID: <CAJWJ43LZODr50fmyEwSRWM_rjpV2gYSaqZgN8za_LLGzyzso7w@mail.gmail.com>
+X-Gm-Features: Ac12FXzTcjMZ5BA9Z7wF9OS5iSh3ryFFoA4JIhL1VmKxNW4cRZy8jXGvE4c7HWE
+Message-ID: <CAJWJ43LZODr50fmyEwSRWM_rjpV2gYSaqZgN8za_LLGzyzso7w@mail.gmail.com>
+To: caml-list@inria.fr
+Content-Type: multipart/alternative; boundary="000000000000a70dc5063d411e39"
+Subject: [Caml-list] PEPM 2026 Call for Papers
+Reply-To: Yukiyoshi Kameyama <kameyama@acm.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19367
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-08/CAJWJ43LZODr50fmyEwSRWM_rjpV2gYSaqZgN8za_LLGzyzso7w%40mail.gmail.com>
+
+--000000000000a70dc5063d411e39
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+CALL FOR PAPERS
+The 2026 ACM SIGPLAN Workshop on Partial Evaluation and Program
+Manipulationhttps://popl26.sigplan.org/home/pepm-2026
+
+# Important Dates, AoE, UTC-12h
+
+Paper due    Fri 25 Oct 2025
+Notification Fri 28 Nov 2025
+Workshop     Tue 13 Jan 2026
+
+# About
+
+The ACM SIGPLAN Workshop on Partial Evaluation and
+Program Manipulation (PEPM) has a history going back
+to 1991 and has been held in conjunction with POPL
+every year since 2006.
+The origin of PEPM is in the discoveries of practically
+useful automated techniques for evaluating programs
+with only partial input. Over time, PEPM has broadened
+its scope to include a variety of research areas centered
+around semantics-based program manipulation =E2=80=94 the systematic
+exploitation of treating programs not only as subject
+to black-box execution, but also as data structures
+that can be generated, analyzed, and transformed while
+establishing or maintaining important semantic properties.
+
+# Scope
+
+Topics of interest for PEPM 2026 include, but are not limited to:
+
+* Program and model manipulation techniques such as:
+  supercompilation, partial evaluation, fusion, on-the-fly
+  program adaptation, active libraries, program inversion,
+  slicing, symbolic execution, refactoring, decompilation,
+  and obfuscation.
+
+* Techniques that treat programs/models as data objects
+  including metaprogramming, generative programming,
+  embedded domain-specific languages, program synthesis by sketching
+  and inductive programming, staged computation, and
+  model-driven program generation and transformation.
+
+* Program analysis techniques that are used to drive
+  program/model manipulation such as: abstract interpretation,
+  termination checking, binding-time analysis, constraint solving,
+  type systems, automated testing and test case generation.
+
+* Application of the above techniques including case studies
+  of program manipulation in real-world (industrial, open-source)
+  projects and software development processes, descriptions of
+  robust tools capable of effectively handling realistic applications,
+  benchmarking. Examples of application domains include legacy
+  program understanding and transformation, DSL implementations,
+  visual languages and end-user programming, scientific computing,
+  middleware frameworks and infrastructure needed for distributed
+  and web-based applications, embedded and resource-limited computation,
+  and security.
+
+* Cross-fertilization with other fields, such as semantics based and
+  machine-learning based program synthesis and program optimisation, and
+  modeling, analysis, and transformation techniques for distributed and
+  concurrent protocols and programs, such as session types, linear types,
+  and contract specifications.
+
+This list of categories is not exhaustive, and we encourage
+submissions describing new theories and applications related
+to semantics-based program manipulation in general. If you have
+a question as to whether a potential submission is within the
+scope of the workshop, please contact the programme co-chairs,
+Yukiyoshi Kameyama (kameyama at acm.org
+<https://lists.seas.upenn.edu/mailman/listinfo/types-announce>)
+and Ningning Xie (ningningxie at cs.toronto.edu
+<https://lists.seas.upenn.edu/mailman/listinfo/types-announce>).
+
+# Submission Categories and Guidelines
+
+Three kinds of submissions will be accepted:
+
+1. Regular Research Papers should describe new results,
+  and will be judged on originality, correctness, significance,
+  and clarity. Regular research papers must not exceed 12 pages.
+
+2. Short Papers may include tool demonstrations and presentations
+  of exciting if not fully polished research, and of interesting
+  academic, industrial, and open-source applications that are new
+  or unfamiliar. Short papers must not exceed 6 pages.
+
+3. Talk Proposals may propose lectures about topics of interest
+  for PEPM, existing work representing relevant contributions,
+  or promising contributions that are not mature enough to be
+  proposed as papers of the other categories. Talk Proposals
+  must not exceed 2 pages.
+
+References and appendices are not included in page limits.
+Appendices may not necessarily be read by reviewers.
+All the submissions should be typeset using the two-column
+=E2=80=98sigplan=E2=80=99 sub-format of the new =E2=80=98acmart=E2=80=99 fo=
+rmat available
+at:https://sigplan.org/Resources/Author/
+<https://urldefense.com/v3/__https://sigplan.org/Resources/Author/__;!!IBzW=
+LUs!WSFrG1mXYWxOICMDqL2RJhvTUlQpllC9VN1JNeWJC1iPxFbDDTGmfo751VV6LiLPDIUdcWH=
+_6wjLJWP8u_s4McqscDuDmQ$>
+and submitted electronically via HotCRP: https://pepm26.hotcrp.com
+<https://urldefense.com/v3/__https://pepm26.hotcrp.com__;!!IBzWLUs!WSFrG1mX=
+YWxOICMDqL2RJhvTUlQpllC9VN1JNeWJC1iPxFbDDTGmfo751VV6LiLPDIUdcWH_6wjLJWP8u_s=
+4McrewPPMLg$>
+
+Reviewing will be single-blind.
+
+Submissions are welcome from PC members (except the two co-chairs).
+
+Accepted regular research papers will appear in formal proceedings
+published by ACM, and be included in the ACM Digital Library.
+Accepted short papers do not constitute formal publications and
+will not appear in the proceedings.
+
+At least one author of each accepted contribution must attend
+the workshop (physically or virtually) to present the work.
+In the case of tool demonstration papers, a live demonstration
+of the described tool is expected.
+
+## Chairs
+
+Yukiyoshi Kameyama, University of Tsukuba, Japan
+Ningning Xie, University of Toronto, Canada
+
+--000000000000a70dc5063d411e39
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><pre style=3D"color:rgb(0,0,0)">CALL FOR PAPERS
+The 2026 ACM SIGPLAN Workshop on Partial Evaluation and Program Manipulatio=
+n
+<a href=3D"https://popl26.sigplan.org/home/pepm-2026" target=3D"_blank">htt=
+ps://popl26.sigplan.org/home/pepm-2026</a></pre><pre style=3D"color:rgb(0,0=
+,0)"># Important Dates, AoE, UTC-12h
+
+Paper due    Fri 25 Oct 2025
+Notification Fri 28 Nov 2025
+Workshop     Tue 13 Jan 2026
+
+# About
+
+The ACM SIGPLAN Workshop on Partial Evaluation and
+Program Manipulation (PEPM) has a history going back
+to 1991 and has been held in conjunction with POPL
+every year since 2006.
+The origin of PEPM is in the discoveries of practically
+useful automated techniques for evaluating programs
+with only partial input. Over time, PEPM has broadened
+its scope to include a variety of research areas centered
+around semantics-based program manipulation =E2=80=94 the systematic
+exploitation of treating programs not only as subject
+to black-box execution, but also as data structures
+that can be generated, analyzed, and transformed while
+establishing or maintaining important semantic properties.
+
+# Scope
+
+Topics of interest for PEPM 2026 include, but are not limited to:
+
+* Program and model manipulation techniques such as:
+  supercompilation, partial evaluation, fusion, on-the-fly
+  program adaptation, active libraries, program inversion,
+  slicing, symbolic execution, refactoring, decompilation,
+  and obfuscation.
+
+* Techniques that treat programs/models as data objects
+  including metaprogramming, generative programming,
+  embedded domain-specific languages, program synthesis by sketching
+  and inductive programming, staged computation, and
+  model-driven program generation and transformation.
+
+* Program analysis techniques that are used to drive
+  program/model manipulation such as: abstract interpretation,
+  termination checking, binding-time analysis, constraint solving,
+  type systems, automated testing and test case generation.
+
+* Application of the above techniques including case studies
+  of program manipulation in real-world (industrial, open-source)
+  projects and software development processes, descriptions of
+  robust tools capable of effectively handling realistic applications,
+  benchmarking. Examples of application domains include legacy
+  program understanding and transformation, DSL implementations,
+  visual languages and end-user programming, scientific computing,
+  middleware frameworks and infrastructure needed for distributed
+  and web-based applications, embedded and resource-limited computation,
+  and security.
+
+* Cross-fertilization with other fields, such as semantics based and
+  machine-learning based program synthesis and program optimisation, and
+  modeling, analysis, and transformation techniques for distributed and
+  concurrent protocols and programs, such as session types, linear types,
+  and contract specifications.
+
+This list of categories is not exhaustive, and we encourage
+submissions describing new theories and applications related
+to semantics-based program manipulation in general. If you have
+a question as to whether a potential submission is within the
+scope of the workshop, please contact the programme co-chairs,
+Yukiyoshi Kameyama (<a href=3D"https://lists.seas.upenn.edu/mailman/listinf=
+o/types-announce" target=3D"_blank">kameyama at acm.org</a>)
+and Ningning Xie (<a href=3D"https://lists.seas.upenn.edu/mailman/listinfo/=
+types-announce" target=3D"_blank">ningningxie at cs.toronto.edu</a>).
+
+# Submission Categories and Guidelines
+
+Three kinds of submissions will be accepted:
+
+1. Regular Research Papers should describe new results,
+  and will be judged on originality, correctness, significance,
+  and clarity. Regular research papers must not exceed 12 pages.
+
+2. Short Papers may include tool demonstrations and presentations
+  of exciting if not fully polished research, and of interesting
+  academic, industrial, and open-source applications that are new
+  or unfamiliar. Short papers must not exceed 6 pages.
+
+3. Talk Proposals may propose lectures about topics of interest
+  for PEPM, existing work representing relevant contributions,
+  or promising contributions that are not mature enough to be
+  proposed as papers of the other categories. Talk Proposals
+  must not exceed 2 pages.
+
+References and appendices are not included in page limits.
+Appendices may not necessarily be read by reviewers.
+All the submissions should be typeset using the two-column
+=E2=80=98sigplan=E2=80=99 sub-format of the new =E2=80=98acmart=E2=80=99 fo=
+rmat available at:
+<a href=3D"https://urldefense.com/v3/__https://sigplan.org/Resources/Author=
+/__;!!IBzWLUs!WSFrG1mXYWxOICMDqL2RJhvTUlQpllC9VN1JNeWJC1iPxFbDDTGmfo751VV6L=
+iLPDIUdcWH_6wjLJWP8u_s4McqscDuDmQ$" target=3D"_blank">https://sigplan.org/R=
+esources/Author/</a>
+and submitted electronically via HotCRP: <a href=3D"https://urldefense.com/=
+v3/__https://pepm26.hotcrp.com__;!!IBzWLUs!WSFrG1mXYWxOICMDqL2RJhvTUlQpllC9=
+VN1JNeWJC1iPxFbDDTGmfo751VV6LiLPDIUdcWH_6wjLJWP8u_s4McrewPPMLg$" target=3D"=
+_blank">https://pepm26.hotcrp.com</a>
+
+Reviewing will be single-blind.
+
+Submissions are welcome from PC members (except the two co-chairs).
+
+Accepted regular research papers will appear in formal proceedings
+published by ACM, and be included in the ACM Digital Library.
+Accepted short papers do not constitute formal publications and
+will not appear in the proceedings.
+
+At least one author of each accepted contribution must attend
+the workshop (physically or virtually) to present the work.
+In the case of tool demonstration papers, a live demonstration
+of the described tool is expected.
+
+## Chairs
+
+Yukiyoshi Kameyama, University of Tsukuba, Japan
+Ningning Xie, University of Toronto, Canada</pre><pre style=3D"color:rgb(0,=
+0,0)"></pre></div>
+
+--000000000000a70dc5063d411e39--
