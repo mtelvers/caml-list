@@ -1,0 +1,2321 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=AaE6cnvj;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=QQt/9zNp;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 9E87840086
+	for <caml-list@tunbury.org>; Tue, 16 Sep 2025 11:53:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=Vc8dgZVwpii8YhoQspJHQMw8zeqhfd94xmFHeLQWvm8=;
+  b=AaE6cnvjU8cj1KgiQ4/2GZTGb0GMzWI1zTS4gKdW4/4mCnhXiaoRkFc3
+   7XvYXaoj0ZxckZXTtPABysXAcbrezkrYoEnefaz2nkLqDiqVfSIvFvA7M
+   S3pia6/f512wTDwS7k7QPCOdnmrNDX3RtKiKTAwYEAfH3dXlbuH/TQ+3U
+   I=;
+X-CSE-ConnectionGUID: Pk+ua3B0QCi8RzEWpz5SeQ==
+X-CSE-MsgGUID: igz+1c37Szaw92JP12DBIQ==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.18,269,1751234400"; 
+   d="scan'208,217";a="239349927"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 16 Sep 2025 13:53:01 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 2B6B5E0CD6; Tue, 16 Sep 2025 13:53:01 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id E08B6E0171
+	for <caml-list@sympa.inria.fr>; Tue, 16 Sep 2025 13:52:58 +0200 (CEST)
+X-CSE-ConnectionGUID: igJY5MlSRUqxv+M4r4te6g==
+X-CSE-MsgGUID: 6S6M0HgiQw2Y+pnUclrEjQ==
+IronPort-SDR: 68c94f98_F3Dc/iVfcyZMlxVF6d92GjM3IKfIl72SirvlK7oADEnBVNd
+ Kl/ipW5A9Y3gC1LmpdIe9hEl6qQKzUoW5Tf1cJw==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0GXBAB1TslohSIeaIFUBhMBAQGCSIE7WygZAWhaMwcIS?=
+ =?us-ascii?q?QOEUoNPjiKBFpA3inuBaYERAxgWAiEVAQMBDS4BBRoBAgQBAQMBAgGCDIJ0A?=
+ =?us-ascii?q?owzAh8GAQQ0EwECBAEBAQEDAgMBAQEBAQEBAQENAQEFAQEBAgEBAgQGAQIQA?=
+ =?us-ascii?q?QEBAUAOO4ZPDUkBEAGBalFxYQQDBjcBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQECBAQDAQECLgMPARtAAQgKEwEBLAUHGCMDF?=
+ =?us-ascii?q?AEGAwIRATUDARMBEhQGAYIPWAGCIAICTgMFDAafCJtMeoEygQGCDAEBBoEIP?=
+ =?us-ascii?q?gIBAQEJAgIDDy4B2gyBZAmBSYINg1+CShoBBSVJawKER4Q8Jw+BVUSBFTWBB?=
+ =?us-ascii?q?oE3B2+BUDM8CwwLAQEBAQEXgQwYAQEIBAQ9CRiDDYJpgiZEPhQdgTiBE4Emg?=
+ =?us-ascii?q?iiBIkCCF0aFOASCLAMsIIE6Boc9gURLMywBVRMXCwcFW4EIAyo0MW4yHYEnh?=
+ =?us-ascii?q?QyEHitPhQKBGINTERNrDwaBFYNbhUpAAwttPTcUG5YYFyoZaheBYQIOHx8CF?=
+ =?us-ascii?q?ScPFRoOBQEHDAgMAgEBBRsCDSEEBAUJAhMKBQYBBwgiCw0FCQQRFg0HBQUBC?=
+ =?us-ascii?q?wIJJwgDklcSFioCdY5ljhiTWR1tNAeEH4FeBgyJCIEmlgaEBIFXizySDYdHI?=
+ =?us-ascii?q?pd+ZiKCNocngSYJYIEPH0yIeow6LAgLhUaBfyM8DWIBHQMJBzMaMEOCMwEzC?=
+ =?us-ascii?q?QkBPBwPWJEhKIE+IoEEgXQ7fYFpB7ZTQTUBAQEBAQkFKQIHAQoBAQMJhWIBA?=
+ =?us-ascii?q?YMyiQhuXQEB?=
+IronPort-PHdr: A9a23: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
+ 6dO4g==
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:oxLB3K45uqm5AevHJgPXwPXXdLJyesId70hD6qkRc203TiX8ra
+ qTdZsguyMc5Ax9ZJhCo7C90cu7IE80nKQdieIs1NyZMzUO1lHFEKhSqaPchxfgFyf9+uM179
+ YDT4FOTPvqAxxfhcb+iTPId+rILeP3lZyVuQ==
+X-Talos-CUID: =?us-ascii?q?9a23=3AwZCjVmvjs1CQUdEWSwrrPW3W6IskfV/skVLUGHW?=
+ =?us-ascii?q?FEHZ3C5jJUwOM9f1rxp8=3D?=
+X-Talos-MUID: 9a23:7MHwLwbWroQmHOBT6QSyoWlCO8ZR/P6fS1gLrJ4CoeSGDHkl
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.18,269,1751234400"; 
+   d="scan'208,217";a="125643556"
+X-MGA-submission: =?us-ascii?q?MDGrooe5Zda6PTMZGSGFnIwdZIWebJpVMshorp?=
+ =?us-ascii?q?UjH8DJ7GdEyHmnifo2u6X+a3KZ90THaiag45VNnbo4I0/GNRe0b6Nhxc?=
+ =?us-ascii?q?+sMAfdGkhELodoY40jd6HqMdHr6J+2qBTwptAjLANUOeYARiiA63rzGF?=
+ =?us-ascii?q?VAUGCBukrD2RrK9NZco+2+QA=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2025 13:52:57 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id E562D1A2DF;
+	Tue, 16 Sep 2025 13:52:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1758023576;
+	bh=qTeFRfNawMovN2F8S41DhQJc0awleyrKnnPUCvHEKZA=;
+	h=From:To:Subject:Date:Message-ID;
+	b=QQt/9zNpCaAiDqU2EHc9z1VN/U6M4E4xpmPxgRxkI9+bj8qG3YRNzc5EUzg8VLJ4L
+	 xWFzpI8PEFCxV7fmEzxe/ljKrmRT6+1a6uWq0ZZzUD2HIKYJSLyKZ2e/C/hPC1SLIc
+	 XQZMoiJkB5oXU/x8RS5d+UP/9GglNCqX+K+Fthf0=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 16 Sep 2025 13:52:54 +0200
+Message-ID: <m25xdivckp.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Sep 16 13:52:56 2025 +0200 (CEST))
+X-Spam-Flag: No, tests=bogofilter, spamicity=0.120680, queueID=12FFB1A303
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19377
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-09/m25xdivckp.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of September 09 to
+16, 2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Dune dev meeting
+Dune 3.20
+OCaml compiler office hours? (preparation thread)
+Second beta release of OCaml 5.4.0
+Unicode 17.0.0 update for Uucd, Uucp, Uunf and Uuseg
+Scope Image File Viewer
+OCaml security team
+Testo 0.2.0 - test library with support for snapshots, parallel runs, xfail=
+s, timeouts
+tinyfiledialogs bindings
+RFC: `for...in' construct
+dead_code_analyzer 1.0.0
+Relocatable OCaml
+FUN OCaml is live on YouTube and Twitch
+Other OCaml News
+Old CWN
+
+
+Dune dev meeting
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/34>
+
+
+Shon announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hi everyone! :camel:
+
+  Starting tomorrow, Wednesday September 9th, 2025, *we will begin
+  holding our Dune dev meeting WEEKLY, every Wednesday*, at alternating
+  time slots.
+
+  Whether you are a maintainer, a regular contributor, a new joiner or
+  just curious, you are always welcome to join: these discussions are
+  open! The goal of these meetings is to provide a place to discuss the
+  ongoing work together and synchronize between the Dune developers
+  :smile:
+
+  However, we will no longer be manually announcing these meetings, as
+  they are at set recurring times, and the meeting times and ways to
+  participate are well documented.
+
+
+:calendar: Agenda and Notes
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C
+
+  If there is a prior agenda, it will be available on the dedicated
+  meeting page [available from or dev wiki]. Feel free to ask if you
+  want to add more items in it.
+
+  You may review the meeting notes for any past meetings from the very
+  same pages.
+
+
+[available from or dev wiki] <https://github.com/ocaml/dune/wiki/>
+
+
+:computer: Links
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  =E2=80=A2 Meeting link:[ zoom]
+  =E2=80=A2 Calendar event:[ google calendar]
+  =E2=80=A2 Wiki with information and previous notes: [dune wiki on GitHub]
+
+  :heart:
+
+
+[ zoom]
+<https://us06web.zoom.us/j/85096877776?pwd=3DcWNhU1dHQ1ZNSjZuOUZCQ0h2by9Udz=
+09>
+
+[ google calendar]
+<https://calendar.google.com/calendar/embed?src=3Dc_5cd698df6784e385b1cdcdc=
+1dbca18c061faa96959a04781566d304dc9ec7319%40group.calendar.google.com>
+
+[dune wiki on GitHub] <https://github.com/ocaml/dune/wiki>
+
+
+Dune 3.20
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-dune-3-20/17150/13>
+
+
+Etienne Marais announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The Dune Team is happy to announce the release of Dune `3.20.2'.
+
+  This release comes with some fixes regarding `js_of_ocaml' and `cram'
+  test. It also fixes `dune' when using Cygwin.
+
+
+Changelog
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C
+
+=E2=97=8A Fixed
+
+  =E2=80=A2 Fix jsoo separate compilation with
+    modules_without_implementation. Regression introduced in
+    ocaml/dune#10767. (ocaml/dune#12320, fixes ocaml/dune#12306 @hhugo)
+
+  =E2=80=A2 Fix `runtest-js' mistakenly using wrong dependencies
+    (ocaml/dune#12324, @vouillon)
+
+  =E2=80=A2 Remove empty `.cram.test.t' directory during the running of a c=
+ram
+    test.  (ocaml/dune#12329, fixes ocaml/dune#12321, @Alizter)
+
+  =E2=80=A2 Fix Cygwin bootstrap (ocaml/dune#12325, fixes ocaml/dune#12316,
+    @Alizter)
+
+
+OCaml compiler office hours? (preparation thread)
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ocaml-compiler-office-hours-preparation-thre=
+ad/17230/1>
+
+
+gasche announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Following our current discussion on making participation to the OCaml
+  compiler development more inviting
+  (<https://discuss.ocaml.org/t/why-lean-4-replaced-ocaml-as-my-primary-lan=
+guage/17109/45?u=3Dgasche>,
+  <https://discuss.ocaml.org/t/synchronous-discussion-channel-for-compiler-=
+contributors/17198/1>
+  ), I propose to give a try to "OCaml compiler office hours". My idea
+  is to do this once during a week day around the end of September (and
+  then we see how it goes).
+
+  =E2=80=A2 Format: a synchronous remote meeting (voice with optional video=
+),
+    backed by a collaborative pad to record questions, take notes, share
+    links etc.
+  =E2=80=A2 Topic: anything related to the development of the OCaml compile=
+r,
+    that is, the github/ocaml/ocaml project. (All topics and questions
+    are welcome, at all levels of knowledge and familiarity with the
+    compiler.)
+  =E2=80=A2 Duration: probably one to two hours, but the idea of "office ho=
+urs"
+    is that people can of course join late and leave at any time.
+
+  I am including below a poll to ask which time slots would be possible
+  / comfortable for prospective attendants. (As the organizer, I
+  pre-selected slots that are comfortable for me.)  Please only answer
+  the poll if you are motivated to attend such a meeting (the
+  preferences may different from the general timezone of the OCaml
+  community).
+
+  /Editor=E2=80=99s note: please follow the archive link above to access the
+  poll./
+
+  (If we do this several time we will of course think of a rotation to
+  accomodate people from different timezones.)
+
+
+Second beta release of OCaml 5.4.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/second-beta-release-of-ocaml-5-4-0/17235/1>
+
+
+octachron announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80
+
+  After an extended summer break, the release of OCaml 5.4.0 is getting
+  close.
+
+  Since there have been a handful of meaningful bug fixes this summer,
+  we are releasing a second beta version of OCaml 5.4.0 to help you
+  update your software and libraries ahead of the release (see below for
+  the installation instructions). More information about the whole
+  release process is now available in the [compiler repository].
+
+  Compared to the first beta release, this beta release contains four
+  notable bug fixes:
+  =E2=80=A2 one type system bugfix for variance annotation on private types
+  =E2=80=A2 one memory concurrency safety fix for weak pointers
+  =E2=80=A2 two Windows fixes
+
+  Those fixes are complemented by:
+  =E2=80=A2 one runtime performance fix
+  =E2=80=A2 three tools and compiler-libs related fixes
+  =E2=80=A2 one error message fix.
+
+  The full list of fixes for this second beta is available below.
+
+  Overall, this beta release is already quite stable.  If the tests for
+  this beta release go well, we are expecting to have a first release
+  candidate in the week of the 22 September, and the full release in the
+  beginning of October.
+
+  If you find any bugs, please report them on [OCaml's issue tracker].
+
+  The last progresses on stabilising the ecosystem are still tracked on
+  the [opam readiness for 5.4.0 meta-issue].
+
+
+  If you are interested in full list of features and bug fixes of the
+  new OCaml version, the updated change log for OCaml 5.4.0 is available
+  [on GitHub].
+
+  Happy hacking, Florian Angeletti for the OCaml team
+
+
+[compiler repository]
+<https://github.com/ocaml/ocaml/blob/trunk/release-info/introduction.md>
+
+[OCaml's issue tracker] <https://github.com/ocaml/ocaml/issues>
+
+[opam readiness for 5.4.0 meta-issue]
+<https://github.com/ocaml/opam-repository/issues/27916>
+
+[on GitHub] <https://github.com/ocaml/ocaml/blob/5.4/Changes>
+
+Installation Instructions
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The base compiler can be installed as an opam switch with the
+  following commands on opam 2.1 and later:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create 5.4.0~beta2
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The source code for the beta is also available at these addresses:
+
+  =E2=80=A2 [GitHub]
+  =E2=80=A2 [OCaml archives at Inria]
+
+
+[GitHub] <https://github.com/ocaml/ocaml/archive/5.4.0-beta2.tar.gz>
+
+[OCaml archives at Inria]
+<https://caml.inria.fr/pub/distrib/ocaml-5.4/ocaml-5.4.0~beta2.tar.gz>
+
+=E2=97=8A Fine-Tuned Compiler Configuration
+
+  If you want to tweak the configuration of the compiler, you can switch
+  to the option variant with:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update
+  =E2=94=82 opam switch create <switch_name> ocaml-variants.5.4.0~beta2+opt=
+ions <option_list>
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  where `option_list' is a space separated list of `ocaml-option-*'
+  packages. For instance, for a flambda and no-flat-float-array switch:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam switch create 5.4.0~beta2+flambda+nffa ocaml-variants.5.4.=
+0~beta2+options ocaml-option-flambda ocaml-option-no-flat-float-array
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  All available options can be listed with `opam search ocaml-option'.
+
+
+Changes since the first beta
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A Type system fix
+
+  =E2=80=A2 [#14200], [#14202] : bad variance check with private aliases
+    (Jacques Garrigue, report and review by Stephen Dolan)
+
+
+  [#14200] <https://github.com/ocaml/ocaml/issues/14200>
+
+  [#14202] <https://github.com/ocaml/ocaml/issues/14202>
+
+
+=E2=97=8A Windows fixes
+
+  =E2=80=A2 #13504, #13625, +[#14223]: Add `Thread.set_current_thread_name'.
+    (Romain Beauxis, review by Gabriel Scherer and Antonin D=C3=A9cimo)
+
+  =E2=80=A2 [#13541], [#13777]: Using C++11 `thread_local' causes name-mang=
+ling
+    issues when linking with flexlink on Cygwin.  (Antonin D=C3=A9cimo and
+    David Allsopp, report by Kate Deplaix)
+
+
+  [#14223] <https://github.com/ocaml/ocaml/issues/14223>
+
+  [#13541] <https://github.com/ocaml/ocaml/issues/13541>
+
+  [#13777] <https://github.com/ocaml/ocaml/issues/13777>
+
+
+=E2=97=8A Runtime fixes
+
+  =E2=80=A2 [#14061], [#14209]: fix a memory-ordering bug in Weak.set that =
+could
+    result in uninitialized memory seen by Weak.get on another domain.
+    (Damien Doligez, review by Gabriel Scherer)
+
+  =E2=80=A2 [#14169]: runtime, fix cache miss within the stack fragments ca=
+che
+    (Florian Angeletti, review by Gabriel Scherer)
+
+
+  [#14061] <https://github.com/ocaml/ocaml/issues/14061>
+
+  [#14209] <https://github.com/ocaml/ocaml/issues/14209>
+
+  [#14169] <https://github.com/ocaml/ocaml/issues/14169>
+
+
+=E2=97=8A Tooling fixes
+
+  =E2=80=A2 #13302, +[#14236]: Store locations of longidents components (Ul=
+ysse
+    G=C3=A9rard and Jules Aguillon, review by Jules Aguillon and Florian
+    Angeletti)
+
+  =E2=80=A2 #12642, #13536, +[#14184], +[#14192]: in the toplevel, print sh=
+orter
+    paths for constructors and labels when only some modules along their
+    path are open.  (Gabriel Scherer, review by Florian Angeletti)
+
+  =E2=80=A2 [#14196], [#14197]: ocamlprof: do not instrument unreachable cl=
+auses
+    (Gabriel Scherer, review by Nicol=C3=A1s Ojeda B=C3=A4r, report by Ali
+    Caglayan)
+
+
+  [#14236] <https://github.com/ocaml/ocaml/issues/14236>
+
+  [#14184] <https://github.com/ocaml/ocaml/issues/14184>
+
+  [#14192] <https://github.com/ocaml/ocaml/issues/14192>
+
+  [#14196] <https://github.com/ocaml/ocaml/issues/14196>
+
+  [#14197] <https://github.com/ocaml/ocaml/issues/14197>
+
+
+=E2=97=8A Error messages
+
+  =E2=80=A2 [#14214], [#14221]: fix a confused error message for module
+    inclusions, functor error messages were missing some type equalities
+    potentially leading to nonsensical "type t is not compatible with
+    type t" submessage (Florian Angeletti, report by Basile Cl=C3=A9ment,
+    review by Gabriel Scherer)
+
+
+  [#14214] <https://github.com/ocaml/ocaml/issues/14214>
+
+  [#14221] <https://github.com/ocaml/ocaml/issues/14221>
+
+
+Unicode 17.0.0 update for Uucd, Uucp, Uunf and Uuseg
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-unicode-17-0-0-update-for-uucd-uucp-uunf=
+-and-uuseg/17236/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello,
+
+  Unicode 17.0.0 was released on September 9th. It adds 4803 new
+  characters for a total of 159'801 characters.
+
+  Among other interesting scripts, this adds support for the [Beria Erfe
+  script], a modern-use script from Africa which coincidentally is also
+  refered to as the *camel alphabet*.
+
+  For more information about other additions see [this page].
+
+  Accordingly these libraries had to be updated (aggregated, boring,
+  release notes [here])
+
+  =E2=80=A2 [Uucd] 17.0.0 Unicode character database decoder for OCaml, [do=
+cs]
+  =E2=80=A2 [Uucp] 17.0.0 Unicode character properties for OCaml, [docs]
+  =E2=80=A2 [Uunf] 17.0.0 Unicode text normalization for OCaml, [docs]
+  =E2=80=A2 [Uuseg] 17.0.0 Unicode text segmentation for OCaml, [docs]
+
+  Both `Uucd' and `Uucp' are incompatible releases sinces new block and
+  script enumerants were added.
+
+  Other than that the minimal Unicode introduction and Unicode OCaml
+  tips is still [here] and remember that despite the myths OCaml :heart:
+  Unicode.
+
+  A big thanks for funding from the [OCaml Software Foundation] and from
+  my [donors].
+
+  Daniel
+
+
+[Beria Erfe script] <https://en.wikipedia.org/wiki/Zaghawa_alphabet>
+
+[this page]
+<https://blog.unicode.org/2025/09/unicode-170-release-announcement.html>
+
+[here] <https://github.com/ocaml/opam-repository/pull/28502>
+
+[Uucd] <http://erratique.ch/software/uucd>
+
+[docs] <http://erratique.ch/software/uucd/doc>
+
+[Uucp] <http://erratique.ch/software/uucp>
+
+[docs] <http://erratique.ch/software/uucp/doc>
+
+[Uunf] <http://erratique.ch/software/uunf>
+
+[docs] <http://erratique.ch/software/uunf/doc>
+
+[Uuseg] <http://erratique.ch/software/uuseg>
+
+[docs] <http://erratique.ch/software/uuseg/doc>
+
+[here] <https://erratique.ch/software/uucp/doc/unicode.html>
+
+[OCaml Software Foundation] <http://ocaml-sf.org/>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+
+Scope Image File Viewer
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-scope-image-file-viewer/17237/1>
+
+
+Charles Averill announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I wanted to mess around with image file parsing and ended up building
+  a small image viewer application using SDL. Includes a few
+  hand-written parsers as well as calls to SDL_Image for more
+  complicated formats. Not super performant but working on it.
+
+  <https://opam.ocaml.org/packages/scope/>
+
+
+OCaml security team
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-ocaml-security-team/16902/5>
+
+
+Hannes Mehnert announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Dear everyone,
+
+  we=E2=80=99ve accomplished several tasks:
+
+  =E2=80=A2 <https://ocaml.org/security> is now live
+  =E2=80=A2 The public mailing list for security advisories is
+    sympa.inria.fr/sympa/info/ocsf-ocaml-security-announcements =E2=80=93 p=
+lease
+    subscribe if you=E2=80=99d like to receive security announcements
+  =E2=80=A2 There=E2=80=99ll be a brief introduction at [Fun OCaml] and a t=
+alk at [OCaml
+    workshop (ICFP)] )16:00 - 16:30
+  =E2=80=A2 We will have a public meeting for discussions on Oct 22nd 14:00=
+ -
+    16:00 CEST (online, yet to be announced where)
+  =E2=80=A2 There=E2=80=99s already the OCaml security advisory database
+    <https://github.com/ocaml/security-advisories> (still empty, we=E2=80=
+=99ll
+    fill it over the next weeks)
+
+
+[Fun OCaml] <https://fun-ocaml.org>
+
+[OCaml workshop (ICFP)]
+<https://conf.researchr.org/details/icfp-splash-2025/ocaml-2025-papers/9/To=
+ward-a-More-Secure-OCaml-Ecosystem>
+
+
+Testo 0.2.0 - test library with support for snapshots, parallel runs, xfail=
+s, timeouts
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-testo-0-2-0-test-library-with-support-fo=
+r-snapshots-parallel-runs-xfails-timeouts/17242/1>
+
+
+Martin Jambon announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Testo was designed as a feature-rich testing framework that makes
+  common tasks easy and unusual ones possible. It is similar to Alcotest
+  but supports more options including notably:
+
+  =E2=80=A2 snapshotting: large output capture and diffing
+  =E2=80=A2 test-driven development: write tests first, make them pass later
+    (`~expected_outcome' option)
+  =E2=80=A2 review test results without re-running them (`status' subcomman=
+d)
+  =E2=80=A2 fast parallel execution supporting Windows and older OCaml vers=
+ions
+    (>=3D 4.08)
+  =E2=80=A2 complete [documentation]: [tutorial], [howto guides], [OCaml API
+    reference]
+  =E2=80=A2 timeouts (new!)
+
+  We=E2=80=99ve been using Testo at [Semgrep] where we need the snapshotting
+  feature to track the output of the `semgrep' command in end-to-end
+  tests.
+
+  [Changes since the last release] include bugfixes, a few new
+  command-line options, and support for timeouts. Install it now with
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ opam install testo
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Testo development is an open-source community effort that [happens on
+  GitHub]. It has been funded by Semgrep, my employer and fine purveyor
+  of application security software. We're planning for a 1.0 release
+  once the known Windows-specific bugs are gone. No major breaking
+  changes are in sight.
+
+  For reference, the previous announcement from last year is [here].
+
+  Enjoy your free software!
+
+
+[documentation] <https://semgrep.github.io/testo/>
+
+[tutorial] <https://semgrep.github.io/testo/tutorial/>
+
+[howto guides] <https://semgrep.github.io/testo/howtos/>
+
+[OCaml API reference]
+<https://semgrep.github.io/testo/reference/testo/Testo/index.html>
+
+[Semgrep] <https://github.com/semgrep/semgrep>
+
+[Changes since the last release]
+<https://github.com/semgrep/testo/releases/tag/0.2.0>
+
+[happens on GitHub] <https://github.com/semgrep/testo>
+
+[here]
+<https://discuss.ocaml.org/t/ann-testo-0-1-0-a-new-testing-framework-for-oc=
+aml/15624>
+
+
+tinyfiledialogs bindings
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-tinyfiledialogs-bindings/17243/1>
+
+
+Charles Averill announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Bindings to the cross-platform tinyfiledialogs library, providing an
+  API for (you guessed it) simple graphical file/directory/color
+  selection using what the host operating system provides.
+
+  <https://opam.ocaml.org/packages/tinyfiledialogs/>
+
+
+RFC: `for...in' construct
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/rfc-for-in-construct/17250/1>
+
+
+Sacha Ayoun announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello,
+
+  Here's [an RFC] I drafted for adding a `for...in' construct to the
+  language. Feedback is welcome here :slight_smile:
+
+  Some reservations were already voiced [here], and acknowledged in the
+  RFC.
+
+
+[an RFC] <https://github.com/ocaml/RFCs/pull/56>
+
+[here]
+<https://caml.zulipchat.com/#narrow/channel/527805-compiler/topic/.60for.20=
+.2E.2E.20in.60.20in.20OCaml/with/539419833>
+
+
+dead_code_analyzer 1.0.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-dead-code-analyzer-1-0-0/17251/1>
+
+
+fantazio announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80
+
+  Hello everyone,
+
+  Almost 10 years later, the [dead_code_analyzer] is coming back !
+
+  Thanks to all the more or less recent contributors and reviewers (I am
+  not allowed to tag you all as a new user).
+
+  The tool has been updated to *OCaml 5.2*. It is available on `opam'.
+  There is planned work to update it to OCaml 5.3.  There is planned
+  work to offer a version compatible with OCaml 4.14. However, there is
+  no intent to maintain the `dead_code_analyzer' on any OCaml version
+  other than the latest.
+
+  This static analyzer is a complement to the compiler=E2=80=99s warnings on
+  unused code constructs. It reads *.cmi* and *.cmt* files, produced by
+  using `-keep-locs' (on by default) on *.mli* files and `-bin-annot' on
+  *.ml* files.
+
+  It scans a compiled OCaml project and reports various warnings about
+  suspicious code:
+
+  =E2=80=A2 exported values never used,
+  =E2=80=A2 class fields never used,
+  =E2=80=A2 constructors and record fields never used,
+  =E2=80=A2 optional arguments always or never used,
+  =E2=80=A2 some stylistic issues.
+
+  By default, only the 3 first elements of the above list are reported.
+  More details available in the project=E2=80=99s /[README]/. A more thorou=
+gh
+  documentation is in progress.
+
+
+[dead_code_analyzer] <https://github.com/LexiFi/dead_code_analyzer>
+
+[README]
+<https://github.com/LexiFi/dead_code_analyzer/blob/master/README.md>
+
+
+Relocatable OCaml
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90
+
+  Archive: <https://discuss.ocaml.org/t/relocatable-ocaml/17253/1>
+
+
+David Allsopp announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  It is my great pleasure, 3 years to the day since I finalised the
+  first full demonstration of it in Ljubljana for the OCaml Workshop in
+  2022, to announce the general availability of Relocatable OCaml for
+  testing and review.
+
+  For example, this creates a 5.4.0 switch (the good old-fashioned slow
+  way):
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ time opam switch create --repos=3Drelocatable=3Dgit+https://g=
+ithub.com/dra27/opam-repository.git#relocatable,default original-compiler o=
+caml.5.4.0
+  =E2=94=82 real    1m27.646s
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  But, having run that, subsequent switches are a just a tad quicker:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ eval $(opam env)
+  =E2=94=82 $ ocamlopt -where
+  =E2=94=82 /home/opam/.opam/original-compiler/lib/ocaml
+  =E2=94=82 $ time opam switch create . --repos=3Drelocatable,default ocaml=
+.5.4.0
+  =E2=94=82 real    0m5.105s
+  =E2=94=82 $ eval $(opam env)
+  =E2=94=82 $ ocamlopt -where
+  =E2=94=82 /home/opam/myproject/_opam/lib/ocaml
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  And, um, that's it really!
+
+  Oh, there are a few other things bundled into the [relocatable branch]
+  on dra27/opam-repository:
+  =E2=80=A2 It's available for all versions of OCaml since 4.08. They insta=
+ll
+    using their "trunk" versions - i.e. the version number of what would
+    be the next release of OCaml (4.08.2, 4.09.2, 4.10.3, 4.11.3,
+    4.12.2, 4.13.2, 4.14.3, 5.0.1, 5.1.2, 5.2.2, 5.1.3, pre-release
+    5.4.0 and, for completeness, trunk OCaml is present as 5.5.0)
+  =E2=80=A2 Relocatable versions of `ocamlbuild' and `ocamlfind' are includ=
+ed,
+    along with patches for `omod' and `stdcompat'
+  =E2=80=A2 The `ocaml-option-' packages work for all of the older versions=
+, too
+  =E2=80=A2 They all work on Windows (including 4.08-4.12, which aren't yet
+    available in opam-repository)
+  =E2=80=A2 They all work on Apple silicon (including 4.08, 4.09 and 4.11)
+
+  I have literally just opened the PRs on ocaml/ocaml
+  ([ocaml/ocaml#14243], [ocaml/ocaml#14244], [ocaml/ocaml#14245] and
+  [ocaml/ocaml#14246]). In the interests of those of us who maintain
+  libraries and tools which have to target multiple versions of OCaml,
+  there will be some kind of story for keeping these older versions
+  available, but the focus for now will be reaching a consensus for
+  merging the feature itself into OCaml 5.5.
+
+  Please do test and report any issues at
+  <https://github.com/dra27/relocatable/issues>. Over-zealous lock-file
+  systems notwithstanding, the compiler should be as "drop-in" a
+  replacement as updating to any "point release" of the compiler
+  (i.e. if you have something which works in OCaml 5.3.0 but doesn't
+  work in Relocatable OCaml 5.3.1, that's a bug, and I'd _love_ to hear
+  about it a.s.a.p., please!)
+
+
+[relocatable branch]
+<https://github.com/dra27/opam-repository/tree/relocatable/packages>
+
+[ocaml/ocaml#14243] <https://github.com/ocaml/ocaml/pull/14243>
+
+[ocaml/ocaml#14244] <https://github.com/ocaml/ocaml/pull/14244>
+
+[ocaml/ocaml#14245] <https://github.com/ocaml/ocaml/pull/14245>
+
+[ocaml/ocaml#14246] <https://github.com/ocaml/ocaml/pull/14246>
+
+
+FUN OCaml is live on YouTube and Twitch
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/fun-ocaml-is-live-on-youtube-and-twitch/1725=
+4/1>
+
+
+Sabine Schmaltz announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We're at FUN OCaml and having some awesome OCaml talks today! And you
+  can join us remotely. =F0=9F=A7=A1=F0=9F=90=AB
+
+  For the schedule and links to the live streams of FUN OCaml 2025 from
+  Warsaw, see
+
+  <https://fun-ocaml.com>
+
+  We also have a discord server for FUN OCaml here:
+
+  <https://discord.gg/DxAghYKqn4>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Relocatable OCaml - from concept to demo to PRs]
+  =E2=80=A2 [Upcoming OCaml Events]
+  =E2=80=A2 [Shipping a robust DB migration runner for Chaufr (OCaml + Caqt=
+i +
+    Lwt)]
+  =E2=80=A2 [FUN OCaml 2025 - Join us in Warsaw, Poland on September 15 for=
+ a
+    day full of presentations!]
+  =E2=80=A2 [Dynamic Formal Verification in OCaml: An Ortac/QCheck-STM Tuto=
+rial]
+  =E2=80=A2 [Caching opam solutions]
+  =E2=80=A2 [Build IDs for Day10]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Relocatable OCaml - from concept to demo to PRs]
+<https://www.dra27.uk/blog/platform/2025/09/15/relocatable-ocaml.html>
+
+[Upcoming OCaml Events] <https://ocaml.org/events>
+
+[Shipping a robust DB migration runner for Chaufr (OCaml + Caqti + Lwt)]
+<https://fearful-odds.rocks/blog/db-migration-runner-for-chaufr>
+
+[FUN OCaml 2025 - Join us in Warsaw, Poland on September 15 for a day
+full of presentations!]
+<https://www.youtube.com/watch/L_rTHhIEfVM?version=3D3>
+
+[Dynamic Formal Verification in OCaml: An Ortac/QCheck-STM Tutorial]
+<https://tarides.com/blog/2025-09-10-dynamic-formal-verification-in-ocaml-a=
+n-ortac-qcheck-stm-tutorial>
+
+[Caching opam solutions]
+<https://jon.recoil.org/blog/2025/09/caching-opam-solutions.html>
+
+[Build IDs for Day10]
+<https://jon.recoil.org/blog/2025/09/build-ids-for-day10.html>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-09-16 Tue 13:50 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.09.09.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.09.23.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of September 09 to 16, 2=
+025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Dune dev meeting</a></li>
+<li><a href=3D"#2">Dune 3.20</a></li>
+<li><a href=3D"#3">OCaml compiler office hours? (preparation thread)</a></l=
+i>
+<li><a href=3D"#4">Second beta release of OCaml 5.4.0</a></li>
+<li><a href=3D"#5">Unicode 17.0.0 update for Uucd, Uucp, Uunf and Uuseg</a>=
+</li>
+<li><a href=3D"#6">Scope Image File Viewer</a></li>
+<li><a href=3D"#7">OCaml security team</a></li>
+<li><a href=3D"#8">Testo 0.2.0 - test library with support for snapshots, p=
+arallel runs, xfails, timeouts</a></li>
+<li><a href=3D"#9">tinyfiledialogs bindings</a></li>
+<li><a href=3D"#10">RFC: <code>for...in</code> construct</a></li>
+<li><a href=3D"#11">dead_code_analyzer 1.0.0</a></li>
+<li><a href=3D"#12">Relocatable OCaml</a></li>
+<li><a href=3D"#13">FUN OCaml is live on YouTube and Twitch</a></li>
+<li><a href=3D"#14">Other OCaml News</a></li>
+<li><a href=3D"#org6538c14">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Dune dev meeting</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/=
+34">https://discuss.ocaml.org/t/ann-dune-dev-meeting/14994/34</a>
+</p>
+</div>
+<div id=3D"outline-container-orgb8cec01" class=3D"outline-3">
+<h3 id=3D"orgb8cec01">Shon announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgb8cec01">
+<p>
+Hi everyone! :camel:
+</p>
+
+<p>
+Starting tomorrow, Wednesday September 9th, 2025, <b>we will begin holding =
+our Dune dev meeting WEEKLY, every Wednesday</b>, at alternating time slots.
+</p>
+
+<p>
+Whether you are a maintainer, a regular contributor, a new joiner or just c=
+urious, you are always welcome to join: these discussions are open! The goa=
+l of these meetings is to provide a place to discuss the ongoing work toget=
+her and synchronize between the Dune developers :smile:
+</p>
+
+<p>
+However, we will no longer be manually announcing these meetings, as they a=
+re at set recurring times, and the meeting times and ways to participate ar=
+e well documented.
+</p>
+</div>
+<div id=3D"outline-container-orge5af269" class=3D"outline-4">
+<h4 id=3D"orge5af269">:calendar: Agenda and Notes</h4>
+<div class=3D"outline-text-4" id=3D"text-orge5af269">
+<p>
+If there is a prior agenda, it will be available on the dedicated meeting p=
+age <a href=3D"https://github.com/ocaml/dune/wiki/">available from or dev w=
+iki</a>. Feel free to ask if you want to add more items in it.
+</p>
+
+<p>
+You may review the meeting notes for any past meetings from the very same p=
+ages.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orgd1f34f4" class=3D"outline-4">
+<h4 id=3D"orgd1f34f4">:computer: Links</h4>
+<div class=3D"outline-text-4" id=3D"text-orgd1f34f4">
+<ul class=3D"org-ul">
+<li>Meeting link:<a href=3D"https://us06web.zoom.us/j/85096877776?pwd=3DcWN=
+hU1dHQ1ZNSjZuOUZCQ0h2by9Udz09"> zoom</a></li>
+<li>Calendar event:<a href=3D"https://calendar.google.com/calendar/embed?sr=
+c=3Dc_5cd698df6784e385b1cdcdc1dbca18c061faa96959a04781566d304dc9ec7319%40gr=
+oup.calendar.google.com"> google calendar</a></li>
+<li>Wiki with information and previous notes: <a href=3D"https://github.com=
+/ocaml/dune/wiki">dune wiki on GitHub</a></li>
+</ul>
+
+<p>
+:heart:
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Dune 3.20</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dune-3-20/17150/13">htt=
+ps://discuss.ocaml.org/t/ann-dune-3-20/17150/13</a>
+</p>
+</div>
+<div id=3D"outline-container-org59534f7" class=3D"outline-3">
+<h3 id=3D"org59534f7">Etienne Marais announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org59534f7">
+<p>
+The Dune Team is happy to announce the release of Dune <code>3.20.2</code>.
+</p>
+
+<p>
+This release comes with some fixes regarding <code>js_of_ocaml</code> and <=
+code>cram</code> test. It also fixes <code>dune</code> when using Cygwin.
+</p>
+</div>
+<div id=3D"outline-container-orgcf1477f" class=3D"outline-4">
+<h4 id=3D"orgcf1477f">Changelog</h4>
+<div class=3D"outline-text-4" id=3D"text-orgcf1477f">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgcea23c8"></a>Fixed<br />
+<div class=3D"outline-text-5" id=3D"text-orgcea23c8">
+<ul class=3D"org-ul">
+<li>Fix jsoo separate compilation with modules_without_implementation. Regr=
+ession
+introduced in ocaml/dune#10767. (ocaml/dune#12320, fixes ocaml/dune#12306 @=
+hhugo)</li>
+
+<li>Fix <code>runtest-js</code> mistakenly using wrong dependencies (ocaml/=
+dune#12324, @vouillon)</li>
+
+<li>Remove empty <code>.cram.test.t</code> directory during the running of =
+a cram test.
+(ocaml/dune#12329, fixes ocaml/dune#12321, @Alizter)</li>
+
+<li>Fix Cygwin bootstrap (ocaml/dune#12325, fixes ocaml/dune#12316, @Alizte=
+r)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">OCaml compiler office hours? (preparation thread)</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocaml-compiler-office-hours=
+-preparation-thread/17230/1">https://discuss.ocaml.org/t/ocaml-compiler-off=
+ice-hours-preparation-thread/17230/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org8c93aad" class=3D"outline-3">
+<h3 id=3D"org8c93aad">gasche announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8c93aad">
+<p>
+Following our current discussion on making participation to the OCaml compi=
+ler development more inviting (<a href=3D"https://discuss.ocaml.org/t/why-l=
+ean-4-replaced-ocaml-as-my-primary-language/17109/45?u=3Dgasche">https://di=
+scuss.ocaml.org/t/why-lean-4-replaced-ocaml-as-my-primary-language/17109/45=
+?u=3Dgasche</a>, <a href=3D"https://discuss.ocaml.org/t/synchronous-discuss=
+ion-channel-for-compiler-contributors/17198/1">https://discuss.ocaml.org/t/=
+synchronous-discussion-channel-for-compiler-contributors/17198/1</a> ), I p=
+ropose to give a try to "OCaml compiler office hours". My idea is to do thi=
+s once during a week day around the end of September (and then we see how i=
+t goes).
+</p>
+
+<ul class=3D"org-ul">
+<li>Format: a synchronous remote meeting (voice with optional video), backe=
+d by a collaborative pad to record questions, take notes, share links etc.<=
+/li>
+<li>Topic: anything related to the development of the OCaml compiler, that =
+is, the github/ocaml/ocaml project. (All topics and questions are welcome, =
+at all levels of knowledge and familiarity with the compiler.)</li>
+<li>Duration: probably one to two hours, but the idea of "office hours" is =
+that people can of course join late and leave at any time.</li>
+</ul>
+
+<p>
+I am including below a poll to ask which time slots would be possible / com=
+fortable for prospective attendants. (As the organizer, I pre-selected slot=
+s that are comfortable for me.)
+Please only answer the poll if you are motivated to attend such a meeting (=
+the preferences may different from the general timezone of the OCaml commun=
+ity).
+</p>
+
+<p>
+<i>Editor=E2=80=99s note: please follow the archive link above to access th=
+e poll.</i>
+</p>
+
+<p>
+(If we do this several time we will of course think of a rotation to accomo=
+date people from different timezones.)
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Second beta release of OCaml 5.4.0</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/second-beta-release-of-ocam=
+l-5-4-0/17235/1">https://discuss.ocaml.org/t/second-beta-release-of-ocaml-5=
+-4-0/17235/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org076ec4b" class=3D"outline-3">
+<h3 id=3D"org076ec4b">octachron announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org076ec4b">
+<p>
+After an extended summer break, the release of OCaml 5.4.0 is getting close.
+</p>
+
+<p>
+Since there have been a handful of meaningful bug fixes this summer,
+we are releasing a second beta version of OCaml 5.4.0 to help you update
+your software and libraries ahead of the release (see below for the
+installation instructions). More information about the whole release proces=
+s is
+now available in the <a href=3D"https://github.com/ocaml/ocaml/blob/trunk/r=
+elease-info/introduction.md">compiler repository</a>.
+</p>
+
+<p>
+Compared to the first beta release, this beta release contains four notable
+bug fixes:
+</p>
+<ul class=3D"org-ul">
+<li>one type system bugfix for variance annotation on private types</li>
+<li>one memory concurrency safety fix for weak pointers</li>
+<li>two Windows fixes</li>
+</ul>
+
+<p>
+Those fixes are complemented by:
+</p>
+<ul class=3D"org-ul">
+<li>one runtime performance fix</li>
+<li>three tools and compiler-libs related fixes</li>
+<li>one error message fix.</li>
+</ul>
+
+<p>
+The full list of fixes for this second beta is available below.
+</p>
+
+<p>
+Overall, this beta release is already quite stable.
+If the tests for this beta release go well, we are expecting to have a firs=
+t release
+candidate in the week of the 22 September, and the full release in the begi=
+nning
+of October.
+</p>
+
+<p>
+If you find any bugs, please report them on <a href=3D"https://github.com/o=
+caml/ocaml/issues">OCaml's issue tracker</a>.
+</p>
+
+<p>
+The last progresses on stabilising the ecosystem are still tracked on the
+<a href=3D"https://github.com/ocaml/opam-repository/issues/27916">opam read=
+iness for 5.4.0 meta-issue</a>.
+</p>
+
+
+<p>
+If you are interested in full list of features and bug fixes of the new OCa=
+ml
+version, the updated change log for OCaml 5.4.0 is available <a href=3D"htt=
+ps://github.com/ocaml/ocaml/blob/5.4/Changes">on GitHub</a>.
+</p>
+
+<p>
+Happy hacking,
+Florian Angeletti for the OCaml team
+</p>
+</div>
+<div id=3D"outline-container-org769e26c" class=3D"outline-4">
+<h4 id=3D"org769e26c">Installation Instructions</h4>
+<div class=3D"outline-text-4" id=3D"text-org769e26c">
+<p>
+The base compiler can be installed as an opam switch with the following com=
+mands
+on opam 2.1 and later:
+</p>
+
+<pre class=3D"example" id=3D"org5be0149">
+opam update
+opam switch create 5.4.0~beta2
+</pre>
+
+<p>
+The source code for the beta is also available at these addresses:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/archive/5.4.0-beta2.tar.gz">G=
+itHub</a></li>
+<li><a href=3D"https://caml.inria.fr/pub/distrib/ocaml-5.4/ocaml-5.4.0~beta=
+2.tar.gz">OCaml archives at Inria</a></li>
+</ul>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orge9482cb"></a>Fine-Tuned Compiler Configuration<br />
+<div class=3D"outline-text-5" id=3D"text-orge9482cb">
+<p>
+If you want to tweak the configuration of the compiler, you can switch to t=
+he option variant with:
+</p>
+
+<pre class=3D"example" id=3D"org566dea5">
+opam update
+opam switch create &lt;switch_name&gt; ocaml-variants.5.4.0~beta2+options &=
+lt;option_list&gt;
+</pre>
+
+<p>
+where <code>option_list</code> is a space separated list of <code>ocaml-opt=
+ion-*</code> packages. For instance, for a flambda and no-flat-float-array =
+switch:
+</p>
+
+<pre class=3D"example" id=3D"orga3874fe">
+opam switch create 5.4.0~beta2+flambda+nffa ocaml-variants.5.4.0~beta2+opti=
+ons ocaml-option-flambda ocaml-option-no-flat-float-array
+</pre>
+
+<p>
+All available options can be listed with <code>opam search ocaml-option</co=
+de>.
+</p>
+</div>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-orgc41cc85" class=3D"outline-4">
+<h4 id=3D"orgc41cc85">Changes since the first beta</h4>
+<div class=3D"outline-text-4" id=3D"text-orgc41cc85">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgc27f48d"></a>Type system fix<br />
+<div class=3D"outline-text-5" id=3D"text-orgc27f48d">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/14200">#14200</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/14202">#14202</a> : bad varia=
+nce check with private aliases
+(Jacques Garrigue, report and review by Stephen Dolan)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orgfb7ef30"></a>Windows fixes<br />
+<div class=3D"outline-text-5" id=3D"text-orgfb7ef30">
+<ul class=3D"org-ul">
+<li>#13504, #13625, +<a href=3D"https://github.com/ocaml/ocaml/issues/14223=
+">#14223</a>: Add <code>Thread.set_current_thread_name</code>.
+(Romain Beauxis, review by Gabriel Scherer and Antonin D=C3=A9cimo)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/13541">#13541</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/13777">#13777</a>: Using C++1=
+1 <code>thread_local</code> causes name-mangling
+issues when linking with flexlink on Cygwin.
+(Antonin D=C3=A9cimo and David Allsopp, report by Kate Deplaix)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org1f28563"></a>Runtime fixes<br />
+<div class=3D"outline-text-5" id=3D"text-org1f28563">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/14061">#14061</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/14209">#14209</a>: fix a memo=
+ry-ordering bug in Weak.set that could
+result in uninitialized memory seen by Weak.get on another domain.
+(Damien Doligez, review by Gabriel Scherer)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/14169">#14169</a>: run=
+time, fix cache miss within the stack fragments cache
+(Florian Angeletti, review by Gabriel Scherer)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"org3010829"></a>Tooling fixes<br />
+<div class=3D"outline-text-5" id=3D"text-org3010829">
+<ul class=3D"org-ul">
+<li>#13302, +<a href=3D"https://github.com/ocaml/ocaml/issues/14236">#14236=
+</a>: Store locations of longidents components
+(Ulysse G=C3=A9rard and Jules Aguillon, review by Jules Aguillon
+ and Florian Angeletti)</li>
+
+<li>#12642, #13536, +<a href=3D"https://github.com/ocaml/ocaml/issues/14184=
+">#14184</a>, +<a href=3D"https://github.com/ocaml/ocaml/issues/14192">#141=
+92</a>: in the toplevel, print shorter paths for
+constructors and labels when only some modules along their path are open.
+ (Gabriel Scherer, review by Florian Angeletti)</li>
+
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/14196">#14196</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/14197">#14197</a>: ocamlprof:=
+ do not instrument unreachable clauses
+(Gabriel Scherer, review by Nicol=C3=A1s Ojeda B=C3=A4r, report by Ali Cagl=
+ayan)</li>
+</ul>
+</div>
+</li>
+<li><a id=3D"orge4df5bb"></a>Error messages<br />
+<div class=3D"outline-text-5" id=3D"text-orge4df5bb">
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/ocaml/ocaml/issues/14214">#14214</a>, <a =
+href=3D"https://github.com/ocaml/ocaml/issues/14221">#14221</a>: fix a conf=
+used error message for module inclusions,
+functor error messages were missing some type equalities potentially leading
+to nonsensical "type t is not compatible with type t" submessage
+(Florian Angeletti, report by Basile Cl=C3=A9ment, review by Gabriel Schere=
+r)</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">Unicode 17.0.0 update for Uucd, Uucp, Uunf and Uuseg</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-unicode-17-0-0-update-f=
+or-uucd-uucp-uunf-and-uuseg/17236/1">https://discuss.ocaml.org/t/ann-unicod=
+e-17-0-0-update-for-uucd-uucp-uunf-and-uuseg/17236/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org9dadee7" class=3D"outline-3">
+<h3 id=3D"org9dadee7">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9dadee7">
+<p>
+Hello,=20
+</p>
+
+<p>
+Unicode 17.0.0 was released on September 9th. It adds 4803 new characters f=
+or a total of 159'801 characters.
+</p>
+
+<p>
+Among other interesting scripts, this adds support for the <a href=3D"https=
+://en.wikipedia.org/wiki/Zaghawa_alphabet">Beria Erfe script</a>, a modern-=
+use script from Africa which coincidentally is also refered to as the <b>ca=
+mel alphabet</b>.=20
+</p>
+
+<p>
+For more information about other additions see <a href=3D"https://blog.unic=
+ode.org/2025/09/unicode-170-release-announcement.html">this page</a>.
+</p>
+
+<p>
+Accordingly these libraries had to be updated (aggregated, boring, release =
+notes <a href=3D"https://github.com/ocaml/opam-repository/pull/28502">here<=
+/a>)
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"http://erratique.ch/software/uucd">Uucd</a> 17.0.0 Unicode c=
+haracter database decoder for OCaml, <a href=3D"http://erratique.ch/softwar=
+e/uucd/doc">docs</a></li>
+<li><a href=3D"http://erratique.ch/software/uucp">Uucp</a> 17.0.0 Unicode c=
+haracter properties for OCaml, <a href=3D"http://erratique.ch/software/uucp=
+/doc">docs</a></li>
+<li><a href=3D"http://erratique.ch/software/uunf">Uunf</a> 17.0.0 Unicode t=
+ext normalization for OCaml, <a href=3D"http://erratique.ch/software/uunf/d=
+oc">docs</a></li>
+<li><a href=3D"http://erratique.ch/software/uuseg">Uuseg</a> 17.0.0 Unicode=
+ text segmentation for OCaml, <a href=3D"http://erratique.ch/software/uuseg=
+/doc">docs</a></li>
+</ul>
+
+<p>
+Both <code>Uucd</code> and <code>Uucp</code> are incompatible releases sinc=
+es new block and script enumerants were added.
+</p>
+
+<p>
+Other than that the minimal Unicode introduction and Unicode OCaml tips is =
+still <a href=3D"https://erratique.ch/software/uucp/doc/unicode.html">here<=
+/a> and remember that despite the myths OCaml :heart: Unicode.
+</p>
+
+<p>
+A big thanks for funding from the <a href=3D"http://ocaml-sf.org/">OCaml So=
+ftware Foundation</a> and from my <a href=3D"https://github.com/sponsors/db=
+uenzli">donors</a>.
+</p>
+
+<p>
+Daniel
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Scope Image File Viewer</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-scope-image-file-viewer=
+/17237/1">https://discuss.ocaml.org/t/ann-scope-image-file-viewer/17237/1</=
+a>
+</p>
+</div>
+<div id=3D"outline-container-org263e048" class=3D"outline-3">
+<h3 id=3D"org263e048">Charles Averill announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org263e048">
+<p>
+I wanted to mess around with image file parsing and ended up building a sma=
+ll image viewer application using SDL. Includes a few hand-written parsers =
+as well as calls to SDL_Image for more complicated formats. Not super perfo=
+rmant but working on it.
+</p>
+
+<p>
+<a href=3D"https://opam.ocaml.org/packages/scope/">https://opam.ocaml.org/p=
+ackages/scope/</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">OCaml security team</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocaml-security-team/169=
+02/5">https://discuss.ocaml.org/t/ann-ocaml-security-team/16902/5</a>
+</p>
+</div>
+<div id=3D"outline-container-org43072d8" class=3D"outline-3">
+<h3 id=3D"org43072d8">Hannes Mehnert announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org43072d8">
+<p>
+Dear everyone,
+</p>
+
+<p>
+we=E2=80=99ve accomplished several tasks:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/security">https://ocaml.org/security</a> i=
+s now live</li>
+<li>The public mailing list for security advisories is sympa.inria.fr/sympa=
+/info/ocsf-ocaml-security-announcements =E2=80=93 please subscribe if you=
+=E2=80=99d like to receive security announcements</li>
+<li>There=E2=80=99ll be a brief introduction at <a href=3D"https://fun-ocam=
+l.org">Fun OCaml</a> and a talk at <a href=3D"https://conf.researchr.org/de=
+tails/icfp-splash-2025/ocaml-2025-papers/9/Toward-a-More-Secure-OCaml-Ecosy=
+stem">OCaml workshop (ICFP)</a> )16:00 - 16:30</li>
+<li>We will have a public meeting for discussions on Oct 22nd 14:00 - 16:00=
+ CEST (online, yet to be announced where)</li>
+<li>There=E2=80=99s already the OCaml security advisory database <a href=3D=
+"https://github.com/ocaml/security-advisories">https://github.com/ocaml/sec=
+urity-advisories</a> (still empty, we=E2=80=99ll fill it over the next week=
+s)</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">Testo 0.2.0 - test library with support for snapshots, paralle=
+l runs, xfails, timeouts</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-testo-0-2-0-test-librar=
+y-with-support-for-snapshots-parallel-runs-xfails-timeouts/17242/1">https:/=
+/discuss.ocaml.org/t/ann-testo-0-2-0-test-library-with-support-for-snapshot=
+s-parallel-runs-xfails-timeouts/17242/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org5a830a3" class=3D"outline-3">
+<h3 id=3D"org5a830a3">Martin Jambon announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org5a830a3">
+<p>
+Testo was designed as a feature-rich testing framework that makes common ta=
+sks easy and unusual ones possible. It is similar to Alcotest but supports =
+more options including notably:
+</p>
+
+<ul class=3D"org-ul">
+<li>snapshotting: large output capture and diffing</li>
+<li>test-driven development: write tests first, make them pass later (<code=
+>~expected_outcome</code> option)</li>
+<li>review test results without re-running them (<code>status</code> subcom=
+mand)</li>
+<li>fast parallel execution supporting Windows and older OCaml versions (&g=
+t;=3D 4.08)</li>
+<li>complete <a href=3D"https://semgrep.github.io/testo/">documentation</a>=
+: <a href=3D"https://semgrep.github.io/testo/tutorial/">tutorial</a>, <a hr=
+ef=3D"https://semgrep.github.io/testo/howtos/">howto guides</a>, <a href=3D=
+"https://semgrep.github.io/testo/reference/testo/Testo/index.html">OCaml AP=
+I reference</a></li>
+<li>timeouts (new!)</li>
+</ul>
+
+<p>
+We=E2=80=99ve been using Testo at <a href=3D"https://github.com/semgrep/sem=
+grep">Semgrep</a> where we need the snapshotting feature to track the outpu=
+t of the <code>semgrep</code> command in end-to-end tests.
+</p>
+
+<p>
+<a href=3D"https://github.com/semgrep/testo/releases/tag/0.2.0">Changes sin=
+ce the last release</a> include bugfixes, a few new command-line options, a=
+nd support for timeouts. Install it now with
+</p>
+
+<pre class=3D"example" id=3D"org9ee24a7">
+$ opam install testo
+</pre>
+
+<p>
+Testo development is an open-source community effort that <a href=3D"https:=
+//github.com/semgrep/testo">happens on GitHub</a>. It has been funded by Se=
+mgrep, my employer and fine purveyor of application security software. We'r=
+e planning for a 1.0 release once the known Windows-specific bugs are gone.=
+ No major breaking changes are in sight.
+</p>
+
+<p>
+For reference, the previous announcement from last year is <a href=3D"https=
+://discuss.ocaml.org/t/ann-testo-0-1-0-a-new-testing-framework-for-ocaml/15=
+624">here</a>.
+</p>
+
+<p>
+Enjoy your free software!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">tinyfiledialogs bindings</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-tinyfiledialogs-binding=
+s/17243/1">https://discuss.ocaml.org/t/ann-tinyfiledialogs-bindings/17243/1=
+</a>
+</p>
+</div>
+<div id=3D"outline-container-org8bfd1eb" class=3D"outline-3">
+<h3 id=3D"org8bfd1eb">Charles Averill announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8bfd1eb">
+<p>
+Bindings to the cross-platform tinyfiledialogs library, providing an API fo=
+r (you guessed it) simple graphical file/directory/color selection using wh=
+at the host operating system provides.=20
+</p>
+
+<p>
+<a href=3D"https://opam.ocaml.org/packages/tinyfiledialogs/">https://opam.o=
+caml.org/packages/tinyfiledialogs/</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-10" class=3D"outline-2">
+<h2 id=3D"10">RFC: <code>for...in</code> construct</h2>
+<div class=3D"outline-text-2" id=3D"text-10">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/rfc-for-in-construct/17250/=
+1">https://discuss.ocaml.org/t/rfc-for-in-construct/17250/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org00d683d" class=3D"outline-3">
+<h3 id=3D"org00d683d">Sacha Ayoun announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org00d683d">
+<p>
+Hello,
+</p>
+
+<p>
+Here's <a href=3D"https://github.com/ocaml/RFCs/pull/56">an RFC</a> I draft=
+ed for adding a <code>for...in</code> construct to the language. Feedback i=
+s welcome here :slight_smile:=20
+</p>
+
+<p>
+Some reservations were already voiced <a href=3D"https://caml.zulipchat.com=
+/#narrow/channel/527805-compiler/topic/.60for.20.2E.2E.20in.60.20in.20OCaml=
+/with/539419833">here</a>, and acknowledged in the RFC.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-11" class=3D"outline-2">
+<h2 id=3D"11">dead_code_analyzer 1.0.0</h2>
+<div class=3D"outline-text-2" id=3D"text-11">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-dead-code-analyzer-1-0-=
+0/17251/1">https://discuss.ocaml.org/t/ann-dead-code-analyzer-1-0-0/17251/1=
+</a>
+</p>
+</div>
+<div id=3D"outline-container-org011b3da" class=3D"outline-3">
+<h3 id=3D"org011b3da">fantazio announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org011b3da">
+<p>
+Hello everyone,
+</p>
+
+<p>
+Almost 10 years later, the <a href=3D"https://github.com/LexiFi/dead_code_a=
+nalyzer">dead_code_analyzer</a> is coming back !
+</p>
+
+<p>
+Thanks to all the more or less recent contributors and reviewers (I am not =
+allowed to tag you all as a new user).
+</p>
+
+<p>
+The tool has been updated to <b>OCaml 5.2</b>. It is available on <code>opa=
+m</code>.
+There is planned work to update it to OCaml 5.3.
+There is planned work to offer a version compatible with OCaml 4.14. Howeve=
+r, there is no intent to maintain the <code>dead_code_analyzer</code> on an=
+y OCaml version other than the latest.
+</p>
+
+<p>
+This static analyzer is a complement to the compiler=E2=80=99s warnings on =
+unused code constructs. It reads <b>.cmi</b> and <b>.cmt</b> files, produce=
+d by using <code>-keep-locs</code> (on by default) on <b>.mli</b> files and=
+ <code>-bin-annot</code> on <b>.ml</b> files.
+</p>
+
+<p>
+It scans a compiled OCaml project and reports various warnings about suspic=
+ious code:
+</p>
+
+<ul class=3D"org-ul">
+<li>exported values never used,</li>
+<li>class fields never used,</li>
+<li>constructors and record fields never used,</li>
+<li>optional arguments always or never used,</li>
+<li>some stylistic issues.</li>
+</ul>
+
+<p>
+By default, only the 3 first elements of the above list are reported.
+More details available in the project=E2=80=99s <i><a href=3D"https://githu=
+b.com/LexiFi/dead_code_analyzer/blob/master/README.md">README</a></i>. A mo=
+re thorough documentation is in progress.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-12" class=3D"outline-2">
+<h2 id=3D"12">Relocatable OCaml</h2>
+<div class=3D"outline-text-2" id=3D"text-12">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/relocatable-ocaml/17253/1">=
+https://discuss.ocaml.org/t/relocatable-ocaml/17253/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org0991643" class=3D"outline-3">
+<h3 id=3D"org0991643">David Allsopp announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org0991643">
+<p>
+It is my great pleasure, 3 years to the day since I finalised the first ful=
+l demonstration of it in Ljubljana for the OCaml Workshop in 2022, to annou=
+nce the general availability of Relocatable OCaml for testing and review.
+</p>
+
+<p>
+For example, this creates a 5.4.0 switch (the good old-fashioned slow way):
+</p>
+<pre class=3D"example" id=3D"org41320d7">
+$ time opam switch create --repos=3Drelocatable=3Dgit+https://github.com/dr=
+a27/opam-repository.git#relocatable,default original-compiler ocaml.5.4.0
+real    1m27.646s
+</pre>
+<p>
+But, having run that, subsequent switches are a just a tad quicker:
+</p>
+<pre class=3D"example" id=3D"org9991b42">
+$ eval $(opam env)
+$ ocamlopt -where
+/home/opam/.opam/original-compiler/lib/ocaml
+$ time opam switch create . --repos=3Drelocatable,default ocaml.5.4.0
+real    0m5.105s
+$ eval $(opam env)
+$ ocamlopt -where
+/home/opam/myproject/_opam/lib/ocaml
+</pre>
+<p>
+And, um, that's it really!
+</p>
+
+<p>
+Oh, there are a few other things bundled into the <a href=3D"https://github=
+.com/dra27/opam-repository/tree/relocatable/packages">relocatable branch</a=
+> on dra27/opam-repository:
+</p>
+<ul class=3D"org-ul">
+<li>It's available for all versions of OCaml since 4.08. They install using=
+ their "trunk" versions - i.e. the version number of what would be the next=
+ release of OCaml (4.08.2, 4.09.2, 4.10.3, 4.11.3, 4.12.2, 4.13.2, 4.14.3, =
+5.0.1, 5.1.2, 5.2.2, 5.1.3, pre-release 5.4.0 and, for completeness, trunk =
+OCaml is present as 5.5.0)</li>
+<li>Relocatable versions of <code>ocamlbuild</code> and <code>ocamlfind</co=
+de> are included, along with patches for <code>omod</code> and <code>stdcom=
+pat</code></li>
+<li>The <code>ocaml-option-</code> packages work for all of the older versi=
+ons, too</li>
+<li>They all work on Windows (including 4.08-4.12, which aren't yet availab=
+le in opam-repository)</li>
+<li>They all work on Apple silicon (including 4.08, 4.09 and 4.11)</li>
+</ul>
+
+<p>
+I have literally just opened the PRs on ocaml/ocaml (<a href=3D"https://git=
+hub.com/ocaml/ocaml/pull/14243">ocaml/ocaml#14243</a>, <a href=3D"https://g=
+ithub.com/ocaml/ocaml/pull/14244">ocaml/ocaml#14244</a>, <a href=3D"https:/=
+/github.com/ocaml/ocaml/pull/14245">ocaml/ocaml#14245</a> and <a href=3D"ht=
+tps://github.com/ocaml/ocaml/pull/14246">ocaml/ocaml#14246</a>). In the int=
+erests of those of us who maintain libraries and tools which have to target=
+ multiple versions of OCaml, there will be some kind of story for keeping t=
+hese older versions available, but the focus for now will be reaching a con=
+sensus for merging the feature itself into OCaml 5.5.
+</p>
+
+<p>
+Please do test and report any issues at <a href=3D"https://github.com/dra27=
+/relocatable/issues">https://github.com/dra27/relocatable/issues</a>. Over-=
+zealous lock-file systems notwithstanding, the compiler should be as "drop-=
+in" a replacement as updating to any "point release" of the compiler (i.e. =
+if you have something which works in OCaml 5.3.0 but doesn't work in Reloca=
+table OCaml 5.3.1, that's a bug, and I'd <span class=3D"underline">love</sp=
+an> to hear about it a.s.a.p., please!)
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-13" class=3D"outline-2">
+<h2 id=3D"13">FUN OCaml is live on YouTube and Twitch</h2>
+<div class=3D"outline-text-2" id=3D"text-13">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/fun-ocaml-is-live-on-youtub=
+e-and-twitch/17254/1">https://discuss.ocaml.org/t/fun-ocaml-is-live-on-yout=
+ube-and-twitch/17254/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orga64c5d2" class=3D"outline-3">
+<h3 id=3D"orga64c5d2">Sabine Schmaltz announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga64c5d2">
+<p>
+We're at FUN OCaml and having some awesome OCaml talks today! And you can j=
+oin us remotely. =F0=9F=A7=A1=F0=9F=90=AB
+</p>
+
+<p>
+For the schedule and links to the live streams of FUN OCaml 2025 from Warsa=
+w, see
+</p>
+
+<p>
+<a href=3D"https://fun-ocaml.com">https://fun-ocaml.com</a>
+</p>
+
+<p>
+We also have a discord server for FUN OCaml here:
+</p>
+
+<p>
+<a href=3D"https://discord.gg/DxAghYKqn4">https://discord.gg/DxAghYKqn4</a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-14" class=3D"outline-2">
+<h2 id=3D"14">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-14">
+</div>
+<div id=3D"outline-container-org9c42361" class=3D"outline-3">
+<h3 id=3D"org9c42361">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org9c42361">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://www.dra27.uk/blog/platform/2025/09/15/relocatable-oc=
+aml.html">Relocatable OCaml - from concept to demo to PRs</a></li>
+<li><a href=3D"https://ocaml.org/events">Upcoming OCaml Events</a></li>
+<li><a href=3D"https://fearful-odds.rocks/blog/db-migration-runner-for-chau=
+fr">Shipping a robust DB migration runner for Chaufr (OCaml + Caqti + Lwt)<=
+/a></li>
+<li><a href=3D"https://www.youtube.com/watch/L_rTHhIEfVM?version=3D3">FUN O=
+Caml 2025 - Join us in Warsaw, Poland on September 15 for a day full of pre=
+sentations!</a></li>
+<li><a href=3D"https://tarides.com/blog/2025-09-10-dynamic-formal-verificat=
+ion-in-ocaml-an-ortac-qcheck-stm-tutorial">Dynamic Formal Verification in O=
+Caml: An Ortac/QCheck-STM Tutorial</a></li>
+<li><a href=3D"https://jon.recoil.org/blog/2025/09/caching-opam-solutions.h=
+tml">Caching opam solutions</a></li>
+<li><a href=3D"https://jon.recoil.org/blog/2025/09/build-ids-for-day10.html=
+">Build IDs for Day10</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org6538c14" class=3D"outline-2">
+<h2 id=3D"org6538c14">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org6538c14">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org220e967">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
