@@ -1,0 +1,735 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=XKo8X9Eb;
+	dkim=fail reason="signature verification failed" (2048-bit key; secure) header.d=cs.ru.nl header.i=@cs.ru.nl header.a=rsa-sha256 header.s=cs20220725 header.b=mTV4qydx;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by plum.tunbury.org (Postfix) with ESMTP id AB59440087
+	for <caml-list@tunbury.org>; Mon, 22 Sep 2025 08:12:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:date:from:to:message-id:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=N6WqOlEmgkx+8vrv1o7xmdvwADFQTmrxkyzRVsBOKOE=;
+  b=XKo8X9Ebu42P+5F/bymuCrGUrAWeq0yAZEAZcmU4V8Iof3WxbTO76ssp
+   8i29N0Vw6SEVt1Eod6lkjQU5hIgHlknyLyWzk4h96VlK0/LhQPX9Ff050
+   F61gvxSMU16w66LKyyzoVz+QFO8OFdk32YB1xREkfimbOT5NVqB8SGFpU
+   M=;
+X-CSE-ConnectionGUID: D0rvEpyPTx60vFs9tnoJwQ==
+X-CSE-MsgGUID: N6kjMOjcR1C8xibSwXSNpQ==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@cs.ru.nl
+X-IronPort-AV: E=Sophos;i="6.18,284,1751234400"; 
+   d="scan'208,217";a="240342756"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 22 Sep 2025 10:12:18 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 23D9CE0CE8; Mon, 22 Sep 2025 10:12:17 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 7CFE5E0172
+	for <caml-list@sympa.inria.fr>; Mon, 22 Sep 2025 10:12:12 +0200 (CEST)
+X-CSE-ConnectionGUID: j3357rerRK2dZO2/C29BlQ==
+X-CSE-MsgGUID: FXW0NR4nTMa19GkPkp8xnw==
+IronPort-SDR: 68d104c0_xEzpCULt5k8BOfzZKaUrbMbH9nHZz4iUR39MeAcumgCwDeq
+ EOHl76eeJ4Boz9ZwBy96a/WqzGuNQkY1M+V67AQ==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0EsAABRBNFohcEeroNQChwBAQEBAQEHAQESAQEEBAEBg?=
+ =?us-ascii?q?gEFAQELAYE8gQNlHVozBAtJhFWBGII3hSyIdoIpm3QUgWsPAQMBCwEBRA0EA?=
+ =?us-ascii?q?QEDAQOFAIxBHwcBBDIHDgECBAEBAQEDAgMBAQEBAQEBAQENAQEFAQEBAgEBA?=
+ =?us-ascii?q?gQGAQIQAQEBAUBJhk8NgkVRcYElAQEBAQEBAQEBAQEBAQEBAQEBARcCCAxXA?=
+ =?us-ascii?q?UIGHQEBJhITFx0LAwcCeQ6CbAGCIgJOAxG3NIEygQGCDAEBBoEI2x2BZAMGg?=
+ =?us-ascii?q?UkBiE8BKoE0AoQLAYcCRIEVNYJCAoF0gUWBMhEJBAQ/JYMcgmmCJoECFB0OS?=
+ =?us-ascii?q?j9VX4gLh2gDij8sgRgiAyYzLAEPRhMXCwcFgWMDgQ8yPDIdgSeFC4QeK0+FA?=
+ =?us-ascii?q?oEYg1Mkaw8GgRWDW4c0QAMLB2Y9NxQbCAGBNZVEF0SCPmwXFwMTKlMTPEkFF?=
+ =?us-ascii?q?xkEFysBAQEWPA+NEIVKS5M5n1kHhB+MHo4zhw4uF4QEjROHfIoRhmBnmQaOC?=
+ =?us-ascii?q?JVkE4UXAgoHGIFuATOBXDMaL4MrTwMZD1eNShcCJYNChG/DA0E1PAIHAQoBA?=
+ =?us-ascii?q?QMJkWoCJgcFamEBAQ?=
+IronPort-PHdr: A9a23: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
+ IE4eEuZUUsiiqGMURINZ5KqFA==
+IronPort-Data: A9a23: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
+ E4bn1ew3l0=
+IronPort-HdrOrdr: A9a23:ZVEtAqvU5l3FYw3EYq596cL37skDZdV00zEX/kB9WHVpm62j5q
+ KTdZEgviMc5wx8ZJhNo7+90cq7LE80l6QU3WB5B97LNjUO01HIEGgN1+XfK1GMIVyaygYMvZ
+ 0QEJRDNA==
+X-Talos-CUID: 9a23:uw5akm7iQMuYXdt/itss9hVPR58/f2fn7y3cEWjiTk0zGZeRcArF
+X-Talos-MUID: 9a23:qSi1tga5Utlve+BTmQ/T3BdYaMFUxq33WW8OqZYe69mCKnkl
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.18,284,1751234400"; 
+   d="scan'208,217";a="126204304"
+X-MGA-submission: =?us-ascii?q?MDFJ+nf5H+eqvAiJPl21oDd7npguopN7eI+p8v?=
+ =?us-ascii?q?5B6PkE4YMR8f02BPTbYyTz+GjTvRDLaIFz1UdQlKhhmRfT/pRPkV7KB0?=
+ =?us-ascii?q?MChyRavfb+paPt1mGmCpJJEuQLcuf8LZxa4/Zp5bUrcp3VjDcyOmUTye?=
+ =?us-ascii?q?aiZdFh5E+g0ACoXZwJigfVAQ=3D=3D?=
+Received: from smtp2.science.ru.nl (HELO smtp2.vm.science.ru.nl) ([131.174.30.193])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2025 10:11:44 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cs.ru.nl;
+	s=cs20220725; t=1758528703;
+	bh=N6WqOlEmgkx+8vrv1o7xmdvwADFQTmrxkyzRVsBOKOE=;
+	h=Date:From:To:Subject:From;
+	b=mTV4qydxnhcmt9wKRl9zKrEBB3bftqe+hV2h3pq1/0+0TkczYKioQoR1d4k4pZjJP
+	 I6CZf8Z80kHVs05HZ9/N77hqkksMntXp97rb4nSgn/F2O5g9QnHpVOAhqC0/I0pt1H
+	 9NDyfY/dHfSr3aju8a+JLKVwFc4711gJgi8Azpl9MmvnMDxTYEI+dehL0g+ayVUWuC
+	 DYEXiNJSd1znlfGGNKyTaEl/BrMw4pDB8neUYgLqJ7RNgKiCCy1D5zpqMmpKKFEzDA
+	 GNNWKplu/000xAqRp/2d/EkyKparB/NzTDrMk0ez1gForO5njsSGiNDbu+SKcAZjNl
+	 hNwh/tXoEGdUg==
+Received: from roundcube.science.ru.nl (havik.science.ru.nl [131.174.30.63])
+	(authenticated bits=0)
+	by smtp2.vm.science.ru.nl (8.18.1/8.18.1/Debian-2) with ESMTPSA id 58M8BgmG091816
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO)
+	for <caml-list@inria.fr>; Mon, 22 Sep 2025 08:11:43 GMT
+MIME-Version: 1.0
+Date: Mon, 22 Sep 2025 10:11:42 +0200
+From: Peter Achten <P.Achten@cs.ru.nl>
+To: caml-list@inria.fr
+Message-ID: <4afa9548fd8eff5a4db909c9b6ff214b@cs.ru.nl>
+X-Sender: P.Achten@cs.ru.nl
+Content-Type: multipart/alternative;
+ boundary="=_59c65521584379b5102ff54e9d99ad08"
+X-Scanned-By: MIMEDefang 3.3
+Subject: [Caml-list] [TFP 2026] Call for Papers for the 27th International
+ Symposium on Trends in Functional Programming, Odense, Denmark, January
+ 2026
+Reply-To: Peter Achten <P.Achten@cs.ru.nl>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19378
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-09/4afa9548fd8eff5a4db909c9b6ff214b%40cs.ru.nl>
+
+--=_59c65521584379b5102ff54e9d99ad08
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+
+# TFP 2026 -- Call for Papers
+(trendsfp.github.io)
+
+## Important Dates
+
+* Submission deadline (pre-symposium, full papers): Thu 13th Nov 2025 
+(AOE)
+* Notification        (pre-symposium, full papers): Thu 11th Dec 2025
+* Submission deadline (pre-symposium draft papers): Thu 11th Dec 2025 
+(AOE)
+* Notification        (pre-symposium draft papers): Fri 19th Dec 2025
+* Submission deadline (post-symposium review):      Thu  5th Mar 2026 
+(AOE)
+* Notification        (post-symposium submissions): Thu 16th Apr 2026
+
+The Symposium on Trends in Functional Programming (TFP) is an 
+international
+forum for researchers with interests in all aspects of functional 
+programming,
+taking a broad view of current and future trends in the area. It aspires 
+to be a
+lively environment for presenting the latest research results, and other
+contributions.
+
+This year, TFP will take place in-person at the University of Southern 
+Denmark,
+in Odense, Denmark. It is co-located with the Trends in Functional 
+Programming
+in Education (TFPIE) workshop, which will take on the day before the 
+main
+symposium.
+
+Please be aware that TFP has several submission deadlines. The first, 
+13th
+November, is for authors who wish to have their full paper reviewed 
+prior to the
+symposium. Papers that are accepted in this way must also be presented 
+at the
+symposium. The second, 11th December, is for authors who wish to present 
+their
+work or work-in-progress at the symposium first without submitting to 
+the full
+review process for publication. These authors can then take into account
+feedback received at the symposium and submit a full paper for review by 
+the
+third deadline, 19th February.
+
+## Scope
+
+The symposium recognizes that new trends may arise through various 
+routes. As
+part of the Symposium's focus on trends we therefore identify the 
+following five
+paper categories. High-quality submissions are solicited in any of these
+categories:
+
+*   Research Papers: Leading-edge, previously unpublished research work
+*   Position Papers: On what new trends should or should not be
+*   Project Papers: Descriptions of recently started new projects
+*   Evaluation Papers: What lessons can be drawn from a finished project
+*   Overview Papers: Summarizing work with respect to a trendy subject
+
+Papers must be original and not simultaneously submitted for publication 
+to any
+other forum. They may consider any aspect of functional programming:
+theoretical, implementation-oriented, or experience-oriented. 
+Applications of
+functional programming techniques to other languages are also within the 
+scope
+of the symposium.
+
+Topics suitable for the symposium include, but are not limited to:
+
+*   Functional programming and multicore/manycore computing
+*   Functional programming in the cloud
+*   High performance functional computing
+*   Extra-functional (behavioural) properties of functional programs
+*   Dependently typed functional programming
+*   Validation and verification of functional programs
+*   Debugging and profiling for functional languages
+*   Functional programming in different application areas:
+     security, mobility, telecommunications applications, embedded 
+systems,
+     global computing, grids, etc.
+*   Interoperability with imperative programming languages
+*   Novel memory management techniques
+*   Program analysis and transformation techniques
+*   Empirical performance studies
+*   Abstract/virtual machines and compilers for functional languages
+*   (Embedded) domain specific languages
+*   New implementation strategies
+*   Any new emerging trend in the functional programming area
+
+If you are in doubt on whether your paper is within the scope of TFP, 
+please
+contact the programme chair, Casper Bach.
+
+## Best Paper Awards
+
+TFP awards two prizes for the best papers each year.
+
+First, to reward excellent contributions, TFP awards a prize for the 
+best
+overall paper accepted for the post-conference formal proceedings.
+
+Second, each year TFP also awards a prize for the best student paper. 
+TFP
+traditionally pays special attention to research students, acknowledging 
+that
+students are almost by definition part of new subject trends. A student 
+paper is
+one for which the authors state that the paper is mainly the work of 
+students,
+the students are the paper's first authors, and a student would present 
+the
+paper.
+
+In both cases, it is the PC of TFP that awards the prize. In case the 
+best paper
+happens to be a student paper, then that paper will receive both prizes.
+
+## Instructions to Authors
+
+Submission is via HotCRP:
+
+   https://tfp26.hotcrp.com/
+
+Authors of papers have the choice of having their contributions formally
+reviewed either before or after the Symposium. Further, pre-symposium
+submissions may either be full (earlier deadline) or draft papers (later
+deadline). See below for more details.
+
+Submission is single-blind.
+
+Submissions are welcome from PC members (except the chair).
+
+Accepted papers from the pre-symposium and post-symposium formal review 
+will
+appear in a formal proceedings, published by Springer.
+
+Papers must be written in English, and written using the LNCS style. For 
+more
+information about formatting please consult the Springer LNCS Guidelines 
+web
+site
+(https://www.springer.com/gp/computer-science/lncs/conference-proceedings-guidelines).
+
+### Pre-symposium formal review
+
+Papers to be formally reviewed before the symposium should be submitted 
+before
+the early deadline and will receive their reviews and notification of 
+acceptance
+for both presentation and publication before the symposium. A paper that 
+has
+been rejected for publication but accepted for presentation may be 
+revised and
+resubmitted for the post-symposium formal review.
+
+### Post-symposium formal review
+
+Draft papers will receive minimal reviews and notification of acceptance 
+for
+presentation at the symposium. Authors of draft papers will be invited 
+to submit
+revised papers based on the feedback received at the symposium. A 
+post-symposium
+refereeing process will then select a subset of these papers for formal
+publication.
+
+### Paper categories
+
+Draft papers and papers submitted for formal review are submitted as 
+extended
+abstracts (4 to 10 pages in length) or full papers (up to 20 pages). The
+submission must clearly indicate which category it belongs to: research,
+position, project, evaluation, or overview paper. It should also 
+indicate which
+authors are research students, and whether the main author(s) are 
+students. A
+draft paper for which all authors are students will receive additional 
+feedback
+by one of the PC members shortly after the symposium has taken place.
+
+## Organizing Committee
+
+| Casper Bach      | University of Southern Denmark, DK | Programme 
+Chair          |
+| Jeremy Gibbons   | University of Oxford               | General Chair  
+           |
+| Peter Achten     | Radboud University Nijmegen, NL    | Publicity 
+Chair          |
+| Marco T. Morazán | Seton Hall University, US          | Steering 
+Committee Chair |
+
+## Programme Committee
+
+| Alex Gerdes          | University of Gothenburg and Chalmers, SE |
+| Andrew Tolmach       | Portland State University, US             |
+| Ben Greenman         | University of Utah, US                    |
+| Bruno Oliveira       | University of Hong Kong, HK               |
+| Cas van der Rest     | Shielded Technologies, NL                 |
+| Cristina Matache     | University of Edinburgh, UK               |
+| Di Wang              | Peking University, CN                     |
+| Dylan McDermott      | University of Oxford, UK                  |
+| Eric Van Wyk         | University of Minnesota, US               |
+| Jan de Muijnck-Hughe | Strathclyde, UK                           |
+| Jeremy Yallop        | University of Cambridge, UK               |
+| Jesper Cockx         | Delft University of Technology, NL        |
+| Jules Jacobs         | Cornell University, US                    |
+| Mart Lubbers         | Radboud University, NL                    |
+| Matthew Lutze        | Aarhus University, DK                     |
+| Max S. New           | University of Michigan, US                |
+| Nicolas Wu           | Imperial College London, UK               |
+| Patrick Bahr         | IT University of Copenhagen, DK           |
+--=_59c65521584379b5102ff54e9d99ad08
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset=UTF-8
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3DUTF-8" /></head><body style=3D'font-size: 10pt; font-family: Verdana,Gen=
+eva,sans-serif'>
+<div id=3D"editbody1" style=3D"font-size: 10pt; font-family: Verdana,Geneva=
+,sans-serif;">
+<div id=3D"v1editbody1" style=3D"font-size: 10pt; font-family: Verdana,Gene=
+va,sans-serif;">
+<p><span style=3D"font-family: 'courier new', courier, monospace;"># TFP 20=
+26 -- Call for Papers</span><br /><span style=3D"font-family: 'courier new'=
+, courier, monospace;">(trendsfp.github.io)</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">## Impor=
+tant Dates</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">* Submis=
+sion deadline (pre-symposium, full papers): Thu 13th Nov 2025 (AOE)</span><=
+br /><span style=3D"font-family: 'courier new', courier, monospace;">* Noti=
+fication &nbsp; &nbsp; &nbsp; &nbsp;(pre-symposium, full papers): Thu 11th =
+Dec 2025</span><br /><span style=3D"font-family: 'courier new', courier, mo=
+nospace;">* Submission deadline (pre-symposium draft papers): Thu 11th Dec =
+2025 (AOE)</span><br /><span style=3D"font-family: 'courier new', courier, =
+monospace;">* Notification &nbsp; &nbsp; &nbsp; &nbsp;(pre-symposium draft =
+papers): Fri 19th Dec 2025</span><br /><span style=3D"font-family: 'courier=
+ new', courier, monospace;">* Submission deadline (post-symposium review): =
+&nbsp; &nbsp; &nbsp;Thu &nbsp;5th Mar 2026 (AOE)</span><br /><span style=3D=
+"font-family: 'courier new', courier, monospace;">* Notification &nbsp; &nb=
+sp; &nbsp; &nbsp;(post-symposium submissions): Thu 16th Apr 2026</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">The Symp=
+osium on Trends in Functional Programming (TFP) is an international</span><=
+br /><span style=3D"font-family: 'courier new', courier, monospace;">forum =
+for researchers with interests in all aspects of functional programming,</s=
+pan><br /><span style=3D"font-family: 'courier new', courier, monospace;">t=
+aking a broad view of current and future trends in the area. It aspires to =
+be a</span><br /><span style=3D"font-family: 'courier new', courier, monosp=
+ace;">lively environment for presenting the latest research results, and ot=
+her</span><br /><span style=3D"font-family: 'courier new', courier, monospa=
+ce;">contributions.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">This yea=
+r, TFP will take place in-person at the University of Southern Denmark,</sp=
+an><br /><span style=3D"font-family: 'courier new', courier, monospace;">in=
+ Odense, Denmark. It is co-located with the Trends in Functional Programmin=
+g</span><br /><span style=3D"font-family: 'courier new', courier, monospace=
+;">in Education (TFPIE) workshop, which will take on the day before the mai=
+n</span><br /><span style=3D"font-family: 'courier new', courier, monospace=
+;">symposium.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Please b=
+e aware that TFP has several submission deadlines. The first, 13th</span><b=
+r /><span style=3D"font-family: 'courier new', courier, monospace;">Novembe=
+r, is for authors who wish to have their full paper reviewed prior to the</=
+span><br /><span style=3D"font-family: 'courier new', courier, monospace;">=
+symposium. Papers that are accepted in this way must also be presented at t=
+he</span><br /><span style=3D"font-family: 'courier new', courier, monospac=
+e;">symposium. The second, 11th December, is for authors who wish to presen=
+t their</span><br /><span style=3D"font-family: 'courier new', courier, mon=
+ospace;">work or work-in-progress at the symposium first without submitting=
+ to the full</span><br /><span style=3D"font-family: 'courier new', courier=
+, monospace;">review process for publication. These authors can then take i=
+nto account</span><br /><span style=3D"font-family: 'courier new', courier,=
+ monospace;">feedback received at the symposium and submit a full paper for=
+ review by the</span><br /><span style=3D"font-family: 'courier new', couri=
+er, monospace;">third deadline, 19th February.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">## Scope=
+</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">The symp=
+osium recognizes that new trends may arise through various routes. As</span=
+><br /><span style=3D"font-family: 'courier new', courier, monospace;">part=
+ of the Symposium&rsquo;s focus on trends we therefore identify the followi=
+ng five</span><br /><span style=3D"font-family: 'courier new', courier, mon=
+ospace;">paper categories. High-quality submissions are solicited in any of=
+ these</span><br /><span style=3D"font-family: 'courier new', courier, mono=
+space;">categories:</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">* &nbsp;=
+ Research Papers: Leading-edge, previously unpublished research work</span>=
+<br /><span style=3D"font-family: 'courier new', courier, monospace;">* &nb=
+sp; Position Papers: On what new trends should or should not be</span><br /=
+><span style=3D"font-family: 'courier new', courier, monospace;">* &nbsp; P=
+roject Papers: Descriptions of recently started new projects</span><br /><s=
+pan style=3D"font-family: 'courier new', courier, monospace;">* &nbsp; Eval=
+uation Papers: What lessons can be drawn from a finished project</span><br =
+/><span style=3D"font-family: 'courier new', courier, monospace;">* &nbsp; =
+Overview Papers: Summarizing work with respect to a trendy subject</span></=
+p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Papers m=
+ust be original and not simultaneously submitted for publication to any</sp=
+an><br /><span style=3D"font-family: 'courier new', courier, monospace;">ot=
+her forum. They may consider any aspect of functional programming:</span><b=
+r /><span style=3D"font-family: 'courier new', courier, monospace;">theoret=
+ical, implementation-oriented, or experience-oriented. Applications of</spa=
+n><br /><span style=3D"font-family: 'courier new', courier, monospace;">fun=
+ctional programming techniques to other languages are also within the scope=
+</span><br /><span style=3D"font-family: 'courier new', courier, monospace;=
+">of the symposium.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Topics s=
+uitable for the symposium include, but are not limited to:</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">* &nbsp;=
+ Functional programming and multicore/manycore computing</span><br /><span =
+style=3D"font-family: 'courier new', courier, monospace;">* &nbsp; Function=
+al programming in the cloud</span><br /><span style=3D"font-family: 'courie=
+r new', courier, monospace;">* &nbsp; High performance functional computing=
+</span><br /><span style=3D"font-family: 'courier new', courier, monospace;=
+">* &nbsp; Extra-functional (behavioural) properties of functional programs=
+</span><br /><span style=3D"font-family: 'courier new', courier, monospace;=
+">* &nbsp; Dependently typed functional programming</span><br /><span style=
+=3D"font-family: 'courier new', courier, monospace;">* &nbsp; Validation an=
+d verification of functional programs</span><br /><span style=3D"font-famil=
+y: 'courier new', courier, monospace;">* &nbsp; Debugging and profiling for=
+ functional languages</span><br /><span style=3D"font-family: 'courier new'=
+, courier, monospace;">* &nbsp; Functional programming in different applica=
+tion areas:&nbsp;</span><br /><span style=3D"font-family: 'courier new', co=
+urier, monospace;">&nbsp; &nbsp; security, mobility, telecommunications app=
+lications, embedded systems,&nbsp;</span><br /><span style=3D"font-family: =
+'courier new', courier, monospace;">&nbsp; &nbsp; global computing, grids, =
+etc.</span><br /><span style=3D"font-family: 'courier new', courier, monosp=
+ace;">* &nbsp; Interoperability with imperative programming languages</span=
+><br /><span style=3D"font-family: 'courier new', courier, monospace;">* &n=
+bsp; Novel memory management techniques</span><br /><span style=3D"font-fam=
+ily: 'courier new', courier, monospace;">* &nbsp; Program analysis and tran=
+sformation techniques</span><br /><span style=3D"font-family: 'courier new'=
+, courier, monospace;">* &nbsp; Empirical performance studies</span><br /><=
+span style=3D"font-family: 'courier new', courier, monospace;">* &nbsp; Abs=
+tract/virtual machines and compilers for functional languages</span><br /><=
+span style=3D"font-family: 'courier new', courier, monospace;">* &nbsp; (Em=
+bedded) domain specific languages</span><br /><span style=3D"font-family: '=
+courier new', courier, monospace;">* &nbsp; New implementation strategies</=
+span><br /><span style=3D"font-family: 'courier new', courier, monospace;">=
+* &nbsp; Any new emerging trend in the functional programming area</span></=
+p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">If you a=
+re in doubt on whether your paper is within the scope of TFP, please</span>=
+<br /><span style=3D"font-family: 'courier new', courier, monospace;">conta=
+ct the programme chair, Casper Bach.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">## Best =
+Paper Awards</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">TFP awar=
+ds two prizes for the best papers each year.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">First, t=
+o reward excellent contributions, TFP awards a prize for the best</span><br=
+ /><span style=3D"font-family: 'courier new', courier, monospace;">overall =
+paper accepted for the post-conference formal proceedings.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Second, =
+each year TFP also awards a prize for the best student paper. TFP</span><br=
+ /><span style=3D"font-family: 'courier new', courier, monospace;">traditio=
+nally pays special attention to research students, acknowledging that</span=
+><br /><span style=3D"font-family: 'courier new', courier, monospace;">stud=
+ents are almost by definition part of new subject trends. A student paper i=
+s</span><br /><span style=3D"font-family: 'courier new', courier, monospace=
+;">one for which the authors state that the paper is mainly the work of stu=
+dents,</span><br /><span style=3D"font-family: 'courier new', courier, mono=
+space;">the students are the paper&rsquo;s first authors, and a student wou=
+ld present the</span><br /><span style=3D"font-family: 'courier new', couri=
+er, monospace;">paper.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">In both =
+cases, it is the PC of TFP that awards the prize. In case the best paper</s=
+pan><br /><span style=3D"font-family: 'courier new', courier, monospace;">h=
+appens to be a student paper, then that paper will receive both prizes.</sp=
+an></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">## Instr=
+uctions to Authors</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Submissi=
+on is via HotCRP:</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">&nbsp; h=
+ttps://tfp26.hotcrp.com/</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Authors =
+of papers have the choice of having their contributions formally</span><br =
+/><span style=3D"font-family: 'courier new', courier, monospace;">reviewed =
+either before or after the Symposium. Further, pre-symposium</span><br /><s=
+pan style=3D"font-family: 'courier new', courier, monospace;">submissions m=
+ay either be full (earlier deadline) or draft papers (later</span><br /><sp=
+an style=3D"font-family: 'courier new', courier, monospace;">deadline). See=
+ below for more details.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Submissi=
+on is single-blind.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Submissi=
+ons are welcome from PC members (except the chair).</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Accepted=
+ papers from the pre-symposium and post-symposium formal review will</span>=
+<br /><span style=3D"font-family: 'courier new', courier, monospace;">appea=
+r in a formal proceedings, published by Springer.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Papers m=
+ust be written in English, and written using the LNCS style. For more</span=
+><br /><span style=3D"font-family: 'courier new', courier, monospace;">info=
+rmation about formatting please consult the Springer LNCS Guidelines web</s=
+pan><br /><span style=3D"font-family: 'courier new', courier, monospace;">s=
+ite</span><br /><span style=3D"font-family: 'courier new', courier, monospa=
+ce;">(https://www.springer.com/gp/computer-science/lncs/conference-proceedi=
+ngs-guidelines).</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">### Pre-=
+symposium formal review</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Papers t=
+o be formally reviewed before the symposium should be submitted before</spa=
+n><br /><span style=3D"font-family: 'courier new', courier, monospace;">the=
+ early deadline and will receive their reviews and notification of acceptan=
+ce</span><br /><span style=3D"font-family: 'courier new', courier, monospac=
+e;">for both presentation and publication before the symposium. A paper tha=
+t has</span><br /><span style=3D"font-family: 'courier new', courier, monos=
+pace;">been rejected for publication but accepted for presentation may be r=
+evised and</span><br /><span style=3D"font-family: 'courier new', courier, =
+monospace;">resubmitted for the post-symposium formal review.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">### Post=
+-symposium formal review</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Draft pa=
+pers will receive minimal reviews and notification of acceptance for</span>=
+<br /><span style=3D"font-family: 'courier new', courier, monospace;">prese=
+ntation at the symposium. Authors of draft papers will be invited to submit=
+</span><br /><span style=3D"font-family: 'courier new', courier, monospace;=
+">revised papers based on the feedback received at the symposium. A post-sy=
+mposium</span><br /><span style=3D"font-family: 'courier new', courier, mon=
+ospace;">refereeing process will then select a subset of these papers for f=
+ormal</span><br /><span style=3D"font-family: 'courier new', courier, monos=
+pace;">publication.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">### Pape=
+r categories</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">Draft pa=
+pers and papers submitted for formal review are submitted as extended</span=
+><br /><span style=3D"font-family: 'courier new', courier, monospace;">abst=
+racts (4 to 10 pages in length) or full papers (up to 20 pages). The</span>=
+<br /><span style=3D"font-family: 'courier new', courier, monospace;">submi=
+ssion must clearly indicate which category it belongs to: research,</span><=
+br /><span style=3D"font-family: 'courier new', courier, monospace;">positi=
+on, project, evaluation, or overview paper. It should also indicate which</=
+span><br /><span style=3D"font-family: 'courier new', courier, monospace;">=
+authors are research students, and whether the main author(s) are students.=
+ A</span><br /><span style=3D"font-family: 'courier new', courier, monospac=
+e;">draft paper for which all authors are students will receive additional =
+feedback</span><br /><span style=3D"font-family: 'courier new', courier, mo=
+nospace;">by one of the PC members shortly after the symposium has taken pl=
+ace.</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">## Organ=
+izing Committee</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">| Casper=
+ Bach &nbsp; &nbsp; &nbsp;| University of Southern Denmark, DK | Programme =
+Chair &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|</span><br /><span style=3D"font-f=
+amily: 'courier new', courier, monospace;">| Jeremy Gibbons &nbsp; | Univer=
+sity of Oxford &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | General C=
+hair &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|</span><br /><span style=3D"=
+font-family: 'courier new', courier, monospace;">| Peter Achten &nbsp; &nbs=
+p; | Radboud University Nijmegen, NL &nbsp; &nbsp;| Publicity Chair &nbsp; =
+&nbsp; &nbsp; &nbsp; &nbsp;|</span><br /><span style=3D"font-family: 'couri=
+er new', courier, monospace;">| Marco T. Moraz&aacute;n | Seton Hall Univer=
+sity, US &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| Steering Committee Chair |</sp=
+an></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">## Progr=
+amme Committee</span></p>
+<p><span style=3D"font-family: 'courier new', courier, monospace;">| Alex G=
+erdes &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| University of Gothenburg and Chal=
+mers, SE |</span><br /><span style=3D"font-family: 'courier new', courier, =
+monospace;">| Andrew Tolmach &nbsp; &nbsp; &nbsp; | Portland State Universi=
+ty, US &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |</span><br /><span style=
+=3D"font-family: 'courier new', courier, monospace;">| Ben Greenman &nbsp; =
+&nbsp; &nbsp; &nbsp; | University of Utah, US &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|</span><br /><span style=3D"font-f=
+amily: 'courier new', courier, monospace;">| Bruno Oliveira &nbsp; &nbsp; &=
+nbsp; | University of Hong Kong, HK &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbs=
+p; &nbsp; |</span><br /><span style=3D"font-family: 'courier new', courier,=
+ monospace;">| Cas van der Rest &nbsp; &nbsp; | Shielded Technologies, NL &=
+nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |</span><br /><span =
+style=3D"font-family: 'courier new', courier, monospace;">| Cristina Matach=
+e &nbsp; &nbsp; | University of Edinburgh, UK &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp; &nbsp; &nbsp; |</span><br /><span style=3D"font-family: 'courier new'=
+, courier, monospace;">| Di Wang &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; =
+&nbsp;| Peking University, CN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nb=
+sp; &nbsp; &nbsp; &nbsp; |</span><br /><span style=3D"font-family: 'courier=
+ new', courier, monospace;">| Dylan McDermott &nbsp; &nbsp; &nbsp;| Univers=
+ity of Oxford, UK &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp;|</span><br /><span style=3D"font-family: 'courier new', courier, mono=
+space;">| Eric Van Wyk &nbsp; &nbsp; &nbsp; &nbsp; | University of Minnesot=
+a, US &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |</span><br /><span =
+style=3D"font-family: 'courier new', courier, monospace;">| Jan de Muijnck-=
+Hughe | Strathclyde, UK &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &n=
+bsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |</span><br /><span style=3D"font-f=
+amily: 'courier new', courier, monospace;">| Jeremy Yallop &nbsp; &nbsp; &n=
+bsp; &nbsp;| University of Cambridge, UK &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;=
+ &nbsp; &nbsp; |</span><br /><span style=3D"font-family: 'courier new', cou=
+rier, monospace;">| Jesper Cockx &nbsp; &nbsp; &nbsp; &nbsp; | Delft Univer=
+sity of Technology, NL &nbsp; &nbsp; &nbsp; &nbsp;|</span><br /><span style=
+=3D"font-family: 'courier new', courier, monospace;">| Jules Jacobs &nbsp; =
+&nbsp; &nbsp; &nbsp; | Cornell University, US &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|</span><br /><span style=3D"font-f=
+amily: 'courier new', courier, monospace;">| Mart Lubbers &nbsp; &nbsp; &nb=
+sp; &nbsp; | Radboud University, NL &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbs=
+p; &nbsp; &nbsp; &nbsp; &nbsp;|</span><br /><span style=3D"font-family: 'co=
+urier new', courier, monospace;">| Matthew Lutze &nbsp; &nbsp; &nbsp; &nbsp=
+;| Aarhus University, DK &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp; &nbsp; &nbsp; |</span><br /><span style=3D"font-family: 'courier new'=
+, courier, monospace;">| Max S. New &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | Un=
+iversity of Michigan, US &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &=
+nbsp;|</span><br /><span style=3D"font-family: 'courier new', courier, mono=
+space;">| Nicolas Wu &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | Imperial College =
+London, UK &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |</span><br /><=
+span style=3D"font-family: 'courier new', courier, monospace;">| Patrick Ba=
+hr &nbsp; &nbsp; &nbsp; &nbsp; | IT University of Copenhagen, DK &nbsp; &nb=
+sp; &nbsp; &nbsp; &nbsp; |</span></p>
+<p><br /></p>
+</div>
+</div>
+</body></html>
+
+--=_59c65521584379b5102ff54e9d99ad08--
