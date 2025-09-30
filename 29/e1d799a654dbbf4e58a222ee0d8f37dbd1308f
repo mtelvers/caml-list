@@ -1,0 +1,2547 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=celY8ZF6;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=TcPMMa2s;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 7DBED40085
+	for <caml-list@tunbury.org>; Tue, 30 Sep 2025 13:12:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=sLdNJ4Kxvh9e169tECTtyC5+15PVPcFQ1WoF9ezujAs=;
+  b=celY8ZF6jDy+4BcWvh81VGvQ1TuC2R0V+9U7ANWI7hHytNfRVIuzFEY5
+   rVBWHRfIIDFgoGOKNjVr02UyzoDUNRhc2GtR+u4wyJGmh/EtLHmgJ1Ejq
+   huJhxv0SAJduuXyCvevfPFVGbncfxIGC8LMIaeXvx7POcKl6pca3BB4Ew
+   M=;
+X-CSE-ConnectionGUID: HcY7jb7MT8eCOClxzdqUfQ==
+X-CSE-MsgGUID: X02netXSTUOOtaR7xzTyVw==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.18,304,1751234400"; 
+   d="scan'208,217";a="241786087"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 30 Sep 2025 15:12:17 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id C3C2DE0CDA; Tue, 30 Sep 2025 15:12:16 +0200 (CEST)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id 65FFAE0171
+	for <caml-list@sympa.inria.fr>; Tue, 30 Sep 2025 15:12:14 +0200 (CEST)
+X-CSE-ConnectionGUID: nVt0eUYXSpS5KNb1EK/Mvw==
+X-CSE-MsgGUID: lRZGgHN3TOqFO91MNJok3g==
+IronPort-SDR: 68dbd72b_qwswg9X8N/tEX++ZDtKHTF1dNmqcBrEWsooTdtMKOrk6po4
+ 0vOeifD3bQpv8fpMB+jQdy5XsZ/o5sQ586l5KYg==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0EbAwCP1ttohSIeaIFaAhSCRoE9WygZAWhaMwcISQNAH?=
+ =?us-ascii?q?oM4PIFjgWyLQoJgA4oQhzqKe4FpgSwWAiEVAQMBDS4BGwQBAgQBAQMBAgGCD?=
+ =?us-ascii?q?IE9cUYCjEYCHwYBBDMGDgECBAEBAQEDAgMBAQEBAQEBAQENAQEFAQEBAgEBA?=
+ =?us-ascii?q?gQGAQIQAQEBAUBJhhUBBQEzDYJFGThxZQk3AQEBAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAgQEBAECBQsRBAlNAQEEDQ4BCAoTA?=
+ =?us-ascii?q?QEpAwMJBBQjAwoBCQEGAwIRATUXARIUBgFiggUBgiICKCYDBQwEApoEmnsaN?=
+ =?us-ascii?q?3qBMoEBggwBAQaBCD4CAQIJAgJAAdoMgWQJgUmFbYJKGgEFJUlrAoRHCYQxA?=
+ =?us-ascii?q?icPgVVEgRU1gXNRb4FQLgUoFAQHDAsBAQEBAYEfBAUBEQIBBhQPJAkSAgSDD?=
+ =?us-ascii?q?YJpgiaBAhQdgTiCOU1ubYEiQIIXhToMPH2BMkyBNYpVgURLMywBVRMXCwcFW?=
+ =?us-ascii?q?4EIAyo0MW4yHYEnhQuEHitPhQKBGINTERNrDwaBFYNbiXEPegMLbT03FBuYV?=
+ =?us-ascii?q?xcrGWoBFYFSASUOOAgGDxQFDiQJCgcOBQgMCAwCAQENEwINKQ4fBQYBCgUQB?=
+ =?us-ascii?q?BEIDQUFBAQXChoFBgsLAh4HBgIDgRGDT41rAwklAx0NBY9XiyyCbJNZHW00B?=
+ =?us-ascii?q?4QfgV4GDIkIgSaODIQjg1eEBIFXizyHApJSIphkIoEJgS2HJ4EmCYFvH0yVN?=
+ =?us-ascii?q?CwjhTaBUiwkSSM/AR0DCQczGjBDgjMBATIJRhwPWIZKhUSBGS0BFoESAQMEA?=
+ =?us-ascii?q?YIbKE1xgSaBOzEIO32BacBXQTUBAQEBBAMDAS0CBwEKAQEDCYViAQGMBgImB?=
+ =?us-ascii?q?wVrYAEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:ei9xyq/ptH7O4IR/P7Ruk+DlI+orL9Y04lQ7vn2ZKCYlEfBw8v
+ rFoB1173HJYVoqNU3I+urhBEDjexLhHPdOiOF7AV7IZmbbUQWTQL1K3M/L/HnLGiH19OJRvJ
+ 0QEZRWOZnXFlY/qc775WCDYrIdKTS8gcWVuds=
+X-Talos-CUID: =?us-ascii?q?9a23=3AbH9A6WtQco4jZ7f7L2DYZqAS6IsjTGGFwUrhE3S?=
+ =?us-ascii?q?gMjtKbrfMZHzX3b17xp8=3D?=
+X-Talos-MUID: 9a23:sb1qtQaZv3pqEOBTswXeqz5CEpxUxL2ALxFUtLMkvMrfOnkl
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.18,304,1751234400"; 
+   d="scan'208,217";a="126940939"
+X-MGA-submission: =?us-ascii?q?MDG1cvSuhTQfZc7MR0ZIZrV7mZ6ob4RGjJpQpD?=
+ =?us-ascii?q?RB/VRIWl7hpx9Zmr4Do89i9pUG1sGXO6Euyr43wwjnBiqvKC+9p4Nyfk?=
+ =?us-ascii?q?poUMTXh1dXFQIAuiagMImJHDiV1BdKLBx3hf1oiBTFDj6KEhcVaRfUw5?=
+ =?us-ascii?q?q8DmH0EK1BN2ixQk6U4Jgf3g=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2025 15:12:11 +0200
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id AB6001A310;
+	Tue, 30 Sep 2025 15:12:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1759237930;
+	bh=dMlOpk901avLDwRl65rVj+Q6LID5eAFMZs6bH5gBplg=;
+	h=From:To:Subject:Date:Message-ID;
+	b=TcPMMa2sQgm4eYbmZtkhp7r6aWyCaXLvziuu6QHRBQYQjMOnjc6+OFewEvS+voNiu
+	 7Io1T2w4DaM21tRRhSXWT1D9ZViNqWGEX74rUx3IjSx4eYia+DVsapUSyZpwrCBNrd
+	 974foKa7RrlsbRlOWBPrft1xqBVNyM9ht7M2jSgQ=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 30 Sep 2025 15:12:09 +0200
+Message-ID: <m2a52caxue.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Sep 30 15:12:10 2025 +0200 (CEST))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.471941, queueID=CB8DE1A311
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19381
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-09/m2a52caxue.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of September 23 to
+30, 2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+OCaml security team
+ocaml-xmlerr 0.08.2 available
+Contract OCaml Engineer =E2=80=93 Terrateam (Remote, 3 months)
+Mk-man module
+gil scm .cmd
+mini-svg version 0.03.13b, of 0.03.13
+An efficient priority queue with low integer priorities
+Cmdliner 2.0.0
+Detrow, a command-line calendar
+rpmfile 0.8.0+ library
+OCaml compiler office hours? (preparation thread)
+Other OCaml News
+Old CWN
+
+
+OCaml security team
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-ocaml-security-team/16902/1>
+
+
+Hannes Mehnert announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Dear everyone,
+
+  We are starting an effort to push security into OCaml. This is based
+  on discussions in the OCaml Software Foundation with industry
+  partners. The main goal is to have best practises similar to those of
+  other programming language ecosystems.
+
+
+Reporting security issues
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  This entails a point of contact for the security team - which deals
+  with communication between the person who found a security-relevant
+  problem in OCaml software (named "reporter"), who can then contact us
+  - the security team - instead of using a public bug tracker, and the
+  upstream OCaml developer(s).
+
+  We, the security team, will establish the three-way communication, and
+  since we have a documented security disclosure process (which will be
+  published soon), we will guide everyone through the process and ensure
+  that timelines are met, CVE numbers are assigned, =E2=80=A6
+
+
+Team composition
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The OCaml security team currently consists of individual security
+  experts and individuals representing company sponsors of the OCaml
+  Software Foundation. Individual members participating on a personal
+  capacity may be compensated for their time from the OCaml Software
+  Foundation.
+
+  The team currently consists of 7 members
+  =E2=80=A2 Hannes Mehnert <https://github.com/hannesm> - individual, chair
+  =E2=80=A2 Mindy <https://github.com/yomimono> - individual
+  =E2=80=A2 Joe <https://github.com/cfcs> - individual
+  =E2=80=A2 Edwin T=C3=B6r=C3=B6k <https://github.com/edwintorok> - individ=
+ual
+  =E2=80=A2 Nicol=C3=A1s Ojeda B=C3=A4r <https://github.com/nojb> - LexiFi
+  =E2=80=A2 Louis Roch=C3=A9 <https://github.com/khady> - ahrefs
+  =E2=80=A2 Maxim Grankin <https://github.com/maxim092001> - Bloomberg
+
+  We're in the process to formalise the responsibilities of the team,
+  our proposed disclosure process, and how to join & leave the team.
+
+
+Funding for security actions
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+  In complement to the security disclosure process, we will accept
+  funding requests for projects that make OCaml more secure (including
+  guidelines how to develop OCaml in a secure way/what are common
+  pitfalls; static analysis; dissemination tools; =E2=80=A6). The OCaml Sof=
+tware
+  Foundation will provide funding for these security actions. After this
+  summer we will discuss this in more depth with the community.
+
+
+Next steps
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C
+
+  We will setup a website (similar to
+  <https://www.haskell.org/security/> has) soon, and provide an email
+  address for contacting us - security At ocamlDoT org is forwarding to
+  our team. We plan to setup a mailing list for security announcements.
+
+  But more on that at a later point, this brief post is mainly about the
+  fact that this team starts to exist now, and is working on improving
+  the security story of OCaml.
+
+  If you have any questions for now, please feel free to discuss them in
+  this announcement. Please be aware that it is vacation time soon, so
+  we may not be very responsive.
+
+
+Hannes Mehnert later added
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  Dear everyone,
+
+  we=E2=80=99ve accomplished several tasks:
+
+  =E2=80=A2 <https://ocaml.org/security> is now live
+  =E2=80=A2 The public mailing list for security advisories is
+    sympa.inria.fr/sympa/info/ocsf-ocaml-security-announcements =E2=80=93 p=
+lease
+    subscribe if you=E2=80=99d like to receive security announcements
+  =E2=80=A2 There=E2=80=99ll be a brief introduction at [Fun OCaml] and a t=
+alk at [OCaml
+    workshop (ICFP)] )16:00 - 16:30
+  =E2=80=A2 We will have a public meeting for discussions on Oct 22nd 14:00=
+ -
+    16:00 CEST (online, yet to be announced where)
+  =E2=80=A2 There=E2=80=99s already the OCaml security advisory database
+    <https://github.com/ocaml/security-advisories> (still empty, we=E2=80=
+=99ll
+    fill it over the next weeks)
+
+
+[Fun OCaml] <https://fun-ocaml.org>
+
+[OCaml workshop (ICFP)]
+<https://conf.researchr.org/details/icfp-splash-2025/ocaml-2025-papers/9/To=
+ward-a-More-Secure-OCaml-Ecosystem>
+
+
+Hannes Mehnert then said
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+        We will have a public meeting for discussions on Oct 22nd
+        14:00 - 16:00 CEST (online, yet to be announced where) =E2=80=93
+        save the date if you=E2=80=99re interested
+
+  We settled on a platform, and will have the meeting at
+  <https://meet.bornhack.dk/OCamlSecurityPublicMeeting>
+
+  An agenda will be posted before the meeting.
+
+
+ocaml-xmlerr 0.08.2 available
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ocaml-xmlerr-0-08-2-available/17313/1>
+
+
+Florent Monnier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  This is an annouce for ocaml-xmlerr.
+
+  *ocaml-xmlerr* version *0.08.2* is *available*.
+
+  This main module of this package is a small module to read xml with
+  errors.
+
+  The main purpose was not to really read xml with errors, but to read
+  html from the web.
+
+  At the beginning I wrote in the read-me file that I wrote it in one
+  afternoon, but this is without considering that in fact it was the
+  third time I was trying to make something like this.
+
+  One of the first attempt even probably took me almost a day. So we can
+  not say that I succeed easily.
+
+  In the .zip archive of ocaml-xmlerr version 0.08.2, you will find the
+  different modules re-organized with dirs.
+
+  And there are also two additional commands build on top of the first
+  module.
+
+  *htmlxtr* is a simple extractor for HTML from a simple template.
+  Please read the man page for more description about how to use it:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ man ./htmlxtr.1
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  There is also *htmluxtr* - a simple extractor for .html using a simple
+  un-template / re-template method.  Please read the man page for more
+  informations :
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ man ./htmluxtr.1
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  There is a new example of use provided in the 'using' directory.
+
+  There is a script to help you writing your pattern matching of xml
+  fragments.  The base module providing a list for tags and contents,
+  the pattern matching is not done based on a tree-structure.
+
+  And there is now an additional module to convert this flat-list
+  structure into a tree structure, inside the addon directory. The
+  report module has not been widely tested yet.
+
+  This is not professional quality.
+
+  If I'm not mistaken "amateur" is both pejorative, in both french and
+  in english languages, exept if it's associated with "astronomer".
+
+  [http://decapode314.free.fr/ocaml/xmlerr/]
+
+  PS: if you edit my posts, I would prefer you edit the links with
+  normal links (like above), please.
+
+  PS-2 : I haven't been able to pattern-match all the opam packages with
+  uxtr, the total doesn't match, I only find 38_000.
+
+
+[http://decapode314.free.fr/ocaml/xmlerr/]
+<http://decapode314.free.fr/ocaml/xmlerr/index4.html>
+
+
+Contract OCaml Engineer =E2=80=93 Terrateam (Remote, 3 months)
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/contract-ocaml-engineer-terrateam-remote-3-m=
+onths/17314/1>
+
+
+Josh Pollara announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Terrateam (<https://terrateam.io>) is looking for an experienced OCaml
+  engineer to join us on a 3-month contract.
+
+  *About us* Terrateam is an open-source tool for GitOps-based Terraform
+  automation. We are a small, bootstrapped team building infrastructure
+  automation software used by enterprises.
+
+  *The role* We are extending our OCaml codebase to support new
+  functionality around Terraform state and plan execution. The work is
+  primarily in OCaml, with a focus on systems programming, concurrency,
+  and backend development. You=E2=80=99ll work directly with the founding t=
+eam
+  on scoped engineering projects and help push forward the internals of
+  how Terraform can be used at scale.
+
+  *Details*
+
+  =E2=80=A2 Contract length: 3 months (with potential extension)
+  =E2=80=A2 Compensation: competitive, commensurate with experience
+  =E2=80=A2 Location: remote (EU timezone preferred)
+  =E2=80=A2 Start date: as soon as possible
+
+  *Requirements*
+
+  =E2=80=A2 Strong background in OCaml development
+  =E2=80=A2 Experience with systems programming or infrastructure tooling
+    (Terraform or related) is a plus
+  =E2=80=A2 Ability to work independently in a fast-moving environment
+
+  If you are interested, please contact me directly at
+  [josh@terrateam.io].
+
+
+[josh@terrateam.io] <mailto:josh@terrateam.io>
+
+
+Mk-man module
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-mk-man-module/17319/1>
+
+
+Florent Monnier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Mk-man tries to provide a simple way to write a man page,
+  [http://decapode314.free.fr/ocaml2/mk_man/] and also with a similare
+  module to produce the web page.
+
+
+[http://decapode314.free.fr/ocaml2/mk_man/]
+<http://decapode314.free.fr/ocaml2/mk_man/>
+
+
+gil scm .cmd
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-gil-scm-cmd/17320/1>
+
+
+Florent Monnier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Gil-scm is not really an scm, (source management control),
+  [http://decapode314.free.fr/ocaml2/gil/] it takes its inspiration from
+  an scm, but it should more be considerated as a
+  "snapshot-management-script".  It can output an .html interface of the
+  following versions: [example]
+
+
+[http://decapode314.free.fr/ocaml2/gil/]
+<http://decapode314.free.fr/ocaml2/gil/index2.html>
+
+[example] <http://decapode314.free.fr/ocaml2/gil/02/versions.html>
+
+
+mini-svg version 0.03.13b, of 0.03.13
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-mini-svg-version-0-03-13b-of-0-03-13/173=
+22/1>
+
+
+Florent Monnier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The release "0.03.13" has been deleted, because chat-gpt informed me
+  that the repository replicating some mondrian art hosted at github has
+  been deleted. The rel-0.03.13 was also containing some pop-art
+  replications, with random additions.
+
+  So these elements have been deleted, and are not there in "0.03.13b"
+  anymore.
+
+  Sorry for the inconveniance.
+
+  PS: [mini-svg]
+
+  PS2: mini-svg is not professional quality.
+
+  PS3: To the extent permitted by law, you can use mini-svg with any
+  spdx license.
+
+
+[mini-svg] <http://decapode314.free.fr/ocaml/mini-svg3/>
+
+
+An efficient priority queue with low integer priorities
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-an-efficient-priority-queue-with-low-int=
+eger-priorities/17323/1>
+
+
+Fran=C3=A7ois Pottier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  Hello,
+
+  I am happy to announce the release of `intPQueue', a package that
+  offers (two variants of) an efficient priority queue, which is
+  restricted to scenarios where the priorities are low integers. See the
+  [documentation].
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 opam update && opam install intPQueue
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Happy queueing, Fran=C3=A7ois.
+
+
+[documentation]
+<https://cambium.inria.fr/~fpottier/intPQueue/doc/intPQueue/>
+
+
+Cmdliner 2.0.0
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-cmdliner-2-0-0/17324/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello,
+
+  It is my pleasure to announce the release of cmdliner 2.0.0.
+
+        Cmdliner is a library that allows the declarative
+        definition of command line interfaces with outstanding
+        support for command line interface user conventions and
+        standards.
+
+  The main points of this release are:
+
+  =E2=80=A2 ANSI styled error and deprecation messages ([details])
+  =E2=80=A2 Support for manpage installation ([details])
+  =E2=80=A2 Support for shell auto-completion ([details])
+
+  The latter was made possible by good initial [ground work] of
+  @andreypopp who can now claim to have unblocked my mind and the [very
+  first] and 11 years old Cmdliner issue. Many thanks to him!
+
+  This addition has the following consequences:
+
+  1. The problematic feature that allowed you to specify command names,
+     option names and enumerant values by a prefix if the prefix was
+     unambiguous has now been removed. See [this issue] for the
+     rationale. Set `CMDLINER_LEGACY_PREFIXES=3Dtrue' in your environment
+     if you find yourself in need of a quick backward compatibility fix
+     because one of your scripts is failing due to a prefix being used
+     (but do eventually correct the script!).
+
+  2. It finally triggered making the type `Arg.conv' abstract as
+     [announced] it would become in 2017. See [this issue] for details.
+
+  If you are a user of cmdliner based tools. You may want to have at a
+  look how to [configure your shell] in order to benefit from their
+  completion scripts, especially if said tools are installed via
+  `opam'. After installing `cmdliner' you should be able to check that
+  your configuration works correctly on the new `cmdliner' tool that now
+  gets installed with cmdliner itself.
+
+  For other changes that may affect you or your users please head to the
+  [release notes] which have many other details.
+
+  Other than that a full pass was made over the documentation to try to
+  improve and bring it up-to-date with the latest style and
+  additions. Notably the [tutorial] and [examples] were updated to make
+  use of the binding operators; however obscure [let punning] may feel,
+  these are less error prone as your number of cli arguments grow.
+
+  I also added a [cookbook] which tries to distill in shorter snippets
+  some of cmdliner's features and the experience I gathered over the
+  past 14 years of using cmdliner to define dozens of command line
+  interfaces. It includes [source code structure tips] and a few
+  bootstrapping [blueprints] to cut and paste for when you start your
+  next command line tool.
+
+  For this release I'm very thankful to a private one-time donation[^1],
+  a grant from the [OCaml software foundation] and, as always, my few
+  but faithfull [donors]. All of which are essential for these releases
+  to eventually get out. They do take quite a bit longer to devise that
+  one would expect :=E2=80=93)
+
+  Home page: <https://erratique.ch/software/cmdliner>
+
+  API docs & manuals: <https://erratique.ch/software/cmdliner/doc/> or
+  `odig doc cmdliner'
+
+  Install: `opam install cmdliner' (once [the PR] is merged, may take a
+  few days)
+
+  Best,
+
+  Daniel
+
+  [^1]: Which are as nice as recurring donations ;=E2=80=93)
+
+
+[details]
+<https://erratique.ch/software/cmdliner/doc/cli.html#error_message_styling>
+
+[details]
+<https://erratique.ch/software/cmdliner/doc/cli.html#install_tool_manpages>
+
+[details]
+<https://erratique.ch/software/cmdliner/doc/cli.html#cli_completion>
+
+[ground work] <https://github.com/dbuenzli/cmdliner/pull/187>
+
+[very first] <https://github.com/dbuenzli/cmdliner/issues/1>
+
+[this issue] <https://github.com/dbuenzli/cmdliner/issues/200>
+
+[announced]
+<https://github.com/dbuenzli/cmdliner/blob/master/CHANGES.md#v100-2017-03-0=
+2-la-forclaz-vs>
+
+[this issue] <https://github.com/dbuenzli/cmdliner/issues/206 >
+
+[configure your shell]
+<https://erratique.ch/software/cmdliner/doc/cli.html#user_configuration>
+
+[release notes]
+<https://github.com/dbuenzli/cmdliner/blob/master/CHANGES.md#v200-2025-09-2=
+6-zagreb>
+
+[tutorial] <https://erratique.ch/software/cmdliner/doc/tutorial.html>
+
+[examples] <https://erratique.ch/software/cmdliner/doc/examples.html>
+
+[let punning]
+<https://ocaml.org/manual/5.2/bindingops.html#ss%3Aletops-punning>
+
+[cookbook] <https://erratique.ch/software/cmdliner/doc/cookbook.html>
+
+[source code structure tips]
+<https://erratique.ch/software/cmdliner/doc/cookbook.html#tip_src_structure>
+
+[blueprints]
+<https://erratique.ch/software/cmdliner/doc/cookbook.html#blueprints>
+
+[OCaml software foundation] <https://ocaml-sf.org/>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+[the PR] <https://github.com/ocaml/opam-repository/pull/28599>
+
+
+Daniel B=C3=BCnzli later added
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  To follow up on the completion feature. It should be stressed that I
+  don't consider it to be fully "done" as it stands. I'm pretty sure the
+  completion API, protocol, features and the generic completion scripts
+  can be improved. The main problem is that it seems shell programmers
+  are more interested in cajoling the look of their prompts than
+  defining sane cross-shell standard protocols for tool/shell
+  interaction. The current completion mecanisms are [broken] beyond
+  imagination.
+
+  Issues about completion are tagged accordingly in the issue
+  tracker. Do not hesitate to chime in if you have ideas or more
+  knowledge than I do for improvements. I'm also happy to add support
+  for more shells but it's better if you help for that because working
+  with shells makes me want to throw my computer out of the window.
+
+  Meanwhile I'd like to show two completion feature that I'm quite happy
+  to have support for in this release.
+
+
+[broken] <https://github.com/dbuenzli/cmdliner/issues/220>
+
+Context sensitive completion
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The idea here, suggested by @andreypopp, is that completion can depend
+  on a context that is specified via a cmdliner term itself. This is
+  typically useful for configuration dependent completions: you have a
+  cmdliner term that represents your configuration and you access it
+  when doing a completion.
+
+  For example in the next release of `odig' you can autocomplete package
+  names on `odig doc [PKG]'. The available packages depend on looking up
+  a libdir which can be specified with a command line argument
+  itself. So for example this completes according to the automatic
+  libdir lookup
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 # Auto discovered libdir
+  =E2=94=82 > odig doc c=E2=90=89
+  =E2=94=82 camlp-streams   checkseum  cmarkit  camlpdf  cairo2=20=20
+  =E2=94=82 containers      cmdliner   cpuid    cppo     cpdf=20=20=20=20
+  =E2=94=82 cstruct-lwt     cstruct    ctypes   crunch   csexp=20=20=20
+  =E2=94=82 ctypes-foreign=20=20=20=20=20=20
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  But the following looks for packages in another switch:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 # Explicit libdir
+  =E2=94=82 > odig doc c=E2=90=89 --lib-dir $(opam var lib --switch=3Dmyswi=
+tch)=20
+  =E2=94=82 capitalization  cerberus-lib  calendar  charon=20=20=20=20=20=
+=20=20=20
+  =E2=94=82 core_kernel     core_unix     cmdliner  cppo    core=20=20
+  =E2=94=82 cstruct         csexp=20=20
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  [The commit] that implements this in `odig' is rather straightforward,
+  it simply reuses the existing `conf' term for the completion
+  context. Also the cookbook has a [simple self-contained example] to
+  start from.
+
+
+[The commit]
+<https://github.com/b0-system/odig/commit/e713f0c62c31f7009cb9d0d580094980f=
+e93b1e6>
+
+[simple self-contained example]
+<https://erratique.ch/software/cmdliner/doc/cookbook.html#args_completion>
+
+
+Compositional completion (restart and raw)
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C
+
+  The second completion feature is to retain completion on the tools
+  that another tool invokes =E2=80=93 commands like `sudo'.
+
+  For example in the `b0' tool, the build system I'm using for all my
+  developments. The `b0 vcs [OPTION]=E2=80=A6 -- VCS [ARG]=E2=80=A6' comman=
+d allows to
+  bulk operate the VCSs of the projects you included in a `B0.ml' build
+  description file.
+
+  Using appopriate cmdliner completion directives the completion of this
+  command first completes the `VCS' enum (which can be `git' or `hg')
+  and then gracefully drops back to the completion of your VCS:
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 > b0 vcs -- =E2=90=89
+  =E2=94=82 git  hg  --
+  =E2=94=82 > b0 vcs -- git sh=E2=90=89
+  =E2=94=82 shell       -- restricted login shell for GIT-only SSH access
+  =E2=94=82 shortlog    -- summarize git log output
+  =E2=94=82 show        -- show various types of objects
+  =E2=94=82 show-branch -- show branches and their commits
+  =E2=94=82 show-index  -- show packed archive index
+  =E2=94=82 show-ref    -- list references in a local repository
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  This is a [restart] completion type. It restarts the completion
+  context as if the cli started after the `--' token.
+
+  It is the kind of behaviour you want from e.g. `opam exec', though
+  arguably in the case of `opam exec' it will be sligthly misleading
+  since completions will occur using the outer environment rather than
+  the one setup by `opam exec -- TOOL [ARG]=E2=80=A6'.  Still, sometimes
+  inaccurate completion is better than no completion.
+
+  Note that this would be quite easy to solve with a good cross-shell
+  completion standard: just invoke `TOOL' in the environment setup by
+  `opam exec' according to the completion standard (e.g. the [cmdliner
+  completion protocol]) and propagate the result back in the completion
+  for `opam exec', but we do not live in that world. Still the API is
+  ready for such a technique to be used, by using a [raw] completion
+  type (I [use this] in `b0' to complete custom, library and
+  user-defined, actions like `b0 -- .opam' or `b0 -- .ocaml').
+
+
+[restart]
+<https://erratique.ch/software/cmdliner/doc/Cmdliner/Arg/Completion/index.h=
+tml#val-restart>
+
+[cmdliner completion protocol]
+<https://erratique.ch/software/cmdliner/doc/cli.html#completion_protocol>
+
+[raw]
+<https://erratique.ch/software/cmdliner/doc/Cmdliner/Arg/Completion/index.h=
+tml#val-raw>
+
+[use this]
+<https://github.com/b0-system/b0/blob/9c9810ad158a83ccfbbf37a7e65b11a3a3e8a=
+922/src/tool/b0_cmd_build.ml#L355-L384>
+
+
+Detrow, a command-line calendar
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-detrow-a-command-line-calendar/17328/1>
+
+
+Florent Monnier announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  [Detrow] is a command-line calendar which displays the months of a
+  calendar in colomns.
+
+  (So each days of months are aligned in rows)
+
+  (With [Detris], months are displayed in a similar way than the cal
+  unix command.)
+
+  You can download it with the following command:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 wget http://decapode314.free.fr/ocaml2/detrow/dl/0.01b/detrow.ml
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  Then you can call it like this:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ \ocaml detrow.ml
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  It will display the first half of the month, Januray until June.
+
+  If you want the second half of the year, Jully until December, you can
+  call it again with:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ \ocaml detrow.ml b
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  The first half, can also be called with the "a" parameter:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ \ocaml detrow.ml a
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  If you call it like this:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ \ocaml detrow.ml ann-file 2025 b
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  With the file called "ann-file" containing:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 $ cat ann-file
+  =E2=94=82 2025-09-27: detrow-ann
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  You will see the string `"detrow-ann"` displayed in the calendar in
+  front of the day `"2025-09-27"`.  (The number of chars that can be
+  displayed is lower than 8 (`< 8').)
+
+
+[Detrow] <http://decapode314.free.fr/ocaml2/detrow/>
+
+[Detris] <http://decapode314.free.fr/ocaml/detris.html>
+
+
+rpmfile 0.8.0+ library
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-rpmfile-0-8-0-library/17330/1>
+
+
+Mikhail announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+  Hello,
+
+  I am pleased to announce the next /major/ version of [my library for
+  reading RPM packages], powered by [Angstrom].
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 # #require "rpmfile";;
+  =E2=94=82=20
+  =E2=94=82 # let pkg =3D=20
+  =E2=94=82     In_channel.with_open_bin=20
+  =E2=94=82       "hello-2.12.2-2.fc43.x86_64.rpm"=20
+  =E2=94=82       Rpmfile.Reader.of_channel
+  =E2=94=82     |> Result.get_ok;;
+  =E2=94=82=20
+  =E2=94=82 # Rpmfile.View.name pkg;;
+  =E2=94=82 - : string =3D "hello"
+  =E2=94=82=20
+  =E2=94=82 # Rpmfile.View.vendor pkg;;
+  =E2=94=82 - : string =3D "Fedora Project"
+  =E2=94=82=20
+  =E2=94=82 # Rpmfile.View.version pkg;;
+  =E2=94=82 - : string =3D "2.12.2"
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  This release has *broken the previous API* and made it simpler and
+  more compact.
+
+  Added capture of the payload of the RPM package body. But it is not
+  effective enough.
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 # pkg.payload;;
+  =E2=94=82 - : string option =3D None
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  You can implement this functionality manually using [Lwt] and
+  angstrom-lwt-unix or something else.
+
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 (* examples/extract_payload_by_lwt.ml *)
+  =E2=94=82=20
+  =E2=94=82 let default_tags_selector =3D
+  =E2=94=82   Rpmfile.Reader.
+  =E2=94=82     {
+  =E2=94=82       predicate_signature_tag =3D Fun.const true;
+  =E2=94=82       predicate_header_tag =3D Fun.const true;
+  =E2=94=82     }
+  =E2=94=82=20
+  =E2=94=82 let pkg_parser =3D
+  =E2=94=82   Rpmfile.Reader.make_package_parser ~capture_payload:false
+  =E2=94=82     ~tags_selector:default_tags_selector
+  =E2=94=82=20
+  =E2=94=82 let () =3D
+  =E2=94=82   let open Lwt.Syntax in
+  =E2=94=82   Lwt_main.run
+  =E2=94=82   @@
+  =E2=94=82   let* ic =3D Lwt_io.open_file ~mode:Input "hello.rpm" in
+  =E2=94=82   let* _pkg =3D
+  =E2=94=82     let* b, r =3D Angstrom_lwt_unix.parse pkg_parser ic in
+  =E2=94=82     let+ _ =3D Lwt_io.set_position ic (Int64.of_int b.off) in
+  =E2=94=82     Result.get_ok r
+  =E2=94=82   in
+  =E2=94=82   let* payload =3D Lwt_io.read ic in
+  =E2=94=82=20
+  =E2=94=82   (* ... *)
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  =E2=80=A6 :pie:
+
+
+[my library for reading RPM packages]
+<https://github.com/dx3mod/rpmfile>
+
+[Angstrom] <https://github.com/inhabitedtype/angstrom>
+
+[Lwt] <https://ocaml.org/p/lwt/latest>
+
+
+OCaml compiler office hours? (preparation thread)
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ocaml-compiler-office-hours-preparation-thre=
+ad/17230/8>
+
+
+Continuing this thread, gasche announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Given the current votes, I propose to pick
+
+  *Friday October 10th* UTC 11:00 =E2=80=93 UTC 12:30*
+
+  as the time slot for this test run of OCaml compiler office
+  hours. Save the date!
+
+  I propose to try [This online meeting room] (this is a BigBlueButton
+  instance hosted by the French government for public workers), and take
+  notes on [this collaborative pad].
+
+  I am planning to join audio-only to save bandwidth, but people are
+  free to do as they prefer.
+
+  A reminder on the format, topic:
+
+        Format: a synchronous remote meeting (voice with optional
+        video), backed by a collaborative pad to record questions,
+        take notes, share links etc. People can join and leave at
+        any time during the office hours.
+
+        Topic: anything related to the development of the OCaml
+        compiler, that is, the github/ocaml/ocaml project. (All
+        topics and questions are welcome, at all levels of
+        knowledge and familiarity with the compiler.)
+
+
+[This online meeting room]
+<https://webinaire.numerique.gouv.fr/meeting/signin/invite/64288/creator/23=
+503/hash/4ad3529af76e35eae42dfa410afc68ff4f24d9af>
+
+[this collaborative pad]
+<https://codimd.math.cnrs.fr/nuew1gMsROCAy_klt_TkJg#>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [A second foray into agentic coding]
+  =E2=80=A2 [Model Validation & Time Utilities Sprint: From Basic Models to
+    Proper Validation Layer]
+  =E2=80=A2 [Parsimoni Joins Techstars' Autumn 2025 Programme!]
+  =E2=80=A2 [Retrofitting a build system into a compiler]
+  =E2=80=A2 [Caching opam solutions - part 2]
+  =E2=80=A2 [Upcoming OCaml Events]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[A second foray into agentic coding]
+<https://www.dra27.uk/blog/platform/2025/09/28/effectful-bug-hunting.html>
+
+[Model Validation & Time Utilities Sprint: From Basic Models to Proper
+Validation Layer]
+<https://fearful-odds.rocks/blog/model-mapping-and-validation-in-ocaml>
+
+[Parsimoni Joins Techstars' Autumn 2025 Programme!]
+<https://tarides.com/blog/2025-09-25-parsimoni-joins-techstars-autumn-2025-=
+programme>
+
+[Retrofitting a build system into a compiler]
+<https://www.dra27.uk/blog/platform/2025/09/25/building-with-effects.html>
+
+[Caching opam solutions - part 2]
+<https://jon.recoil.org/blog/2025/09/caching-opam-solutions2.html>
+
+[Upcoming OCaml Events] <https://ocaml.org/events>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-09-30 Tue 15:11 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.09.23.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.10.07.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of September 23 to 30, 2=
+025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">OCaml security team</a></li>
+<li><a href=3D"#2">ocaml-xmlerr 0.08.2 available</a></li>
+<li><a href=3D"#3">Contract OCaml Engineer =E2=80=93 Terrateam (Remote, 3 m=
+onths)</a></li>
+<li><a href=3D"#4">Mk-man module</a></li>
+<li><a href=3D"#5">gil scm .cmd</a></li>
+<li><a href=3D"#6">mini-svg version 0.03.13b, of 0.03.13</a></li>
+<li><a href=3D"#7">An efficient priority queue with low integer priorities<=
+/a></li>
+<li><a href=3D"#8">Cmdliner 2.0.0</a></li>
+<li><a href=3D"#9">Detrow, a command-line calendar</a></li>
+<li><a href=3D"#10">rpmfile 0.8.0+ library</a></li>
+<li><a href=3D"#11">OCaml compiler office hours? (preparation thread)</a></=
+li>
+<li><a href=3D"#12">Other OCaml News</a></li>
+<li><a href=3D"#org599395f">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">OCaml security team</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocaml-security-team/169=
+02/1">https://discuss.ocaml.org/t/ann-ocaml-security-team/16902/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgbde8c7e" class=3D"outline-3">
+<h3 id=3D"orgbde8c7e">Hannes Mehnert announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgbde8c7e">
+<p>
+Dear everyone,
+</p>
+
+<p>
+We are starting an effort to push security into OCaml. This is based on dis=
+cussions in the OCaml Software Foundation with industry partners. The main =
+goal is to have best practises similar to those of other programming langua=
+ge ecosystems.
+</p>
+</div>
+<div id=3D"outline-container-org26d4ee2" class=3D"outline-4">
+<h4 id=3D"org26d4ee2">Reporting security issues</h4>
+<div class=3D"outline-text-4" id=3D"text-org26d4ee2">
+<p>
+This entails a point of contact for the security team - which deals with co=
+mmunication between the person who found a security-relevant problem in OCa=
+ml software (named "reporter"), who can then contact us - the security team=
+ - instead of using a public bug tracker, and the upstream OCaml developer(=
+s).
+</p>
+
+<p>
+We, the security team, will establish the three-way communication, and sinc=
+e we have a documented security disclosure process (which will be published=
+ soon), we will guide everyone through the process and ensure that timeline=
+s are met, CVE numbers are assigned, &hellip;
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org6339abd" class=3D"outline-4">
+<h4 id=3D"org6339abd">Team composition</h4>
+<div class=3D"outline-text-4" id=3D"text-org6339abd">
+<p>
+The OCaml security team currently consists of individual security experts a=
+nd individuals representing company sponsors of the OCaml Software Foundati=
+on. Individual members participating on a personal capacity may be compensa=
+ted for their time from the OCaml Software Foundation.
+</p>
+
+<p>
+The team currently consists of 7 members
+</p>
+<ul class=3D"org-ul">
+<li>Hannes Mehnert <a href=3D"https://github.com/hannesm">https://github.co=
+m/hannesm</a> - individual, chair</li>
+<li>Mindy <a href=3D"https://github.com/yomimono">https://github.com/yomimo=
+no</a> - individual</li>
+<li>Joe <a href=3D"https://github.com/cfcs">https://github.com/cfcs</a> - i=
+ndividual</li>
+<li>Edwin T=C3=B6r=C3=B6k <a href=3D"https://github.com/edwintorok">https:/=
+/github.com/edwintorok</a> - individual</li>
+<li>Nicol=C3=A1s Ojeda B=C3=A4r <a href=3D"https://github.com/nojb">https:/=
+/github.com/nojb</a> - LexiFi</li>
+<li>Louis Roch=C3=A9 <a href=3D"https://github.com/khady">https://github.co=
+m/khady</a> - ahrefs</li>
+<li>Maxim Grankin <a href=3D"https://github.com/maxim092001">https://github=
+.com/maxim092001</a> - Bloomberg</li>
+</ul>
+
+<p>
+We're in the process to formalise the responsibilities of the team, our pro=
+posed disclosure process, and how to join &amp; leave the team.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org9ddf000" class=3D"outline-4">
+<h4 id=3D"org9ddf000">Funding for security actions</h4>
+<div class=3D"outline-text-4" id=3D"text-org9ddf000">
+<p>
+In complement to the security disclosure process, we will accept funding re=
+quests for projects that make OCaml more secure (including guidelines how t=
+o develop OCaml in a secure way/what are common pitfalls; static analysis; =
+dissemination tools; &hellip;). The OCaml Software Foundation will provide =
+funding for these security actions. After this summer we will discuss this =
+in more depth with the community.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org8c86fb6" class=3D"outline-4">
+<h4 id=3D"org8c86fb6">Next steps</h4>
+<div class=3D"outline-text-4" id=3D"text-org8c86fb6">
+<p>
+We will setup a website (similar to <a href=3D"https://www.haskell.org/secu=
+rity/">https://www.haskell.org/security/</a> has) soon, and provide an emai=
+l address for contacting us - security At ocamlDoT org is forwarding to our=
+ team. We plan to setup a mailing list for security announcements.
+</p>
+
+<p>
+But more on that at a later point, this brief post is mainly about the fact=
+ that this team starts to exist now, and is working on improving the securi=
+ty story of OCaml.
+</p>
+
+<p>
+If you have any questions for now, please feel free to discuss them in this=
+ announcement. Please be aware that it is vacation time soon, so we may not=
+ be very responsive.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-orgb9e3d82" class=3D"outline-3">
+<h3 id=3D"orgb9e3d82">Hannes Mehnert later added</h3>
+<div class=3D"outline-text-3" id=3D"text-orgb9e3d82">
+<p>
+Dear everyone,
+</p>
+
+<p>
+we=E2=80=99ve accomplished several tasks:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://ocaml.org/security">https://ocaml.org/security</a> i=
+s now live</li>
+<li>The public mailing list for security advisories is sympa.inria.fr/sympa=
+/info/ocsf-ocaml-security-announcements =E2=80=93 please subscribe if you=
+=E2=80=99d like to receive security announcements</li>
+<li>There=E2=80=99ll be a brief introduction at <a href=3D"https://fun-ocam=
+l.org">Fun OCaml</a> and a talk at <a href=3D"https://conf.researchr.org/de=
+tails/icfp-splash-2025/ocaml-2025-papers/9/Toward-a-More-Secure-OCaml-Ecosy=
+stem">OCaml workshop (ICFP)</a> )16:00 - 16:30</li>
+<li>We will have a public meeting for discussions on Oct 22nd 14:00 - 16:00=
+ CEST (online, yet to be announced where)</li>
+<li>There=E2=80=99s already the OCaml security advisory database <a href=3D=
+"https://github.com/ocaml/security-advisories">https://github.com/ocaml/sec=
+urity-advisories</a> (still empty, we=E2=80=99ll fill it over the next week=
+s)</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-org1de4bb9" class=3D"outline-3">
+<h3 id=3D"org1de4bb9">Hannes Mehnert then said</h3>
+<div class=3D"outline-text-3" id=3D"text-org1de4bb9">
+<blockquote>
+<p>
+We will have a public meeting for discussions on Oct 22nd 14:00 - 16:00 CES=
+T (online, yet to be announced where) =E2=80=93 save the date if you=E2=80=
+=99re interested
+</p>
+</blockquote>
+
+<p>
+We settled on a platform, and will have the meeting at <a href=3D"https://m=
+eet.bornhack.dk/OCamlSecurityPublicMeeting">https://meet.bornhack.dk/OCamlS=
+ecurityPublicMeeting</a>
+</p>
+
+<p>
+An agenda will be posted before the meeting.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">ocaml-xmlerr 0.08.2 available</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocaml-xmlerr-0-08-2-ava=
+ilable/17313/1">https://discuss.ocaml.org/t/ann-ocaml-xmlerr-0-08-2-availab=
+le/17313/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc77e86c" class=3D"outline-3">
+<h3 id=3D"orgc77e86c">Florent Monnier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc77e86c">
+<p>
+This is an annouce for ocaml-xmlerr.
+</p>
+
+<p>
+<b>ocaml-xmlerr</b> version <b>0.08.2</b> is <b>available</b>.
+</p>
+
+<p>
+This main module of this package is a small module to read xml with errors.
+</p>
+
+<p>
+The main purpose was not to really read xml with errors, but to read html f=
+rom the web.
+</p>
+
+<p>
+At the beginning I wrote in the read-me file that I wrote it in one afterno=
+on, but this is without considering that in fact it was the third time I wa=
+s trying to make something like this.
+</p>
+
+<p>
+One of the first attempt even probably took me almost a day. So we can not =
+say that I succeed easily.
+</p>
+
+<p>
+In the .zip archive of ocaml-xmlerr version 0.08.2, you will find the diffe=
+rent modules re-organized with dirs.
+</p>
+
+<p>
+And there are also two additional commands build on top of the first module.
+</p>
+
+<p>
+<b>htmlxtr</b> is a simple extractor for HTML from a simple template.
+Please read the man page for more description about how to use it:
+</p>
+<pre class=3D"example" id=3D"orge90fce2">
+$ man ./htmlxtr.1
+</pre>
+<p>
+There is also <b>htmluxtr</b> - a simple extractor for .html using a simple=
+ un-template / re-template method.
+Please read the man page for more informations :
+</p>
+<pre class=3D"example" id=3D"org31a1c68">
+$ man ./htmluxtr.1
+</pre>
+<p>
+There is a new example of use provided in the 'using' directory.
+</p>
+
+<p>
+There is a script to help you writing your pattern matching of xml fragment=
+s.
+The base module providing a list for tags and contents, the pattern matchin=
+g is not done based on a tree-structure.
+</p>
+
+<p>
+And there is now an additional module to convert this flat-list structure i=
+nto a tree structure, inside the addon directory. The report module has not=
+ been widely tested yet.
+</p>
+
+<p>
+This is not professional quality.
+</p>
+
+<p>
+If I'm not mistaken "amateur" is both pejorative, in both french and in eng=
+lish languages, exept if it's associated with "astronomer".
+</p>
+
+<p>
+<a href=3D"http://decapode314.free.fr/ocaml/xmlerr/index4.html">http://deca=
+pode314.free.fr/ocaml/xmlerr/</a>
+</p>
+
+<p>
+PS: if you edit my posts, I would prefer you edit the links with normal lin=
+ks (like above), please.
+</p>
+
+<p>
+PS-2 : I haven't been able to pattern-match all the opam packages with uxtr=
+, the total doesn't match, I only find 38_000.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Contract OCaml Engineer =E2=80=93 Terrateam (Remote, 3 months)=
+</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/contract-ocaml-engineer-ter=
+rateam-remote-3-months/17314/1">https://discuss.ocaml.org/t/contract-ocaml-=
+engineer-terrateam-remote-3-months/17314/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org8593173" class=3D"outline-3">
+<h3 id=3D"org8593173">Josh Pollara announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8593173">
+<p>
+Terrateam (<a href=3D"https://terrateam.io">https://terrateam.io</a>) is lo=
+oking for an experienced OCaml engineer to join us on a 3-month contract.
+</p>
+
+<p>
+<b>About us</b>
+Terrateam is an open-source tool for GitOps-based Terraform automation. We =
+are a small, bootstrapped team building infrastructure automation software =
+used by enterprises.
+</p>
+
+<p>
+<b>The role</b>
+We are extending our OCaml codebase to support new functionality around Ter=
+raform state and plan execution. The work is primarily in OCaml, with a foc=
+us on systems programming, concurrency, and backend development. You=E2=80=
+=99ll work directly with the founding team on scoped engineering projects a=
+nd help push forward the internals of how Terraform can be used at scale.
+</p>
+
+<p>
+<b>Details</b>
+</p>
+
+<ul class=3D"org-ul">
+<li>Contract length: 3 months (with potential extension)</li>
+<li>Compensation: competitive, commensurate with experience</li>
+<li>Location: remote (EU timezone preferred)</li>
+<li>Start date: as soon as possible</li>
+</ul>
+
+<p>
+<b>Requirements</b>
+</p>
+
+<ul class=3D"org-ul">
+<li>Strong background in OCaml development</li>
+<li>Experience with systems programming or infrastructure tooling (Terrafor=
+m or related) is a plus</li>
+<li>Ability to work independently in a fast-moving environment</li>
+</ul>
+
+<p>
+If you are interested, please contact me directly at <a href=3D"mailto:josh=
+@terrateam.io">josh@terrateam.io</a>.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Mk-man module</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-mk-man-module/17319/1">=
+https://discuss.ocaml.org/t/ann-mk-man-module/17319/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc0cd025" class=3D"outline-3">
+<h3 id=3D"orgc0cd025">Florent Monnier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc0cd025">
+<p>
+Mk-man tries to provide a simple way to write a man page,
+<a href=3D"http://decapode314.free.fr/ocaml2/mk_man/">http://decapode314.fr=
+ee.fr/ocaml2/mk_man/</a>
+and also with a similare module to produce the web page.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">gil scm .cmd</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-gil-scm-cmd/17320/1">ht=
+tps://discuss.ocaml.org/t/ann-gil-scm-cmd/17320/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org715bee5" class=3D"outline-3">
+<h3 id=3D"org715bee5">Florent Monnier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org715bee5">
+<p>
+Gil-scm is not really an scm, (source management control),
+<a href=3D"http://decapode314.free.fr/ocaml2/gil/index2.html">http://decapo=
+de314.free.fr/ocaml2/gil/</a>
+it takes its inspiration from an scm, but it should more be considerated as=
+ a "snapshot-management-script".
+It can output an .html interface of the following versions:
+<a href=3D"http://decapode314.free.fr/ocaml2/gil/02/versions.html">example<=
+/a>
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">mini-svg version 0.03.13b, of 0.03.13</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-mini-svg-version-0-03-1=
+3b-of-0-03-13/17322/1">https://discuss.ocaml.org/t/ann-mini-svg-version-0-0=
+3-13b-of-0-03-13/17322/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgd871681" class=3D"outline-3">
+<h3 id=3D"orgd871681">Florent Monnier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd871681">
+<p>
+The release "0.03.13" has been deleted, because chat-gpt informed me that t=
+he repository replicating some mondrian art hosted at github has been delet=
+ed. The rel-0.03.13 was also containing some pop-art replications, with ran=
+dom additions.
+</p>
+
+<p>
+So these elements have been deleted, and are not there in "0.03.13b" anymor=
+e.
+</p>
+
+<p>
+Sorry for the inconveniance.
+</p>
+
+<p>
+PS: <a href=3D"http://decapode314.free.fr/ocaml/mini-svg3/">mini-svg</a>
+</p>
+
+<p>
+PS2: mini-svg is not professional quality.
+</p>
+
+<p>
+PS3: To the extent permitted by law, you can use mini-svg with any spdx lic=
+ense.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">An efficient priority queue with low integer priorities</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-an-efficient-priority-q=
+ueue-with-low-integer-priorities/17323/1">https://discuss.ocaml.org/t/ann-a=
+n-efficient-priority-queue-with-low-integer-priorities/17323/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgc3029a4" class=3D"outline-3">
+<h3 id=3D"orgc3029a4">Fran=C3=A7ois Pottier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgc3029a4">
+<p>
+Hello,
+</p>
+
+<p>
+I am happy to announce the release of <code>intPQueue</code>, a package tha=
+t offers (two variants of) an efficient priority queue, which is restricted=
+ to scenarios where the priorities are low integers. See the <a href=3D"htt=
+ps://cambium.inria.fr/~fpottier/intPQueue/doc/intPQueue/">documentation</a>.
+</p>
+
+<pre class=3D"example" id=3D"orgd1d792d">
+opam update &amp;&amp; opam install intPQueue
+</pre>
+
+<p>
+Happy queueing,
+Fran=C3=A7ois.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">Cmdliner 2.0.0</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-cmdliner-2-0-0/17324/1"=
+>https://discuss.ocaml.org/t/ann-cmdliner-2-0-0/17324/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgdbb530e" class=3D"outline-3">
+<h3 id=3D"orgdbb530e">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgdbb530e">
+<p>
+Hello,=20
+</p>
+
+<p>
+It is my pleasure to announce the release of cmdliner 2.0.0.=20
+</p>
+
+<blockquote>
+<p>
+Cmdliner is a library that allows the declarative definition of command lin=
+e interfaces with outstanding support for command line interface user conve=
+ntions and standards.
+</p>
+</blockquote>
+
+<p>
+The main points of this release are:
+</p>
+
+<ul class=3D"org-ul">
+<li>ANSI styled error and deprecation messages (<a href=3D"https://erratiqu=
+e.ch/software/cmdliner/doc/cli.html#error_message_styling">details</a>)</li>
+<li>Support for manpage installation (<a href=3D"https://erratique.ch/softw=
+are/cmdliner/doc/cli.html#install_tool_manpages">details</a>)</li>
+<li>Support for shell auto-completion (<a href=3D"https://erratique.ch/soft=
+ware/cmdliner/doc/cli.html#cli_completion">details</a>)</li>
+</ul>
+
+<p>
+The latter was made possible by good initial <a href=3D"https://github.com/=
+dbuenzli/cmdliner/pull/187">ground work</a> of @andreypopp who can now clai=
+m to have unblocked my mind and the <a href=3D"https://github.com/dbuenzli/=
+cmdliner/issues/1">very first</a> and 11 years old Cmdliner issue. Many tha=
+nks to him!
+</p>
+
+<p>
+This addition has the following consequences:=20
+</p>
+
+<ol class=3D"org-ol">
+<li>The problematic feature that allowed you to specify command names, opti=
+on names and enumerant values by a prefix if the prefix was unambiguous has=
+ now been removed. See <a href=3D"https://github.com/dbuenzli/cmdliner/issu=
+es/200">this issue</a> for the rationale. Set <code>CMDLINER_LEGACY_PREFIXE=
+S=3Dtrue</code> in your environment if you find yourself in need of a quick=
+ backward compatibility fix because one of your scripts is failing due to a=
+ prefix being used (but do eventually correct the script!).</li>
+
+<li>It finally triggered making the type <code>Arg.conv</code> abstract as =
+<a href=3D"https://github.com/dbuenzli/cmdliner/blob/master/CHANGES.md#v100=
+-2017-03-02-la-forclaz-vs">announced</a> it would become in 2017. See <a hr=
+ef=3D"https://github.com/dbuenzli/cmdliner/issues/206%20">this issue</a> fo=
+r details.</li>
+</ol>
+
+<p>
+If you are a user of cmdliner based tools. You may want to have at a look h=
+ow to <a href=3D"https://erratique.ch/software/cmdliner/doc/cli.html#user_c=
+onfiguration">configure your shell</a> in order to benefit from their compl=
+etion scripts, especially if said tools are installed via <code>opam</code>=
+. After installing <code>cmdliner</code> you should be able to check that y=
+our configuration works correctly on the new <code>cmdliner</code> tool tha=
+t now gets installed with cmdliner itself.
+</p>
+
+<p>
+For other changes that may affect you or your users please head to the <a h=
+ref=3D"https://github.com/dbuenzli/cmdliner/blob/master/CHANGES.md#v200-202=
+5-09-26-zagreb">release notes</a> which have many other details.
+</p>
+
+<p>
+Other than that a full pass was made over the documentation to try to impro=
+ve and bring it up-to-date with the latest style and additions. Notably the=
+ <a href=3D"https://erratique.ch/software/cmdliner/doc/tutorial.html">tutor=
+ial</a> and <a href=3D"https://erratique.ch/software/cmdliner/doc/examples.=
+html">examples</a> were updated to make use of the binding operators; howev=
+er obscure <a href=3D"https://ocaml.org/manual/5.2/bindingops.html#ss%3Alet=
+ops-punning">let punning</a> may feel, these are less error prone as your n=
+umber of cli arguments grow.
+</p>
+
+<p>
+I also added a <a href=3D"https://erratique.ch/software/cmdliner/doc/cookbo=
+ok.html">cookbook</a> which tries to distill in shorter snippets some of cm=
+dliner's features and the experience I gathered over the past 14 years of u=
+sing cmdliner to define dozens of command line interfaces. It includes <a h=
+ref=3D"https://erratique.ch/software/cmdliner/doc/cookbook.html#tip_src_str=
+ucture">source code structure tips</a> and a few bootstrapping <a href=3D"h=
+ttps://erratique.ch/software/cmdliner/doc/cookbook.html#blueprints">bluepri=
+nts</a> to cut and paste for when you start your next command line tool.
+</p>
+
+<p>
+For this release I'm very thankful to a private one-time donation[^1], a gr=
+ant from the <a href=3D"https://ocaml-sf.org/">OCaml software foundation</a=
+> and, as always, my few but faithfull <a href=3D"https://github.com/sponso=
+rs/dbuenzli">donors</a>. All of which are essential for these releases to e=
+ventually get out. They do take quite a bit longer to devise that one would=
+ expect :=E2=80=93)
+</p>
+
+<p>
+Home page: <a href=3D"https://erratique.ch/software/cmdliner">https://errat=
+ique.ch/software/cmdliner</a>
+</p>
+
+<p>
+API docs &amp; manuals: <a href=3D"https://erratique.ch/software/cmdliner/d=
+oc/">https://erratique.ch/software/cmdliner/doc/</a>  or <code>odig doc cmd=
+liner</code>
+</p>
+
+<p>
+Install: <code>opam install cmdliner</code> (once <a href=3D"https://github=
+.com/ocaml/opam-repository/pull/28599">the PR</a> is merged, may take a few=
+ days)
+</p>
+
+<p>
+Best,=20
+</p>
+
+<p>
+Daniel
+</p>
+
+<p>
+[^1]: Which are as nice as recurring donations ;=E2=80=93)
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org8c0f3e4" class=3D"outline-3">
+<h3 id=3D"org8c0f3e4">Daniel B=C3=BCnzli later added</h3>
+<div class=3D"outline-text-3" id=3D"text-org8c0f3e4">
+<p>
+To follow up on the completion feature. It should be stressed that I don't =
+consider it to be fully "done" as it stands. I'm pretty sure the completion=
+ API, protocol, features and the generic completion scripts can be improved=
+. The main problem is that it seems shell programmers are more interested i=
+n cajoling the look of their prompts than defining sane cross-shell standar=
+d protocols for tool/shell interaction. The current completion mecanisms ar=
+e <a href=3D"https://github.com/dbuenzli/cmdliner/issues/220">broken</a> be=
+yond imagination.
+</p>
+
+<p>
+Issues about completion are tagged accordingly in the issue tracker. Do not=
+ hesitate to chime in if you have ideas or more knowledge than I do for imp=
+rovements. I'm also happy to add support for more shells but it's better if=
+ you help for that because working with shells makes me want to throw my co=
+mputer out of the window.
+</p>
+
+<p>
+Meanwhile I'd like to show two completion feature that I'm quite happy to h=
+ave support for in this release.=20
+</p>
+</div>
+<div id=3D"outline-container-org9d03b42" class=3D"outline-4">
+<h4 id=3D"org9d03b42">Context sensitive completion</h4>
+<div class=3D"outline-text-4" id=3D"text-org9d03b42">
+<p>
+The idea here, suggested by @andreypopp, is that completion can depend on a=
+ context that is specified via a cmdliner term itself. This is typically us=
+eful for configuration dependent completions: you have a cmdliner term that=
+ represents your configuration and you access it when doing a completion.
+</p>
+
+<p>
+For example in the next release of <code>odig</code> you can autocomplete p=
+ackage names on <code>odig doc [PKG]</code>. The available packages depend =
+on looking up a libdir which can be specified with a command line argument =
+itself. So for example this completes according to the automatic libdir loo=
+kup
+</p>
+
+<pre class=3D"example" id=3D"org26787d7">
+# Auto discovered libdir
+&gt; odig doc c=E2=90=89
+camlp-streams   checkseum  cmarkit  camlpdf  cairo2=20=20
+containers      cmdliner   cpuid    cppo     cpdf=20=20=20=20
+cstruct-lwt     cstruct    ctypes   crunch   csexp=20=20=20
+ctypes-foreign=20=20=20=20=20=20
+</pre>
+
+<p>
+But the following looks for packages in another switch:
+</p>
+
+<pre class=3D"example" id=3D"org70d50fe">
+# Explicit libdir
+&gt; odig doc c=E2=90=89 --lib-dir $(opam var lib --switch=3Dmyswitch)=20
+capitalization  cerberus-lib  calendar  charon=20=20=20=20=20=20=20=20
+core_kernel     core_unix     cmdliner  cppo    core=20=20
+cstruct         csexp=20=20
+</pre>
+
+<p>
+<a href=3D"https://github.com/b0-system/odig/commit/e713f0c62c31f7009cb9d0d=
+580094980fe93b1e6">The commit</a> that implements this in <code>odig</code>=
+ is rather straightforward, it simply reuses the existing <code>conf</code>=
+ term for the completion context. Also the cookbook has a <a href=3D"https:=
+//erratique.ch/software/cmdliner/doc/cookbook.html#args_completion">simple =
+self-contained example</a> to start from.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org57aab03" class=3D"outline-4">
+<h4 id=3D"org57aab03">Compositional completion (restart and raw)</h4>
+<div class=3D"outline-text-4" id=3D"text-org57aab03">
+<p>
+The second completion feature is to retain completion on the tools that ano=
+ther tool invokes =E2=80=93 commands like <code>sudo</code>.=20
+</p>
+
+<p>
+For example in the <code>b0</code> tool, the build system I'm using for all=
+ my developments. The <code>b0 vcs [OPTION]=E2=80=A6 -- VCS [ARG]=E2=80=A6<=
+/code> command allows to bulk operate the VCSs of the projects you included=
+ in a <code>B0.ml</code> build description file.=20
+</p>
+
+<p>
+Using appopriate cmdliner completion directives the completion of this comm=
+and first completes the <code>VCS</code> enum (which can be <code>git</code=
+> or <code>hg</code>) and then gracefully drops back to the completion of
+your VCS:
+</p>
+
+<pre class=3D"example" id=3D"org2b04411">
+&gt; b0 vcs -- =E2=90=89
+git  hg  --
+&gt; b0 vcs -- git sh=E2=90=89
+shell       -- restricted login shell for GIT-only SSH access
+shortlog    -- summarize git log output
+show        -- show various types of objects
+show-branch -- show branches and their commits
+show-index  -- show packed archive index
+show-ref    -- list references in a local repository
+</pre>
+
+<p>
+This is a <a href=3D"https://erratique.ch/software/cmdliner/doc/Cmdliner/Ar=
+g/Completion/index.html#val-restart">restart</a> completion type. It restar=
+ts the completion context as if the cli started after the <code>--</code> t=
+oken.=20
+</p>
+
+<p>
+It is the kind of behaviour you want from e.g. <code>opam exec</code>, thou=
+gh arguably in the case of <code>opam exec</code> it will be sligthly misle=
+ading since completions will occur using the outer environment rather than =
+the one setup by <code>opam exec -- TOOL [ARG]=E2=80=A6</code>.  Still, som=
+etimes inaccurate completion is better than no completion.=20
+</p>
+
+<p>
+Note that this would be quite easy to solve with a good cross-shell complet=
+ion standard: just invoke <code>TOOL</code> in the environment setup by <co=
+de>opam exec</code> according to the completion standard (e.g. the <a href=
+=3D"https://erratique.ch/software/cmdliner/doc/cli.html#completion_protocol=
+">cmdliner completion protocol</a>) and propagate the result back in the co=
+mpletion for <code>opam exec</code>, but we do not live in that world. Stil=
+l the API is ready for such a technique to be used, by using a <a href=3D"h=
+ttps://erratique.ch/software/cmdliner/doc/Cmdliner/Arg/Completion/index.htm=
+l#val-raw">raw</a> completion type (I <a href=3D"https://github.com/b0-syst=
+em/b0/blob/9c9810ad158a83ccfbbf37a7e65b11a3a3e8a922/src/tool/b0_cmd_build.m=
+l#L355-L384">use this</a> in <code>b0</code> to complete custom, library an=
+d user-defined, actions like <code>b0 -- .opam</code> or <code>b0 -- .ocaml=
+</code>).=20
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">Detrow, a command-line calendar</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-detrow-a-command-line-c=
+alendar/17328/1">https://discuss.ocaml.org/t/ann-detrow-a-command-line-cale=
+ndar/17328/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org0b44cff" class=3D"outline-3">
+<h3 id=3D"org0b44cff">Florent Monnier announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org0b44cff">
+<p>
+<a href=3D"http://decapode314.free.fr/ocaml2/detrow/">Detrow</a> is a comma=
+nd-line calendar which displays the months of a calendar in colomns.
+</p>
+
+<p>
+(So each days of months are aligned in rows)
+</p>
+
+<p>
+(With <a href=3D"http://decapode314.free.fr/ocaml/detris.html">Detris</a>, =
+months are displayed in a similar way than the cal unix command.)
+</p>
+
+<p>
+You can download it with the following command:
+</p>
+<pre class=3D"example" id=3D"org5ce7b93">
+wget http://decapode314.free.fr/ocaml2/detrow/dl/0.01b/detrow.ml
+</pre>
+<p>
+Then you can call it like this:
+</p>
+<pre class=3D"example" id=3D"orgeb48c53">
+$ \ocaml detrow.ml
+</pre>
+<p>
+It will display the first half of the month, Januray until June.
+</p>
+
+<p>
+If you want the second half of the year, Jully until December, you can call=
+ it again with:
+</p>
+<pre class=3D"example" id=3D"org69e9f3a">
+$ \ocaml detrow.ml b
+</pre>
+<p>
+The first half, can also be called with the "a" parameter:
+</p>
+<pre class=3D"example" id=3D"org65f85b4">
+$ \ocaml detrow.ml a
+</pre>
+<p>
+If you call it like this:
+</p>
+<pre class=3D"example" id=3D"org573aa93">
+$ \ocaml detrow.ml ann-file 2025 b
+</pre>
+<p>
+With the file called "ann-file" containing:
+</p>
+<pre class=3D"example" id=3D"org2ccb2a5">
+$ cat ann-file
+2025-09-27: detrow-ann
+</pre>
+<p>
+You will see the string `"detrow-ann"` displayed in the calendar in front o=
+f the day `"2025-09-27"`.
+(The number of chars that can be displayed is lower than 8 (<code>&lt; 8</c=
+ode>).)
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-10" class=3D"outline-2">
+<h2 id=3D"10">rpmfile 0.8.0+ library</h2>
+<div class=3D"outline-text-2" id=3D"text-10">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-rpmfile-0-8-0-library/1=
+7330/1">https://discuss.ocaml.org/t/ann-rpmfile-0-8-0-library/17330/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org0794ee8" class=3D"outline-3">
+<h3 id=3D"org0794ee8">Mikhail announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org0794ee8">
+<p>
+Hello,
+</p>
+
+<p>
+I am pleased to announce the next <i>major</i> version of <a href=3D"https:=
+//github.com/dx3mod/rpmfile">my library for reading RPM packages</a>, power=
+ed by <a href=3D"https://github.com/inhabitedtype/angstrom">Angstrom</a>.
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code># #require <span style=3D"color: #ca3400=
+;">"rpmfile"</span><span style=3D"color: #ff4500;">;;</span>
+
+# <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">pkg</span> =3D=20
+    <span style=3D"color: #444fcf;">In_channel.</span>with_open_bin=20
+      <span style=3D"color: #ca3400;">"hello-2.12.2-2.fc43.x86_64.rpm"</spa=
+n>=20
+      <span style=3D"color: #444fcf;">Rpmfile.Reader.</span>of_channel
+    <span style=3D"color: #a52a2a;">|&gt;</span> <span style=3D"color: #444=
+fcf;">Result.</span>get_ok<span style=3D"color: #ff4500;">;;</span>
+
+# <span style=3D"color: #444fcf;">Rpmfile.View.</span>name pkg<span style=
+=3D"color: #ff4500;">;;</span>
+- : string =3D <span style=3D"color: #ca3400;">"hello"</span>
+
+# <span style=3D"color: #444fcf;">Rpmfile.View.</span>vendor pkg<span style=
+=3D"color: #ff4500;">;;</span>
+- : string =3D <span style=3D"color: #ca3400;">"Fedora Project"</span>
+
+# <span style=3D"color: #444fcf;">Rpmfile.View.</span>version pkg<span styl=
+e=3D"color: #ff4500;">;;</span>
+- : string =3D <span style=3D"color: #ca3400;">"2.12.2"</span>
+</code></pre>
+</div>
+
+<p>
+This release has <b>broken the previous API</b> and made it simpler and mor=
+e compact.
+</p>
+
+<p>
+Added capture of the payload of the RPM package body. But it is not effecti=
+ve enough.
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code># pkg.payload<span style=3D"color: #ff45=
+00;">;;</span>
+- : string option =3D None
+</code></pre>
+</div>
+
+<p>
+You can implement this functionality manually using <a href=3D"https://ocam=
+l.org/p/lwt/latest">Lwt</a> and angstrom-lwt-unix or something else.
+</p>
+
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #8f6f4a; font-styl=
+e: italic;">(* </span><span style=3D"color: #8f6f4a; font-style: italic;">e=
+xamples/extract_payload_by_lwt.ml</span><span style=3D"color: #8f6f4a; font=
+-style: italic;"> *)</span>
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">default_tags_selector</span> =3D
+  <span style=3D"color: #444fcf;">Rpmfile.Reader.</span>
+    {
+      predicate_signature_tag =3D <span style=3D"color: #444fcf;">Fun.</spa=
+n>const <span style=3D"color: #00824f;">true</span>;
+      predicate_header_tag =3D <span style=3D"color: #444fcf;">Fun.</span>c=
+onst <span style=3D"color: #00824f;">true</span>;
+    }
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #007a9f;">pkg_parser</span> =3D
+  <span style=3D"color: #444fcf;">Rpmfile.Reader.</span>make_package_parser=
+ <span style=3D"color: #00824f;">~capture_payload</span>:<span style=3D"col=
+or: #00824f;">false</span>
+    <span style=3D"color: #00824f;">~tags_selector</span>:default_tags_sele=
+ctor
+
+<span style=3D"color: #000000; font-weight: bold;">let</span> () =3D
+  <span style=3D"color: #000000; font-weight: bold;">let</span> <span style=
+=3D"color: #000000; font-weight: bold;">open </span><span style=3D"color: #=
+444fcf;">Lwt.Syntax</span> <span style=3D"color: #000000; font-weight: bold=
+;">in</span>
+  <span style=3D"color: #444fcf;">Lwt_main.</span>run
+  <span style=3D"color: #a52a2a;">@@</span>
+  <span style=3D"color: #000000; font-weight: bold;">let*</span> <span styl=
+e=3D"color: #007a9f;">ic</span> =3D <span style=3D"color: #444fcf;">Lwt_io.=
+</span>open_file <span style=3D"color: #00824f;">~mode</span>:<span style=
+=3D"color: #242521; background-color: #fcf7ef;">Input</span> <span style=3D=
+"color: #ca3400;">"hello.rpm"</span> <span style=3D"color: #000000; font-we=
+ight: bold;">in</span>
+  <span style=3D"color: #000000; font-weight: bold;">let*</span> <span styl=
+e=3D"color: #007a9f;">_pkg</span> =3D
+    <span style=3D"color: #000000; font-weight: bold;">let*</span> <span st=
+yle=3D"color: #007a9f;">b</span>, <span style=3D"color: #007a9f;">r</span> =
+=3D <span style=3D"color: #444fcf;">Angstrom_lwt_unix.</span>parse pkg_pars=
+er ic <span style=3D"color: #000000; font-weight: bold;">in</span>
+    <span style=3D"color: #000000; font-weight: bold;">let+</span> <span st=
+yle=3D"color: #007a9f;">_</span> =3D <span style=3D"color: #444fcf;">Lwt_io=
+.</span>set_position ic (<span style=3D"color: #444fcf;">Int64.</span>of_in=
+t b.off) <span style=3D"color: #000000; font-weight: bold;">in</span>
+    <span style=3D"color: #444fcf;">Result.</span>get_ok r
+  <span style=3D"color: #000000; font-weight: bold;">in</span>
+  <span style=3D"color: #000000; font-weight: bold;">let*</span> <span styl=
+e=3D"color: #007a9f;">payload</span> =3D <span style=3D"color: #444fcf;">Lw=
+t_io.</span>read ic <span style=3D"color: #000000; font-weight: bold;">in</=
+span>
+
+  <span style=3D"color: #8f6f4a; font-style: italic;">(* </span><span style=
+=3D"color: #8f6f4a; font-style: italic;">...</span><span style=3D"color: #8=
+f6f4a; font-style: italic;"> *)</span>
+</code></pre>
+</div>
+
+<p>
+&hellip; :pie:
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-11" class=3D"outline-2">
+<h2 id=3D"11">OCaml compiler office hours? (preparation thread)</h2>
+<div class=3D"outline-text-2" id=3D"text-11">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ocaml-compiler-office-hours=
+-preparation-thread/17230/8">https://discuss.ocaml.org/t/ocaml-compiler-off=
+ice-hours-preparation-thread/17230/8</a>
+</p>
+</div>
+<div id=3D"outline-container-orgb601bc7" class=3D"outline-3">
+<h3 id=3D"orgb601bc7">Continuing this thread, gasche announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgb601bc7">
+<p>
+Given the current votes, I propose to pick
+</p>
+
+<p>
+<b>Friday October 10th</b>
+<b>UTC 11:00 &ndash; UTC 12:30</b>
+</p>
+
+<p>
+as the time slot for this test run of OCaml compiler office hours. Save the=
+ date!
+</p>
+
+<p>
+I propose to try <a href=3D"https://webinaire.numerique.gouv.fr/meeting/sig=
+nin/invite/64288/creator/23503/hash/4ad3529af76e35eae42dfa410afc68ff4f24d9a=
+f">This online meeting room</a> (this is a BigBlueButton instance hosted by=
+ the French government for public workers), and take notes on <a href=3D"ht=
+tps://codimd.math.cnrs.fr/nuew1gMsROCAy_klt_TkJg#">this collaborative pad</=
+a>.
+</p>
+
+<p>
+I am planning to join audio-only to save bandwidth, but people are free to =
+do as they prefer.
+</p>
+
+<p>
+A reminder on the format, topic:
+</p>
+
+<blockquote>
+<p>
+Format: a synchronous remote meeting (voice with optional video), backed by=
+ a collaborative pad to record questions, take notes, share links etc. Peop=
+le can join and leave at any time during the office hours.
+</p>
+
+<p>
+Topic: anything related to the development of the OCaml compiler, that is, =
+the github/ocaml/ocaml project. (All topics and questions are welcome, at a=
+ll levels of knowledge and familiarity with the compiler.)
+</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-12" class=3D"outline-2">
+<h2 id=3D"12">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-12">
+</div>
+<div id=3D"outline-container-org65de2f5" class=3D"outline-3">
+<h3 id=3D"org65de2f5">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org65de2f5">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://www.dra27.uk/blog/platform/2025/09/28/effectful-bug-=
+hunting.html">A second foray into agentic coding</a></li>
+<li><a href=3D"https://fearful-odds.rocks/blog/model-mapping-and-validation=
+-in-ocaml">Model Validation &amp; Time Utilities Sprint: From Basic Models =
+to Proper Validation Layer</a></li>
+<li><a href=3D"https://tarides.com/blog/2025-09-25-parsimoni-joins-techstar=
+s-autumn-2025-programme">Parsimoni Joins Techstars' Autumn 2025 Programme!<=
+/a></li>
+<li><a href=3D"https://www.dra27.uk/blog/platform/2025/09/25/building-with-=
+effects.html">Retrofitting a build system into a compiler</a></li>
+<li><a href=3D"https://jon.recoil.org/blog/2025/09/caching-opam-solutions2.=
+html">Caching opam solutions - part 2</a></li>
+<li><a href=3D"https://ocaml.org/events">Upcoming OCaml Events</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org599395f" class=3D"outline-2">
+<h2 id=3D"org599395f">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org599395f">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"orgdcde181">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
