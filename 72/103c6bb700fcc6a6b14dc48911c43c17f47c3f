@@ -1,0 +1,409 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=g8I/3FKv;
+	dkim=fail reason="signature verification failed" (1024-bit key; unprotected) header.d=deinprogramm.de header.i=@deinprogramm.de header.a=rsa-sha256 header.s=default header.b=feg85sup;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 948A040086
+	for <caml-list@tunbury.org>; Wed, 22 Oct 2025 13:19:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:
+   content-transfer-encoding:subject:reply-to:sender:list-id:
+   list-help:list-subscribe:list-unsubscribe:list-post:
+   list-owner:list-archive;
+  bh=1FEgWD9OKSSCtNF4GPGgK3ooVLx7aeBT6PQ3eztVg7g=;
+  b=g8I/3FKvXpNVarwrdQccRvUbYveTQqzZlpfJU/xNQ8lfv9/2UgoWdr7Q
+   6jFOayPBTfb3NLlbndloplhNetf7VajwOaxOhYQdLCEUioamFgLMm9Wmh
+   9tilT7Vjf2upsF9Nvxlilay/q3uuegYfkXlrc6EHBio4O7ykzfp9aQhuX
+   Q=;
+X-CSE-ConnectionGUID: 4+pIfJ5NTICbB9zeL0CjJg==
+X-CSE-MsgGUID: z6Z8YaFDSm+3C6jgezovog==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@deinprogramm.de
+X-IronPort-AV: E=Sophos;i="6.19,247,1754949600"; 
+   d="scan'208";a="245666858"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 22 Oct 2025 15:18:59 +0200
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id 2BD81E0264; Wed, 22 Oct 2025 15:18:59 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id BF692E0172;
+	Wed, 22 Oct 2025 15:18:56 +0200 (CEST)
+X-CSE-ConnectionGUID: ny8+OJYPTvKkP4ylkxSBBw==
+X-CSE-MsgGUID: RRLbge4BSnCea6tpTU3bfQ==
+IronPort-SDR: 68f8d9bf_q6R4Ef1tKIaY75vylH/otTJ7+gxmM+HL3u6AhIHah+y9Nj1
+ ST8+qKboyQnexfC+Ma0MuchCG/V87Qac+0h6dbg==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0HmBAC+2Pho/9Oqd6haDhABAQsSDECBRQuCQAd7XjMHC?=
+ =?us-ascii?q?EmEVYNPhSyIeJFNjkUKDwEDAQ0uDxEBAgQBAQMBA5FOAh8GAQQzBg4BAgQBA?=
+ =?us-ascii?q?QEBAwIDAQEBAQEBAQEBDQEBBQEBAQIBAQIEBgECgQoThk8Ngls7cYElAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBARcCCAVeASEFARsGHQEBEhQNBTQCBSECAg8BBEcCg?=
+ =?us-ascii?q?xWCIgJPAwQNryF6gTKBAYIMAQEGgQjdAQMGgRwuiFEBhWw7hD0nG4INgRWCO?=
+ =?us-ascii?q?oEugUKBHwGBGCGEA4JpgiZ6FIYogicDjxuBSngsAVUTFwsHBYEwMwMgCjQUG?=
+ =?us-ascii?q?QIUHRIPBBYyHXMMKBIvGHM9V4NJIWgPBoETgRqCOgWJMB8PhmsDC209NwYOG?=
+ =?us-ascii?q?5QDggprMSMgKSQTDQIuMg4IBTQ0Dh45DY0QhUqLIqg7gj+BZ4Rwhy6OM4dTl?=
+ =?us-ascii?q?2CTC5kGIo1mlWICL2iEPoF+J4FZMxoIHBQaglQBM08DGQ9WAY1KDBaDXjOEY?=
+ =?us-ascii?q?IohCa4wQTU8AgcBCgEBAwmFRAEDjCMzagFgAQE?=
+IronPort-PHdr: A9a23:fGrHcBx9AMmJMIvXCzItxFBlVkEcU1XcAAcZ59Idhq5Udez7ptK+Z
+ xeZvakm1QOSA9uTq6odzbaN6Oa4Ai1IyK3CmU5BWaQEbwUCh8QSkl5oK+++Imq/AdjUKgcXJ
+ 4B8bmJj5GyxKkNPGczzNBX4q3y26iMOSF2kbVImbuv6FZTPgMupyuu854PcYxlShDq6fLh+M
+ Ai6oR/eu8QYj4ZuMLo9xxTGrndVdOlby2JlKFOOlBr4+su84YRv/itetv8v7cJMTav3c6ElR
+ rFEEToqNHw468LsuRTfVwWE+2ESUn8RkhpGAgjF6A/1U5LsuSbkteRzxTeXM9TuQb47QTqt4
+ L5nRQHnhikaLzI2/33ZhcJ2jKJAvRKuvAd/zJLOYIGUL/VxYKXQds4HSGVbX8ZRUytBAp6gb
+ 4YKEuEMM/pUo5X7qlATqxa1GAuiC/71yjJQhnH4w7A03eoiHw7I0wMvA90AvW/IrNXsLqoeT
+ fy5wbPKwDjFcvhY2S396I/Nch05pv+MXK5/ccrLxkYxEwPOk0ieqZT7MDOPzesCrXKb5PdnW
+ OK0k24otRtxrSOxycc2kYTGm5waylHC9SVh2oY1ItK4SFRhbt6hFZtcrTyVOJVvT84kXmpnt
+ zo0xKcctp6nYCgF1o4nxxjHZvKHbYSF4g7uWfifLDp3mn9oea+yiwqy/0W91+HyWMe53VRWo
+ idGndTBq3IA2hjd58WFRfVw4lut1DKS2gzO6uxJJ10/m6TcK54k2LEwl5wTvFzNHi/rnkX5k
+ LOWdkQj+uiu8evnZqzqppubN497iwHxLr4imsulAeQ3KgQORHCb+f691L3l8k32Xq9Kgucqn
+ anetZDXI9kQqK2hAwJNz4ou6hWyAy273NgFmXQLNk9JdRCbg4TzJV3CPe30Ae+xjlmuijtn2
+ f/LMqf8DpnQKnXPiqrtcLJh50Na1QE918pQ54hOBbEEOP/zWlH+tNjfDhIhLgO73efnCNNl1
+ oMEXmKPDbWZP7nXsV+N/O4gPveDaJcUuDb7Nfcl++bjgWI4lFIeZ6WlwIYbZXSiEvh7IUiVf
+ WDgjskcHWsXpgY+SfbliFyGUT5dfXayWKc86ykgCIK+E4jDXJuij6Kb3CqgA5JZeGFGClaUE
+ XfycIWEVO0MZziXIs9kiDALSKauR5c71R6yrA/616ZnLu3M9yIEr53j0dx16/TXlREz7jx0E
+ 9+Q03qNTmFxhmMHXSU63KF5oUxny1eMy7J0g/JCFdBL/fNGTh86NYLAz+x9E939RgXBfs6QR
+ Fm6RtWmHCo+Q8kqw94OZkZ9A8+tggrC3yqsGb8VlqaECIY68qLGx3TxId1yxG7c1KY9l1kmX
+ tdPNWq+i6Jh7wTTCJDGk0KamaiwbakS0iHD+H+ZzWWQokFWUxR+XL3YUn8BZ0vWq8z55lnFT
+ 7+hE7QoKA5BycuYJqRXdNLllUhJRPTiONTbe2+/g2i+ChiWyL2QcIfkfX0R0zjYCEceiQAc4
+ W6LOxAnCCm5rGzSFCduFUrhY0706+dztG61QFIswwGRd01h2aK6+h4LivyYTPMexqgKtTs8p
+ TtpTx6B2IfLENeavCJ7da5fbM945F5B2iTerQM5dpepKqQngl8Fbyx2uVnv3lN5EMEIkcExr
+ 34uyCJyILmb3VdFMTSC0tS4OrTMKWT2+FWkYqDb8lHXy9Wb/qNJ7+437x3svArsGkc86F1n2
+ sJW3n+YoJLQA05aTYPpX11y/h58oKzcaSQV44LPyWYqKqS9qXnfw98vAq0oxgvkN9lCNouPD
+ 0n0FNEGQcGlbvEp3xCiaQtBN+RP/oY1Odmnfr2IwurjNelslRqijH9b+8Z20kuI8idmUajT0
+ tJNx/+TxU6GUSvxllq6ruj2n44CaD1UF2H51CugTIBUI6R0e4EWD2yjJsCx2s5Wg5/2R2Ue8
+ le4DhUJ39HtMSKIaFvz4Q1d0l4GiXimgjejiTZ9jzFvp6HZwS+Ki+vubl8GP0ZESHMnjFKqL
+ 5Lwx9QdU0mjKQwojweN4lvmw69cp+J0KGyXCUlTdCSwJGZkXKaqu7yJbuZD45huvy4RTfz6e
+ UzeArjiuwdf0iXtGENaxSsnbHervZ6/khE+wHqHK3k2qHPfdul8xBTCotDfAbZL0z4DRSJjz
+ D3/I1OZNsK18M/SvL6H+vumU3mJUpxIbTKtxo6GqG204WQsCBb5gvP30ubdPDAe6gfZ9uJBc
+ AzpiFDVSc/W9ODyOv99ZFhAAF7n99E8AJ5iks45jZoQ1H5cipjRtWEGmnzvLM4exLnzdmElS
+ jkMzNrY7xLixVV4aHmOwsaxTXyc2I5lZsKmSmMJnCs2qd1JTO+91oMBtgxQh3uEkS/8Sfx8g
+ DoH0fwp7DgTiKcUu05lxSHYA6sbF0RcOSGpig+F9cuWqKRMeH3perG1kkN1282iSPmeqw50R
+ Wr9e4w+Bmlt8shvOUmK3XHursnvfNTZa5cXtwaIuwzLjuVTI593jOdMgy4jcW/jsHs54+89y
+ wBzmJq+tZWcN2Vk+OS1D1oQOSGwec4J+z+olatEm8+Q0oazBb1uFi9OXZ6uQ+jsWDwXtP/8H
+ weICjw1rm+WAvzRB0vX40BjqjfTE52sLWC/JXQUwJNlXhbZbEdWjA08XSkn2JI6UkiywMXnf
+ Vt6/HUW+Vj1sDNP0KRvLRasfH3YoVKNazw0QZWbZCFO4xtI6l2dZdeG4/h5Ejtw8pCgqhSXL
+ WOBbgFNS20EDB/XT2v/N6WjsIGTu9OTAfCzeqOmidSmrOVfU63N3pezys58+D3KMMyTP35kB
+ vl920xZXHk/Fd6K0y4XRXkxkCTAJ9WeuA/64jd++9un/e7hVRjH6YaODaNINtp18hWzx6uOZ
+ KaLnCgsET9DzdsXwGPQjr0W3VockSZrIiK1HK4KuDTlQK/RnLdNCBEBYiZ2csdFvOonxgcYA
+ cfAkZvu06JgyP44D1AQTVv6hsSgftAHOUmxOVLBHFyMO66PIDiNz8yfjbqUb7pWga0UshSxv
+ WzeCEr/JnGZkDKvURmzMOZKhSXdPRpEuYj7fAw/QW7kBMnrbBG2KroVxXU/3KE0i3XWNGUdL
+ Sk0ckVDqaeV5D9ZhfM3EnJI735sJ+2J0yiD6OyQJpETuPptSiN68oASqG8ixqFf4TtsSPF0n
+ jPIqdF0qlSj1OWCi3JmXBdItjdXldeTp0wxXMeRvpJEWHvC4FcM9TDJVURM/oI0TISw4+YKk
+ 4Gc8cC7YC1P+N/V48YGUs3dKcbddWEkLQKsAjnfSg0MUT+sM2jbwU1bivCbsHOP/f1Y4tDhn
+ oQDTrhDWRk7DPQfXw5+BNEYKpptdj8pkLiDlskH/3O7qV/dSY8J2/KPHuLXGvjpJDuD2PNff
+ xYSy77iBYgeN4vjwUttcFB/mcLGFgCDOLIF6j0kZQgyrkJX9XF4RWBmwEPpZDSm53oLHOK1l
+ Bo74udnSdwk7yyko1I+J16Q4TA1jFF0g9LuxzaYbD/2Kq60G4BQESv98UYrYNv3RAN8bAv6m
+ kIBVn+MXKpclbFtb0hnhQ7aoYFIFuRVSKgCbBJYyfyMZvou2EhRsW3+mx8BvLKUT8I9zE1wK
+ MfkpmkluUordNMvIK3MOKdFhkNdgK6DpG7g1+w8xhMfO1dY9WqTfCASv0lbU9tubyGs/+Fq9
+ UmDg24aJjhKDqN75Ks1rgVnYr3TqkCom6ROIU2wKeGFeqaQumya0NWNXkt1zEQD0U9M4blx1
+ 84nNUuSTUEmirWLRHFrfYLPLx9Ya81K+T3dZyGL5K/W2Z9vNYinPuzlTOmWrqEbmEuhGUAlE
+ s5fi6ZJVonpy0zeIcr9efQe0Rg37gnxDFmIDfJRYhWEij4CpoezwdUkuOsVbiFYCmJ7PyKt4
+ 7/RrQJ/m/uPUuA9ZXICV5cFPHY7C4Wq3jRUtHNaAHyrw/oUnUKcuiTkqH2aX1yeJ5JzIe2Zb
+ hR2BJSq9CUjpuKo3EXP/MyWLin/JZxjooOdsL1K4c/eWrUNEuE76R6F059RQ3jgO4LWOea8P
+ IO4K4wlbNiuT22/TkT6kTU+CcH4INeqKKGMxwDuX4dd9oeBjngvMsq0FzdWHBkVxalL/KVne
+ QgKeIY2ezbkugU4L7a4Lx2R19DoT2vlJTZNTvZZxPm3fPQOkXpqN7brjiJ/FtdglrD/+FVoJ
+ tlClhzEwPe/e4RSGTP+HHBQYUSHpCY0kXRgKvdnwuo7x0CAul0dPjaXMe1xPTUa75dlXALUe
+ CouTDBhHgz578KL+AOn0rEM8jEImt9V1bcAq33iptrFZznqXqW3qJLTui5mbN48oqQ3P5awR
+ 6nO/J7YgDHbS4Hd9wOfVyvvXeFCl8JaLThwTPRJn3k/PsMcsI9Er0Y8HJRbRfQHGOw3q7amZ
+ CAxRzYV1jMcXpic0SYqjuq93aPAkRiKeZEndhAJ+sYn4JNVQ2t9ZSUQo7WmXoPdmjqfS2QFF
+ wwU6BxF+AMKkoIjNvCg+ofDS4VAjiJHu/8hGDWeDYFmrhGoLwPeyUi9UviqlPalmB5f3O65m
+ MdOQwZxUABUj+NG3kowdOMudflW59eb9GbXLQWg5Tul3uKiIBM5ISz8e1D5CpLfsmXmWygZv
+ 3EZF9YnIJ73GZkTlRJjb6kxrVBJZoyrKB+WD9kMy4loGaGiUs+xzlMg63oLFX/CLg==
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:8plHga2q9WoXecguW7eL1gqjBKMkLtp133Aq2lEZdPUzSL38qy
+ nOpoV46faQslwssR4b9+xoVJPsfZq+z+8X3WByB9aftWDd0QPCEGgI1+TfKlPbdxEWutQ86Z
+ td
+X-Talos-CUID: =?us-ascii?q?9a23=3A3BlmeWozH4hHesR1N6gzizfmUcY0Ij767kboH1G?=
+ =?us-ascii?q?bCl41WbmWWWS60rwxxg=3D=3D?=
+X-Talos-MUID: 9a23:tkLy/AjZ1z+7vS3yEgHS+cMpDv1M6aujVGo2l74LspeYLRBNYD2TtWHi
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.19,247,1754949600"; 
+   d="scan'208";a="245666813"
+X-MGA-submission: =?us-ascii?q?MDEbH5oxhknXIgjuNkhULDnVM1xbhSaAsIdLzv?=
+ =?us-ascii?q?b6v741E73xj9pQX34TCINUxqpDNGMHgEOu13auKaenh3HS4HvVbbs2oM?=
+ =?us-ascii?q?KHiWx6QY8Vg+EACIsE4e35Tca4NvzccTOdK6IbVxH5jzmRoGiWjj+jaB?=
+ =?us-ascii?q?m0sf2ilDHp9kWyhWypJfJEsg=3D=3D?=
+Received: from deinprogramm.de ([168.119.170.211])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2025 15:18:55 +0200
+Received: from Tourvel.home.active-group.de (ip-037-024-119-190.um08.pools.vodafone-ip.de [37.24.119.190])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange secp256r1 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by deinprogramm.de (Postfix) with ESMTPSA id 828793AD32;
+	Wed, 22 Oct 2025 15:18:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=deinprogramm.de;
+	s=default; t=1761139134;
+	bh=ihOtTtfVCee6WwrAlT6lakd8J10oOqtbudW5spl+YUs=;
+	h=From:To:Subject:Date;
+	b=feg85supJ8nWUsYc6yBUU4eKogYXpKVtP0E1H/LZk6Y8jWbq5qvFdKNFgxW8eQevQ
+	 Efv6qXjGyXYjePf+t+I6IIN68BAodrSVkoDEt53UVKAiljuCAiZG/ZyFNckbRkvNpF
+	 F++Ct+926+Wzq/UGffB5r8seNDzI3+qqiRuoRZss=
+From: Michael Sperber <sperber@deinprogramm.de>
+To: users@racket-lang.org, caml-list@inria.fr, haskell@haskell.org,
+ haskell-cafe@haskell.org, ghc-devs@haskell.org,
+ types-announce@lists.seas.upenn.edu, fun@cs.nott.ac.uk, coq-club@inria.fr,
+ agda@lists.chalmers.se, lfcs-interest@inf.ed.ac.uk,
+ fm-announcements@lists.nasa.gov, ProofTheory@lists.bath.ac.uk,
+ gdr-im@gdr-im.fr, logic.list@outlook.com, fscd.conference@dcc.fc.up.pt,
+ nwpt-info@lists.ioc.ee, prog-lang@diku.dk, relmics-l@McMaster.CA,
+ spls@lists.cent.gla.ac.uk, SREPLS@JISCMAIL.AC.UK,
+ curry@lists.rwth-aachen.de, sicstus-users@googlegroups.com,
+ sair-list@hw.ac.uk, ARW-COMMITTEE@liverpool.ac.uk,
+ cl-isabelle-users@lists.cam.ac.uk, tag@utlists.utexas.edu,
+ clean-list@science.ru.nl, event@in.tu-clausthal.de,
+ gt-verif-permanents@gdr-im.fr, fmics@inrialpes.fr, comm-theory@ieee.org,
+ cade@itu.dk, planetkr-owner@kr.org
+Date: Wed, 22 Oct 2025 15:18:52 +0200
+Message-ID: <y9lo6pz13cz.fsf@Tourvel.home.active-group.de>
+User-Agent: Gnus/5.13 (Gnus v5.13)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Caml-list] 2nd CfP: Functional and Logic Programming (FLOPS)
+ (Deadline Dec 8)
+Reply-To: Michael Sperber <sperber@deinprogramm.de>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19391
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-10/y9lo6pz13cz.fsf%40Tourvel.home.active-group.de>
+
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+		 *** FLOPS 2026 - Call For Papers ***
+   18th International Symposium on Functional and Logic Programming
+
+		    May 26-28, 2026, Akita, Japan
+
+	   https://functional-logic.org/events/flops/2026/
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+FLOPS aims to bring together practitioners, researchers and implementers
+of declarative programming, to discuss mutually interesting results and
+common problems: theoretical advances, their implementations in language
+systems and tools, and applications of these systems in practice. The
+scope includes all aspects of the design, semantics, theory,
+applications, implementations, and teaching of declarative programming.
+FLOPS specifically aims to promote cross-fertilization between theory
+and practice and among different styles of declarative programming.
+
+Previous FLOPS meetings were held at Fuji Susono (1995), Shonan Village
+(1996), Kyoto (1998), Tsukuba (1999), Tokyo (2001), Aizu (2002), Nara
+(2004), Fuji Susono (2006), Ise (2008), Sendai (2010), Kobe (2012),
+Kanazawa (2014), Kochi (2016), Nagoya (2018), Akita (2020, online),=20
+Kyoto (2022, online), and Kumamoto (2024).=20
+
+SCOPE
+
+FLOPS solicits original papers in all areas of declarative programming:
+
+* functional, logic, functional-logic programming, rewriting systems,
+formal methods and model checking, program transformations and program
+refinements
+
+* developing programs with the help of theorem provers or
+SAT/SMT solvers, verifying properties of programs using declarative
+programming techniques, or statistical methods including generative
+AI (*);
+
+* foundations, language design, implementation issues (compilation
+techniques, memory management, run-time systems, etc.), applications and
+case studies.
+
+FLOPS promotes cross-fertilization among different styles of declarative
+programming. Therefore, research papers must be written to be
+understandable by a wide audience of declarative programmers and
+researchers. In particular, each submission should explain its
+contributions in both general and technical terms, clearly identifying
+what has been accomplished, explaining why it is significant for its
+area, and comparing it with previous work. Submission of system
+descriptions and declarative pearls are especially encouraged.
+
+(*) Note that FLOPS is a Programming Languages conference.
+Submissions should be accessible to a Programming Languages audience.
+The Program Committee has been selected from that audience, and it may
+be unable to gauge the quality of your submission if that requires
+specialized competencies in statistical methods and/or AI.  Special
+attention should also be paid to the reproducibility of the results
+from public sources.
+
+SUBMISSION
+
+Submissions should fall into one of the following categories:
+
+* Regular research papers: they should describe new results and will be
+judged on originality, correctness, and significance.
+
+* System descriptions: they should describe a working system and will be
+judged on originality, usefulness, and design.
+
+* Declarative pearls: new and excellent declarative programs or theories
+with illustrative applications.
+
+System descriptions and declarative pearls must be explicitly marked as
+such in the title.
+
+Submissions must be unpublished and not submitted for publication
+elsewhere. Work that already appeared in unpublished or informally
+published workshops proceedings may be submitted. Authors must follow
+Springer=E2=80=99s Code of Conduct. See also the ACM SIGPLAN Republication
+Policy. At least one author of each accepted paper should plan to
+attend the conference in person to present the work: there will be no
+general facility for online or pre-recorded presentation (but we will
+do our best to accommodate visa issues and similar unavoidable
+obstacles).
+
+Submissions must be written in English and can be up to 15 pages
+excluding references, though system descriptions and pearls are
+typically shorter. The formatting has to conform to Springer=E2=80=99s
+guidelines. Regular research papers should be supported by proofs
+and/or experimental results. In case of lack of space, this supporting
+information should be made accessible otherwise (e.g., a link to a
+web page or an appendix, which does not count towards the
+page limit). However, it is the responsibility of the authors to
+guarantee that their paper can be understood and appreciated without
+referring to this supporting information; reviewers may simply choose
+not to look at it when writing their review.
+
+For more details, see
+
+   https://functional-logic.org/events/flops/2026/
+
+Papers should be submitted electronically at
+
+https://meteor.springer.com/FLOPS2026
+
+Reviewing will be single-blind.
+
+PUBLICATION
+
+The proceedings will be published by Springer in the LNCS series. We
+expect to invite the authors of a selection of the best papers to submit
+an extended version of their FLOPS paper to a special issue which will
+appear in the Science of Computer Programming journal.
+
+IMPORTANT DATES
+
+All deadlines are Anywhere on Earth (AoE =3D UTC-12).
+
+Abstracts due         Dec 8, 2025
+Submission deadline   Dec 15, 2025
+Notifications         Feb 2, 2026
+Final versions        March 2, 2026
+
+ORGANIZERS
+
+Ekaterina Komendantskaya (Co-chair), School of Mathematical and
+Computer Sciences (MACS), Heriot-Watt University
+
+Mike Sperber (Co-chair), Active Group
+
+Ryoma Sin=E2=80=99ya (Co-Chair), Department of Mathematical Science and
+Electrical-Electronic-Computer Engineering, Akita University
+
+PROGRAM COMMITTEE
+
+- Reynald Affeldt, AIST=20
+- Davide Ancona, University of Genova=20
+- Lennart Augustsson, Epic Games
+- Mutsunori Banbara, Nagoya University
+- Alessandro  Bruni, ITU Copenhagen
+- William Byrd, University of Alabama at Birmingham
+- Pedro Cabalar, Corunna University
+- Youyou Cong, Institute of Science Tokyo
+- Matthew Daggitt, U. Western Australia
+- Jeremy Gibbons, Oxford University
+- Andrew D. Gordon, Cogna and University of Edinburgh
+- Gopal Gupta, University of Texas
+- Jason Hemann, Seton Hall University
+- Mirai Ikebuchi, Kyoto University
+- Ranjit Jhala, UC San Diego
+- Wen Kokke, Well-Typed
+- Dale Miller, Inria Saclay - =C3=8Ele-de-France and the Laboratoire d'Info=
+rmatique (LIX)
+- Simon Peyton Jones, Epic Games
+- Benjamin Pierce, University of Pennsylvania
+- Michael Rawson, Southampton
+- Takehide Soh, Kobe University
+- Theresa Swift, Universidade Nova de Lisboa
+- Enrico Tassi, INRIA
+- Ekaterina Verbitskaia, JetBrains Research
+- Christina Zeller, Active Group
+- Neng-Fa Zhou, Brooklyn College
+- Akimasa Morihata, The University of Tokyo
+
+CONTACT ADDRESS
+
+flops2026_at_deinprogramm_de
