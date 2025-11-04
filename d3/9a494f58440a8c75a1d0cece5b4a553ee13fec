@@ -1,0 +1,2539 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=kFefGPbd;
+	dkim=fail reason="signature verification failed" (1024-bit key; secure) header.d=polytechnique.org header.i=@polytechnique.org header.a=rsa-sha256 header.s=svoboda header.b=oA5qyZx7;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 20E58400B1
+	for <caml-list@tunbury.org>; Tue,  4 Nov 2025 13:21:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=76iAnkdpJgoC7wB+v97z1IlgNbos29VYSfzKT139thw=;
+  b=kFefGPbd12Uimz3kLD8r4cwrZc+04eXCDLIWhHuRcndNJMiiOV/hji3R
+   vOhky9uQgzCXNgHGzejK8stPfqAqsfT5M9Y3+TJZEIj6ZK1Q/A5014EOv
+   pyLOubWdjFntmhyAEtcKMUgR9zbLRnruJ+FgoxSsI6SRxR2XJ8kuY6Iez
+   M=;
+X-CSE-ConnectionGUID: 71zLTaXTSZeh/t3V7Noa2Q==
+X-CSE-MsgGUID: vcW21ieySB+MS3HvpWNiIQ==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (body hash did not verify [final]) header.i=@polytechnique.org
+X-IronPort-AV: E=Sophos;i="6.19,279,1754949600"; 
+   d="scan'208,217";a="247535886"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 04 Nov 2025 14:21:41 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id CA9D6E0172; Tue,  4 Nov 2025 14:21:40 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by sympa.inria.fr (Postfix) with ESMTPS id C2B71E0172
+	for <caml-list@sympa.inria.fr>; Tue,  4 Nov 2025 14:21:35 +0100 (CET)
+X-CSE-ConnectionGUID: hNabRk3dRT2I0VZEUb++2Q==
+X-CSE-MsgGUID: Hopsv11dT1aFJsHypWuD3w==
+IronPort-SDR: 6909fddd_oIXK9AoYye1x36c8dziC+Jnw4yHsCWMotKz2BwOIZN1zbM8
+ YcA21nr0bJSSe3FKsTJP5wUMLw6N3KAMEZLlphA==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0ESAQAx/AlpgSIeaIFaHQITCQMFBYIABQwBgTyBAxkBa?=
+ =?us-ascii?q?F4zBwhJhFWDTwiOHJFNiEuCMIMVFiMVAQMBDS4BGwQBAgQBAQMBAgGCDIJ0A?=
+ =?us-ascii?q?oxWAh8GAQQzBg4BAgQBAQEBAwIDAQEBAQEBAQEBDQEBBQEBAQIBAQIEBgECE?=
+ =?us-ascii?q?AEBPQVJhk8NgkVRUx4UUQkGAQEBAQEBAQEBAQEBAQEiAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQIEBAQBAgoNRUABAgYEB?=
+ =?us-ascii?q?hMBATIGGCMDFAEGAwIRATUDARMBEhkBAYIjRYIgAgJPAwUMBpVIm0x6fzOBA?=
+ =?us-ascii?q?YIMAQEGgQg+AgELAgIDAQ4JJQHaDIFkCYEyGAGFbIJKGgEFJUlrAoRHCYMVg?=
+ =?us-ascii?q?R8IHw+BVUSBFTWCRG+CAj0LFwIBAYE5AwEBCEUJgyWCaYIRFXoUHYYKeIEwg?=
+ =?us-ascii?q?X8GhlYGh1OBREszLAFVExcLBwVbgQgDKjQtbjIdgSRBGHGBFINJDxJoDwaBE?=
+ =?us-ascii?q?oNRiSYPiTsDC209NxQblC9CGSyBbhUOCy0CAwEXGwwPBw0BAgQUBA8BCgoHD?=
+ =?us-ascii?q?gIiKwECCAUJChUTAgEZDgECCAQJBQYDEAUGCxkFBgsCCQItA5JXCRsBAwQoA?=
+ =?us-ascii?q?XSSO4pCk3ZtNAeEH4FeBgyJCIEmhyaOYIQEgVeFQIV8hwKRa2cimGQigjaGJ?=
+ =?us-ascii?q?4EAClNEBQmCDkyVJBACJAYEBIVRgX4kSWIBGgMMBzMaMCIhgjMBMwlGHA+II?=
+ =?us-ascii?q?YYJAxaDNigQgS6BJoF0O33FU0I1AQEBATgCBwEKAQEDCYViAQGMCC0FgUsBA?=
+ =?us-ascii?q?Q?=
+IronPort-PHdr: A9a23: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
+ nkFWYJEyHfeDIkf1Q1jZ/RzzGg=
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:njGBw690rMIXPfa5UzNuk+DlI+orL9Y04lQ7vn2ZKCYlEfBw8v
+ rFoB1173HJYVoqNU3I+urhBEDjexLhHPdOiOF7AV7IZmbbUQWTQL1K3M/L/HnLGiH19OJRvJ
+ 0QEZRWOZnXFlY/qc775WCDYrIdKTS8gcWVuds=
+X-Talos-CUID: 9a23:uYEEIG718UHp01ZYZtss9GgdEPomKXHn8C3xe3GKJFtjC/7PcArF
+X-Talos-MUID: =?us-ascii?q?9a23=3ArwY1AAyzk+vRPwPrnowjj8Zt1iyaqISpEFsTyMw?=
+ =?us-ascii?q?Kh5CNGw5rGyaFsymbGZByfw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.19,279,1754949600"; 
+   d="scan'208,217";a="247535628"
+X-URL-ContentFilter: 
+X-MGA-submission: =?us-ascii?q?MDFWBnOtFGGGdHTu4Deb6kb368Kr3/sCY5tGtT?=
+ =?us-ascii?q?X1qnHlP5HArV/1JAtAEL086PmqsdeD9vbilY4AnifWaliMZxPQK0tHUo?=
+ =?us-ascii?q?NA9CIL1GpL5NGvzhDVn0UnqbkBay3OqTeISZtXG+S8V9qrv6wvaY0P9g?=
+ =?us-ascii?q?WNsiNTAIAGvO3G/BQ4EgDRkA=3D=3D?=
+Received: from mx1.polytechnique.org ([129.104.30.34])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2025 14:21:33 +0100
+Received: from mac-03220211.irisa.fr (mac-03220211.irisa.fr [131.254.21.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ssl.polytechnique.org (Postfix) with ESMTPSA id 3BF521A318;
+	Tue,  4 Nov 2025 14:21:32 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=polytechnique.org;
+	s=svoboda; t=1762262492;
+	bh=hNMrlebsWOZ5Q3lG2LsPBk0JH93u/IACSwCWWbyJHdw=;
+	h=From:To:Subject:Date:Message-ID;
+	b=oA5qyZx75/utNmyZdBeLdLO0Ki11cx+Ue+Ku/0mSs8xKqOnbCFmKM7q5Htr7xp9Bg
+	 7sHOJXqxWUeB2qfhCE7Om/0/jP/knzwTsSCDKuzJHJ41+fy0/1afrJegria12ywFgW
+	 vBetuQaAjBjkdhTXVvFtTurJAdqEMvEsWc9HYWn0=
+From: Alan Schmitt <alan.schmitt@polytechnique.org>
+To: "lwn" <lwn@lwn.net>, caml-list@inria.fr
+Date: Tue, 04 Nov 2025 14:21:30 +0100
+Message-ID: <m2wm46x7ad.fsf@mac-03220211.irisa.fr>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="=-=-="
+X-AV-Checked: ClamAV using ClamSMTP at svoboda.polytechnique.org (Tue Nov  4 14:21:32 2025 +0100 (CET))
+X-Spam-Flag: Unsure, tests=bogofilter, spamicity=0.498289, queueID=5D3801A379
+X-Org-Mail: alan.schmitt.1995@polytechnique.org
+Subject: [Caml-list] Attn: Development Editor, Latest OCaml Weekly News
+Reply-To: Alan Schmitt <alan.schmitt@polytechnique.org>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19399
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-11/m2wm46x7ad.fsf%40mac-03220211.irisa.fr>
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello
+
+Here is the latest OCaml Weekly News, for the week of October 28 to
+November 04, 2025.
+
+Table of Contents
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+Caml in the Capital
+Ppxlib: Support for future compilers
+Miou, a simple scheduler for OCaml 5
+Cmarkit 0.4.0 - CommonMark parser and renderer for OCaml
+OCaml library for Timeplus Proton timeseries streaming database
+Book draft: "Control structures in programming languages"
+oplot 0.85 - mathematical plotter
+QCheck 0.27
+Bytesrw 0.3.0 =E2=80=93 The cryptographic edition
+Other OCaml News
+Old CWN
+
+
+Caml in the Capital
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-caml-in-the-capital/17428/1>
+
+
+Alistair O'Brien announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80
+
+  Hi everyone =F0=9F=91=8B
+
+  We (@giltho and myself) are happy to announce the first OCaml meetup
+  in London (Caml in the Capital)! Think of it as the British cousin of
+  OCaml Users Meetup in Paris (OUPS).
+
+
+What?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  Caml in the Capital is an informal evening of talks, demos, and
+  hacking from anyone working with or interested in OCaml. The goal is
+  to create a friendly local space for sharing ideas, showing off
+  projects, and connecting with other OCaml developers in the UK.
+
+
+When?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  We=E2=80=99re aiming for February 2026. Please fill out this short poll to
+  help us pick a date:
+
+  =F0=9F=91=89 [Doodle poll link]
+
+  Options: Thu 5th Feb, Thu 12th Feb, Thu 19th Feb, Thu 26th Feb
+
+  The meetup will take place in central London (venue TBA =E2=80=94 likely
+  Imperial College), starting around 6:30pm and running until 8:30pm,
+  with informal drinks and discussions afterwards.
+
+
+[Doodle poll link] <https://doodle.com/group-poll/participate/b6VAjjRb>
+
+
+What=E2=80=99s the `Fmt'?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C
+
+  A mix of:
+
+  =E2=80=A2 Workshop-style talks =E2=80=93 anything from an accessible intr=
+oduction of
+    your work or research, a deep dive into your library, a live demo,
+    or a tutorial.
+  =E2=80=A2 Hacking / discussions
+
+
+Call for presentations?
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  If you=E2=80=99d like to give a talk, please message me or @giltho direct=
+ly
+  with:
+
+  =E2=80=A2 A title and short abstract
+  =E2=80=A2 Expected time slot
+
+  Once we confirm the first date, we=E2=80=99ll:
+
+  =E2=80=A2 Confirm the programme and publish a new forum post
+  =E2=80=A2 Setup website, a Zulip channel, and a Meetup page for registrat=
+ion
+
+  Looking forward to meeting more OCaml users in person!
+
+  =E2=80=93 Alistair & Sacha
+
+
+Ppxlib: Support for future compilers
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ppxlib-support-for-future-compilers/1743=
+0/1>
+
+
+Nathan Rebours announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  *Handling future AST changes in ppxlib*
+
+  The OCaml 5.2 compiler release has introduced changes in core parts of
+  the AST types. Reflecting those changes when we bumped the internal
+  AST used by ppxlib in [0.36.0] caused breakage in a lot of reverse
+  dependencies. Despite [our efforts to keep the ecosystem up to date],
+  it has lead to a split in the opam universe between packages that are
+  compatible with 0.36.0 and above and those that aren't.
+
+  Looking at the 5.3 and 5.4 AST changes, we cannot reasonably keep the
+  same ["update the universe" approach] going forward I would like to
+  propose a slightly different but much more stable and sustainable
+  approach.
+
+  I think it's important to have a bit of context on why ppxlib is
+  designed the way it is and how we've been handling new compiler
+  releases over the past few years to understand this new approach and
+  how it's going to improve the situation.
+
+  The next section of this post will summarize this. If you're already
+  familiar with ppxlib's history and design choices, please skip ahead
+  to the [Proposed Approach section](#proposed-approach-for-53-onward).
+
+
+[0.36.0] <https://github.com/ocaml-ppx/ppxlib/releases/tag/0.36.0>
+
+[our efforts to keep the ecosystem up to date]
+<https://discuss.ocaml.org/t/ann-ppxlib-0-36-0/16241#p-69148-ocaml-52-inter=
+nal-ast-1>
+
+["update the universe" approach]
+<https://discuss.ocaml.org/t/ppx-omp-2-0-0-and-next-steps/6231>
+
+Ppxlib and compiler releases: How it works today
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+=E2=97=8A Ppxlib internal AST
+
+  Before ppxlib there was [ocaml-migrate-parsetree]. OMP had the
+  advantage of providing a stable API for ppx authors. Each ppx would
+  select a fixed version of the AST and be implemented as a full AST
+  rewrite, i.e. a `structure -> structure' or `signature -> signature'
+  function.
+
+  This had the advantage of making ppx-es forward compatible as omp
+  maintainers would add support for new compiler releases in the form of
+  a new module containing the AST types for this version and migration
+  functions to convert to/from the types matching the previous compiler
+  version.
+
+  OMP also came with a ppx driver, i.e. a program in charge of applying
+  a set of ppx-es on a given AST or source file and spit out the final
+  preprocessed AST for the compiler. The driver was responsible for
+  migrating the AST from the compiler's version to the one used by a
+  ppx. Because each ppx could require a different AST version, it also
+  potentially had to migrate the AST transformed by a ppx before it
+  passing it on to the next one.
+
+  This had a few disadvantages though:
+  1. poor performance as the AST was traversed and migrated
+     (i.e. copied) several times through the course of a single driver
+     run.
+  2. transformations semantic issues: the order in which ppx-es were
+     applied was uncertain or rather tied to the set of ppx-es version
+     used. That meant that updating one ppx could change its "turn" and
+     result in a different AST returned by the driver. This also did not
+     allow ppx-es to interact together reliably.
+
+  ppxlib aimed at fixing those issues by forcing ppx-es to agree on the
+  AST version to use. ppxlib provides its own, fixed AST version that
+  ppx-es have to use. Its driver handles the migration to/from the
+  current compiler and provides a smooth API to write transformations as
+  rewriting rules. The driver then handles the AST rewrite by
+  recursively applying those rules in the right places in a single AST
+  traversal.
+
+
+  [ocaml-migrate-parsetree]
+  <https://github.com/ocaml-ppx/ocaml-migrate-parsetree>
+
+
+=E2=97=8A Support for new compilers
+
+  Support for new compilers comes in two stages.
+
+
+  =E2=97=8A Build and preprocess old code with new compiler
+
+    This is the most basic support, that is making sure that one can
+    still build and preprocess its code using the newest compiler,
+    provided they don't use any of the new language features.
+
+    To do this, we add the new AST types and migration functions, just
+    as OMP used to do. This does not allow new features in the code
+    because those cannot be represented with the old AST types and the
+    migration would fail (*This was also an existing limitation of
+    OMP*).
+
+    This is usually released early on, when the compiler is still in
+    beta and is a non breaking change, all reverse dependencies still
+    build with this new version.
+
+
+  =E2=97=8A Support new language features
+
+    To support new language features, we bump the AST used by
+    ppxlib. This means new features don't have to be migrated anymore
+    and are therefore supported.
+
+    This does change types that are exposed as part of ppxlib's API and
+    can cause breakage in reverse dependencies, depending on which part
+    of the AST were modified and which part each individual ppx uses
+    explicitly.
+
+    We provide tools that can help make ppx code more robust as they
+    allow matching over and producing AST nodes without explicitly
+    referencing the types themselves: `metaquot', `Ast_builder' or
+    `Ast_pattern' for instance. That's not always enough though and
+    eventually, those ppx-es have to be updated to be compatible with
+    the latest version of ppxlib.
+
+    As was the case for the 5.2 AST bump, when we release such a ppxlib
+    version, we send PRs to help maintainers of our opam reverse
+    dependencies update and carefully add upper bounds to the versions
+    that aren't compatible anymore.
+
+    This worked pretty well for a few years as the AST was relatively
+    stable and the parts that were modified were not directly used by a
+    lot of ppx-es.
+
+    A problem with this approach is that even though we can help
+    maintainers go through the update, we cannot release packages in
+    their stead which means that unmaintained ppx-es aren't compatible
+    anymore no matter how much effort we put into easing the upgrade. It
+    is also often the case that not all ppx-es have a compatible release
+    straight away and this results in a transition period with the opam
+    universe split mentioned in the introduction.
+
+
+Proposed approach for 5.3 onward
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=
+=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C
+
+  The first part of this plan is to freeze ppxlib's internal AST for
+  each major versions. That means that until we release ppxlib.1.0.0 our
+  internal AST will always be the 5.2 AST.
+
+  The second and most important part is to provide complete forward
+  compatibility despite the AST freeze. We will allow migrating new
+  features down to our AST by encoding them inside specific language
+  extensions and migrating them back to their original form before
+  returning the preprocessed AST to the compiler.
+
+  This will allow existing ppx-es to be used with new compilers AND to
+  be used in the same files as new language features as long as they
+  don't have to directly interact with them without being updated in any
+  way.
+
+  We will also provide a stable API to allow ppx-es that would like to
+  add special support for these new features to build and match over
+  such nodes.
+
+  You can take a look at the examples below to get an idea of what that
+  would look like for recent language features such as the [effect
+  syntax](#effect-syntax-example) from OCaml 5.3 or the [bivariance
+  annotation](#bivariant-type-parameter-example) from OCaml 5.4.
+
+  As part of these changes, we will deprecate ppxlib's copy of
+  `Ast_helper' in favor of `Ast_builder', aiming to remove `Ast_helper'
+  entirely in 1.0.0. We have been maintaining two distinct modules for
+  quite a while now. `Ast_helper' also has a tendency to encourage its
+  users to generate all their code with `Location.none' as their
+  location which makes the life of their users a bit hard when they have
+  to interpret compiler errors.
+
+  This can be seen as a middle ground between the approach proposed
+  [here] 6 years ago (/that we gave up on due to its complexity/) and
+  the current situation.
+
+
+[here] <https://discuss.ocaml.org/t/the-future-of-ppx/3766>
+
+=E2=97=8A Limitations
+
+  Encoding new features into extension points is not always easy, only
+  specific parts of the AST can be replaced by an extension point. To
+  keep things under control and prevent ppx-es from generating
+  inconsistent nodes, all new features will always be migrated into an
+  extension point. That means that if the impacted node cannot directly
+  be encoded that way, we will encode the first suitable parent node. In
+  some scenarios, that can climb up the AST types quite significantly,
+  potentially all the way to the `structure_item~/~signature_item'. This
+  means that new features won't be equal when it comes to how easy it is
+  to use them in conjunction with some ppx-es. It's important to keep in
+  mind that this is still a net improvement as it was previously not
+  possible to use them together at all.
+
+  Similarly, providing a nice API to allow building and destructing
+  encoded new features will vastly depend on the features themselves and
+  how entangled they are with new AST types. We will likely not always
+  expose such builder/destructor pairs and might only add some of them
+  if the demand is high enough.
+
+  It is also part of the reason why we will probably still bump our AST
+  at some points in time even if much less frequently than we have in
+  the past. When that eventually happens, we will be able to maintain
+  the previous major versions for quite a while as this will just be a
+  matter of adding our newest migrations there as well.
+
+
+=E2=97=8A Effect syntax example
+
+  OCaml 5.3 introduced the following syntax:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 match f () with
+  =E2=94=82 | v -> Complete v
+  =E2=94=82 | effect (Xchg msg), k ->
+  =E2=94=82   ...
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  This special effect pattern is represented in the 5.3 AST with the
+  `Ppat_effect' variant:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 | Ppat_effect of pattern * pattern
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  We cannot represent this in the 5.2 AST and previously, any attempt at
+  migrating such a node down would have failed. With this new approach
+  we instead migrate it to something along those lines:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 [%ppxlib.migration.ppat_effect? (Xchg msg, k)]
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  and the upward migration knows to translate this to the right
+  `Ppat_effect' node. This migration needs to work without context
+  outside the extension so that any ppx that would unknowingly copy such
+  a node elsewhere in the AST would not cause an uninterpreted extension
+  error later on during the compilation.
+
+  If this is passed down to an existing ppx as part of its payload and
+  it tries to interpret it, it should fail as it won't know what to do
+  with such an extension.
+
+  *Note that ppx authors should never rely on the actual extension point
+   encoding, we reserve ourselves the right to change that encoding as
+   part of minor or patch releases of ppxlib. Such nodes should be left
+   untouched or dealt with using the stable API described below.*
+
+  Now if a ppx author needs to add explicit support for effects they
+  will be able to use something like:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 val ppat_effect : loc: location -> pattern -> pattern -> pattern
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  from `Ast_builder' to generate such a node. Of course if your ppx
+  generates an `effect' pattern with an older compiler, this will lead
+  to a compile error as the extension won't be translated unless
+  migrated back up. Authors will have to be mindful of this and properly
+  document when/how they'll generate newer nodes and eventually restrict
+  their ppx to the right range of compilers.
+
+  These will likely come with a "destruct" version in `Ast_pattern'. For
+  the `effect' pattern it should look like:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 val ppat_effect : (pattern * pattern, 'a, 'b) t -> (pattern, 'a=
+, 'b) t
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+
+=E2=97=8A Bivariant type parameter example
+
+  This example is probably a bit of a stretch as it is a very niche
+  syntax change and is highly unlikely to actually be used in the wild,
+  but it makes a good example of a feature that is hard to encode.
+
+  In OCaml 5.4, a new variant was added to the `Asttypes.variance' type:
+  `Bivariant'. The `variance' type is used in the AST to describe how a
+  type parameter behaves relative to the type itself. This can be
+  manually annotated for each parameter when writing a type declaration
+  or a class.
+
+  The `Bivariant' case is a bit of a special one as a parameter can only
+  be `Bivariant' (i.e. covariant AND contravariant) with the type if it
+  does not actually appear in the concrete type definition, that is in
+  cases such as:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 type 'a t =3D A
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  For reasons that we won't expand upon here, 5.4 introduced the
+  following syntax to allow one to explicit annotate a parameter as
+  bivariant:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 type +-'a t
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  The problem is that the variance cannot be replaced directly by an
+  extension point, see the type `type_declaration' for instance:
+  =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+  =E2=94=82 and type_declaration =3D
+  =E2=94=82     {
+  =E2=94=82      ptype_name: string loc;
+  =E2=94=82      ptype_params: (core_type * (variance * injectivity)) list;
+  =E2=94=82                                  ^^^^^^^^
+  =E2=94=82       (** [('a1,...'an) t] *)
+  =E2=94=82      ptype_cstrs: (core_type * core_type * Location.t) list;
+  =E2=94=82       (** [... constraint T1=3DT1'  ... constraint Tn=3DTn'] *)
+  =E2=94=82      ptype_kind: type_kind;
+  =E2=94=82      ptype_private: private_flag;  (** for [=3D private ...] *)
+  =E2=94=82      ptype_manifest: core_type option;  (** represents [=3D T] =
+*)
+  =E2=94=82      ptype_attributes: attributes;  (** [... [\@\@id1] [\@\@id2=
+]] *)
+  =E2=94=82      ptype_loc: Location.t;
+  =E2=94=82     }
+  =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  In this example we have to encode the entire parent node of the type
+  declaration as an extension point.
+
+  This means that it spreads in quite a few places, `type_declaration'
+  can be found in `structure_items', `signature_items' and inside some
+  `module_type' nodes as well.
+
+  Given there's very little to no use for this syntax, we won't be
+  providing any function to build or destruct such nodes initially.
+
+
+Miou, a simple scheduler for OCaml 5
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-miou-a-simple-scheduler-for-ocaml-5/1296=
+3/17>
+
+
+Calascibetta Romain announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I am delighted to announce the release of Miou version 0.5.0. This
+  release now uses `poll(2)~/~ppoll(2)' instead of `select(3P)' in order
+  to improve I/O management performance.
+
+  Since I/O management is decoupled from the scheduler, this does not
+  change the Miou API or the `miou.unix' library.
+
+  I would particularly like to thank @backtracking for allowing us to
+  integrate part of his [bitv] library under a different licence, as
+  well as @haesbaert, the original author of [ocaml-iomux], for allowing
+  us to use `poll(2)~/~ppoll(2)'.
+
+  This has allowed us to go further, particularly with [vif], our web
+  framework for OCaml 5, and our website [builder-web] has been
+  completely rewritten to move to OCaml 5 (thanks to @reynir and
+  @yomimono who participated in this rewrite and provided important
+  feedbacks).
+
+  This release comes with a new package, [flux] (still experimental),
+  offering streaming abstractions that can be used with Miou. I would
+  like to thank @rizo for his sketch [streaming] in this regard
+  (pre-OCaml 5). This library takes advantage of the parallelism offered
+  by Miou (with `Miou.call') as well as resource management and
+  finalisers (with `Miou.Ownership'). A tutorial is available [here] to
+  create a tiny `curl' with a loading bar.
+
+  <https://raw.githubusercontent.com/robur-coop/flux/refs/heads/main/assets=
+/fetch.gif>
+
+  Finally, we are continuing to lay the groundwork for the development
+  of unikernels with [mkernel]. We are currently experimenting with
+  three unikernels:
+  =E2=80=A2 [immuable], which reuses Vif to create websites in OCaml 5 in t=
+he
+    form of unikernels
+  =E2=80=A2 [chaos] (still at a very experimental stage), which aims to be =
+an
+    NTP server
+  =E2=80=A2 [dns-resolver], which is a DNS query resolver in the form of a
+    unikernel
+
+  Finally, we would also like to thank everyone who has been involved in
+  the development of Miou and its related ecosystem, whether directly or
+  indirectly.
+
+  Happy hacking!
+
+
+[bitv] <https://github.com/backtracking/bitv>
+
+[ocaml-iomux] <https://github.com/ocaml-multicore/ocaml-iomux>
+
+[vif] <https://github.com/robur-coop/vif>
+
+[builder-web] <https://git.robur.coop/robur/builder-web>
+
+[flux] <https://github.com/robur-coop/flux>
+
+[streaming] <https://github.com/rizo/streaming>
+
+[here] <https://robur-coop.github.io/flux/local/flux/flux.html>
+
+[mkernel] <https://github.com/robur-coop/mkernel>
+
+[immuable] <https://github.com/dinosaure/immuable>
+
+[chaos] <https://git.robur.coop/robur/chaos>
+
+[dns-resolver] <https://github.com/mirage/dns-resolver/pull/6>
+
+
+Cmarkit 0.4.0 - CommonMark parser and renderer for OCaml
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-cmarkit-0-4-0-commonmark-parser-and-rend=
+erer-for-ocaml/17435/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello,
+
+  It's my pleasure to announce a new release of [cmarkit], an
+  ISC-licensed CommonMark parser and renderer for OCaml.
+
+  This release provides support for the latest version of the CommonMark
+  specification, updated data for Unicode 17.0.0, a notable semantic
+  change in the task item extension (thanks to @samoht) and a couple of
+  bug fixes and improvements mostly in the CommonMark renderer.
+
+  All the details are in the [release notes]. Thanks to everyone who
+  reported issues.
+
+  This release is brought to you by essential funding from the [OCaml
+  software foundation] and my [donors].
+
+  =E2=80=A2 Homepage: <https://erratique.ch/software/cmarkit>
+  =E2=80=A2 Docs: <https://erratique.ch/software/cmarkit/doc> (or `odig doc
+    cmarkit`)
+  =E2=80=A2 Install: `opam install cmarkit` ([opam PR])
+
+  =E2=80=94
+
+  P.S. I'm surprised by the number of users (or rather, dissatisfied
+  users :=E2=80=93) of the CommonMark renderer. If you are using it don't
+  hesitate to tell how/why you are using it in this thread, just curious
+  :=E2=80=93)
+
+
+[cmarkit] <https://erratique.ch/software/cmarkit>
+
+[release notes]
+<https://github.com/dbuenzli/cmarkit/blob/main/CHANGES.md#v040-2025-11-01-z=
+agreb>
+
+[OCaml software foundation] <https://ocaml-sf.org/>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+[opam PR] <https://github.com/ocaml/opam-repository/pull/28811>
+
+
+OCaml library for Timeplus Proton timeseries streaming database
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-ocaml-library-for-timeplus-proton-timese=
+ries-streaming-database/17440/1>
+
+
+Michael Freeman announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  A high-performance, feature-rich OCaml driver for [Timeplus Proton] -
+  the streaming database built on ClickHouse.
+
+
+[Timeplus Proton] <https://timeplus.com/>
+
+*Features*
+=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=95=8C=E2=
+=95=8C=E2=95=8C
+
+  =E2=80=A2 *Streaming Queries* - Process large datasets with constant memo=
+ry
+     usage
+  =E2=80=A2 *Async Inserts* - High-throughput data ingestion with automatic
+     batching
+  =E2=80=A2 *Compression* - LZ4 and ZSTD support for reduced network overhe=
+ad
+  =E2=80=A2 *TLS Security* - Secure connections with certificate validation
+  =E2=80=A2 *Connection Pooling* - Efficient resource management for
+     high-concurrency applications
+  =E2=80=A2 *Rich Data Types* - Full support for ClickHouse types including
+     Arrays, Maps, Enums, DateTime64
+  =E2=80=A2 *Idiomatic OCaml* - Functional API leveraging OCaml's strengths
+
+  <https://github.com/mfreeman451/proton-ocaml-driver>
+
+
+Book draft: "Control structures in programming languages"
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/book-draft-control-structures-in-programming=
+-languages/17443/1>
+
+
+Xavier Leroy announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  I am happy to announce that a draft of my upcoming book "Control
+  structures in programming languages: from goto to algebraic effects"
+  is now available at [https://xavierleroy.org/control-structures] .
+
+  The book compares several programming languages from the standpoint of
+  control structures.  OCaml is used intensively to discuss control in
+  functional programming, including continuation-passing style, control
+  operators, exceptions, user-defined effects and effect handlers, with
+  many examples that I hope you'll like.
+
+  The book also discusses in depth a number of questions that are often
+  raised in this forum, such as the theory and practice of algebraic
+  effects and handlers, and the static checking of exceptions and
+  effects.
+
+  Enjoy!
+
+
+[https://xavierleroy.org/control-structures]
+<https://xavierleroy.org/control-structures>
+
+
+oplot 0.85 - mathematical plotter
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-oplot-0-85-mathematical-plotter/17444/1>
+
+
+sanette announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80
+
+  Hello
+
+  I=E2=80=99m happy to announce a new version of [oplot], a library for plo=
+tting
+  mathematical functions, using openGL by default for fast rendering and
+  animations, but also providing high quality vector graphics exports.
+
+  This version has a new feature that math lovers will appreciate:
+  `implicit_curve' plotting!
+
+  For instance do you want to know what the solutions to the equation
+  (x=C2=B2+y=C2=B2-1)=C2=B3 - x=C2=B2 y=C2=B3 =3D 0 look like?
+
+  Here is the result:
+
+  <https://us1.discourse-cdn.com/flex020/uploads/ocaml/optimized/2X/0/00fbc=
+53496cd6a8e5b9fb37807e9f5243b79e75e_2_1222x1000.png>
+
+  If you already dug into the problem of plotting implicit curves you
+  know that it=E2=80=99s sometimes very difficult to localize in advance the
+  various singularities of the curve. `oplot' gives you 3 ways of tuning
+  the computation: grid size, recursive grid size for subsampling where
+  the curvature of the curve seems high, and control over the iterations
+  of the Newton method. There is also a pole detection, where the
+  function changes sign but probably still doesn=E2=80=99t have a zero
+  there. You can obtain debug information for any curve, for instance
+  here you see the default parameters automatically detected for the
+  above curve: initial grid (green) and subsampling (cyan):
+
+  <https://us1.discourse-cdn.com/flex020/uploads/ocaml/optimized/2X/1/1edb6=
+f547feb24bd42aad4f21d0bb20c2455d684_2_1222x1000.png>
+
+  `oplot' is available in opam, doc is [here].
+
+
+[oplot] <https://github.com/sanette/oplot>
+
+[here] <https://sanette.github.io/oplot/oplot/Oplot/index.html>
+
+
+QCheck 0.27
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90
+
+  Archive: <https://discuss.ocaml.org/t/ann-qcheck-0-24/16198/4>
+
+
+Jan Midtgaard announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  QCheck 0.27 is now available from the opam repository :partying_face:
+
+  <https://github.com/c-cube/qcheck/releases/tag/v0.27>
+
+  The 0.27 release is focused on improving the `float' shrinking support
+  and also contains a small patch to make the package compile with
+  OxCaml:
+  =E2=80=A2 Add `QCheck.Shrink.float' and enable shrinking for `QCheck.floa=
+t'
+  =E2=80=A2 Add `QCheck.Shrink.float_bound' and enable shrinking for
+    `QCheck.float_bound_inclusive' and `QCheck.float_bound_exclusive'
+  =E2=80=A2 Add `QCheck.Shrink.float_range' and enable shrinking for
+    `QCheck.float_range'
+  =E2=80=A2 Enable shrinking for `QCheck.{pos_float,neg_float,exponential}'
+  =E2=80=A2 Patch `QCheck.Print.float' and `QCheck2.Print.float' to print
+    negative nans consistently as "-nan" also on Windows and macOS, and
+    correct documentation for `QCheck.{float,pos_float,neg_float}' in
+    that they may produce ~nan~s since #350 from 0.26
+  =E2=80=A2 Eta-expand a couple of partial application to compile under OxC=
+aml
+
+  Happy testing! :smiley:
+
+
+Bytesrw 0.3.0 =E2=80=93 The cryptographic edition
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=
+=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  Archive:
+  <https://discuss.ocaml.org/t/ann-bytesrw-0-3-0-the-cryptographic-edition/=
+17450/1>
+
+
+Daniel B=C3=BCnzli announced
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Hello,
+
+  It's my pleasure to announce a new release of the [bytesrw] set of ISC
+  licensed libraries.
+
+        Bytesrw extends the OCaml Bytes module with composable,
+        memory efficient, byte stream readers and writers
+        compatible with effect-based concurrency.
+
+        Optional support for compressed, hashed and encrypted
+        bytes depend, at your wish, on the C `zlib', `libzstd',
+        `blake3', `libmd', `xxhash' and `mbedtls' libraries.
+
+  This release adds optional libraries to support for `SHA-3' hashes,
+  cryptographically secure pseudo-random bytes streams, TLS encrypted
+  byte stream and low-level support for cryptographic operations on
+  slices:
+
+  =E2=80=A2 [`Bytesrw_sysrandom'] provides pseudorandom byte streams and en=
+tropy
+    directly sourced from your operating system primitives.
+
+  =E2=80=A2 [`Bytesrw_crypto.Psa'] provides low-level cryptographic operati=
+ons
+    on byte slices via thin and safe bindings to the [TF-PSA-Crypto] C
+    library distributed with Mbed TLS. This library is an implementation
+    of the [PSA Crypto API Specification]. Its design is particularly
+    suited if you care about key materiel not being seen by the OCaml GC
+    (implementations also allow further degrees of isolation as can be
+    read in the API's [design goals]). Besides the API is nicely and
+    thoroughly documented. It is quite bureaucratic to use but that's
+    what you likely want from a cryptographic library (e.g. key usages
+    have to be declared upfront and are checked at runtime by
+    cryptographic operations).
+
+  =E2=80=A2 [`Bytesrw_crypto'] (will) provides a few higher-level operations
+    implemented over PSA. The module is rather shallow at the moment,
+    more will be added in the future as we abstract over our usage of
+    PSA Crypto. For now it mostly contains an API to access the hashes
+    provided by PSA Crypto in the way other `bytesrw' hashing modules
+    expose their hashing service. This notably provides the `SHA-3'
+    family of hashes which were not previously available in the set of
+    optional `bytesrw' libraries.
+
+  =E2=80=A2 [`Bytesrw_tls'] provides support for TLS encrypted streams and =
+the
+    needed X.509 certificate management (including system lookups for
+    trusted CAs). The backend is provided by the [Mbed TLS] C
+    library. For now these streams are instantied over blocking fds, but
+    this restriction will be lifted in the future. I also added a little
+    tool called `certown' which you may find handy for dealing with
+    certificates for localhost when you develop servers.
+
+  Note that the binding to PSA cryptography has been used to implement a
+  few things (e.g. the horrific passkeys specification) but has not run
+  in production yet. However the binding is pleasantly unsophisticated,
+  the underlying C API is straightforward to bind to.
+
+  See the [release notes] for details about other changes.
+
+  This release was made possible thanks to a grant from the [OCaml
+  software foundation] and to my [donors].
+
+  =E2=80=A2 Homepage: <https://erratique.ch/software/bytesrw>
+  =E2=80=A2 Docs: <https://erratique.ch/software/bytesrw/doc> (or `odig doc
+    bytesrw')
+  =E2=80=A2 Install: `opam install bytesrw conf-=E2=80=A6' ([opam pr])
+
+  =E2=80=94
+
+  P.S. Libraries that depend on Mbed TLS need the recent 4.0.0 version
+  which is quite fresh and may take a bit of time to trickle in system
+  package managers. If you trust me you can use my [distribution crutch]
+  opam repository to install it.
+
+
+[bytesrw] <https://erratique.ch/software/bytesrw>
+
+[`Bytesrw_sysrandom']
+<https://erratique.ch/software/bytesrw/doc/Bytesrw_sysrandom/index.html>
+
+[`Bytesrw_crypto.Psa']
+<https://erratique.ch/software/bytesrw/doc/Bytesrw_crypto/Psa/index.html>
+
+[TF-PSA-Crypto] <https://github.com/Mbed-TLS/TF-PSA-Crypto>
+
+[PSA Crypto API Specification]
+<https://arm-software.github.io/psa-api/crypto/1.2/>
+
+[design goals]
+<https://arm-software.github.io/psa-api/crypto/1.2/overview/goals.html>
+
+[`Bytesrw_crypto']
+<https://erratique.ch/software/bytesrw/doc/Bytesrw_crypto/index.html>
+
+[`Bytesrw_tls']
+<https://erratique.ch/software/bytesrw/doc/Bytesrw_tls/index.html>
+
+[Mbed TLS] <https://www.trustedfirmware.org/projects/mbed-tls/>
+
+[release notes]
+<https://github.com/dbuenzli/bytesrw/blob/main/CHANGES.md#v030-2025-11-04-z=
+agreb>
+
+[OCaml software foundation] <https://ocaml-sf.org/>
+
+[donors] <https://github.com/sponsors/dbuenzli>
+
+[opam pr] <https://github.com/ocaml/opam-repository/pull/28836>
+
+[distribution crutch] <https://github.com/dbuenzli/distrib-crutch.opam>
+
+
+Other OCaml News
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=
+=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+>From the ocaml.org blog
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80
+
+  Here are links from many OCaml blogs aggregated at [the ocaml.org
+  blog].
+
+  =E2=80=A2 [Supporting OCurrent: FLOSS/Fund Backs Maintenance for OCaml's
+    Native CI Framework]
+  =E2=80=A2 [WebAuthn & Passkeys in OCaml: Implementing Passwordless
+    Authentication]
+
+
+[the ocaml.org blog] <https://ocaml.org/blog/>
+
+[Supporting OCurrent: FLOSS/Fund Backs Maintenance for OCaml's Native CI
+Framework]
+<https://tarides.com/blog/2025-10-30-supporting-ocurrent-floss-fund-backs-m=
+aintenance-for-ocaml-s-native-ci-framework>
+
+[WebAuthn & Passkeys in OCaml: Implementing Passwordless Authentication]
+<https://fearful-odds.rocks/blog/webauthn-passkey-implementation-ocaml>
+
+
+Old CWN
+=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90=E2=95=90
+
+  If you happen to miss a CWN, you can [send me a message] and I'll mail
+  it to you, or go take a look at [the archive] or the [RSS feed of the
+  archives].
+
+  If you also wish to receive it every week by mail, you may subscribe
+  to the [caml-list].
+
+  [Alan Schmitt]
+
+
+[send me a message] <mailto:alan.schmitt@polytechnique.org>
+
+[the archive] <https://alan.petitepomme.net/cwn/>
+
+[RSS feed of the archives] <https://alan.petitepomme.net/cwn/cwn.rss>
+
+[caml-list] <https://sympa.inria.fr/sympa/info/caml-list>
+
+[Alan Schmitt] <https://alan.petitepomme.net/>
+
+
+--=-=-=
+Content-Type: text/html; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" lang=3D"en" xml:lang=3D"en">
+<head>
+<!-- 2025-11-04 Tue 14:20 -->
+<meta http-equiv=3D"Content-Type" content=3D"text/html;charset=3Dutf-8" />
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1"=
+ />
+<title>OCaml Weekly News</title>
+<meta name=3D"generator" content=3D"Org Mode" />
+<style type=3D"text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<style type=3D"text/css">#table-of-contents h2 { display: none } .title { d=
+isplay: none } .authorname { text-align: right }</style>
+<style type=3D"text/css">.outline-2 {border-top: 1px solid black;}</style>
+</head>
+<body>
+<div id=3D"content" class=3D"content">
+<h1 class=3D"title">OCaml Weekly News</h1>
+<p>
+<a href=3D"https://alan.petitepomme.net/cwn/2025.10.28.html">Previous Week<=
+/a> <a href=3D"https://alan.petitepomme.net/cwn/index.html">Up</a> <a href=
+=3D"https://alan.petitepomme.net/cwn/2025.11.11.html">Next Week</a>
+</p>
+
+<p>
+Hello
+</p>
+
+<p>
+Here is the latest OCaml Weekly News, for the week of October 28 to Novembe=
+r 04, 2025.
+</p>
+
+<div id=3D"table-of-contents" role=3D"doc-toc">
+<h2>Table of Contents</h2>
+<div id=3D"text-table-of-contents" role=3D"doc-toc">
+<ul>
+<li><a href=3D"#1">Caml in the Capital</a></li>
+<li><a href=3D"#2">Ppxlib: Support for future compilers</a></li>
+<li><a href=3D"#3">Miou, a simple scheduler for OCaml 5</a></li>
+<li><a href=3D"#4">Cmarkit 0.4.0 - CommonMark parser and renderer for OCaml=
+</a></li>
+<li><a href=3D"#5">OCaml library for Timeplus Proton timeseries streaming d=
+atabase</a></li>
+<li><a href=3D"#6">Book draft: "Control structures in programming languages=
+"</a></li>
+<li><a href=3D"#7">oplot 0.85 - mathematical plotter</a></li>
+<li><a href=3D"#8">QCheck 0.27</a></li>
+<li><a href=3D"#9">Bytesrw 0.3.0 =E2=80=93 The cryptographic edition</a></l=
+i>
+<li><a href=3D"#10">Other OCaml News</a></li>
+<li><a href=3D"#org27f93a9">Old CWN</a></li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-1" class=3D"outline-2">
+<h2 id=3D"1">Caml in the Capital</h2>
+<div class=3D"outline-text-2" id=3D"text-1">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-caml-in-the-capital/174=
+28/1">https://discuss.ocaml.org/t/ann-caml-in-the-capital/17428/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgd7dbc2f" class=3D"outline-3">
+<h3 id=3D"orgd7dbc2f">Alistair O'Brien announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgd7dbc2f">
+<p>
+Hi everyone =F0=9F=91=8B
+</p>
+
+<p>
+We (@giltho and myself) are happy to announce the first OCaml meetup in Lon=
+don (Caml in the Capital)! Think of it as the British cousin of OCaml Users=
+ Meetup in Paris (OUPS).
+</p>
+</div>
+<div id=3D"outline-container-org1683c64" class=3D"outline-4">
+<h4 id=3D"org1683c64">What?</h4>
+<div class=3D"outline-text-4" id=3D"text-org1683c64">
+<p>
+Caml in the Capital is an informal evening of talks, demos, and hacking fro=
+m anyone working with or interested in OCaml. The goal is to create a frien=
+dly local space for sharing ideas, showing off projects, and connecting wit=
+h other OCaml developers in the UK.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-org9750649" class=3D"outline-4">
+<h4 id=3D"org9750649">When?</h4>
+<div class=3D"outline-text-4" id=3D"text-org9750649">
+<p>
+We=E2=80=99re aiming for February 2026. Please fill out this short poll to =
+help us pick a date:
+</p>
+
+<p>
+=F0=9F=91=89 <a href=3D"https://doodle.com/group-poll/participate/b6VAjjRb"=
+>Doodle poll link</a>
+</p>
+
+<p>
+Options: Thu 5th Feb, Thu 12th Feb, Thu 19th Feb, Thu 26th Feb
+</p>
+
+<p>
+The meetup will take place in central London (venue TBA =E2=80=94 likely Im=
+perial College), starting around 6:30pm and running until 8:30pm, with info=
+rmal drinks and discussions afterwards.
+</p>
+</div>
+</div>
+<div id=3D"outline-container-orga4f200c" class=3D"outline-4">
+<h4 id=3D"orga4f200c">What=E2=80=99s the <code>Fmt</code>?</h4>
+<div class=3D"outline-text-4" id=3D"text-orga4f200c">
+<p>
+A mix of:
+</p>
+
+<ul class=3D"org-ul">
+<li>Workshop-style talks =E2=80=93 anything from an accessible introduction=
+ of your work or research, a deep dive into your library, a live demo, or a=
+ tutorial.</li>
+<li>Hacking / discussions</li>
+</ul>
+</div>
+</div>
+<div id=3D"outline-container-orgd82afc3" class=3D"outline-4">
+<h4 id=3D"orgd82afc3">Call for presentations?</h4>
+<div class=3D"outline-text-4" id=3D"text-orgd82afc3">
+<p>
+If you=E2=80=99d like to give a talk, please message me or @giltho directly=
+ with:
+</p>
+
+<ul class=3D"org-ul">
+<li>A title and short abstract</li>
+<li>Expected time slot</li>
+</ul>
+
+<p>
+Once we confirm the first date, we=E2=80=99ll:
+</p>
+
+<ul class=3D"org-ul">
+<li>Confirm the programme and publish a new forum post</li>
+<li>Setup website, a Zulip channel, and a Meetup page for registration</li>
+</ul>
+
+<p>
+Looking forward to meeting more OCaml users in person!
+</p>
+
+<p>
+=E2=80=93 Alistair &amp; Sacha
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-2" class=3D"outline-2">
+<h2 id=3D"2">Ppxlib: Support for future compilers</h2>
+<div class=3D"outline-text-2" id=3D"text-2">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ppxlib-support-for-futu=
+re-compilers/17430/1">https://discuss.ocaml.org/t/ann-ppxlib-support-for-fu=
+ture-compilers/17430/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org34431fb" class=3D"outline-3">
+<h3 id=3D"org34431fb">Nathan Rebours announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org34431fb">
+<p>
+<b>Handling future AST changes in ppxlib</b>
+</p>
+
+<p>
+The OCaml 5.2 compiler release has introduced changes in core parts of the =
+AST types. Reflecting those changes when we bumped the internal AST used by=
+ ppxlib in <a href=3D"https://github.com/ocaml-ppx/ppxlib/releases/tag/0.36=
+.0">0.36.0</a> caused breakage in a lot of reverse dependencies. Despite <a=
+ href=3D"https://discuss.ocaml.org/t/ann-ppxlib-0-36-0/16241#p-69148-ocaml-=
+52-internal-ast-1">our efforts to keep the ecosystem up to date</a>, it has=
+ lead to a split in the opam universe between packages that are compatible =
+with 0.36.0 and above and those that aren't.
+</p>
+
+<p>
+Looking at the 5.3 and 5.4 AST changes, we cannot reasonably keep the same =
+<a href=3D"https://discuss.ocaml.org/t/ppx-omp-2-0-0-and-next-steps/6231">"=
+update the universe" approach</a> going forward I would like to propose a s=
+lightly different but much more stable and sustainable approach.
+</p>
+
+<p>
+I think it's important to have a bit of context on why ppxlib is designed t=
+he way it is and how we've been handling new compiler releases over the pas=
+t few years to understand this new approach and how it's going to improve t=
+he situation.
+</p>
+
+<p>
+The next section of this post will summarize this. If you're already famili=
+ar with ppxlib's history and design choices, please skip ahead to the [Prop=
+osed Approach section](#proposed-approach-for-53-onward).
+</p>
+</div>
+<div id=3D"outline-container-orgb53c03c" class=3D"outline-4">
+<h4 id=3D"orgb53c03c">Ppxlib and compiler releases: How it works today</h4>
+<div class=3D"outline-text-4" id=3D"text-orgb53c03c">
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"org479c057"></a>Ppxlib internal AST<br />
+<div class=3D"outline-text-5" id=3D"text-org479c057">
+<p>
+Before ppxlib there was <a href=3D"https://github.com/ocaml-ppx/ocaml-migra=
+te-parsetree">ocaml-migrate-parsetree</a>. OMP had the advantage of providi=
+ng a stable API for ppx authors. Each ppx would select a fixed version of t=
+he AST and be implemented as a full AST rewrite, i.e. a <code>structure -&g=
+t; structure</code> or <code>signature -&gt; signature</code> function.
+</p>
+
+<p>
+This had the advantage of making ppx-es forward compatible as omp maintaine=
+rs would add support for new compiler releases in the form of a new module =
+containing the AST types for this version and migration functions to conver=
+t to/from the types matching the previous compiler version.
+</p>
+
+<p>
+OMP also came with a ppx driver, i.e. a program in charge of applying a set=
+ of ppx-es on a given AST or source file and spit out the final preprocesse=
+d AST for the compiler. The driver was responsible for migrating the AST fr=
+om the compiler's version to the one used by a ppx. Because each ppx could =
+require a different AST version, it also potentially had to migrate the AST=
+ transformed by a ppx before it passing it on to the next one.
+</p>
+
+<p>
+This had a few disadvantages though:
+</p>
+<ol class=3D"org-ol">
+<li>poor performance as the AST was traversed and migrated (i.e. copied) se=
+veral times through the course of a single driver run.</li>
+<li>transformations semantic issues: the order in which ppx-es were applied=
+ was uncertain or rather tied to the set of ppx-es version used. That meant=
+ that updating one ppx could change its "turn" and result in a different AS=
+T returned by the driver. This also did not allow ppx-es to interact togeth=
+er reliably.</li>
+</ol>
+
+<p>
+ppxlib aimed at fixing those issues by forcing ppx-es to agree on the AST v=
+ersion to use. ppxlib provides its own, fixed AST version that ppx-es have =
+to use. Its driver handles the migration to/from the current compiler and p=
+rovides a smooth API to write transformations as rewriting rules. The drive=
+r then handles the AST rewrite by recursively applying those rules in the r=
+ight places in a single AST traversal.
+</p>
+</div>
+</li>
+<li><a id=3D"org4a497b6"></a>Support for new compilers<br />
+<div class=3D"outline-text-5" id=3D"text-org4a497b6">
+<p>
+Support for new compilers comes in two stages.
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgd69c159"></a>Build and preprocess old code with new compile=
+r<br />
+<div class=3D"outline-text-6" id=3D"text-orgd69c159">
+<p>
+This is the most basic support, that is making sure that one can still buil=
+d and preprocess its code using the newest compiler, provided they don't us=
+e any of the new language features.
+</p>
+
+<p>
+To do this, we add the new AST types and migration functions, just as OMP u=
+sed to do. This does not allow new features in the code because those canno=
+t be represented with the old AST types and the migration would fail (<b>Th=
+is was also an existing limitation of OMP</b>).
+</p>
+
+<p>
+This is usually released early on, when the compiler is still in beta and i=
+s a non breaking change, all reverse dependencies still build with this new=
+ version.
+</p>
+</div>
+</li>
+<li><a id=3D"orgc45f77a"></a>Support new language features<br />
+<div class=3D"outline-text-6" id=3D"text-orgc45f77a">
+<p>
+To support new language features, we bump the AST used by ppxlib. This mean=
+s new features don't have to be migrated anymore and are therefore supporte=
+d.
+</p>
+
+<p>
+This does change types that are exposed as part of ppxlib's API and can cau=
+se breakage in reverse dependencies, depending on which part of the AST wer=
+e modified and which part each individual ppx uses explicitly.
+</p>
+
+<p>
+We provide tools that can help make ppx code more robust as they allow matc=
+hing over and producing AST nodes without explicitly referencing the types =
+themselves: <code>metaquot</code>, <code>Ast_builder</code> or <code>Ast_pa=
+ttern</code> for instance. That's not always enough though and eventually, =
+those ppx-es have to be updated to be compatible with the latest version of=
+ ppxlib.
+</p>
+
+<p>
+As was the case for the 5.2 AST bump, when we release such a ppxlib version=
+, we send PRs to help maintainers of our opam reverse dependencies update a=
+nd carefully add upper bounds to the versions that aren't compatible anymor=
+e.
+</p>
+
+<p>
+This worked pretty well for a few years as the AST was relatively stable an=
+d the parts that were modified were not directly used by a lot of ppx-es.
+</p>
+
+<p>
+A problem with this approach is that even though we can help maintainers go=
+ through the update, we cannot release packages in their stead which means =
+that unmaintained ppx-es aren't  compatible anymore no matter how much effo=
+rt we put into easing the upgrade. It is also often the case that not all p=
+px-es have a compatible release straight away and this results in a transit=
+ion period with the opam universe split mentioned in the introduction.
+</p>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id=3D"outline-container-org9086af7" class=3D"outline-4">
+<h4 id=3D"org9086af7">Proposed approach for 5.3 onward</h4>
+<div class=3D"outline-text-4" id=3D"text-org9086af7">
+<p>
+The first part of this plan is to freeze ppxlib's internal AST for each maj=
+or versions. That means that until we release ppxlib.1.0.0 our internal AST=
+ will always be the 5.2 AST.
+</p>
+
+<p>
+The second and most important part is to provide complete forward compatibi=
+lity despite the AST freeze. We will allow migrating new features down to o=
+ur AST by encoding them inside specific language extensions and migrating t=
+hem back to their original form before returning the preprocessed AST to th=
+e compiler.
+</p>
+
+<p>
+This will allow existing ppx-es to be used with new compilers AND to be use=
+d in the same files as new language features as long as they don't have to =
+directly interact with them without being updated in any way.
+</p>
+
+<p>
+We will also provide a stable API to allow ppx-es that would like to add sp=
+ecial support for these new features to build and match over such nodes.
+</p>
+
+<p>
+You can take a look at the examples below to get an idea of what that would=
+ look like for recent language features such as the [effect syntax](#effect=
+-syntax-example) from OCaml 5.3 or the [bivariance annotation](#bivariant-t=
+ype-parameter-example) from OCaml 5.4.
+</p>
+
+<p>
+As part of these changes, we will deprecate ppxlib's copy of <code>Ast_help=
+er</code> in favor of <code>Ast_builder</code>, aiming to remove <code>Ast_=
+helper</code> entirely in 1.0.0. We have been maintaining two distinct modu=
+les for quite a while now. <code>Ast_helper</code> also has a tendency to e=
+ncourage its users to generate all their code with <code>Location.none</cod=
+e> as their location which makes the life of their users a bit hard when th=
+ey have to interpret compiler errors.
+</p>
+
+<p>
+This can be seen as a middle ground between the approach proposed <a href=
+=3D"https://discuss.ocaml.org/t/the-future-of-ppx/3766">here</a> 6 years ag=
+o (<i>that we gave up on due to its complexity</i>) and the current situati=
+on.
+</p>
+</div>
+<ul class=3D"org-ul">
+<li><a id=3D"orgbcee607"></a>Limitations<br />
+<div class=3D"outline-text-5" id=3D"text-orgbcee607">
+<p>
+Encoding new features into extension points is not always easy, only specif=
+ic parts of the AST can be replaced by an extension point. To keep things u=
+nder control and prevent ppx-es from generating inconsistent nodes, all new=
+ features will always be migrated into an extension point. That means that =
+if the impacted node cannot directly be encoded that way, we will encode th=
+e first suitable parent node. In some scenarios, that can climb up the AST =
+types quite significantly, potentially all the way to the <code>structure_i=
+tem~/~signature_item</code>. This means that new features won't be equal wh=
+en it comes to how easy it is to use them in conjunction with some ppx-es. =
+It's important to keep in mind that this is still a net improvement as it w=
+as previously not possible to use them together at all.
+</p>
+
+<p>
+Similarly, providing a nice API to allow building and destructing encoded n=
+ew features will vastly depend on the features themselves and how entangled=
+ they are with new AST types. We will likely not always expose such builder=
+/destructor pairs and might only add some of them if the demand is high eno=
+ugh.
+</p>
+
+<p>
+It is also part of the reason why we will probably still bump our AST at so=
+me points in time even if much less frequently than we have in the past. Wh=
+en that eventually happens, we will be able to maintain the previous major =
+versions for quite a while as this will just be a matter of adding our newe=
+st migrations there as well.
+</p>
+</div>
+</li>
+<li><a id=3D"orga503eae"></a>Effect syntax example<br />
+<div class=3D"outline-text-5" id=3D"text-orga503eae">
+<p>
+OCaml 5.3 introduced the following syntax:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #006f00;">match</s=
+pan> f () <span style=3D"color: #006f00;">with</span>
+| v -&gt; <span style=3D"color: #242521;">Complete</span> v
+| effect (<span style=3D"color: #242521;">Xchg</span> msg), k -&gt;
+  ...
+</code></pre>
+</div>
+
+<p>
+This special effect pattern is represented in the 5.3 AST with the <code>Pp=
+at_effect</code> variant:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code>| <span style=3D"color: #242521;">Ppat_e=
+ffect</span> <span style=3D"color: #006f00;">of</span> pattern * pattern
+</code></pre>
+</div>
+
+<p>
+We cannot represent this in the 5.2 AST and previously, any attempt at migr=
+ating such a node down would have failed. With this new approach we instead=
+ migrate it to something along those lines:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #a7601f; backgroun=
+d-color: #ebebeb;">[%ppxlib.migration.ppat_effect</span>? (<span style=3D"c=
+olor: #242521;">Xchg</span> msg, k)<span style=3D"color: #a7601f; backgroun=
+d-color: #ebebeb;">]</span>
+</code></pre>
+</div>
+<p>
+and the upward migration knows to translate this to the right <code>Ppat_ef=
+fect</code> node. This migration needs to work without context outside the =
+extension so that any ppx that would unknowingly copy such a node elsewhere=
+ in the AST would not cause an uninterpreted extension error later on durin=
+g the compilation.
+</p>
+
+<p>
+If this is passed down to an existing ppx as part of its payload and it tri=
+es to interpret it, it should fail as it won't know what to do with such an=
+ extension.
+</p>
+
+<p>
+<b>Note that ppx authors should never rely on the actual extension point en=
+coding, we reserve ourselves the right to change that encoding as part of m=
+inor or patch releases of ppxlib. Such nodes should be left untouched or de=
+alt with using the stable API described below.</b>
+</p>
+
+<p>
+Now if a ppx author needs to add explicit support for effects they will be =
+able to use something like:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #242521;">val</spa=
+n> <span style=3D"color: #a7601f;">ppat_effect</span> : <span style=3D"colo=
+r: #444fcf;">loc</span>: location -&gt; pattern -&gt; pattern -&gt; pattern
+</code></pre>
+</div>
+<p>
+from <code>Ast_builder</code> to generate such a node. Of course if your pp=
+x generates an <code>effect</code> pattern with an older compiler, this wil=
+l lead to a compile error as the extension won't be translated unless migra=
+ted back up. Authors will have to be mindful of this and properly document =
+when/how they'll generate newer nodes and eventually restrict their ppx to =
+the right range of compilers.
+</p>
+
+<p>
+These will likely come with a "destruct" version in <code>Ast_pattern</code=
+>. For the <code>effect</code> pattern it should look like:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #242521;">val</spa=
+n> <span style=3D"color: #a7601f;">ppat_effect</span> : (pattern * pattern,=
+ 'a, 'b) t -&gt; (pattern, 'a, 'b) t
+</code></pre>
+</div>
+</div>
+</li>
+<li><a id=3D"org19d8a4b"></a>Bivariant type parameter example<br />
+<div class=3D"outline-text-5" id=3D"text-org19d8a4b">
+<p>
+This example is probably a bit of a stretch as it is a very niche syntax ch=
+ange and is highly unlikely to actually be used in the wild, but it makes a=
+ good example of a feature that is hard to encode.
+</p>
+
+<p>
+In OCaml 5.4, a new variant was added to the <code>Asttypes.variance</code>=
+ type: <code>Bivariant</code>. The <code>variance</code> type is used in th=
+e AST to describe how a type parameter behaves relative to the type itself.=
+ This can be manually annotated for each parameter when writing a type decl=
+aration or a class.
+</p>
+
+<p>
+The <code>Bivariant</code> case is a bit of a special one as a parameter ca=
+n only be <code>Bivariant</code> (i.e. covariant AND contravariant) with th=
+e type if it does not actually appear in the concrete type definition, that=
+ is in cases such as:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #242521;">type</sp=
+an> <span style=3D"color: #444fcf;">'a t</span> =3D A
+</code></pre>
+</div>
+
+<p>
+For reasons that we won't expand upon here, 5.4 introduced the following sy=
+ntax to allow one to explicit annotate a parameter as bivariant:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #242521;">type</sp=
+an> +-'a t
+</code></pre>
+</div>
+
+<p>
+The problem is that the variance cannot be replaced directly by an extensio=
+n point, see the type <code>type_declaration</code> for instance:
+</p>
+<div class=3D"org-src-container">
+<pre class=3D"src src-ocaml"><code><span style=3D"color: #242521;">and</spa=
+n> <span style=3D"color: #007a9f;">type_declaration</span> =3D
+    {
+     ptype_name: string loc;
+     ptype_params: (core_type * (variance * injectivity)) list;
+                                 <span style=3D"color: #9f0d0f;">^^^^^^^^</=
+span>
+      <span style=3D"color: #4f677f;">(** </span><span style=3D"color: #804=
+f60;">[</span>('a1,...'an) t<span style=3D"color: #804f60;">]</span><span s=
+tyle=3D"color: #4f677f;"> *)</span>
+     ptype_cstrs: (core_type * core_type * <span style=3D"color: #557400;">=
+Location.</span>t) list;
+      <span style=3D"color: #4f677f;">(** </span><span style=3D"color: #804=
+f60;">[</span>... <span style=3D"color: #242521;">constraint</span> <span s=
+tyle=3D"color: #242521;">T1</span>=3D<span style=3D"color: #242521;">T1'</s=
+pan>  ... <span style=3D"color: #242521;">constraint</span> <span style=3D"=
+color: #242521;">Tn</span>=3D<span style=3D"color: #242521;">Tn'</span><spa=
+n style=3D"color: #804f60;">]</span><span style=3D"color: #4f677f;"> *)</sp=
+an>
+     ptype_kind: type_kind;
+     ptype_private: private_flag;  <span style=3D"color: #4f677f;">(** for =
+</span><span style=3D"color: #804f60;">[</span>=3D <span style=3D"color: #0=
+06f00;">private</span> ...<span style=3D"color: #804f60;">]</span><span sty=
+le=3D"color: #4f677f;"> *)</span>
+     ptype_manifest: core_type option;  <span style=3D"color: #4f677f;">(**=
+ represents </span><span style=3D"color: #804f60;">[</span>=3D <span style=
+=3D"color: #242521;">T</span><span style=3D"color: #804f60;">]</span><span =
+style=3D"color: #4f677f;"> *)</span>
+     ptype_attributes: attributes;  <span style=3D"color: #4f677f;">(** </s=
+pan><span style=3D"color: #804f60;">[</span>... [\<span style=3D"color: #9f=
+0d0f;">@</span>\<span style=3D"color: #9f0d0f;">@</span>id1] [\<span style=
+=3D"color: #9f0d0f;">@</span>\<span style=3D"color: #9f0d0f;">@</span>id2]<=
+span style=3D"color: #804f60;">]</span><span style=3D"color: #4f677f;"> *)<=
+/span>
+     ptype_loc: <span style=3D"color: #557400;">Location.</span>t;
+    }
+</code></pre>
+</div>
+
+<p>
+In this example we have to encode the entire parent node of the type declar=
+ation as an extension point.
+</p>
+
+<p>
+This means that it spreads in quite a few places, <code>type_declaration</c=
+ode> can be found in <code>structure_items</code>, <code>signature_items</c=
+ode> and inside some <code>module_type</code> nodes as well.
+</p>
+
+<p>
+Given there's very little to no use for this syntax, we won't be providing =
+any function to build or destruct such nodes initially.
+</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-3" class=3D"outline-2">
+<h2 id=3D"3">Miou, a simple scheduler for OCaml 5</h2>
+<div class=3D"outline-text-2" id=3D"text-3">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-miou-a-simple-scheduler=
+-for-ocaml-5/12963/17">https://discuss.ocaml.org/t/ann-miou-a-simple-schedu=
+ler-for-ocaml-5/12963/17</a>
+</p>
+</div>
+<div id=3D"outline-container-orgf78b291" class=3D"outline-3">
+<h3 id=3D"orgf78b291">Calascibetta Romain announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgf78b291">
+<p>
+I am delighted to announce the release of Miou version 0.5.0. This release =
+now uses <code>poll(2)~/~ppoll(2)</code> instead of <code>select(3P)</code>=
+ in order to improve I/O management performance.
+</p>
+
+<p>
+Since I/O management is decoupled from the scheduler, this does not change =
+the Miou API or the <code>miou.unix</code> library.
+</p>
+
+<p>
+I would particularly like to thank @backtracking for allowing us to integra=
+te part of his <a href=3D"https://github.com/backtracking/bitv">bitv</a> li=
+brary under a different licence, as well as @haesbaert, the original author=
+ of <a href=3D"https://github.com/ocaml-multicore/ocaml-iomux">ocaml-iomux<=
+/a>, for allowing us to use <code>poll(2)~/~ppoll(2)</code>.
+</p>
+
+<p>
+This has allowed us to go further, particularly with <a href=3D"https://git=
+hub.com/robur-coop/vif">vif</a>, our web framework for OCaml 5, and our web=
+site <a href=3D"https://git.robur.coop/robur/builder-web">builder-web</a> h=
+as been completely rewritten to move to OCaml 5 (thanks to @reynir and @yom=
+imono who participated in this rewrite and provided important feedbacks).
+</p>
+
+<p>
+This release comes with a new package, <a href=3D"https://github.com/robur-=
+coop/flux">flux</a> (still experimental), offering streaming abstractions t=
+hat can be used with Miou. I would like to thank @rizo for his sketch <a hr=
+ef=3D"https://github.com/rizo/streaming">streaming</a> in this regard (pre-=
+OCaml 5). This library takes advantage of the parallelism offered by Miou (=
+with <code>Miou.call</code>) as well as resource management and finalisers =
+(with <code>Miou.Ownership</code>). A tutorial is available <a href=3D"http=
+s://robur-coop.github.io/flux/local/flux/flux.html">here</a> to create a ti=
+ny <code>curl</code> with a loading bar.
+</p>
+
+
+<div id=3D"org874732f" class=3D"figure">
+<p><img src=3D"https://raw.githubusercontent.com/robur-coop/flux/refs/heads=
+/main/assets/fetch.gif" alt=3D"fetch.gif" />
+</p>
+</div>
+
+<p>
+Finally, we are continuing to lay the groundwork for the development of uni=
+kernels with <a href=3D"https://github.com/robur-coop/mkernel">mkernel</a>.=
+ We are currently experimenting with three unikernels:
+</p>
+<ul class=3D"org-ul">
+<li><a href=3D"https://github.com/dinosaure/immuable">immuable</a>, which r=
+euses Vif to create websites in OCaml 5 in the form of unikernels</li>
+<li><a href=3D"https://git.robur.coop/robur/chaos">chaos</a> (still at a ve=
+ry experimental stage), which aims to be an NTP server</li>
+<li><a href=3D"https://github.com/mirage/dns-resolver/pull/6">dns-resolver<=
+/a>, which is a DNS query resolver in the form of a unikernel</li>
+</ul>
+
+<p>
+Finally, we would also like to thank everyone who has been involved in the =
+development of Miou and its related ecosystem, whether directly or indirect=
+ly.
+</p>
+
+<p>
+Happy hacking!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-4" class=3D"outline-2">
+<h2 id=3D"4">Cmarkit 0.4.0 - CommonMark parser and renderer for OCaml</h2>
+<div class=3D"outline-text-2" id=3D"text-4">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-cmarkit-0-4-0-commonmar=
+k-parser-and-renderer-for-ocaml/17435/1">https://discuss.ocaml.org/t/ann-cm=
+arkit-0-4-0-commonmark-parser-and-renderer-for-ocaml/17435/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org3af5f5c" class=3D"outline-3">
+<h3 id=3D"org3af5f5c">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org3af5f5c">
+<p>
+Hello,=20
+</p>
+
+<p>
+It's my pleasure to announce a new release of <a href=3D"https://erratique.=
+ch/software/cmarkit">cmarkit</a>, an ISC-licensed CommonMark parser and ren=
+derer for OCaml.
+</p>
+
+<p>
+This release provides support for the latest version of the CommonMark spec=
+ification, updated data for Unicode 17.0.0, a notable semantic change in th=
+e task item extension (thanks to @samoht) and a couple of bug fixes and imp=
+rovements mostly in the CommonMark renderer.
+</p>
+
+<p>
+All the details are in the <a href=3D"https://github.com/dbuenzli/cmarkit/b=
+lob/main/CHANGES.md#v040-2025-11-01-zagreb">release notes</a>. Thanks to ev=
+eryone who reported issues.=20
+</p>
+
+<p>
+This release is brought to you by essential funding from the <a href=3D"htt=
+ps://ocaml-sf.org/">OCaml software foundation</a> and my <a href=3D"https:/=
+/github.com/sponsors/dbuenzli">donors</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li>Homepage: <a href=3D"https://erratique.ch/software/cmarkit">https://err=
+atique.ch/software/cmarkit</a></li>
+<li>Docs: <a href=3D"https://erratique.ch/software/cmarkit/doc">https://err=
+atique.ch/software/cmarkit/doc</a> (or `odig doc cmarkit`)</li>
+<li>Install: `opam install cmarkit` (<a href=3D"https://github.com/ocaml/op=
+am-repository/pull/28811">opam PR</a>)</li>
+</ul>
+
+<p>
+&mdash;
+</p>
+
+<p>
+P.S. I'm surprised by the number of users (or rather, dissatisfied users :=
+=E2=80=93) of the CommonMark renderer. If you are using it don't hesitate t=
+o tell how/why you are using it in this thread, just curious :=E2=80=93)
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-5" class=3D"outline-2">
+<h2 id=3D"5">OCaml library for Timeplus Proton timeseries streaming databas=
+e</h2>
+<div class=3D"outline-text-2" id=3D"text-5">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-ocaml-library-for-timep=
+lus-proton-timeseries-streaming-database/17440/1">https://discuss.ocaml.org=
+/t/ann-ocaml-library-for-timeplus-proton-timeseries-streaming-database/1744=
+0/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org9ae058c" class=3D"outline-3">
+<h3 id=3D"org9ae058c">Michael Freeman announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org9ae058c">
+<p>
+A high-performance, feature-rich OCaml driver for <a href=3D"https://timepl=
+us.com/">Timeplus Proton</a> - the streaming database built on ClickHouse.
+</p>
+</div>
+<div id=3D"outline-container-org324204d" class=3D"outline-4">
+<h4 id=3D"org324204d"><b>Features</b></h4>
+<div class=3D"outline-text-4" id=3D"text-org324204d">
+<ul class=3D"org-ul">
+<li><b>Streaming Queries</b> - Process large datasets with constant memory =
+usage</li>
+<li><b>Async Inserts</b> - High-throughput data ingestion with automatic ba=
+tching</li>
+<li><b>Compression</b> - LZ4 and ZSTD support for reduced network overhead<=
+/li>
+<li><b>TLS Security</b> - Secure connections with certificate validation</l=
+i>
+<li><b>Connection Pooling</b> - Efficient resource management for high-conc=
+urrency applications</li>
+<li><b>Rich Data Types</b> - Full support for ClickHouse types including Ar=
+rays, Maps, Enums, DateTime64</li>
+<li><b>Idiomatic OCaml</b> - Functional API leveraging OCaml's strengths</l=
+i>
+</ul>
+
+<p>
+<a href=3D"https://github.com/mfreeman451/proton-ocaml-driver">https://gith=
+ub.com/mfreeman451/proton-ocaml-driver</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-6" class=3D"outline-2">
+<h2 id=3D"6">Book draft: "Control structures in programming languages"</h2>
+<div class=3D"outline-text-2" id=3D"text-6">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/book-draft-control-structur=
+es-in-programming-languages/17443/1">https://discuss.ocaml.org/t/book-draft=
+-control-structures-in-programming-languages/17443/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orga070dd5" class=3D"outline-3">
+<h3 id=3D"orga070dd5">Xavier Leroy announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orga070dd5">
+<p>
+I am happy to announce that a draft of my upcoming book "Control structures=
+ in programming languages: from goto to algebraic effects" is now available=
+ at <a href=3D"https://xavierleroy.org/control-structures">https://xavierle=
+roy.org/control-structures</a> .
+</p>
+
+<p>
+The book compares several programming languages from the standpoint of cont=
+rol structures.  OCaml is used intensively to discuss control in functional=
+ programming, including continuation-passing style, control operators, exce=
+ptions, user-defined effects and effect handlers, with many examples that I=
+ hope you'll like.
+</p>
+
+<p>
+The book also discusses in depth a number of questions that are often raise=
+d in this forum, such as the theory and practice of algebraic effects and h=
+andlers, and the static checking of exceptions and effects.
+</p>
+
+<p>
+Enjoy!
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-7" class=3D"outline-2">
+<h2 id=3D"7">oplot 0.85 - mathematical plotter</h2>
+<div class=3D"outline-text-2" id=3D"text-7">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-oplot-0-85-mathematical=
+-plotter/17444/1">https://discuss.ocaml.org/t/ann-oplot-0-85-mathematical-p=
+lotter/17444/1</a>
+</p>
+</div>
+<div id=3D"outline-container-org8171275" class=3D"outline-3">
+<h3 id=3D"org8171275">sanette announced</h3>
+<div class=3D"outline-text-3" id=3D"text-org8171275">
+<p>
+Hello=20
+</p>
+
+<p>
+I=E2=80=99m happy to announce a new version of <a href=3D"https://github.co=
+m/sanette/oplot">oplot</a>, a library for plotting mathematical functions, =
+using openGL by default for fast rendering and animations, but also providi=
+ng high quality vector graphics exports.
+</p>
+
+<p>
+This version has a new feature that math lovers will appreciate: <code>impl=
+icit_curve</code> plotting!
+</p>
+
+<p>
+For instance do you want to know what the solutions to the equation (x=C2=
+=B2+y=C2=B2-1)=C2=B3 - x=C2=B2 y=C2=B3 =3D 0 look like?
+</p>
+
+<p>
+Here is the result:
+</p>
+
+
+<div id=3D"org46570d4" class=3D"figure">
+<p><img src=3D"https://us1.discourse-cdn.com/flex020/uploads/ocaml/optimize=
+d/2X/0/00fbc53496cd6a8e5b9fb37807e9f5243b79e75e_2_1222x1000.png" alt=3D"00f=
+bc53496cd6a8e5b9fb37807e9f5243b79e75e_2_1222x1000.png" width=3D"80%" />
+</p>
+</div>
+
+<p>
+If you already dug into the problem of plotting implicit curves you know th=
+at it=E2=80=99s sometimes very difficult to localize in advance the various=
+ singularities of the curve. <code>oplot</code> gives you 3 ways of tuning =
+the computation: grid size, recursive grid size for subsampling where the c=
+urvature of the curve seems high, and control over the iterations of the Ne=
+wton method. There is also a pole detection, where the function changes sig=
+n but probably still doesn=E2=80=99t have a zero there. You can obtain debu=
+g information for any curve, for instance here you see the default paramete=
+rs automatically detected for the above curve: initial grid (green) and sub=
+sampling (cyan):
+</p>
+
+
+<div id=3D"org3ca459c" class=3D"figure">
+<p><img src=3D"https://us1.discourse-cdn.com/flex020/uploads/ocaml/optimize=
+d/2X/1/1edb6f547feb24bd42aad4f21d0bb20c2455d684_2_1222x1000.png" alt=3D"1ed=
+b6f547feb24bd42aad4f21d0bb20c2455d684_2_1222x1000.png" width=3D"80%" />
+</p>
+</div>
+
+<p>
+<code>oplot</code> is available in opam, doc is <a href=3D"https://sanette.=
+github.io/oplot/oplot/Oplot/index.html">here</a>.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-8" class=3D"outline-2">
+<h2 id=3D"8">QCheck 0.27</h2>
+<div class=3D"outline-text-2" id=3D"text-8">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-qcheck-0-24/16198/4">ht=
+tps://discuss.ocaml.org/t/ann-qcheck-0-24/16198/4</a>
+</p>
+</div>
+<div id=3D"outline-container-orgcc60338" class=3D"outline-3">
+<h3 id=3D"orgcc60338">Jan Midtgaard announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgcc60338">
+<p>
+QCheck 0.27 is now available from the opam repository :partying_face:
+</p>
+
+<p>
+<a href=3D"https://github.com/c-cube/qcheck/releases/tag/v0.27">https://git=
+hub.com/c-cube/qcheck/releases/tag/v0.27</a>
+</p>
+
+<p>
+The 0.27 release is focused on improving the <code>float</code> shrinking s=
+upport and also contains a small patch to make the package compile with OxC=
+aml:
+</p>
+<ul class=3D"org-ul">
+<li>Add <code>QCheck.Shrink.float</code> and enable shrinking for <code>QCh=
+eck.float</code></li>
+<li>Add <code>QCheck.Shrink.float_bound</code> and enable shrinking for <co=
+de>QCheck.float_bound_inclusive</code> and <code>QCheck.float_bound_exclusi=
+ve</code></li>
+<li>Add <code>QCheck.Shrink.float_range</code> and enable shrinking for <co=
+de>QCheck.float_range</code></li>
+<li>Enable shrinking for <code>QCheck.{pos_float,neg_float,exponential}</co=
+de></li>
+<li>Patch <code>QCheck.Print.float</code> and <code>QCheck2.Print.float</co=
+de> to print negative nans consistently as "-nan" also on Windows and macOS=
+, and correct documentation for <code>QCheck.{float,pos_float,neg_float}</c=
+ode> in that they may produce ~nan~s since #350 from 0.26</li>
+<li>Eta-expand a couple of partial application to compile under OxCaml</li>
+</ul>
+
+<p>
+Happy testing! :smiley:
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-9" class=3D"outline-2">
+<h2 id=3D"9">Bytesrw 0.3.0 =E2=80=93 The cryptographic edition</h2>
+<div class=3D"outline-text-2" id=3D"text-9">
+<p>
+Archive: <a href=3D"https://discuss.ocaml.org/t/ann-bytesrw-0-3-0-the-crypt=
+ographic-edition/17450/1">https://discuss.ocaml.org/t/ann-bytesrw-0-3-0-the=
+-cryptographic-edition/17450/1</a>
+</p>
+</div>
+<div id=3D"outline-container-orgdcfd6b1" class=3D"outline-3">
+<h3 id=3D"orgdcfd6b1">Daniel B=C3=BCnzli announced</h3>
+<div class=3D"outline-text-3" id=3D"text-orgdcfd6b1">
+<p>
+Hello,=20
+</p>
+
+<p>
+It's my pleasure to announce a new release of the <a href=3D"https://errati=
+que.ch/software/bytesrw">bytesrw</a> set of ISC licensed libraries.
+</p>
+
+<blockquote>
+<p>
+Bytesrw extends the OCaml Bytes module with composable, memory efficient,  =
+byte stream readers and writers compatible with effect-based concurrency.
+</p>
+
+<p>
+Optional support for compressed, hashed and encrypted bytes depend, at your=
+ wish, on the C <code>zlib</code>, <code>libzstd</code>, <code>blake3</code=
+>, <code>libmd</code>, <code>xxhash</code> and  <code>mbedtls</code> librar=
+ies.
+</p>
+</blockquote>
+
+<p>
+This release adds optional libraries to support for <code>SHA-3</code> hash=
+es, cryptographically secure pseudo-random bytes streams, TLS encrypted byt=
+e stream and low-level support for cryptographic operations on slices:
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://erratique.ch/software/bytesrw/doc/Bytesrw_sysrandom/=
+index.html"><code>Bytesrw_sysrandom</code></a> provides pseudorandom byte s=
+treams and entropy directly sourced from your operating system primitives.<=
+/li>
+
+<li><a href=3D"https://erratique.ch/software/bytesrw/doc/Bytesrw_crypto/Psa=
+/index.html"><code>Bytesrw_crypto.Psa</code></a> provides low-level cryptog=
+raphic operations on byte slices via thin and safe bindings to the <a href=
+=3D"https://github.com/Mbed-TLS/TF-PSA-Crypto">TF-PSA-Crypto</a> C library =
+distributed with Mbed TLS. This library is an implementation of the <a href=
+=3D"https://arm-software.github.io/psa-api/crypto/1.2/">PSA Crypto API Spec=
+ification</a>. Its design is particularly suited if you care about key mate=
+riel not being seen by the OCaml GC (implementations also allow further deg=
+rees of isolation as can be read in the API's <a href=3D"https://arm-softwa=
+re.github.io/psa-api/crypto/1.2/overview/goals.html">design goals</a>). Bes=
+ides the API is nicely and thoroughly documented. It is quite bureaucratic =
+to use but that's what you likely want from a cryptographic library (e.g. k=
+ey usages have to be declared upfront and are checked at runtime by cryptog=
+raphic operations).</li>
+
+<li><a href=3D"https://erratique.ch/software/bytesrw/doc/Bytesrw_crypto/ind=
+ex.html"><code>Bytesrw_crypto</code></a> (will) provides a few higher-level=
+ operations implemented over PSA. The module is rather shallow at the momen=
+t, more will be added in the future as we abstract over our usage of PSA Cr=
+ypto. For now it mostly contains an API to access the hashes provided by PS=
+A Crypto in the way other <code>bytesrw</code> hashing modules expose their=
+ hashing service. This notably provides the <code>SHA-3</code> family of ha=
+shes which were not previously available in the set of optional <code>bytes=
+rw</code> libraries.</li>
+
+<li><a href=3D"https://erratique.ch/software/bytesrw/doc/Bytesrw_tls/index.=
+html"><code>Bytesrw_tls</code></a> provides support for TLS encrypted strea=
+ms and the needed X.509 certificate management (including system lookups fo=
+r trusted CAs). The backend is provided by the <a href=3D"https://www.trust=
+edfirmware.org/projects/mbed-tls/">Mbed TLS</a> C library. For now these st=
+reams are instantied over blocking fds, but this restriction will be lifted=
+ in the future. I also added a little tool called <code>certown</code> whic=
+h you may find handy for dealing with certificates for localhost when you d=
+evelop servers.</li>
+</ul>
+
+<p>
+Note that the binding to PSA cryptography has been used to implement a few =
+things (e.g. the horrific passkeys specification) but has not run in produc=
+tion yet. However the binding is pleasantly unsophisticated, the underlying=
+ C API is straightforward to bind to.
+</p>
+
+<p>
+See the <a href=3D"https://github.com/dbuenzli/bytesrw/blob/main/CHANGES.md=
+#v030-2025-11-04-zagreb">release notes</a> for details about other changes.
+</p>
+
+<p>
+This release was made possible thanks to a grant from the <a href=3D"https:=
+//ocaml-sf.org/">OCaml software foundation</a> and to my <a href=3D"https:/=
+/github.com/sponsors/dbuenzli">donors</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li>Homepage: <a href=3D"https://erratique.ch/software/bytesrw">https://err=
+atique.ch/software/bytesrw</a></li>
+<li>Docs: <a href=3D"https://erratique.ch/software/bytesrw/doc">https://err=
+atique.ch/software/bytesrw/doc</a> (or <code>odig doc bytesrw</code>)</li>
+<li>Install: <code>opam install bytesrw conf-=E2=80=A6</code> (<a href=3D"h=
+ttps://github.com/ocaml/opam-repository/pull/28836">opam pr</a>)</li>
+</ul>
+
+<p>
+&mdash;
+</p>
+
+<p>
+P.S. Libraries that depend on Mbed TLS need the recent 4.0.0 version which =
+is quite fresh and may take a bit of time to trickle in system package mana=
+gers. If you trust me you can use my
+<a href=3D"https://github.com/dbuenzli/distrib-crutch.opam">distribution cr=
+utch</a> opam repository to install it.
+</p>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-10" class=3D"outline-2">
+<h2 id=3D"10">Other OCaml News</h2>
+<div class=3D"outline-text-2" id=3D"text-10">
+</div>
+<div id=3D"outline-container-org02feb28" class=3D"outline-3">
+<h3 id=3D"org02feb28">From the ocaml.org blog</h3>
+<div class=3D"outline-text-3" id=3D"text-org02feb28">
+<p>
+Here are links from many OCaml blogs aggregated at <a href=3D"https://ocaml=
+.org/blog/">the ocaml.org blog</a>.
+</p>
+
+<ul class=3D"org-ul">
+<li><a href=3D"https://tarides.com/blog/2025-10-30-supporting-ocurrent-flos=
+s-fund-backs-maintenance-for-ocaml-s-native-ci-framework">Supporting OCurre=
+nt: FLOSS/Fund Backs Maintenance for OCaml's Native CI Framework</a></li>
+<li><a href=3D"https://fearful-odds.rocks/blog/webauthn-passkey-implementat=
+ion-ocaml">WebAuthn &amp; Passkeys in OCaml: Implementing Passwordless Auth=
+entication</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id=3D"outline-container-org27f93a9" class=3D"outline-2">
+<h2 id=3D"org27f93a9">Old CWN</h2>
+<div class=3D"outline-text-2" id=3D"text-org27f93a9">
+<p>
+If you happen to miss a CWN, you can <a href=3D"mailto:alan.schmitt@polytec=
+hnique.org">send me a message</a> and I'll mail it to you, or go take a loo=
+k at <a href=3D"https://alan.petitepomme.net/cwn/">the archive</a> or the <=
+a href=3D"https://alan.petitepomme.net/cwn/cwn.rss">RSS feed of the archive=
+s</a>.
+</p>
+
+<p>
+If you also wish to receive it every week by mail, you may subscribe to the=
+ <a href=3D"https://sympa.inria.fr/sympa/info/caml-list">caml-list</a>.
+</p>
+
+<div class=3D"authorname" id=3D"org9e180f6">
+<p>
+<a href=3D"https://alan.petitepomme.net/">Alan Schmitt</a>
+</p>
+
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+
+--=-=-=--
+
