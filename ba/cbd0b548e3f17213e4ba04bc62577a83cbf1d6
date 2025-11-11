@@ -1,0 +1,1405 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=ieCETFwS;
+	dkim=fail reason="signature verification failed" (2048-bit key; unprotected) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20230601 header.b=KSJcGzYq;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 756D140086
+	for <caml-list@tunbury.org>; Tue, 11 Nov 2025 17:04:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=sfpzLD0XY5rGp2laSlY6n45986g1/A/mzbgPURUDeqc=;
+  b=ieCETFwSVegJGBdp3ZFEej6YRRgP6kDNOB+c3DNKDYPurWlBBYTdxVQO
+   c1WpqMe5x0FIUYCUmAnDkmtVDE7iheNUTEIWrkdhTrK6m8RzWhd0E1/CR
+   v+XLfBtK2aj/0g3vB+uka+v/KPztSToYOCjddNY+xCrzZdgQRVTWeHUtc
+   Y=;
+X-CSE-ConnectionGUID: b3/DRuBwTrepU4hO+BC9bg==
+X-CSE-MsgGUID: wNZNnoYxR9uu7DY3LnxIRA==
+Received-SPF: Pass (mail2-relais-roc.national.inria.fr: domain of
+  caml-list-owner@inria.fr designates 128.93.162.160 as
+  permitted sender) identity=mailfrom;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@sympa.inria.fr) identity=helo;
+  client-ip=128.93.162.160;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@sympa.inria.fr"; x-conformance=spf_only
+Authentication-Results: mail2-relais-roc.national.inria.fr; spf=Pass smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@sympa.inria.fr; dkim=hardfail (signature did not verify [final]) header.i=@googlemail.com
+X-IronPort-AV: E=Sophos;i="6.19,297,1754949600"; 
+   d="scan'208,217";a="248607044"
+Received: from prod-listesu18.inria.fr (HELO sympa.inria.fr) ([128.93.162.160])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 11 Nov 2025 18:04:03 +0100
+Received: by sympa.inria.fr (Postfix, from userid 20132)
+	id A102DE0C55; Tue, 11 Nov 2025 18:04:03 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by sympa.inria.fr (Postfix) with ESMTPS id BDF8AE0171
+	for <caml-list@sympa.inria.fr>; Tue, 11 Nov 2025 18:03:59 +0100 (CET)
+X-CSE-ConnectionGUID: Ofe2eVGVRDW2YMkJDmIYKw==
+X-CSE-MsgGUID: zwGFjl1PQTujVOHaSzvv2A==
+IronPort-SDR: 69136c7d_WhRXI27WprN9aG2A/0WkI4V/3A6g55PEYX5qoW+2Yllhj+L
+ /50usV1K6quAJ8uElR9dyt3/bNRWimd4GNZIM3Q==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0F0AwDraxNpfKunVdFQAQMGhBZbKIECXTQECxkwA4RSg?=
+ =?us-ascii?q?SNAgWyMBIIhBYERgS+PCIxkgSwWJwIPAQMBDTQdBAEBAwEDggyBPXFGjF0CH?=
+ =?us-ascii?q?gcBBDQTAQIEAQEBAQMCAwEBAQEBAQEBAQ0BAQUBAQECAQECBAYBAhABASIZB?=
+ =?us-ascii?q?w4SKYYVCDINgkVRcV5HAQEBAQEBAQEBAQEBAQEBAQEBAQEBARQCDQcYBA0uO?=
+ =?us-ascii?q?AgBAgYdASQDAwECBgYDEgMNLQEJAiMSAQUBIgoSCwIMU4E1WYIiAQYQAQM2A?=
+ =?us-ascii?q?xFFknONHYIkgQVCiXMaN3qBMoEBO4FSBoEJUw/YdQpBDW6BZAIHFIE2hHZ4g?=
+ =?us-ascii?q?mUBgUQaAg6EAIN+ehcQD4FVRIEUATWCPXaBBT0QgQQLBAKBHwcJAQMBGDcGg?=
+ =?us-ascii?q?y6CaQSBNlcVehSGJ4JzgS4Fg3OCRAaBQkaGIiYmAwcHDitGDgEhAyYzLAFVE?=
+ =?us-ascii?q?xcLBwWBYwECAWwebjIdgSRBGHGBFINJDxNoDwaBEoNRhS2DcQ+JWnMDC2ILP?=
+ =?us-ascii?q?TcUG0yUbBmCCQkIChI/BwcQEAMHHggJAwQDCB8ICQgPARMFCAItMwMHBAEHB?=
+ =?us-ascii?q?RIBBA4LAwEJBQUBAwMYAQUKAQEBEQUFBgMBAgsvkloQAggKASaPY4IhgTWeG?=
+ =?us-ascii?q?4EKNAcrg3SBZAyKLpVTM4QEjROHAosLhmBnmQaCWIhNgTiBK4ddjVcwEwmFK?=
+ =?us-ascii?q?BEkgVsjgUkMBzQZIy8hMYI2CUYDGQ9XiD+EaTmBHQEIgkOFE7pzKDICESkCB?=
+ =?us-ascii?q?wEKAQEDCYZLix8BAQ8XBAMFgUsBAQ?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+ YT5qa2ojq12pY4d3PuMo0JoJSw=
+IronPort-HdrOrdr: A9a23:7Ynn069t75dn3G6rfRZuk+AZI+orL9Y04lQ7vn1ZYhZeG/bo7P
+ xG/c5rrSMc7Qx6ZJhOo6HkBEDtewK/yXcX2/hzAV7BZniAhILAFugLhrcKqAeQfREWmNQtrJ
+ tIQuxQDsbvBUN2gcu/zA6zCMY43dWLmZrFuc7ui1loCS5nY7x99AtiYzzrdnFedU1pAd4WGv
+ OniPavZADORZ3UVKmG77U+PtQrbueqqK7b
+X-Talos-CUID: =?us-ascii?q?9a23=3AEBW1OmhQ6sM5OkrjGkvfwUAhTTJuVXPQlnruDHG?=
+ =?us-ascii?q?CJVkzeZiWa3OV2ZJHjJ87?=
+X-Talos-MUID: 9a23:IJQHbwtstdjRvhC+/s2nli5NGsVsupyXNF0Pr7ImsvKWKzIqEmLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.19,297,1754949600"; 
+   d="scan'208,217";a="130530508"
+X-MGA-submission: =?us-ascii?q?MDGPmxqRChs+OHECK7TX5tgYCAinFpU9j+phvo?=
+ =?us-ascii?q?xAVITz1w/4EkJB0jSUZSX6kl/RXfj052eb4eta3fQIqYDClaKUlPb8Zr?=
+ =?us-ascii?q?tDzERCXHqm5f5cSpypZQRtlHWJeEyKp4jjhPia4ES30YdV6p52TVQEKS?=
+ =?us-ascii?q?EzhZCDU+I4TRw/hs+8jYWSaQ=3D=3D?=
+Received: from mail-oi1-f171.google.com ([209.85.167.171])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2025 18:03:57 +0100
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-4503ee5c160so1228851b6e.1
+        for <caml-list@inria.fr>; Tue, 11 Nov 2025 09:03:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20230601; t=1762880635; x=1763485435; darn=inria.fr;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=sfpzLD0XY5rGp2laSlY6n45986g1/A/mzbgPURUDeqc=;
+        b=KSJcGzYqagwKtNda2QTwNPkZ39I9n1qegyjXQLtAXQSvuLZpqasTtDXzKuGErap8Eq
+         d1IcTfTW4H99MVDI/X6zDiAmQn4yCxU93dqwE4S+V6nDz/jy8piTtGP0bzhAvwCTTCM5
+         cRHivRqfU0kRdjQFI1MdW5B5HvgxG2GI5hs/0oUBegSX25zkjUc9G4coyVwooPweYRd/
+         krRs9hY9PBx6Lby1efTLEDmD2L5i1diCSyvOS6VsHVoQ6b3IDg7bEGXySo0YhFUAlvsP
+         ov7x18/m2ANV+cfagv9tQktKANN7M7SURRI0t1jkPnSxrVLkYP2mmPzjL7YmaQBUb46O
+         3BBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1762880635; x=1763485435;
+        h=to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sfpzLD0XY5rGp2laSlY6n45986g1/A/mzbgPURUDeqc=;
+        b=rJkDkn+Yuvd3GbWrIBv8//XHN2h15oiCkPj1XqR3D0Mi4q7+GnU7kRjaDR3o3VtLE+
+         wfNBTAisVsKjDjPHwO6FKDG9J4Mx3mkuSR3sysh2j2uEW8O65YUNniXb1bzi7kGdIWrB
+         XcOvJ7JpNmcjNwEzAJNOMvBlg81eLAbpzUu42LNybo9UEIvtU+DcTkBetYM3vkEceIP+
+         C25SQld+7+64Kght1hm4+n0ueqrdNdtw/YLM/nWXW2WmZqKwGcEfcIgHdC8T0XbZ9ScG
+         UjQYuBsQ3d7166q03YKEi0dX5hW87jPnZqIIGiNB2OrW4QmdxpQWEXEiSUdfvEc7dJ37
+         OcVg==
+X-Forwarded-Encrypted: i=1; AJvYcCVpK9ZaUJ1EA9zJ8fESu/Se1ZUB/QEkKepvKOoL6tniSIrp4SAhgYFzEnXYxFsSIokYQpsWpzqruCU=@inria.fr
+X-Gm-Message-State: AOJu0YzfcX5UQ70qF44rxur+yQ7/egxfVRkm/dYpJrnN5PBPTALI57tl
+	ZHA6fuNA51fXOeiFn1DIK5snmhetNF1K/hFDR5xb2yWSDO7E9fqtp0vV2h1SYpyP/mtikjGPzzA
+	7MmK1kDozjpoHgFOdckfb7b05CgI3Vb4=
+X-Gm-Gg: ASbGnctQ2LXX+56+5/gPO6yd3piE2RsheUbB71iXIDTjlfKD+TQNsyQBxOTdwp5LZ+M
+	TuLsuOH1mwPsb7ciJYq/e4dKUq72N9StNgILdkVkJF7IgeacuAvDHx8Ufi024J7SHYM6gB4ZPm/
+	+mKjszwTFJ1h0EsKrzs6bs0GMPy7hZM+RZwoezxua5ImsZymKvLKLAEdBklYKbxoTflezxRj0gg
+	ccqViNqK4C7WL8ixRXx0jxkSLJ0E/PTIIrS8Qs+oJkJexIXW4QyXnU0L/2lCg==
+X-Google-Smtp-Source: AGHT+IGhmXbbsfR/DGtyAFeIp2KkEEkYeDRUQ9L6mGR1oAdM6BPgPfOwNlAe/jrkuu/rV3iUKSV5z8vbJuAAKOXA/XU=
+X-Received: by 2002:a05:6808:1513:b0:43f:4798:9af1 with SMTP id
+ 5614622812f47-4502a365634mr6535547b6e.27.1762880635107; Tue, 11 Nov 2025
+ 09:03:55 -0800 (PST)
+MIME-Version: 1.0
+From: ICFP Publicity <icfp.publicity@googlemail.com>
+Date: Tue, 11 Nov 2025 12:03:44 -0500
+X-Gm-Features: AWmQ_bkp9S3-Wc0W43NhzDvBpc0M33D_Q0P9vWzXWJbvlTkAzw5k7OpDu6istTs
+Message-ID: <CAAmpXijiCM1HZZE3rCw=Guw7nCGfmoPp2yzwJdA3ieE61+9stg@mail.gmail.com>
+To: ICFP Publicity <icfp.publicity@googlemail.com>
+Content-Type: multipart/alternative; boundary="000000000000098168064354a26a"
+Subject: [Caml-list] ICFP 2026: Call for Papers
+Reply-To: ICFP Publicity <icfp.publicity@googlemail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19401
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <mailto:sympa_inria@inria.fr?subject=help>
+List-Subscribe: <mailto:sympa_inria@inria.fr?subject=subscribe%20caml-list>
+List-Unsubscribe: <mailto:sympa_inria@inria.fr?subject=unsubscribe%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/arcsearch_id/caml-list/2025-11/CAAmpXijiCM1HZZE3rCw%3DGuw7nCGfmoPp2yzwJdA3ieE61%2B9stg%40mail.gmail.com>
+
+--000000000000098168064354a26a
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+ICFP 2026 Call for Papers
+
+Accepted papers to be invited for presentation at:
+
+
+*The 31st ACM SIGPLAN International Conference on Functional Programming*Au=
+gust
+23-29, 2026
+Indianapolis, Indiana, USA
+https://icfp26.sigplan.org
+------------------------------
+
+Submission Information
+
+   - *Submission web site*: https://icfp26.hotcrp.com
+   - *Submission Deadline*: 19 Feb 2026 (AoE)
+
+Double-blind review
+
+   - Reviews: 20 Apr 2026 (AoE)
+   - Author Response: 20 Apr 2026 - 23 Apr 2026 (AoE)
+   - Notification of Conditional Acceptance: 14 May 2026 (AoE)
+   - Revision: 3 Jun 2026 (AoE)
+   - Final Notification: 10 Jun 2026 (AoE)
+   - Camera Ready: 1 Jul 2026 (AoE)
+
+------------------------------
+
+PACMPL issue ICFP 2026 seeks original papers on the art and science of
+functional programming. Submissions are invited on all topics from
+principles to practice, from foundations to features, and from abstraction
+to application. The scope includes all languages that encourage functional
+programming, including both purely applicative and imperative languages, as
+well as languages with objects, concurrency, or parallelism. Topics of
+interest include (but are not limited to):
+
+   -
+
+   Language Design: concurrency, parallelism, and distribution; modularity;
+   components and composition; meta-programming; macros; pattern matching;
+   type systems; type inference; dependent types; effect types; gradual typ=
+es;
+   refinement types; session types; interoperability; domain-specific
+   languages; imperative programming; object-oriented programming; logic
+   programming; probabilistic programming; reactive programming; generic
+   programming; bidirectional programming; secure programming.
+   -
+
+   Implementation: abstract machines; virtual machines; interpretation;
+   compilation; compile-time and run-time optimisation; garbage collection =
+and
+   memory management; runtime systems; multi-threading; exploiting parallel
+   hardware; interfaces to foreign functions, services, components, or
+   low-level machine resources.
+   -
+
+   Software-Development Techniques: algorithms and data structures; design
+   patterns; specification; verification; validation; proof assistants;
+   debugging; testing; tracing; profiling; build systems; program synthesis=
+.
+   -
+
+   Analysis and Transformation: control flow; data flow; abstract
+   interpretation; partial evaluation; program calculation.
+   -
+
+   Foundations: formal semantics; lambda calculus; program equivalence;
+   rewriting; type theory; logic; category theory; computational effects;
+   continuations; control; state; names and binding; program verification.
+   -
+
+   Applications: symbolic computing; formal-methods tools; systems
+   programming; distributed systems and web programming; hardware design;
+   databases; scientific and numerical computing; graphical user interfaces=
+;
+   graphics and multimedia; GPU programming; scripting; system administrati=
+on;
+   security.
+   -
+
+   Education: teaching introductory programming; mathematical proof;
+   algebra.
+
+Submissions will be evaluated according to their relevance, correctness,
+significance, originality, and clarity. Each submission should explain its
+contributions in both general and technical terms, clearly identifying what
+has been accomplished, explaining why it is significant, and comparing it
+with previous work. The technical content should be accessible to a broad
+audience.
+
+PACMPL issue ICFP 2026 also welcomes submissions in two separate categories
+=E2=80=94 Functional Pearls and Experience Reports =E2=80=94 that must be m=
+arked as such
+when submitted and that *need not* report original research results.
+Detailed guidelines on both categories are given at the end of this call.
+
+In an effort to achieve a balanced, diverse program, each author may be
+listed as a (co)author on a maximum of four submissions. Authors who
+require financial support to attend the conference can apply for PAC
+funding (http://www.sigplan.org/PAC/).
+
+The General Chair and PC Chair may not submit papers. PC members (other
+than the PC Chair) may submit papers.
+
+Please contact the Program Chair if you have questions or are concerned
+about the appropriateness of a topic.
+Double-blind Submissions
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#double-bind-submiss=
+ions>
+
+ICFP 2026 will use a full double-blind reviewing process. This means that
+identities of authors will not be made visible to reviewers until after
+conditional-acceptance decisions have been made, and then only for the
+conditionally-accepted papers. The use of full double-blind reviewing has
+several consequences for authors.
+
+   -
+
+   Submissions: Authors must omit their names and institutions from their
+   paper submissions. In addition, references to authors=E2=80=99 own prior=
+ work
+   should be in the third person (e.g., not =E2=80=9CWe build on our previo=
+us work =E2=80=A6=E2=80=9D
+   but rather =E2=80=9CWe build on the work of =E2=80=A6=E2=80=9D).
+   -
+
+   Supplementary material: Authors must fully anonymize any supplementary
+   material (see below). Links to supplementary material on external websit=
+es
+   are not permitted.
+   -
+
+   Author response: In responding to reviews, authors should not say
+   anything that reveals their identity, since author identities will not b=
+e
+   revealed to reviewers at that stage of the reviewing process.
+   -
+
+   Dissemination of work under submission: Authors are welcome to
+   disseminate their ideas and post draft versions of their paper(s) on the=
+ir
+   personal website, institutional repository, or arXiv (reviewers will be
+   asked to turn off arXiv notifications during the review period). But
+   authors should not take steps that would almost certainly reveal their
+   identities to members of the Program Committee, e.g., directly contactin=
+g
+   PC members or publicizing the work on widely-visible social media or maj=
+or
+   mailing lists used by the community.
+
+The purpose of the above restrictions is to help the Program Committee come
+to a judgment about the paper without bias, not to make it impossible for
+them to discover the authors=E2=80=99 identities if they were to try. In
+particular, nothing should be done in the name of anonymity that weakens
+the quality of the submission. However, there are occasionally cases where
+adhering to the above restrictions is truly difficult or impossible for one
+reason or another. In such cases, the authors should contact the Program
+Chair to discuss the situation and how to handle it. The FAQ on
+Double-Blind Reviewing (
+https://popl24.sigplan.org/track/POPL-2024-popl-research-papers#FAQ-on-Doub=
+le-Blind-Reviewing)
+addresses many common scenarios and answers many common questions about
+this topic. But there remain many grey areas and trade-offs. If you have
+any doubts about how to interpret the double-blind rules or you encounter a
+complex case that is not clearly covered by the FAQ, please contact the
+Program Chair for guidance.
+Preparation of submissions
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#preparation-of-subm=
+issions>
+
+The deadline for submissions is: *** Thursay, 19 Feb 2026 AoE *** (
+https://www.timeanddate.com/time/zones/aoe). This deadline will be strictly
+enforced.
+
+   -
+
+   Formatting: Submissions must be in PDF format, printable in black and
+   white on US Letter sized paper and interpretable by common PDF tools. Al=
+l
+   submissions must adhere to the =E2=80=9CACM Small=E2=80=9D template that=
+ is available (in
+   both LaTeX and Word formats) from
+   https://www.acm.org/publications/authors/submissions.
+
+   Please download the latest version of the ACM style from
+   https://www.acm.org/publications/authors/submissions, since the citation
+   format has recently been changed.
+
+   See also PACMPL=E2=80=99s Information and Guidelines for Authors at
+   https://pacmpl.acm.org/authors.cfm.
+
+   There is a limit of *25 pages* for a full paper or Functional Pearl and =
+*12
+   pages* for an Experience Report; in either case, the bibliography and an
+   optional clearly marked appendix will not be counted against these limit=
+s.
+   Submissions that exceed the page limits or, for other reasons, do not me=
+et
+   the requirements for formatting, will be desk rejected.
+   -
+
+   Submission: Submissions will be accepted at https://icfp26.hotcrp.com
+
+   Improved versions of a paper may be submitted at any point before the
+   submission deadline using the same web interface.
+   -
+
+   Author Response Period: Authors will have a 96-hour period, starting at
+   00:00 (midnight) AoE on Monday, 20 April, 2026, to read reviews and resp=
+ond
+   to them.
+   -
+
+   Appendix and Supplementary Material: Authors have the option to include
+   a clearly marked appendix and/or to attach supplementary material to a
+   submission, on the understanding that reviewers may choose not to look a=
+t
+   such an appendix or supplementary material. Supplementary material may b=
+e
+   uploaded as a separate PDF document or tarball. Any supplementary materi=
+al
+   must be uploaded at submission time, not by providing a URL in the paper
+   that points to an external repository. All supplementary material must b=
+e
+   anonymised.
+   -
+
+   Authorship Policies: All submissions are expected to comply with the ACM
+   Policies for Authorship that are detailed at
+   https://www.acm.org/publications/authors/information-for-authors.
+   -
+
+   Republication Policies: Each submission must adhere to SIGPLAN=E2=80=99s
+   republication policy, as explained on the web at
+   http://www.sigplan.org/Resources/Policies/Republication.
+
+Review Process
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#review-process>
+
+This section outlines the two-stage process with double-blind reviewing
+that will be used to select papers for PACMPL issue ICFP 2026. Like last
+year, ICFP 2026 will adapt a full double-blind reviewing process. More
+information see below.
+
+ICFP 2026 will have two Associate Chairs who will help the PC Chair monitor
+reviews, solicit external expert reviews for submissions when there is not
+enough expertise on the committee, and facilitate reviewer discussions.
+
+ICFP 2026 will employ a two-stage review process. The first stage in the
+review process will assess submitted papers using the criteria stated above
+and will allow for feedback and input on initial reviews through the author
+response period mentioned previously. As a result of the review process, a
+set of papers will be conditionally accepted and all other papers will be
+rejected. Authors will be notified of these decisions on 14 May, 2026.
+
+Authors of conditionally accepted papers will be provided with committee
+reviews along with a set of optional or mandatory revisions. By 3 June,
+2026, the authors should provide a revised submission. The second and final
+reviewing phase assesses whether the mandatory revisions have been
+adequately addressed by the authors and thereby determines the final
+accept/reject status of the paper. The intent and expectation is that the
+mandatory revisions can feasibly be addressed within a couple of weeks.
+
+The second submission should clearly identify how the mandatory revisions
+were addressed. To that end, the second submission *must be accompanied by
+a cover letter* mapping each mandatory revision request to specific parts
+of the paper. The cover letter will facilitate a quick second review,
+allowing for confirmation of final acceptance within two weeks. Conversely,
+the absence of a cover letter will be grounds for the paper=E2=80=99s rejec=
+tion.
+Information for Authors of Accepted Papers
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#information-for-aut=
+hors-of-accepted-papers>
+
+As a condition of acceptance, final versions of all papers must adhere to
+the ACM Small format. The page limit for the final versions of papers will
+be *increased by two pages* to help authors respond to reviewer comments
+and mandatory revisions: 27 pages plus bibliography for a regular paper or
+Functional Pearl, 14 pages plus bibliography for an Experience Report.
+
+Authors of accepted submissions will be required to agree to one of the
+three ACM licensing options, one of which is Creative Commons CC-BY
+publication; this is the option recommended by the PACMPL editorial board.
+A reasoned argument in favour of this option can be found in the article
+Why CC-BY? published by OASPA, the Open Access Scholarly Publishers
+Association. The other options are copyright transfer to ACM or retaining
+copyright but granting ACM exclusive publication rights.
+
+PACMPL is a Gold Open Access journal, and authors are encouraged to publish
+their work under a CC-BY license. Gold Open Access guarantees permanent
+free online access to the definitive version in the ACM Digital Library,
+and the recommended CC-BY option also allows anyone to copy and distribute
+the work with attribution. Gold Open Access has been made possible by
+generous funding through ACM SIGPLAN, which will cover all open access
+costs in the event authors cannot. Authors who can cover the costs may do
+so by paying an Article Processing Charge (APC). PACMPL, SIGPLAN, and ACM
+Headquarters are committed to exploring routes to making Gold Open Access
+publication both affordable and sustainable.
+
+ACM Author-Izer is a unique service that enables ACM authors to generate
+and post links on either their home page or institutional repository for
+visitors to download the definitive version of their articles from the ACM
+Digital Library at no charge. Downloads through Author-Izer links are
+captured in official ACM statistics, improving the accuracy of usage and
+impact measurements. Consistently linking to the definitive version of an
+ACM article should reduce user confusion over article versioning. After an
+article has been published and assigned to the appropriate ACM Author
+Profile pages, authors should visit
+http://www.acm.org/publications/acm-author-izer-service to learn how to
+create links for free downloads from the ACM DL.
+
+The official publication date is the date the journal is made available in
+the ACM Digital Library. The journal issue and associated papers will be
+published no earlier than 1 August, 2026. The official publication date
+affects the deadline for any patent filings related to published work.
+
+Authors of each accepted submission are invited to attend and be available
+for the presentation of that paper at the conference. The schedule for
+presentations will be determined and shared with authors after the full
+program has been selected.
+
+ORCID: ORCID provides a persistent digital identifier (an ORCID iD) that
+you own and control, and that distinguishes you from every other
+researcher: https://orcid.org/. ACM now require an ORCID iD for every
+author of a paper, not just the corresponding author. So, the author who is
+filling out the permission form should make sure they have the ORCID iDs
+for all of their coauthors before filling out the form. Any authors who do
+not yet have an ORCID iD can go to https://orcid.org/register to have one
+assigned.
+
+By submitting your article to an ACM Publication, you are hereby
+acknowledging that you and your co-authors are subject to all ACM
+Publications Policies, including ACM=E2=80=99s new Publications Policy on R=
+esearch
+Involving Human Participants and Subjects. Alleged violations of this
+policy or any ACM Publications Policy will be investigated by ACM and may
+result in a full retraction of your paper, in addition to other potential
+penalties, as per ACM Publications Policy.
+Artifact Evaluation
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#artifact-evaluation=
+>
+
+Authors of papers that are conditionally accepted in the first phase of the
+review process will be encouraged (but not required) to submit supporting
+materials for Artifact Evaluation. These items will then be reviewed by an
+Artifact Evaluation Committee, separate from the paper Review Committee,
+whose task is to assess how the artifacts support the work described in the
+associated paper. Papers that go through the Artifact Evaluation process
+successfully will receive a seal of approval printed on the papers
+themselves. Authors of accepted papers will be encouraged to make the
+supporting materials publicly available upon publication of the papers, for
+example, by including them as =E2=80=9Csource materials=E2=80=9D in the ACM=
+ Digital
+Library. An additional seal will mark papers whose artifacts are made
+available, as outlined in the ACM guidelines for artifact badging.
+
+Participation in Artifact Evaluation is voluntary and *will not influence* =
+the
+final decision regarding paper acceptance.
+Special categories of papers
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#special-categories-=
+of-papers>
+
+In addition to research papers, PACMPL issue ICFP solicits two kinds of
+papers that do not require original research contributions: Functional
+Pearls, which are full papers, and Experience Reports, which are limited to
+half the length of a full paper. Authors submitting such papers should
+consider the following guidelines.
+Functional Pearls
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#functional-pearls>
+
+A Functional Pearl is an elegant essay about something related to
+functional programming. Examples include, but are not limited to:
+
+   - a new and thought-provoking way of looking at an old idea;
+      - an instructive example of program calculation or proof;
+      - a nifty presentation of an old or new data structure;
+      - an interesting application of functional programming techniques;
+      - a novel use or exposition of functional programming in the
+      classroom.
+
+While pearls often demonstrate an idea through the development of a short
+program, there is no requirement or expectation that they do so. Thus, they
+encompass the notions of theoretical and educational pearls.
+
+Functional Pearls are valued as highly and judged as rigorously as ordinary
+papers, but using somewhat different criteria. In particular, a pearl is
+not required to report original research, but, it should be concise,
+instructive, and entertaining. A pearl is likely to be rejected if its
+readers get bored, if the material gets too complicated, if too
+much-specialised knowledge is needed, or if the writing is inelegant. The
+key to writing a good pearl is polishing.
+
+A submission that is intended to be treated as a pearl must be marked as
+such on the submission web page and should contain the words =E2=80=9CFunct=
+ional
+Pearl=E2=80=9D somewhere in its title or subtitle. These steps will alert r=
+eviewers
+to use the appropriate evaluation criteria. Pearls will be combined with
+ordinary papers for the purpose of computing the conference=E2=80=99s accep=
+tance
+rate.
+Experience Reports
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#experience-reports>
+
+The purpose of an Experience Report is to describe the experience of using
+functional programming in practice, whether in industrial application, tool
+development, programming education, or any other area.
+
+Possible topics for an Experience Report include, but are not limited to:
+
+   - insights gained from real-world projects using functional programming;
+      - comparison of functional programming with conventional programming
+      in the context of an industrial project or a university curriculum
+      project-management, business, or legal issues encountered when using
+      functional programming in a real-world project;
+      - curricular issues encountered when using functional programming in
+      education;
+      - real-world constraints that created special challenges for an
+      implementation of a functional language or for functional programming=
+ in
+      general.
+
+An Experience Report is distinguished from a normal PACMPL issue ICFP paper
+by its title, by its length, and by the criteria used to evaluate it.
+
+Both in the papers and in any citations, the title of each accepted
+Experience Report must end with the words =E2=80=9C(Experience Report)=E2=
+=80=9D in
+parentheses. The acceptance rate for Experience Reports will be computed
+and reported separately from the rate for ordinary papers.
+
+Experience Report submissions can be at most 12 pages long, excluding
+bibliography.
+
+Each accepted Experience Report will be presented at the conference, but
+depending on the number of Experience Reports and regular papers accepted,
+authors of Experience Reports may be asked to give shorter talks.
+
+Because the purpose of Experience Reports is to enable our community to
+understand the application of functional programming, an acceptable
+Experience Report need not add to the body of knowledge of the
+functional-programming community by presenting novel results or
+conclusions. It is sufficient if the report describes an illuminating
+experience with functional programming, or provides evidence for a clear
+thesis about the use of functional programming. The experience or thesis
+must be relevant to ICFP, but it need not be novel.
+
+The review committee will accept or reject Experience Reports based on
+whether they judge the paper to illuminate some aspect of the use of
+functional programming. Anecdotal evidence will be acceptable provided it
+is well-argued and the author explains what efforts were made to gather as
+much evidence as possible. Typically, papers that show how functional
+programming was used are more convincing than papers that say only that
+functional programming was used. It can be especially effective to present
+comparisons of the situations before and after the experience described in
+the paper, but other kinds of evidence would also make sense, depending on
+context. Experience drawn from a single person=E2=80=99s experience may be
+sufficient, but more weight will be given to evidence drawn from the
+experience of groups of people.
+
+An Experience Report should be short and to the point. For an industrial
+project, it should make a claim about how well functional programming
+worked and why; for a pedagogy paper, it might make a claim about the
+suitability of a particular teaching style or educational exercise. Either
+way, it should produce evidence to substantiate the claim. If functional
+programming worked in this case in the same ways it has worked for others,
+the paper need only summarise the results =E2=80=94 the main part of the pa=
+per
+should discuss how well it worked and in what context. Most readers will
+not want to know all the details of the experience and its implementation,
+but the paper should characterise it and its context well enough so that
+readers can judge to what degree this experience is relevant to their own
+circumstances. The paper should take care to highlight any unusual aspects;
+specifics about the experience are more valuable than generalities about
+functional programming.
+
+If the paper not only describes experience but also presents new technical
+results, or if the experience refutes cherished beliefs of the
+functional-programming community, it may be better to submit it as a full
+paper, which will be judged by the usual criteria of novelty, originality,
+and relevance. The Program Chair will be happy to advise on any concerns
+about which category to submit to.
+About PACMPL
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#about-pacmpl>
+
+Proceedings of the ACM on Programming Languages (PACMPL
+https://pacmpl.acm.org/) is a Gold Open Access journal publishing research
+on all aspects of programming languages, from design to implementation and
+from mathematical formalisms to empirical studies. Each issue of the
+journal is devoted to a particular subject area within programming
+languages and will be announced through publicised Calls for Papers, like
+this one.
+Important update on ACM=E2=80=99s new open access publishing model for 2026=
+ ACM
+Conferences:
+<https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#important-update-on=
+-acms-new-open-access-publishing-model-for-2026-acm-conferences>
+
+Starting January 1, 2026, ACM will fully transition to Open Access. All ACM
+publications, including those from ACM-sponsored conferences, will be 100%
+Open Access. Authors will have two primary options for publishing Open
+Access articles with ACM: the ACM Open institutional model or by paying
+Article Processing Charges (APCs). With over 1,800 institutions already
+part of ACM Open, the majority of ACM-sponsored conference papers will not
+require APCs from authors or conferences (currently, around 70=E2=80=9375%)=
+.
+
+Authors from institutions not participating in ACM Open will need to pay an
+APC to publish their papers, unless they qualify for a geographic or
+discretionary waiver. To find out whether an APC applies to your article,
+please consult the list of participating institutions
+<https://libraries.acm.org/acmopen/open-participants> in ACM Open and
+review the APC Waivers and Discounts Policy
+<https://www.acm.org/publications/policies/policy-on-open-access-apc-waiver=
+s-and-discounts>
+.
+
+To support a smooth transition and encourage broader ACM Open
+participation, ACM has introduced a temporary subsidy on APC pricing for
+2026, funded directly by ACM. This pricing applies to all articles
+published in ACM and SIG sponsored conferences taking place in 2026. The
+subsidized conference pricing for 2026 is as follows:
+Authors No ACM or SIG members At least 1 ACM or SIG member
+ACM and SIG Sponsored Conference Article $350 $250
+From a lower-middle-income country
+<https://www.acm.org/publications/policies/lower-middle-income-countries>
+$175 $125
+
+This represents a 65% discount <https://www.acm.org/publications/openaccess=
+>,
+funded directly by ACM. Authors are encouraged to help advocate for their
+institutions to join ACM Open during this transition period.
+
+--000000000000098168064354a26a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><h2 style=3D"box-sizing:border-box;font-family:&quot;Helve=
+tica Neue&quot;,Helvetica,Arial,sans-serif;font-weight:500;line-height:1.1;=
+color:rgb(51,51,51);margin-top:20px;margin-bottom:10px;font-size:30px">ICFP=
+ 2026 Call for Papers</h2><div><p style=3D"box-sizing:border-box;margin:0px=
+ 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvet=
+ica,Arial,sans-serif;font-size:14px">Accepted papers to be invited for pres=
+entation at:</p><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color=
+:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-=
+serif;font-size:14px"><b>The <i>31st ACM SIGPLAN International Conference o=
+n Functional Programming<br></i></b>August 23-29, 2026<br>Indianapolis, Ind=
+iana, USA<br><a href=3D"https://icfp26.sigplan.org/">https://icfp26.sigplan=
+.org</a>=C2=A0</p><hr style=3D"box-sizing:content-box;height:0px;margin-top=
+:20px;margin-bottom:20px;border-right:0px;border-bottom:0px;border-left:0px=
+;border-top-style:solid;border-top-color:rgb(238,238,238);font-family:&quot=
+;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px"><p style=
+=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-fami=
+ly:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">Su=
+bmission Information</p><ul style=3D"box-sizing:border-box;margin-top:0px;m=
+argin-bottom:10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot=
+;,Helvetica,Arial,sans-serif;font-size:14px"><li style=3D"box-sizing:border=
+-box"><b>Submission web site</b>:=C2=A0<a href=3D"https://icfp26.hotcrp.com=
+/" style=3D"background-color:transparent;box-sizing:border-box;color:rgb(51=
+,122,183);text-decoration-line:none;word-break:break-word">https://icfp26.h=
+otcrp.com</a></li><li style=3D"box-sizing:border-box"><b>Submission Deadlin=
+e</b>: 19 Feb 2026 (AoE)</li></ul></div><p style=3D"box-sizing:border-box;m=
+argin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quo=
+t;,Helvetica,Arial,sans-serif;font-size:14px">Double-blind review</p><ul st=
+yle=3D"box-sizing:border-box;margin-top:0px;margin-bottom:10px;color:rgb(51=
+,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;f=
+ont-size:14px"><li style=3D"box-sizing:border-box">Reviews: 20 Apr 2026 (Ao=
+E)</li><li style=3D"box-sizing:border-box">Author Response: 20 Apr 2026 - 2=
+3 Apr 2026 (AoE)</li><li style=3D"box-sizing:border-box">Notification of Co=
+nditional Acceptance: 14 May 2026 (AoE)</li><li style=3D"box-sizing:border-=
+box">Revision: 3 Jun 2026 (AoE)</li><li style=3D"box-sizing:border-box">Fin=
+al Notification: 10 Jun 2026 (AoE)</li><li style=3D"box-sizing:border-box">=
+Camera Ready: 1 Jul 2026 (AoE)</li></ul><hr style=3D"box-sizing:content-box=
+;height:0px;margin-top:20px;margin-bottom:20px;border-right:0px;border-bott=
+om:0px;border-left:0px;border-top-style:solid;border-top-color:rgb(238,238,=
+238);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font=
+-size:14px"><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb=
+(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-seri=
+f;font-size:14px">PACMPL issue ICFP 2026 seeks original papers on the art a=
+nd science of functional programming. Submissions are invited on all topics=
+ from principles to practice, from foundations to features, and from abstra=
+ction to application. The scope includes all languages that encourage funct=
+ional programming, including both purely applicative and imperative languag=
+es, as well as languages with objects, concurrency, or parallelism. Topics =
+of interest include (but are not limited to):</p><ul style=3D"box-sizing:bo=
+rder-box;margin-top:0px;margin-bottom:10px;color:rgb(51,51,51);font-family:=
+&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px"><li s=
+tyle=3D"box-sizing:border-box"><p style=3D"box-sizing:border-box;margin:0px=
+ 0px 10px">Language Design: concurrency, parallelism, and distribution; mod=
+ularity; components and composition; meta-programming; macros; pattern matc=
+hing; type systems; type inference; dependent types; effect types; gradual =
+types; refinement types; session types; interoperability; domain-specific l=
+anguages; imperative programming; object-oriented programming; logic progra=
+mming; probabilistic programming; reactive programming; generic programming=
+; bidirectional programming; secure programming.</p></li><li style=3D"box-s=
+izing:border-box"><p style=3D"box-sizing:border-box;margin:0px 0px 10px">Im=
+plementation: abstract machines; virtual machines; interpretation; compilat=
+ion; compile-time and run-time optimisation; garbage collection and memory =
+management; runtime systems; multi-threading; exploiting parallel hardware;=
+ interfaces to foreign functions, services, components, or low-level machin=
+e resources.</p></li><li style=3D"box-sizing:border-box"><p style=3D"box-si=
+zing:border-box;margin:0px 0px 10px">Software-Development Techniques: algor=
+ithms and data structures; design patterns; specification; verification; va=
+lidation; proof assistants; debugging; testing; tracing; profiling; build s=
+ystems; program synthesis.</p></li><li style=3D"box-sizing:border-box"><p s=
+tyle=3D"box-sizing:border-box;margin:0px 0px 10px">Analysis and Transformat=
+ion: control flow; data flow; abstract interpretation; partial evaluation; =
+program calculation.</p></li><li style=3D"box-sizing:border-box"><p style=
+=3D"box-sizing:border-box;margin:0px 0px 10px">Foundations: formal semantic=
+s; lambda calculus; program equivalence; rewriting; type theory; logic; cat=
+egory theory; computational effects; continuations; control; state; names a=
+nd binding; program verification.</p></li><li style=3D"box-sizing:border-bo=
+x"><p style=3D"box-sizing:border-box;margin:0px 0px 10px">Applications: sym=
+bolic computing; formal-methods tools; systems programming; distributed sys=
+tems and web programming; hardware design; databases; scientific and numeri=
+cal computing; graphical user interfaces; graphics and multimedia; GPU prog=
+ramming; scripting; system administration; security.</p></li><li style=3D"b=
+ox-sizing:border-box"><p style=3D"box-sizing:border-box;margin:0px 0px 10px=
+">Education: teaching introductory programming; mathematical proof; algebra=
+.</p></li></ul><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:=
+rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-s=
+erif;font-size:14px">Submissions will be evaluated according to their relev=
+ance, correctness, significance, originality, and clarity. Each submission =
+should explain its contributions in both general and technical terms, clear=
+ly identifying what has been accomplished, explaining why it is significant=
+, and comparing it with previous work. The technical content should be acce=
+ssible to a broad audience.</p><p style=3D"box-sizing:border-box;margin:0px=
+ 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvet=
+ica,Arial,sans-serif;font-size:14px">PACMPL issue ICFP 2026 also welcomes s=
+ubmissions in two separate categories =E2=80=94 Functional Pearls and Exper=
+ience Reports =E2=80=94 that must be marked as such when submitted and that=
+=C2=A0<em style=3D"box-sizing:border-box">need not</em>=C2=A0report origina=
+l research results. Detailed guidelines on both categories are given at the=
+ end of this call.</p><p style=3D"box-sizing:border-box;margin:0px 0px 10px=
+;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial=
+,sans-serif;font-size:14px">In an effort to achieve a balanced, diverse pro=
+gram, each author may be listed as a (co)author on a maximum of four submis=
+sions. Authors who require financial support to attend the conference can a=
+pply for PAC funding (<a href=3D"http://www.sigplan.org/PAC/" style=3D"box-=
+sizing:border-box;background-color:transparent;color:rgb(51,122,183);text-d=
+ecoration-line:none;word-break:break-word">http://www.sigplan.org/PAC/</a>)=
+.</p><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,=
+51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-=
+size:14px">The General Chair and PC Chair may not submit papers. PC members=
+ (other than the PC Chair) may submit papers.</p><p style=3D"box-sizing:bor=
+der-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica=
+ Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">Please contact the P=
+rogram Chair if you have questions or are concerned about the appropriatene=
+ss of a topic.</p><h2 style=3D"box-sizing:border-box;font-family:&quot;Helv=
+etica Neue&quot;,Helvetica,Arial,sans-serif;font-weight:500;line-height:1.1=
+;color:rgb(51,51,51);margin-top:20px;margin-bottom:10px;font-size:30px"><a =
+href=3D"https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#double-bind-=
+submissions" id=3D"gmail-double-bind-submissions" class=3D"gmail-anchor-lin=
+k" style=3D"box-sizing:border-box;background-color:transparent;color:inheri=
+t;text-decoration:inherit;word-break:break-word">Double-blind Submissions</=
+a></h2><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,5=
+1,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;fon=
+t-size:14px">ICFP 2026 will use a full double-blind reviewing process. This=
+ means that identities of authors will not be made visible to reviewers unt=
+il after conditional-acceptance decisions have been made, and then only for=
+ the conditionally-accepted papers. The use of full double-blind reviewing =
+has several consequences for authors.</p><ul style=3D"box-sizing:border-box=
+;margin-top:0px;margin-bottom:10px;color:rgb(51,51,51);font-family:&quot;He=
+lvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px"><li style=3D"=
+box-sizing:border-box"><p style=3D"box-sizing:border-box;margin:0px 0px 10p=
+x">Submissions: Authors must omit their names and institutions from their p=
+aper submissions. In addition, references to authors=E2=80=99 own prior wor=
+k should be in the third person (e.g., not =E2=80=9CWe build on our previou=
+s work =E2=80=A6=E2=80=9D but rather =E2=80=9CWe build on the work of =E2=
+=80=A6=E2=80=9D).</p></li><li style=3D"box-sizing:border-box"><p style=3D"b=
+ox-sizing:border-box;margin:0px 0px 10px">Supplementary material: Authors m=
+ust fully anonymize any supplementary material (see below). Links to supple=
+mentary material on external websites are not permitted.</p></li><li style=
+=3D"box-sizing:border-box"><p style=3D"box-sizing:border-box;margin:0px 0px=
+ 10px">Author response: In responding to reviews, authors should not say an=
+ything that reveals their identity, since author identities will not be rev=
+ealed to reviewers at that stage of the reviewing process.</p></li><li styl=
+e=3D"box-sizing:border-box"><p style=3D"box-sizing:border-box;margin:0px 0p=
+x 10px">Dissemination of work under submission: Authors are welcome to diss=
+eminate their ideas and post draft versions of their paper(s) on their pers=
+onal website, institutional repository, or arXiv (reviewers will be asked t=
+o turn off arXiv notifications during the review period). But authors shoul=
+d not take steps that would almost certainly reveal their identities to mem=
+bers of the Program Committee, e.g., directly contacting PC members or publ=
+icizing the work on widely-visible social media or major mailing lists used=
+ by the community.</p></li></ul><p style=3D"box-sizing:border-box;margin:0p=
+x 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helve=
+tica,Arial,sans-serif;font-size:14px">The purpose of the above restrictions=
+ is to help the Program Committee come to a judgment about the paper withou=
+t bias, not to make it impossible for them to discover the authors=E2=80=99=
+ identities if they were to try. In particular, nothing should be done in t=
+he name of anonymity that weakens the quality of the submission. However, t=
+here are occasionally cases where adhering to the above restrictions is tru=
+ly difficult or impossible for one reason or another. In such cases, the au=
+thors should contact the Program Chair to discuss the situation and how to =
+handle it. The FAQ on Double-Blind Reviewing (<a href=3D"https://popl24.sig=
+plan.org/track/POPL-2024-popl-research-papers#FAQ-on-Double-Blind-Reviewing=
+" style=3D"box-sizing:border-box;background-color:transparent;color:rgb(51,=
+122,183);text-decoration-line:none;word-break:break-word">https://popl24.si=
+gplan.org/track/POPL-2024-popl-research-papers#FAQ-on-Double-Blind-Reviewin=
+g</a>) addresses many common scenarios and answers many common questions ab=
+out this topic. But there remain many grey areas and trade-offs. If you hav=
+e any doubts about how to interpret the double-blind rules or you encounter=
+ a complex case that is not clearly covered by the FAQ, please contact the =
+Program Chair for guidance.</p><h2 style=3D"box-sizing:border-box;font-fami=
+ly:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-weight:500;li=
+ne-height:1.1;color:rgb(51,51,51);margin-top:20px;margin-bottom:10px;font-s=
+ize:30px"><a href=3D"https://icfp26.sigplan.org/track/icfp-2026-icfp-papers=
+#preparation-of-submissions" id=3D"gmail-preparation-of-submissions" class=
+=3D"gmail-anchor-link" style=3D"box-sizing:border-box;background-color:tran=
+sparent;color:inherit;text-decoration:inherit;word-break:break-word">Prepar=
+ation of submissions</a></h2><p style=3D"box-sizing:border-box;margin:0px 0=
+px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetic=
+a,Arial,sans-serif;font-size:14px">The deadline for submissions is: <b>** T=
+hursay, 19 Feb 2026 AoE **</b> (<a href=3D"https://www.timeanddate.com/time=
+/zones/aoe" style=3D"box-sizing:border-box;background-color:transparent;col=
+or:rgb(51,122,183);text-decoration-line:none;word-break:break-word">https:/=
+/www.timeanddate.com/time/zones/aoe</a>). This deadline will be strictly en=
+forced.</p><ul style=3D"box-sizing:border-box;margin-top:0px;margin-bottom:=
+10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,A=
+rial,sans-serif;font-size:14px"><li style=3D"box-sizing:border-box"><p styl=
+e=3D"box-sizing:border-box;margin:0px 0px 10px">Formatting: Submissions mus=
+t be in PDF format, printable in black and white on US Letter sized paper a=
+nd interpretable by common PDF tools. All submissions must adhere to the =
+=E2=80=9CACM Small=E2=80=9D template that is available (in both LaTeX and W=
+ord formats) from=C2=A0<a href=3D"https://www.acm.org/publications/authors/=
+submissions" style=3D"box-sizing:border-box;background-color:transparent;co=
+lor:rgb(51,122,183);text-decoration-line:none;word-break:break-word">https:=
+//www.acm.org/publications/authors/submissions</a>.</p><p style=3D"box-sizi=
+ng:border-box;margin:0px 0px 10px">Please download the latest version of th=
+e ACM style from=C2=A0<a href=3D"https://www.acm.org/publications/authors/s=
+ubmissions" style=3D"box-sizing:border-box;background-color:transparent;col=
+or:rgb(51,122,183);text-decoration-line:none;word-break:break-word">https:/=
+/www.acm.org/publications/authors/submissions</a>, since the citation forma=
+t has recently been changed.</p><p style=3D"box-sizing:border-box;margin:0p=
+x 0px 10px">See also PACMPL=E2=80=99s Information and Guidelines for Author=
+s at=C2=A0<a href=3D"https://pacmpl.acm.org/authors.cfm" style=3D"box-sizin=
+g:border-box;background-color:transparent;color:rgb(51,122,183);text-decora=
+tion-line:none;word-break:break-word">https://pacmpl.acm.org/authors.cfm</a=
+>.</p><p style=3D"box-sizing:border-box;margin:0px 0px 10px">There is a lim=
+it of=C2=A0<em style=3D"box-sizing:border-box">25 pages</em>=C2=A0for a ful=
+l paper or Functional Pearl and=C2=A0<em style=3D"box-sizing:border-box">12=
+ pages</em>=C2=A0for an Experience Report; in either case, the bibliography=
+ and an optional clearly marked appendix will not be counted against these =
+limits. Submissions that exceed the page limits or, for other reasons, do n=
+ot meet the requirements for formatting, will be desk rejected.</p></li><li=
+ style=3D"box-sizing:border-box"><p style=3D"box-sizing:border-box;margin:0=
+px 0px 10px">Submission: Submissions will be accepted at=C2=A0<a href=3D"ht=
+tps://icfp26.hotcrp.com/" style=3D"box-sizing:border-box;background-color:t=
+ransparent;color:rgb(51,122,183);text-decoration-line:none;word-break:break=
+-word">https://icfp26.hotcrp.com</a></p><p style=3D"box-sizing:border-box;m=
+argin:0px 0px 10px">Improved versions of a paper may be submitted at any po=
+int before the submission deadline using the same web interface.</p></li><l=
+i style=3D"box-sizing:border-box"><p style=3D"box-sizing:border-box;margin:=
+0px 0px 10px">Author Response Period: Authors will have a 96-hour period, s=
+tarting at 00:00 (midnight) AoE on Monday, 20 April, 2026, to read reviews =
+and respond to them.</p></li><li style=3D"box-sizing:border-box"><p style=
+=3D"box-sizing:border-box;margin:0px 0px 10px">Appendix and Supplementary M=
+aterial: Authors have the option to include a clearly marked appendix and/o=
+r to attach supplementary material to a submission, on the understanding th=
+at reviewers may choose not to look at such an appendix or supplementary ma=
+terial. Supplementary material may be uploaded as a separate PDF document o=
+r tarball. Any supplementary material must be uploaded at submission time, =
+not by providing a URL in the paper that points to an external repository. =
+All supplementary material must be anonymised.</p></li><li style=3D"box-siz=
+ing:border-box"><p style=3D"box-sizing:border-box;margin:0px 0px 10px">Auth=
+orship Policies: All submissions are expected to comply with the ACM Polici=
+es for Authorship that are detailed at=C2=A0<a href=3D"https://www.acm.org/=
+publications/authors/information-for-authors" style=3D"box-sizing:border-bo=
+x;background-color:transparent;color:rgb(51,122,183);text-decoration-line:n=
+one;word-break:break-word">https://www.acm.org/publications/authors/informa=
+tion-for-authors</a>.</p></li><li style=3D"box-sizing:border-box"><p style=
+=3D"box-sizing:border-box;margin:0px 0px 10px">Republication Policies: Each=
+ submission must adhere to SIGPLAN=E2=80=99s republication policy, as expla=
+ined on the web at=C2=A0<a href=3D"http://www.sigplan.org/Resources/Policie=
+s/Republication" style=3D"box-sizing:border-box;background-color:transparen=
+t;color:rgb(51,122,183);text-decoration-line:none;word-break:break-word">ht=
+tp://www.sigplan.org/Resources/Policies/Republication</a>.</p></li></ul><h2=
+ style=3D"box-sizing:border-box;font-family:&quot;Helvetica Neue&quot;,Helv=
+etica,Arial,sans-serif;font-weight:500;line-height:1.1;color:rgb(51,51,51);=
+margin-top:20px;margin-bottom:10px;font-size:30px"><a href=3D"https://icfp2=
+6.sigplan.org/track/icfp-2026-icfp-papers#review-process" id=3D"gmail-revie=
+w-process" class=3D"gmail-anchor-link" style=3D"box-sizing:border-box;backg=
+round-color:transparent;color:inherit;text-decoration:inherit;word-break:br=
+eak-word">Review Process</a></h2><p style=3D"box-sizing:border-box;margin:0=
+px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helv=
+etica,Arial,sans-serif;font-size:14px">This section outlines the two-stage =
+process with double-blind reviewing that will be used to select papers for =
+PACMPL issue ICFP 2026. Like last year, ICFP 2026 will adapt a full double-=
+blind reviewing process. More information see below.</p><p style=3D"box-siz=
+ing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;He=
+lvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">ICFP 2026 wil=
+l have two Associate Chairs who will help the PC Chair monitor reviews, sol=
+icit external expert reviews for submissions when there is not enough exper=
+tise on the committee, and facilitate reviewer discussions.</p><p style=3D"=
+box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&=
+quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">ICFP 2=
+026 will employ a two-stage review process. The first stage in the review p=
+rocess will assess submitted papers using the criteria stated above and wil=
+l allow for feedback and input on initial reviews through the author respon=
+se period mentioned previously. As a result of the review process, a set of=
+ papers will be conditionally accepted and all other papers will be rejecte=
+d. Authors will be notified of these decisions on 14 May, 2026.</p><p style=
+=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-fami=
+ly:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">Au=
+thors of conditionally accepted papers will be provided with committee revi=
+ews along with a set of optional or mandatory revisions. By 3 June, 2026, t=
+he authors should provide a revised submission. The second and final review=
+ing phase assesses whether the mandatory revisions have been adequately add=
+ressed by the authors and thereby determines the final accept/reject status=
+ of the paper. The intent and expectation is that the mandatory revisions c=
+an feasibly be addressed within a couple of weeks.</p><p style=3D"box-sizin=
+g:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helv=
+etica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">The second subm=
+ission should clearly identify how the mandatory revisions were addressed. =
+To that end, the second submission=C2=A0<em style=3D"box-sizing:border-box"=
+>must be accompanied by a cover letter</em>=C2=A0mapping each mandatory rev=
+ision request to specific parts of the paper. The cover letter will facilit=
+ate a quick second review, allowing for confirmation of final acceptance wi=
+thin two weeks. Conversely, the absence of a cover letter will be grounds f=
+or the paper=E2=80=99s rejection.</p><h2 style=3D"box-sizing:border-box;fon=
+t-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-weight:=
+500;line-height:1.1;color:rgb(51,51,51);margin-top:20px;margin-bottom:10px;=
+font-size:30px"><a href=3D"https://icfp26.sigplan.org/track/icfp-2026-icfp-=
+papers#information-for-authors-of-accepted-papers" id=3D"gmail-information-=
+for-authors-of-accepted-papers" class=3D"gmail-anchor-link" style=3D"box-si=
+zing:border-box;background-color:transparent;color:inherit;text-decoration:=
+inherit;word-break:break-word">Information for Authors of Accepted Papers</=
+a></h2><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,5=
+1,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;fon=
+t-size:14px">As a condition of acceptance, final versions of all papers mus=
+t adhere to the ACM Small format. The page limit for the final versions of =
+papers will be=C2=A0<em style=3D"box-sizing:border-box">increased by two pa=
+ges</em>=C2=A0to help authors respond to reviewer comments and mandatory re=
+visions: 27 pages plus bibliography for a regular paper or Functional Pearl=
+, 14 pages plus bibliography for an Experience Report.</p><p style=3D"box-s=
+izing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;=
+Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">Authors of =
+accepted submissions will be required to agree to one of the three ACM lice=
+nsing options, one of which is Creative Commons CC-BY publication; this is =
+the option recommended by the PACMPL editorial board. A reasoned argument i=
+n favour of this option can be found in the article Why CC-BY? published by=
+ OASPA, the Open Access Scholarly Publishers Association. The other options=
+ are copyright transfer to ACM or retaining copyright but granting ACM excl=
+usive publication rights.</p><p style=3D"box-sizing:border-box;margin:0px 0=
+px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetic=
+a,Arial,sans-serif;font-size:14px">PACMPL is a Gold Open Access journal, an=
+d authors are encouraged to publish their work under a CC-BY license. Gold =
+Open Access guarantees permanent free online access to the definitive versi=
+on in the ACM Digital Library, and the recommended CC-BY option also allows=
+ anyone to copy and distribute the work with attribution. Gold Open Access =
+has been made possible by generous funding through ACM SIGPLAN, which will =
+cover all open access costs in the event authors cannot. Authors who can co=
+ver the costs may do so by paying an Article Processing Charge (APC). PACMP=
+L, SIGPLAN, and ACM Headquarters are committed to exploring routes to makin=
+g Gold Open Access publication both affordable and sustainable.</p><p style=
+=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-fami=
+ly:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">AC=
+M Author-Izer is a unique service that enables ACM authors to generate and =
+post links on either their home page or institutional repository for visito=
+rs to download the definitive version of their articles from the ACM Digita=
+l Library at no charge. Downloads through Author-Izer links are captured in=
+ official ACM statistics, improving the accuracy of usage and impact measur=
+ements. Consistently linking to the definitive version of an ACM article sh=
+ould reduce user confusion over article versioning. After an article has be=
+en published and assigned to the appropriate ACM Author Profile pages, auth=
+ors should visit=C2=A0<a href=3D"http://www.acm.org/publications/acm-author=
+-izer-service" style=3D"box-sizing:border-box;background-color:transparent;=
+color:rgb(51,122,183);text-decoration-line:none;word-break:break-word">http=
+://www.acm.org/publications/acm-author-izer-service</a>=C2=A0to learn how t=
+o create links for free downloads from the ACM DL.</p><p style=3D"box-sizin=
+g:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helv=
+etica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">The official pu=
+blication date is the date the journal is made available in the ACM Digital=
+ Library. The journal issue and associated papers will be published no earl=
+ier than 1 August, 2026. The official publication date affects the deadline=
+ for any patent filings related to published work.</p><p style=3D"box-sizin=
+g:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helv=
+etica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">Authors of each=
+ accepted submission are invited to attend and be available for the present=
+ation of that paper at the conference. The schedule for presentations will =
+be determined and shared with authors after the full program has been selec=
+ted.</p><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,=
+51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;fo=
+nt-size:14px">ORCID: ORCID provides a persistent digital identifier (an ORC=
+ID iD) that you own and control, and that distinguishes you from every othe=
+r researcher:=C2=A0<a href=3D"https://orcid.org/" style=3D"box-sizing:borde=
+r-box;background-color:transparent;color:rgb(51,122,183);text-decoration-li=
+ne:none;word-break:break-word">https://orcid.org/</a>. ACM now require an O=
+RCID iD for every author of a paper, not just the corresponding author. So,=
+ the author who is filling out the permission form should make sure they ha=
+ve the ORCID iDs for all of their coauthors before filling out the form. An=
+y authors who do not yet have an ORCID iD can go to=C2=A0<a href=3D"https:/=
+/orcid.org/register" style=3D"box-sizing:border-box;background-color:transp=
+arent;color:rgb(51,122,183);text-decoration-line:none;word-break:break-word=
+">https://orcid.org/register</a>=C2=A0to have one assigned.</p><p style=3D"=
+box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&=
+quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">By sub=
+mitting your article to an ACM Publication, you are hereby acknowledging th=
+at you and your co-authors are subject to all ACM Publications Policies, in=
+cluding ACM=E2=80=99s new Publications Policy on Research Involving Human P=
+articipants and Subjects. Alleged violations of this policy or any ACM Publ=
+ications Policy will be investigated by ACM and may result in a full retrac=
+tion of your paper, in addition to other potential penalties, as per ACM Pu=
+blications Policy.</p><h2 style=3D"box-sizing:border-box;font-family:&quot;=
+Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-weight:500;line-height=
+:1.1;color:rgb(51,51,51);margin-top:20px;margin-bottom:10px;font-size:30px"=
+><a href=3D"https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#artifact=
+-evaluation" id=3D"gmail-artifact-evaluation" class=3D"gmail-anchor-link" s=
+tyle=3D"box-sizing:border-box;background-color:transparent;color:inherit;te=
+xt-decoration:inherit;word-break:break-word">Artifact Evaluation</a></h2><p=
+ style=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);fon=
+t-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14=
+px">Authors of papers that are conditionally accepted in the first phase of=
+ the review process will be encouraged (but not required) to submit support=
+ing materials for Artifact Evaluation. These items will then be reviewed by=
+ an Artifact Evaluation Committee, separate from the paper Review Committee=
+, whose task is to assess how the artifacts support the work described in t=
+he associated paper. Papers that go through the Artifact Evaluation process=
+ successfully will receive a seal of approval printed on the papers themsel=
+ves. Authors of accepted papers will be encouraged to make the supporting m=
+aterials publicly available upon publication of the papers, for example, by=
+ including them as =E2=80=9Csource materials=E2=80=9D in the ACM Digital Li=
+brary. An additional seal will mark papers whose artifacts are made availab=
+le, as outlined in the ACM guidelines for artifact badging.</p><p style=3D"=
+box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&=
+quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">Partic=
+ipation in Artifact Evaluation is voluntary and=C2=A0<em style=3D"box-sizin=
+g:border-box">will not influence</em>=C2=A0the final decision regarding pap=
+er acceptance.</p><h2 style=3D"box-sizing:border-box;font-family:&quot;Helv=
+etica Neue&quot;,Helvetica,Arial,sans-serif;font-weight:500;line-height:1.1=
+;color:rgb(51,51,51);margin-top:20px;margin-bottom:10px;font-size:30px"><a =
+href=3D"https://icfp26.sigplan.org/track/icfp-2026-icfp-papers#special-cate=
+gories-of-papers" id=3D"gmail-special-categories-of-papers" class=3D"gmail-=
+anchor-link" style=3D"box-sizing:border-box;background-color:transparent;co=
+lor:inherit;text-decoration:inherit;word-break:break-word">Special categori=
+es of papers</a></h2><p style=3D"box-sizing:border-box;margin:0px 0px 10px;=
+color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,=
+sans-serif;font-size:14px">In addition to research papers, PACMPL issue ICF=
+P solicits two kinds of papers that do not require original research contri=
+butions: Functional Pearls, which are full papers, and Experience Reports, =
+which are limited to half the length of a full paper. Authors submitting su=
+ch papers should consider the following guidelines.</p><h4 style=3D"box-siz=
+ing:border-box;font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-=
+serif;font-weight:500;line-height:1.1;color:rgb(51,51,51);margin-top:10px;m=
+argin-bottom:10px;font-size:18px"><a href=3D"https://icfp26.sigplan.org/tra=
+ck/icfp-2026-icfp-papers#functional-pearls" id=3D"gmail-functional-pearls" =
+class=3D"gmail-anchor-link" style=3D"box-sizing:border-box;background-color=
+:transparent;color:inherit;text-decoration:inherit;word-break:break-word">F=
+unctional Pearls</a></h4><p style=3D"box-sizing:border-box;margin:0px 0px 1=
+0px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Ar=
+ial,sans-serif;font-size:14px">A Functional Pearl is an elegant essay about=
+ something related to functional programming. Examples include, but are not=
+ limited to:</p><ul style=3D"box-sizing:border-box;margin-top:0px;margin-bo=
+ttom:10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvet=
+ica,Arial,sans-serif;font-size:14px"><li style=3D"box-sizing:border-box">a =
+new and thought-provoking way of looking at an old idea;<ul style=3D"box-si=
+zing:border-box;margin-top:0px;margin-bottom:0px"><li style=3D"box-sizing:b=
+order-box">an instructive example of program calculation or proof;</li><li =
+style=3D"box-sizing:border-box">a nifty presentation of an old or new data =
+structure;</li><li style=3D"box-sizing:border-box">an interesting applicati=
+on of functional programming techniques;</li><li style=3D"box-sizing:border=
+-box">a novel use or exposition of functional programming in the classroom.=
+</li></ul></li></ul><p style=3D"box-sizing:border-box;margin:0px 0px 10px;c=
+olor:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,s=
+ans-serif;font-size:14px">While pearls often demonstrate an idea through th=
+e development of a short program, there is no requirement or expectation th=
+at they do so. Thus, they encompass the notions of theoretical and educatio=
+nal pearls.</p><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:=
+rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-s=
+erif;font-size:14px">Functional Pearls are valued as highly and judged as r=
+igorously as ordinary papers, but using somewhat different criteria. In par=
+ticular, a pearl is not required to report original research, but, it shoul=
+d be concise, instructive, and entertaining. A pearl is likely to be reject=
+ed if its readers get bored, if the material gets too complicated, if too m=
+uch-specialised knowledge is needed, or if the writing is inelegant. The ke=
+y to writing a good pearl is polishing.</p><p style=3D"box-sizing:border-bo=
+x;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&=
+quot;,Helvetica,Arial,sans-serif;font-size:14px">A submission that is inten=
+ded to be treated as a pearl must be marked as such on the submission web p=
+age and should contain the words =E2=80=9CFunctional Pearl=E2=80=9D somewhe=
+re in its title or subtitle. These steps will alert reviewers to use the ap=
+propriate evaluation criteria. Pearls will be combined with ordinary papers=
+ for the purpose of computing the conference=E2=80=99s acceptance rate.</p>=
+<h4 style=3D"box-sizing:border-box;font-family:&quot;Helvetica Neue&quot;,H=
+elvetica,Arial,sans-serif;font-weight:500;line-height:1.1;color:rgb(51,51,5=
+1);margin-top:10px;margin-bottom:10px;font-size:18px"><a href=3D"https://ic=
+fp26.sigplan.org/track/icfp-2026-icfp-papers#experience-reports" id=3D"expe=
+rience-reports" class=3D"gmail-anchor-link" style=3D"box-sizing:border-box;=
+background-color:transparent;color:inherit;text-decoration:inherit;word-bre=
+ak:break-word">Experience Reports</a></h4><p style=3D"box-sizing:border-box=
+;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&q=
+uot;,Helvetica,Arial,sans-serif;font-size:14px">The purpose of an Experienc=
+e Report is to describe the experience of using functional programming in p=
+ractice, whether in industrial application, tool development, programming e=
+ducation, or any other area.</p><p style=3D"box-sizing:border-box;margin:0p=
+x 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helve=
+tica,Arial,sans-serif;font-size:14px">Possible topics for an Experience Rep=
+ort include, but are not limited to:</p><ul style=3D"box-sizing:border-box;=
+margin-top:0px;margin-bottom:10px;color:rgb(51,51,51);font-family:&quot;Hel=
+vetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px"><li style=3D"b=
+ox-sizing:border-box">insights gained from real-world projects using functi=
+onal programming;<ul style=3D"box-sizing:border-box;margin-top:0px;margin-b=
+ottom:0px"><li style=3D"box-sizing:border-box">comparison of functional pro=
+gramming with conventional programming in the context of an industrial proj=
+ect or a university curriculum project-management, business, or legal issue=
+s encountered when using functional programming in a real-world project;</l=
+i><li style=3D"box-sizing:border-box">curricular issues encountered when us=
+ing functional programming in education;</li><li style=3D"box-sizing:border=
+-box">real-world constraints that created special challenges for an impleme=
+ntation of a functional language or for functional programming in general.<=
+/li></ul></li></ul><p style=3D"box-sizing:border-box;margin:0px 0px 10px;co=
+lor:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sa=
+ns-serif;font-size:14px">An Experience Report is distinguished from a norma=
+l PACMPL issue ICFP paper by its title, by its length, and by the criteria =
+used to evaluate it.</p><p style=3D"box-sizing:border-box;margin:0px 0px 10=
+px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Ari=
+al,sans-serif;font-size:14px">Both in the papers and in any citations, the =
+title of each accepted Experience Report must end with the words =E2=80=9C(=
+Experience Report)=E2=80=9D in parentheses. The acceptance rate for Experie=
+nce Reports will be computed and reported separately from the rate for ordi=
+nary papers.</p><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color=
+:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-=
+serif;font-size:14px">Experience Report submissions can be at most 12 pages=
+ long, excluding bibliography.</p><p style=3D"box-sizing:border-box;margin:=
+0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Hel=
+vetica,Arial,sans-serif;font-size:14px">Each accepted Experience Report wil=
+l be presented at the conference, but depending on the number of Experience=
+ Reports and regular papers accepted, authors of Experience Reports may be =
+asked to give shorter talks.</p><p style=3D"box-sizing:border-box;margin:0p=
+x 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helve=
+tica,Arial,sans-serif;font-size:14px">Because the purpose of Experience Rep=
+orts is to enable our community to understand the application of functional=
+ programming, an acceptable Experience Report need not add to the body of k=
+nowledge of the functional-programming community by presenting novel result=
+s or conclusions. It is sufficient if the report describes an illuminating =
+experience with functional programming, or provides evidence for a clear th=
+esis about the use of functional programming. The experience or thesis must=
+ be relevant to ICFP, but it need not be novel.</p><p style=3D"box-sizing:b=
+order-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helveti=
+ca Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">The review committ=
+ee will accept or reject Experience Reports based on whether they judge the=
+ paper to illuminate some aspect of the use of functional programming. Anec=
+dotal evidence will be acceptable provided it is well-argued and the author=
+ explains what efforts were made to gather as much evidence as possible. Ty=
+pically, papers that show how functional programming was used are more conv=
+incing than papers that say only that functional programming was used. It c=
+an be especially effective to present comparisons of the situations before =
+and after the experience described in the paper, but other kinds of evidenc=
+e would also make sense, depending on context. Experience drawn from a sing=
+le person=E2=80=99s experience may be sufficient, but more weight will be g=
+iven to evidence drawn from the experience of groups of people.</p><p style=
+=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-fami=
+ly:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">An=
+ Experience Report should be short and to the point. For an industrial proj=
+ect, it should make a claim about how well functional programming worked an=
+d why; for a pedagogy paper, it might make a claim about the suitability of=
+ a particular teaching style or educational exercise. Either way, it should=
+ produce evidence to substantiate the claim. If functional programming work=
+ed in this case in the same ways it has worked for others, the paper need o=
+nly summarise the results =E2=80=94 the main part of the paper should discu=
+ss how well it worked and in what context. Most readers will not want to kn=
+ow all the details of the experience and its implementation, but the paper =
+should characterise it and its context well enough so that readers can judg=
+e to what degree this experience is relevant to their own circumstances. Th=
+e paper should take care to highlight any unusual aspects; specifics about =
+the experience are more valuable than generalities about functional program=
+ming.</p><p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51=
+,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;f=
+ont-size:14px">If the paper not only describes experience but also presents=
+ new technical results, or if the experience refutes cherished beliefs of t=
+he functional-programming community, it may be better to submit it as a ful=
+l paper, which will be judged by the usual criteria of novelty, originality=
+, and relevance. The Program Chair will be happy to advise on any concerns =
+about which category to submit to.</p><h2 style=3D"box-sizing:border-box;fo=
+nt-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-weight=
+:500;line-height:1.1;color:rgb(51,51,51);margin-top:20px;margin-bottom:10px=
+;font-size:30px"><a href=3D"https://icfp26.sigplan.org/track/icfp-2026-icfp=
+-papers#about-pacmpl" id=3D"gmail-about-pacmpl" class=3D"gmail-anchor-link"=
+ style=3D"box-sizing:border-box;background-color:transparent;color:inherit;=
+text-decoration:inherit;word-break:break-word">About PACMPL</a></h2><p styl=
+e=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);font-fam=
+ily:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">P=
+roceedings of the ACM on Programming Languages (PACMPL=C2=A0<a href=3D"http=
+s://pacmpl.acm.org/" style=3D"box-sizing:border-box;background-color:transp=
+arent;color:rgb(51,122,183);text-decoration-line:none;word-break:break-word=
+">https://pacmpl.acm.org/</a>) is a Gold Open Access journal publishing res=
+earch on all aspects of programming languages, from design to implementatio=
+n and from mathematical formalisms to empirical studies. Each issue of the =
+journal is devoted to a particular subject area within programming language=
+s and will be announced through publicised Calls for Papers, like this one.=
+</p><h3 style=3D"box-sizing:border-box;font-family:&quot;Helvetica Neue&quo=
+t;,Helvetica,Arial,sans-serif;font-weight:500;line-height:1.1;color:rgb(51,=
+51,51);margin-top:20px;margin-bottom:10px;font-size:24px"><a href=3D"https:=
+//icfp26.sigplan.org/track/icfp-2026-icfp-papers#important-update-on-acms-n=
+ew-open-access-publishing-model-for-2026-acm-conferences" id=3D"gmail-impor=
+tant-update-on-acms-new-open-access-publishing-model-for-2026-acm-conferenc=
+es" class=3D"gmail-anchor-link" style=3D"box-sizing:border-box;background-c=
+olor:transparent;color:inherit;text-decoration:inherit;word-break:break-wor=
+d">Important update on ACM=E2=80=99s new open access publishing model for 2=
+026 ACM Conferences:</a></h3><p style=3D"box-sizing:border-box;margin:0px 0=
+px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvetic=
+a,Arial,sans-serif;font-size:14px">Starting January 1, 2026, ACM will fully=
+ transition to Open Access. All ACM publications, including those from ACM-=
+sponsored conferences, will be 100% Open Access. Authors will have two prim=
+ary options for publishing Open Access articles with ACM: the ACM Open inst=
+itutional model or by paying Article Processing Charges (APCs). With over 1=
+,800 institutions already part of ACM Open, the majority of ACM-sponsored c=
+onference papers will not require APCs from authors or conferences (current=
+ly, around 70=E2=80=9375%).</p><p style=3D"box-sizing:border-box;margin:0px=
+ 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue&quot;,Helvet=
+ica,Arial,sans-serif;font-size:14px">Authors from institutions not particip=
+ating in ACM Open will need to pay an APC to publish their papers, unless t=
+hey qualify for a geographic or discretionary waiver. To find out whether a=
+n APC applies to your article, please consult the list of=C2=A0<a href=3D"h=
+ttps://libraries.acm.org/acmopen/open-participants" style=3D"box-sizing:bor=
+der-box;background-color:transparent;color:rgb(51,122,183);text-decoration-=
+line:none;word-break:break-word">participating institutions</a>=C2=A0in ACM=
+ Open and review the=C2=A0<a href=3D"https://www.acm.org/publications/polic=
+ies/policy-on-open-access-apc-waivers-and-discounts" style=3D"box-sizing:bo=
+rder-box;background-color:transparent;color:rgb(51,122,183);text-decoration=
+-line:none;word-break:break-word">APC Waivers and Discounts Policy</a>.</p>=
+<p style=3D"box-sizing:border-box;margin:0px 0px 10px;color:rgb(51,51,51);f=
+ont-family:&quot;Helvetica Neue&quot;,Helvetica,Arial,sans-serif;font-size:=
+14px">To support a smooth transition and encourage broader ACM Open partici=
+pation, ACM has introduced a temporary subsidy on APC pricing for 2026, fun=
+ded directly by ACM. This pricing applies to all articles published in ACM =
+and SIG sponsored conferences taking place in 2026. The subsidized conferen=
+ce pricing for 2026 is as follows:</p><table style=3D"border-collapse:colla=
+pse;border-spacing:0px;color:rgb(51,51,51);font-family:&quot;Helvetica Neue=
+&quot;,Helvetica,Arial,sans-serif;font-size:14px"><thead style=3D"box-sizin=
+g:border-box"><tr style=3D"box-sizing:border-box"><th style=3D"box-sizing:b=
+order-box;padding:2px 6px;text-align:left;border-top:1px solid rgb(204,204,=
+204)">Authors</th><th style=3D"box-sizing:border-box;padding:2px 6px;text-a=
+lign:left;border-top:1px solid rgb(204,204,204)">No ACM or SIG members</th>=
+<th style=3D"box-sizing:border-box;padding:2px 6px;text-align:left;border-t=
+op:1px solid rgb(204,204,204)">At least 1 ACM or SIG member</th></tr></thea=
+d><tbody style=3D"box-sizing:border-box"><tr style=3D"box-sizing:border-box=
+"><td style=3D"box-sizing:border-box;padding:2px 6px;border-top:1px solid r=
+gb(204,204,204)">ACM and SIG Sponsored Conference Article</td><td style=3D"=
+box-sizing:border-box;padding:2px 6px;border-top:1px solid rgb(204,204,204)=
+">$350</td><td style=3D"box-sizing:border-box;padding:2px 6px;border-top:1p=
+x solid rgb(204,204,204)">$250</td></tr><tr style=3D"box-sizing:border-box"=
+><td style=3D"box-sizing:border-box;padding:2px 6px;border-top:1px solid rg=
+b(204,204,204)">From a=C2=A0<a href=3D"https://www.acm.org/publications/pol=
+icies/lower-middle-income-countries" style=3D"box-sizing:border-box;backgro=
+und-color:transparent;color:rgb(51,122,183);text-decoration-line:none;word-=
+break:break-word">lower-middle-income country</a></td><td style=3D"box-sizi=
+ng:border-box;padding:2px 6px;border-top:1px solid rgb(204,204,204)">$175</=
+td><td style=3D"box-sizing:border-box;padding:2px 6px;border-top:1px solid =
+rgb(204,204,204)">$125</td></tr></tbody></table><p style=3D"box-sizing:bord=
+er-box;margin:0px 0px 10px;color:rgb(51,51,51);font-family:&quot;Helvetica =
+Neue&quot;,Helvetica,Arial,sans-serif;font-size:14px">This represents a=C2=
+=A0<a href=3D"https://www.acm.org/publications/openaccess" style=3D"box-siz=
+ing:border-box;background-color:transparent;color:rgb(51,122,183);text-deco=
+ration-line:none;word-break:break-word">65% discount</a>, funded directly b=
+y ACM. Authors are encouraged to help advocate for their institutions to jo=
+in ACM Open during this transition period.</p></div>
+
+--000000000000098168064354a26a--
