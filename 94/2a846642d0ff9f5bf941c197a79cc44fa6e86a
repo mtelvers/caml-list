@@ -1,0 +1,569 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=fS2Khbve;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id 3AA4940083
+	for <caml-list@tunbury.org>; Fri,  9 Jan 2026 15:42:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=message-id:date:from:to:content-transfer-encoding:
+   mime-version:subject:reply-to:sender:list-id:list-help:
+   list-subscribe:list-unsubscribe:list-post:list-owner:
+   list-archive;
+  bh=5I6x5mfDyTe/VdZpnwUQO+npk8gKEQGoiUOnFIw+EVo=;
+  b=fS2KhbveQVAebEVlDxdQEtom+Rs9oiLm44IhOAwpiKKGck455KfKBTW2
+   ToOLx1pKFYAszdrWhxCjF+SmFA9gBxeCnPgHI75IjiwMvG6GsfXbHneCO
+   aPJZpAoPdoNuNsJ0QixnWHrSDmQbI6n4nWQG9sqKt/CK0AZn3um963HVs
+   0=;
+X-CSE-ConnectionGUID: tWPl4ahRTa2Qi0wYo6o0bg==
+X-CSE-MsgGUID: +zrK/+HaQ66I0RIya5FzLA==
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
+Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
+  domain of caml-list-owner@inria.fr is inclined to not
+  designate 128.93.162.27 as permitted sender)
+  identity=mailfrom; client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@prod-sympa-app.inria.fr) identity=helo;
+  client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@prod-sympa-app.inria.fr";
+  x-conformance=spf_only
+X-IronPort-AV: E=Sophos;i="6.21,214,1763420400"; 
+   d="scan'208";a="257849664"
+Received: from prod-sympa-app.inria.fr ([128.93.162.27])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 09 Jan 2026 16:42:21 +0100
+Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
+	id 35BEF827CB; Fri,  9 Jan 2026 16:42:21 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 93708827C8;
+	Fri,  9 Jan 2026 16:40:49 +0100 (CET)
+X-CSE-ConnectionGUID: pvnjkT01Q0ezgKwVsics8g==
+X-CSE-MsgGUID: p6s1BodMTaydl7bBdnYrXg==
+IronPort-SDR: 69612180_ibs3N1MjyIX+lhFffOK5VdtQkbnT03DG2L46ngjobXTMrAX
+ Eaplyj2Kl6n3FIHgE8avVPQw9T1+VaX3NrMGd8g==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0HfAgAxIGFpgXJTZTRaDnuBUIFuU0EBRWAyBFSEWINMA?=
+ =?us-ascii?q?4UsiHmRTYhLgjCDFRYpBgkBAwELAj0UBAEBAwEDggyPYx8HAQQzBg4BAgQBA?=
+ =?us-ascii?q?QEBAwIDAQEBAQEBAQEBDQEBBQEBAQIBAQIEBgECEAEBIhkHDjuGTw2CWztxZ?=
+ =?us-ascii?q?Ak3AQEBAQEBAQEBAQEBAQEdAg0HLSo4CwYPAQUIAQESEgIFDTQCJgIzLBQBA?=
+ =?us-ascii?q?RIMgmABgiQESwQCDqUQAYFAAoslgTKBAYIMAQEGBASBAIFh2H0tFoFmAwYJA?=
+ =?us-ascii?q?YEVLohTAYVvO4ZIRIEVJw6DM4EFgUUXAQOBNQSEAIJpgiZ6FI1XhnOBShwDW?=
+ =?us-ascii?q?SwBVRMXCwcFgTMzAyAKLxQZAhQdEg8EFjIdcAwnEiwXM1gbCAWCMQWIZhsPi?=
+ =?us-ascii?q?nICAQttPTcGAwsbQZBKgicuEwV0IhMYEw0vFxMXAQcFMAQzKAUJPZJaGosIq?=
+ =?us-ascii?q?DsHhB+MHpU/BhMvhASHF4V8mEyBCJkGIolog3+VNDATGIR+AgQCBAUCEAEBB?=
+ =?us-ascii?q?oF+JIFMCQczGjQ/gmdPAxkPjjiEHIRggmaHO7IpRDQ8AgcBCgEBAwmRajSBS?=
+ =?us-ascii?q?wEB?=
+IronPort-PHdr: A9a23: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
+ jN9DW9qHzeh
+IronPort-Data: A9a23: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
+ vKQD7TSyahLxI29GFFb9OnRx69Mbw==
+IronPort-HdrOrdr: A9a23:9zHIA6zFSnIllnjkmboJKrPx1uskLtp133Aq2lEZdPULSKGlfp
+ GV9sjziyWetN9wYh4dcKO7Scy9qBTnhOZICOgqTM6ftWzd1FdAQ7sSjrcKrweQfxEWldQtqJ
+ uIEZIfNDSYNzET46fHCWGDYqwdKbK8gceVbInlvhFQpE1RGsNdB1ATMHfhLqQ6fngyObMJUL
+ 6nouZXrTupfnoaKuy9G3k+RuDG4/nGjojvbxIqDwMurFDmt0Le1JfKVzyjmjsOWTJGxrkvtU
+ DDjgzC/62m99W20AXV2WP/54lf3PHh1txALsqRjdV9EESZti+YIKBaH5GStjE8p++irH4sjd
+ n3uh8le/9+7nvAF1vF0SfF6k3F6nID+nXiwViXjT/IusriXg83DMJHmMZwbgbZw1BIhqA27I
+ t7m0ai87ZHBxLJmyrwo/LSUQtxq0ayqX0+1cYOkn1kV5cEYrM5l/1WwKpsKuZMIMvG0vFqLA
+ E3Z/usq8q+MGnqJkwxh1MfiuBFBR8Ib1m7qktrgL3l79EZpgE586Ii/r1gop4xzuNAd3B63Z
+ W6Dk1JrsA8ciZEV9MOOA5Ge7rANlDw
+X-Talos-CUID: =?us-ascii?q?9a23=3AuOUUEWtNftS+OWd+BSNT3Fy06Is9bHvfz0uIenb?=
+ =?us-ascii?q?gBHRma6KrUl6b4/Nrxp8=3D?=
+X-Talos-MUID: =?us-ascii?q?9a23=3A1LoZqAyL4ZEQ72Yi9uwQ9QyqNy+aqLzwExknlpk?=
+ =?us-ascii?q?jh8CVOSgvMR2RigWtcoByfw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.21,214,1763420400"; 
+   d="scan'208";a="135539317"
+X-MGA-submission: =?us-ascii?q?MDEMd8VAgvQHzLX7zekGOaBpFU7KBzZp62lBw6?=
+ =?us-ascii?q?nLU1TLQINHXDXK7TK2P1MSlp+kWYlqVhlfOchaoDaqZELEwmdmiFvjEa?=
+ =?us-ascii?q?8y4+KlqUepV34QGeg5lkFv5yL79tqWvbDlAGUs10xtb/WIpdn9+QZNaf?=
+ =?us-ascii?q?n8tbqBxhtpBUM+3JbaoZpVvQ=3D=3D?=
+Received: from mail-swedencentralazon11023114.outbound.protection.outlook.com (HELO GVXPR05CU001.outbound.protection.outlook.com) ([52.101.83.114])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2026 16:40:48 +0100
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=wR3cmAEzi8WsGe50WW9AARGLYR8YxOt5q82ALKRxHWz1NXqimRgl+RsdpmltXJHTxNn2NJ7KUhvwaszAkxe+0xfbijZ+feu179N508tKCq1gTd1bDTyvqqWoTbI8Lf5LR0RNwrg1qS0jCN9hm/oAoXama5nFhtvTkRJV+MADTySvHwI1i/tO05uYXY10LZb73xuAgsAlu1yI/n7tp3FvQ39Yrs03tr46TGFoD8djDTz0vao/r+yXnKj9TRYDy/PsiOAWmIUuXeIy319saQrJEy6HEpIK+Dyfpd4xMIYiKkGQuFdxFMQO6x2FP28Q+F8i9GIKjQ9yv4//DrQVVOTe8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5I6x5mfDyTe/VdZpnwUQO+npk8gKEQGoiUOnFIw+EVo=;
+ b=lll30yQ5gwEmsyZhX2+/AWJW1fVSiKD2c1qsTxeSYju1HcXAX1id04Kn3ji2vGEOhxH1yWglUshOgOpsp2el5o1SGMa/fDeEWOv4bvzu1glb7EFYN8Fo7gQxYPMynZAES/D0pPMLcsj+EmRJpaVbtT7jpmg3TeU6HLgfspsLDRnOtWso5obfx8Yh3NJ7NoVHTMbUDwIp7eDFqmsWZu40L72WfQ+J7OgIM2nvE8PCb9m9/tOg+JbYS+bG5p8cKDEO1bpjM1arsNabteooYjx9sVM8GjEZApBIslruzlNLvMrd1P7AxA2OrfnZ49aGi3YyFQ4PJdATNF6vAhB5yOzoqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bbk.ac.uk; dmarc=pass action=none header.from=bbk.ac.uk;
+ dkim=pass header.d=bbk.ac.uk; arc=none
+Received: from AS2PR02MB8792.eurprd02.prod.outlook.com (2603:10a6:20b:553::14)
+ by PAVPR02MB8991.eurprd02.prod.outlook.com (2603:10a6:102:32c::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9499.3; Fri, 9 Jan
+ 2026 15:40:43 +0000
+Received: from AS2PR02MB8792.eurprd02.prod.outlook.com
+ ([fe80::e595:4ce3:6c27:17f9]) by AS2PR02MB8792.eurprd02.prod.outlook.com
+ ([fe80::e595:4ce3:6c27:17f9%3]) with mapi id 15.20.9499.003; Fri, 9 Jan 2026
+ 15:40:42 +0000
+Message-ID: <30c27011-1a33-4fc4-a75a-d1d2bfd95ffa@bbk.ac.uk>
+Date: Fri, 9 Jan 2026 15:40:40 +0000
+User-Agent: Mozilla Thunderbird
+Content-Language: en-GB
+From: Carsten Fuhs <c.fuhs@bbk.ac.uk>
+To: types-announce@lists.seas.upenn.edu, cl-isabelle-users@lists.cam.ac.uk,
+ rewriting@ens-lyon.fr, ProofTheory@Lists.Bath.Ac.UK, coq-club@inria.fr,
+ caml-list@inria.fr, clap@groupes.renater.fr, gt-scalp@gdr-ifm.fr,
+ SREPLS@JISCMAIL.AC.UK
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: LO4P123CA0598.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:295::22) To AS2PR02MB8792.eurprd02.prod.outlook.com
+ (2603:10a6:20b:553::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS2PR02MB8792:EE_|PAVPR02MB8991:EE_
+X-MS-Office365-Filtering-Correlation-Id: b9bd31a8-385b-4316-bfe4-08de4f9572bc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|786006|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?WkplYW85OXpyUlpzamwrcDE5SDJFZVByaTZVZFJOTDlrcVpFSVBXSWh0THkx?=
+ =?utf-8?B?ZysxbVJZbDRJTkVwOFZWN1FqTkJKOFc1TDNEVytrby9CL0NLNXlqYTFrZlZM?=
+ =?utf-8?B?U3FzUnJJeGRUQ2ZVVVZyWE9KcHQvNFpTYkJVbnBMZzZoZk8wUlhIbU1kd3Rs?=
+ =?utf-8?B?dzltdXB6ZVM4VDgwUGdjZy9BWVVOelZQNjBhbkRNbUd3L3Jtb3NWMjJZNjhK?=
+ =?utf-8?B?WHFRTVg0TTM4ZzZuNjQrTE9BNlRLVTJid2lFV1ZnL1pnWVR2RXo3ZUUvejV6?=
+ =?utf-8?B?b1l3eUtzUXYwNlhNT0wrUWxZalhNNzV5TXZ2SHhKQStUeFQrU2wwMVAwRzQ4?=
+ =?utf-8?B?Nm1mMWhtQWQyelVUU0xheWFRMU5EcW02RjUyZXplZEJ4ZXNhZ3Y2S09udTVM?=
+ =?utf-8?B?ZDlaKy96aGxaUTV0bE15NlVJWnIvSmdYbFRUM2JVZnFxajZsZ0FzWUlnSUVa?=
+ =?utf-8?B?QTZ5bTk4T01JSlEwNUROaFA4VCs1TUYzUDNyN0pTSTBHOUlQZklLalZlL0tw?=
+ =?utf-8?B?UVhCZVJDbUpPV2ZDR3hMOEhRTnh0T2E5d21hcmd4TE0zRWpYVWFVQkVzSEw5?=
+ =?utf-8?B?enBDL21lMlA0b2phdHM3YmlsNGNLZ3pXTjcvSks3bk5RRlNOT3cwdnRMcmpJ?=
+ =?utf-8?B?empSUFh4c0E5blB3UTZpVUE0SmpkU0s0dXdnY1pOUHVKMi9ORVpyakNJTDIz?=
+ =?utf-8?B?VkxQbHpBc1NEZFpJZUlLOFBPR2ViMDNzSC9jajJNSG5JSk5RZHRnRWtnd2hN?=
+ =?utf-8?B?TkswMGczYVVKcUZqY1VQQ2FBZktnd1IwdjM4RUNabWNiQ0RSaFc3UlhzMS9W?=
+ =?utf-8?B?R2NhQmVvbERORDh0elRzTkRjR05vUVlXbzErZ01vVTFXdzNkcjBzREg0alRv?=
+ =?utf-8?B?Q2lQM25BdTlFc2tVQnJPUGNLOFFqblVOWVJnTTNrVDkzQXFHbXd5dW9tYU9v?=
+ =?utf-8?B?SGdkVzdsTGtYY0NRcndpeGRHSlZqYlZKWU4yQ0NTM2hyZkVBVXcvZ292bUMz?=
+ =?utf-8?B?K2NuZUd1RldXQmYrcnRUUjJrZWdtSWRaeHVsbmx4THkzVzQ1NmdOZ2xRRy9N?=
+ =?utf-8?B?YXdXV2hoM0N1QWJZNzBJaVhSN1F4a0FYZXJVMlBQaEtVeGNtUzhVdkJBMXA3?=
+ =?utf-8?B?Ym5MYUF0TWw1SUdTa3N0YmVWSUdpblV1RlRqN0dFeXNwSWdiV2RMZW42M3ll?=
+ =?utf-8?B?RzNDT2EyTnQvR1ZUOWNFbnN5YW1WT05SMGJIM1NocW5pdWJ4aXVoU1JTNzFn?=
+ =?utf-8?B?ZnFibkRjQ05tTExpKzQ1bnpNdW5MZE0zNjBvT25sRi9nY2JXNTlXemVjQS9m?=
+ =?utf-8?B?c1p0WStJMTJhNGwyWGt3U282RHF6YkJHNlpiSlJRZEJ0ZUcyUnBBamJzNUJK?=
+ =?utf-8?B?ckZhRC9SSVgzaHl6RFR1SFVtNHJkdVZCR0o0WUpRbGtHMWxuM0x2S0VKUTBo?=
+ =?utf-8?B?dmtwL1htdmhvazlKR093UTlVT0lUMVljM2ZneTZ5WEJpSHNYOWRTOU1IakJk?=
+ =?utf-8?B?S09vNFBRTlNsemNtVjFSWWQyRXZnUmUzZmo1UEllUXlmQnYyUERteU9tWnVZ?=
+ =?utf-8?B?cjB0UGllSVdYQkw3QnlRN0dSWFRwaEFXTFR5VXJGT0ppb1RXdU9sSHBWNVB4?=
+ =?utf-8?B?WUlCcGNvKzFjUlNyanNoeitPNGMyOWhHU25yUzM2NjUvVUlIaWJuM2JOZDJ3?=
+ =?utf-8?B?aWRLTElPUUxJWDBOa0RuK2J6TURGU1NncEdzamhkbERpYVFzcFNXMDVFcHA0?=
+ =?utf-8?B?WVh1VlJYWWNrRjFHZkVJdUVia3BhZi9wRDd3Uno4N204aUlLdm1rK0I0ZlEz?=
+ =?utf-8?B?QURQUUphUkU2d3F6OXkrWkdaNm02YWFleCs4QXpiUXFUb00zZ2JPdlI0RUF1?=
+ =?utf-8?B?OXFBbENQQU1KSzltalJNQXlWQlhaN1d6clY5MkVoL3cyVmc9PQ==?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS2PR02MB8792.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(786006)(1800799024);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?WGVTdWNWclh0UjJZOXdPQjFLUUhkZDR5YXdpUVR4Uzk0V0xMS0pXYnNxdDcr?=
+ =?utf-8?B?bGNmNENHMlpyL0RhL1ppQm9PWmltbktGQnpxMy9ScFRCSW8rNWhBV3ZTZzRu?=
+ =?utf-8?B?N3cyOFJXUVRyV1VaQVg5Vkc0ZEhVUTM0ZjNYaVgzdmorWk83Y1RYeERpSmZ0?=
+ =?utf-8?B?RFVIY3Rscmd6TktlTSs3Q3FsMmVDMDdGc21qaTJtRzRNMm1MeGQ3Tk5hWkh4?=
+ =?utf-8?B?L2ptL2pqajh0dnA2dUtVNTk5WHBSMXN2SXBNMVZBYS9oWnhjeG5qQTdwMWo1?=
+ =?utf-8?B?UFJPNXdhQ0ZMNUZzSVFsdlFUTTc0UzJHYk0vU1ZyV3d0bjZhVGJxdHF2Qkt1?=
+ =?utf-8?B?cVdvUHNzNE4xVU0yRSs2cURGOHg1NjZiTnhpa1cyYSt6WDZhVTVZUkhFanh4?=
+ =?utf-8?B?YzRlUXdXdUFLVlJRdWQzbnByRzlvRUhPMDA3bXVwQ2RTNmd1NnZqOEFvQm9T?=
+ =?utf-8?B?OHJjTWxRaFkxU1Z3cjJ6NitHMjZudVVGWUh4WmRQOS9kQWl5OU1VSWtYcDRU?=
+ =?utf-8?B?ZUtsUDBoRVkrWDhuYU9xQlVIVVN5YVBVMldRNTJDV1R2cG83Um42Vm0zK1A5?=
+ =?utf-8?B?T3RkY3d2OHJ4UTdQYXVRSkpJR0FhZHlYby9QYzVmNFIrT1h0SFl5Ym1IOEtz?=
+ =?utf-8?B?N1lOSnpsWjZSU3J5c0J4UFNtaHJRMzczT1pQTVR4UkM4cVI0VFMyVGNNNGxs?=
+ =?utf-8?B?clV4ejFYTnJOWUNCRWhGd2lQVEg5TEgzYnZxTVNTTVh5NlVsTzFNUU9GZ2k5?=
+ =?utf-8?B?OVBZVTNuUlZraXdtdFp4bDVhYVBjKytnZzlWVG5yeVBKSjZDdWZPbjlSTmF3?=
+ =?utf-8?B?TjFCdGJ5MnZpMXdoREFmZXB5M2o5MUhXcnBpSVkwRzBHcTNJMFluUWQ0bEpD?=
+ =?utf-8?B?M3VVZnpHY1R2OU9QTXlXTy8xN3Mwa3E2R0NxTGNqL21aRElyVVZHb2Q0cUtq?=
+ =?utf-8?B?ZVlna296NG1KSnBwdWJXaUFXd2t2emZNT1pYdWpTaGVUMnBjQWtOTTlqR2NX?=
+ =?utf-8?B?V1JaKzRvNzdGcE1TTmdpSjNGV2YrSzFDQklEYXF1VS80NUgwblJoYk1yYnZ6?=
+ =?utf-8?B?ZjZGYmZPSGJuNEEvdTViZTc1dnZCUUZxNHNyZnZmRzhDalA1c2Q2VGErcVlY?=
+ =?utf-8?B?YjdLcGEweVhHNGhxRmE5MHR3NUdENE5qQ25qRmF3MzV5d0dWTUt3aE9ZRmNy?=
+ =?utf-8?B?MFdiR2krSFdRWlpReU9yQm9IMkpWZ3J5SFdCTTloZ0JxOEsrQjlDcS9RUzZl?=
+ =?utf-8?B?UCs2WHIzeUwvS29UK3MzeHZnK1RvMWIzTm9MZHZoOWNKSjFVekZ6ZmdON3ht?=
+ =?utf-8?B?elVacEZaQUpzNWVsUWh3MjdDWWJjMG9pc3J1elVvRGw1MGUreUlBQS9VSURR?=
+ =?utf-8?B?dTVWTE5vU3FNelFmWGd2MHV5S2FSUDRUaWZQeG9PTS9UWUM5L3o4SDUyOG1m?=
+ =?utf-8?B?dFlhczFIaWV0NGE2aVNOM0V5V1hlR2Y0WDlsNWE1TzVyQUYvYTJISEVVZUZs?=
+ =?utf-8?B?OVJ1cy9FcDlpTDQ0RS9DRlE1YVRSMDZBMXhkTFl0bVpoQkU5eUFJcFk0ZmtU?=
+ =?utf-8?B?QkdBUCt0NnlmbTNLVEVmK3lrY2ZEVXEvYlRiSVNSdlNuTmF6N1JEYzRDK0Jq?=
+ =?utf-8?B?enZWWGd4QjJnUlI0QnBTeWE0ODkvZVh6bjRKQ25wTkVSWXkyT0NKNmR2T3g1?=
+ =?utf-8?B?L0RpNjdVUWpOcWh1M2RtdmNRMWdvYkZialVpN2FXMXFWSjQ0b2xuVnFqVy9l?=
+ =?utf-8?B?NDlodjVNWWVEN3hYNm1ZWmhPOW1UUy9JQ21ML3o2bDNZZUkvK0NpNmlCaElC?=
+ =?utf-8?B?RVdpNFZTVzllZ3dSWkh1K242d0hlM1UyaWFYdkNVdksvMW1VeFpLQTJCOTl6?=
+ =?utf-8?B?RXZOSGhldUhzR25OOXYveDhweUpKeUNkSGwwSFFMSlNybGk3eS9ZVVNtNXJo?=
+ =?utf-8?B?Vi8yZmpoZVZ4OHV6ZDJtVmlWV21mL2pNa2xSTEpEZDNLUzBrUlUxZnRHRFZr?=
+ =?utf-8?B?KzFBdCs0cUVwb1FFWDNDOG1wZERCR3dsWnZtZC91RFkxY1RrVXJTQUNwSjZJ?=
+ =?utf-8?B?WENvTVJmOTdOMk1zRXoydnVMcm9ULzM2RldRYzRmQ0VoVUJ2S1c5UC9DRFZQ?=
+ =?utf-8?B?b3hPR1M3bmx2ZCtQckRNL2RNcXFJUlBEUkhJVmw1NjllSk8ydS9zSWIzNits?=
+ =?utf-8?B?aHRVUXczU2wxQ1hoa2xFV0prczVwelFIeUk1R1p5dE5aOGk3YjdrVDhOVm1n?=
+ =?utf-8?B?NkFnczJhZGVpT3d4QzNaTVh3QTJvQm1Bai8ydVBqWWxHVWZyYlJNelN6Tk9B?=
+ =?utf-8?B?UmhFTnY5bjNkMjRyNVFWZzRqUlplUXpJWndvVEU1UUd3QUR5Ukc3UT09?=
+X-OriginatorOrg: bbk.ac.uk
+X-MS-Exchange-CrossTenant-Network-Message-Id: b9bd31a8-385b-4316-bfe4-08de4f9572bc
+X-MS-Exchange-CrossTenant-AuthSource: AS2PR02MB8792.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jan 2026 15:40:42.8395
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 89d07f47-d258-463c-8700-635ffaeca38e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KYhc2A9FXrjI3pInqv0JQwl4qlAHY1tIPvr05i4VvZFPh5syYQ3Ay4n/bV5L25utku/td+jO0XId4bDQTHHokQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR02MB8991
+X-Validation-by: c.fuhs@bbk.ac.uk
+Subject: [Caml-list] FSCD 2026: Second Call for Papers
+Reply-To: Carsten Fuhs <c.fuhs@bbk.ac.uk>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19424
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <https://sympa.inria.fr/sympa/help>, <mailto:sympa_inria@inria.fr?subject=HELP>
+List-Subscribe: <https://sympa.inria.fr/sympa/subscribe/caml-list>, <mailto:sympa_inria@inria.fr?subject=SUB%20caml-list>
+List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/caml-list>, <mailto:sympa_inria@inria.fr?subject=SIG%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/msg/caml-list/2026-01/wSH1rq7Qg33zmw5J6LQLTg>
+
+======================================================================
+     Updated information on: invited speakers, affiliated workshops
+======================================================================
+                            SECOND CALL FOR PAPERS
+                     Eleventh International Conference on
+          Formal Structures for Computation and Deduction (FSCD 2026)
+                        July 20-23, Lisbon, Portugal
+                      https://fscd-conference.org/2026
+            Part of the Ninth Federated Logic Conference (FLoC 2026)
+
+
+IMPORTANT DATES
+---------------
+All deadlines are midnight anywhere-on-earth (AoE); late submissions 
+will not be considered.
+
+        Abstract:      	January 23, 2026
+        Submission:   	January 30, 2026
+        Author Response: March 23-27, 2026
+        Notification: 	April 16, 2026
+        Final version: 	April 30, 2026
+
+
+INVITED SPEAKERS
+----------------
+Andrej Bauer           University of Ljubljana (FSCD Invited Speaker)
+Laura Kovács           Vienna University of Technology - TU Wien (FSCD 
+Invited Speaker)
+
+Alessandra Russo       Imperial College London (FLoC Keynote Speaker)
+Giuseppe De Giacomo    University of Oxford (FLoC Plenary Speaker)
+
+
+AFFILIATED WORKSHOPS
+--------------------
+IFIP-WG1.6: Annual Meeting of the IFIP Working Group 1.6 on Rewriting 
+(July 18, Invited talks only)
+ITRS: 12th Workshop on Intersection Types and Related Systems (July 18)
+MSFP: 11th Workshop on Mathematically Structured Functional Programming 
+(July 18)
+TGD: Tribute to Gilles Dowek (July 18)
+GALOP: 17th Workshop on Games for Logic and Programming Languages (July 
+18-19)
+LSFA: 21st International Symposium on Logical and Semantic Frameworks 
+with Applications (July 18-19)
+TLLA: 10th International Workshop on Trends in Linear Logic and 
+Applications (July 18-19)
+TERMGRAPH: 14th International Workshop on Computing with Terms and 
+Graphs (July 19)
+WPTE: 12th International Workshop on Rewriting Techniques for Program 
+Transformations and Evaluation (July 19)
+IWC: 15th International Workshop on Confluence (July 24)
+LFMTP: Logical frameworks and meta-languages: Theory and Practice (July 24)
+UNIF: 40th International Workshop on Unification (July 24)
+
+
+OVERVIEW
+--------
+FSCD (https://fscd-conference.org/) covers all aspects of formal 
+structures for computation and deduction, from theoretical foundations 
+to applications. Building on two communities, RTA (Rewriting Techniques 
+and Applications) and TLCA (Typed Lambda Calculi and Applications), FSCD 
+embraces their core topics and broadens their scope to closely related 
+areas in logic, models of computation, semantics and verification in new 
+challenging areas.
+
+The suggested, but not exclusive, list of topics for submission is:
+
+1. Calculi:
+- Rewriting systems (string, term, higher-order, nominal, graph, 
+conditional, modulo, infinitary, etc.);
+- Lambda calculus;
+- Logics (first-order, higher-order, equational, modal, linear, 
+classical, constructive, etc.);
+- Proof theory (natural deduction, sequent calculus, proof nets, etc.);
+- Type theory and logical frameworks;
+- Homotopy type theory;
+- Process algebras (synchronous, asynchronous, static and dynamic 
+semantics with and without time, etc.);
+- Quantum calculi.
+
+2. Methods in Computation and Deduction:
+- Type systems (polymorphism, dependent, recursive, intersection, 
+session, etc.);
+- Induction, coinduction;
+- Matching, unification, completion, orderings;
+- Strategies (normalisation, completeness, etc.);
+- Tree automata;
+- Model building and model checking;
+- Proof search and theorem proving;
+- Constraint solving and decision procedures.
+
+3. Semantics:
+- Operational semantics and abstract machines;
+- Game Semantics and applications;
+- Domain theory and categorical models;
+- Quantitative models (timing, probabilities, etc.);
+- Quantum computation and emerging models of computation.
+
+4. Algorithmic Analysis and Transformations of Formal Systems:
+- Type inference and type checking;
+- Abstract Interpretation;
+- Complexity analysis and implicit computational complexity;
+- Checking termination, confluence, derivational complexity and related 
+properties;
+- Symbolic computation.
+
+5. Tools and Applications:
+- Programming and proof environments;
+- Verification tools;
+- Proof assistants and interactive theorem provers;
+- Applications in industry;
+- Applications of formal systems in other sciences;
+- Applications of formal systems in education.
+
+6. Formal Systems for Modelling and Verification in new challenging areas:
+- Certification;
+- Security;
+- Blockchain;
+- Databases;
+- Deep learning and machine learning algorithms;
+- Planning.
+
+PUBLICATION
+-----------
+The proceedings will be published as an electronic volume in the Leibniz 
+International Proceedings in Informatics (LIPIcs) of Schloss Dagstuhl. 
+All LIPIcs proceedings are open access.
+
+SPECIAL ISSUE
+-------------
+There will be a special issue of Logical Methods in Computer Science of 
+selected papers. More details will be provided later.
+
+SUBMISSION GUIDELINES
+---------------------
+The submission site is:
+
+     https://submissions.floc26.org/fscd/
+
+Submissions must be formatted using the LIPIcs style files 
+(https://submission.dagstuhl.de/series/details/5#author).
+
+Submissions can be made in two categories: regular research papers and 
+system descriptions. Please indicate in the submission page in HotCRP 
+and in the first page of the paper in which category you are submitting. 
+Regular research papers are limited to 15 pages, excluding references 
+and appendices. They must present original research which is unpublished 
+and not submitted elsewhere. System descriptions are limited to 15 
+pages, excluding references. Shorter papers are welcome and will be 
+given equal consideration. A system description must present new 
+software tools, or significantly new versions of such tools, in which 
+FSCD topics play an important role. An archive of the code with 
+instructions on how to install and run the tool must be submitted. In 
+addition, a webpage where the system can be experimented with should be 
+provided.
+
+One author of each accepted paper is expected to register and present 
+the work in person at the conference. In case that this is not possible, 
+online presentation will be arranged, but in person registration will 
+still be required.
+
+BEST PAPER AWARD BY JUNIOR RESEARCHERS
+--------------------------------------
+The programme committee will select a paper in which at least one author 
+is a junior researcher, i.e., either a student or someone whose PhD 
+award date is less than three years from the first day of the meeting. 
+When submitting the paper, other authors should declare to the PC Chair 
+that at least 50% of contribution is made by the junior researcher(s).
+
+CODE OF CONDUCT
+-----------------
+FSCD 2026 stands by the FLoC 2026 Code of conduct 
+(https://www.floc26.org/policies).
+
+PROGRAM COMMITTEE CHAIR
+-----------------------
+Frank Pfenning         Carnegie Mellon University
+
+PROGRAM COMMITTEE
+-----------------
+Alejandro Díaz-Caro    INRIA (LORIA) & UNQuilmes, France & Argentina
+Alexis Saurin          CNRS & University Paris Cité, France
+Alwen Tiu              Australian National University, Australia
+Andreas Abel           Chalmers University of Technology & University of 
+Gothenburg, Sweden
+Andreia Mordido        University of Lisbon, Portugal
+Cynthia Kop            Radboud University Nijmegen, The Netherlands
+Daniel Gratzer         Aarhus University, Denmark
+Dominic Orchard        University of Kent & University of Cambridge, UK
+Elaine Pimentel        University College London, UK
+Kristina Sojakova      Free University of Amsterdam, The Netherlands
+Kwangkeun Yi           Seoul National University, Korea
+Liron Cohen            Ben-Gurion University, Israel
+Małgorzata Biernacka   University of Wrocław, Poland
+Nao Hirokawa           JAIST, Japan
+Natarajan Shankar      SRI International, USA
+Niki Vazou             IMDEA Madrid, Spain
+Paul Downen            UMass Lowell, USA
+Peter Selinger         Dalhousie University, Canada
+Salvador Lucas         Technical University of Valencia, Spain
+Sarah Winkler          Free University of Bozen-Bolzano, Italy
+Ugo Dal Lago           University of Bologna, Italy
+
+CONFERENCE CHAIR
+----------------
+Sandra Alves           University of Porto
+
+WORKSHOPS CHAIR
+---------------
+Cynthia Kop            Radboud University Nijmegen
+
+FSCD STEERING COMMITTEE
+-----------------------
+
+Chair:
+   Patrick Baillot      CNRS, University of Lille
+Past Chair:
+   Herman Geuvers       Radboud University Nijmegen
+Workshop Chair:
+   Cynthia Kop          Radboud University Nijmegen
+Publicity Chair:
+   Carsten Fuhs         Birkbeck University of London
+Past PC Chairs:
+   Marco Gaboardi       Boston University
+   Femke van Raamsdonk  VU Amsterdam
+   Jakob Rehof          TU Dortmund
+   Maribel Fernández    King's College London
+Elected Members:
+   Guilio Manzonetto    Université Paris Cité
+   Ugo Dal Lago         University of Bologna
+   Sandra Alves         University of Porto
+   Jürgen Giesl         RWTH Aachen
