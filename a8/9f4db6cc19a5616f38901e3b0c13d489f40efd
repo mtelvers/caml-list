@@ -1,0 +1,823 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=uZZ/yGI9;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by plum.tunbury.org (Postfix) with ESMTPS id D5BA440085
+	for <caml-list@tunbury.org>; Thu, 15 Jan 2026 14:14:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:cc:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=V2YYNBKmtdQFMa6oRuX+zI61lWF2ZiMRa5vsu/gAv8A=;
+  b=uZZ/yGI95RX69jWvMwajE8x7XxJ+x6evPdLyId+2hgRr6xDH0vRsj2WX
+   jplE6mi+whAnPkQz3v78kCgm5Nqw4K4TanT9OaQX8XHOFaH9EvTAPqYdU
+   7NSdi7UMBtUnizZMaKD3h8wA2hYj3A53hz28ABWk4hm7z7NvPkPJI4sMH
+   Y=;
+X-CSE-ConnectionGUID: E1FsDA6VR0e6HUdEhd8JTA==
+X-CSE-MsgGUID: bSIaOgcdQAeRhyO05perzw==
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
+Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
+  domain of caml-list-owner@inria.fr is inclined to not
+  designate 128.93.162.27 as permitted sender)
+  identity=mailfrom; client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@prod-sympa-app.inria.fr) identity=helo;
+  client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@prod-sympa-app.inria.fr";
+  x-conformance=spf_only
+X-IronPort-AV: E=Sophos;i="6.21,228,1763420400"; 
+   d="scan'208,217";a="258763077"
+Received: from prod-sympa-app.inria.fr ([128.93.162.27])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 15 Jan 2026 15:14:35 +0100
+Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
+	id 66807832BF; Thu, 15 Jan 2026 15:14:35 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 58A1C82FF4;
+	Thu, 15 Jan 2026 15:09:50 +0100 (CET)
+X-CSE-ConnectionGUID: Swdlup3WSM26AuRP/7NSFw==
+X-CSE-MsgGUID: ewYClRGSR0SYmifpwjIPSw==
+IronPort-SDR: 6968f52d_/+yIQhdVo2MKObeW6lzyU+QbJFiE0RosQ0xqCUYgPmgtVms
+ WraYG7O4utcFiBboeBkKLd46td7E6MTrOU9WQLA==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0EJCAAJ9Ghpjy8gs5JaDg4BAQE8AQEEBAEBAgEBBwEBF?=
+ =?us-ascii?q?YFQAoE7MSopQQFDAmExBAtJiCQDhSyIeZoYhSoDLikGCQEDAQwBFAIBAg4QG?=
+ =?us-ascii?q?gQBAQMBA4IMgnQCjHUCHgcBBDMGDgECBAEBAQEDAgMBAQEBAQEBAQENAQEFA?=
+ =?us-ascii?q?QEBAgEBAgQGAQIQAQEBAQEBOQVJhk8NgmI0cYElAQEBAQEBAQEBAQEBAQEBA?=
+ =?us-ascii?q?QEZAg0HIQwqASEWCyMBARIeBwERAUADPCcEAQ0NDA6CCFgBgh0HBAsHAzYDA?=
+ =?us-ascii?q?RCifwGBQAKLI4E0gQGCDAEBBgQEgQDaJhggLYF9AwaBTQGDD2yEVwEqgTQBh?=
+ =?us-ascii?q?BCHBEOBFUKCN2+BBT2BHwKBOyeEE4IvgiZ6FIJyA5EfgUQiAyYzKwEBCksTF?=
+ =?us-ascii?q?wsHBYEzMwMgCi8tAhQcARIPBBYyHXAMJxIsFzJYGwcFgVIFAYhhGw+JMoESM?=
+ =?us-ascii?q?gMLGyExPTcGDhsDBIE1jjsHVEeCJYEVLBN+BxwODw40FFCkPaF6AwQDhByMH?=
+ =?us-ascii?q?pVwF6prh3OREyKJaIN/ig6LVhOFFgIEAgQFAhABAQaBfiSBXIEBgyZPAxkPV?=
+ =?us-ascii?q?41jJYNCgmSCL4JmhzsJAbECRTM8AgcLAQEDCZFsLQWBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:+wKCxqMWPIFK/8BcT3j155DYdb4zR+YMi2TDiHofdfUFSKClfp
+ 6V8cjzjSWE8wr4WBkb6LW90dq7MAnhHP9OkMIs1NKZN2fbUQSTXfhfBOfZsl7d8k7Fh6RgPM
+ VbAtBD4bTLZDAR7KbHCWKDYrIdKay8gcaVbJDlvhBQpG9RGsNdxjY8KizeNld5ZCQuP+t/KL
+ Osou584xawc3Ueacq2QlMfWfLYmtHNnJX6JTYbGh8O8mC1/H+VwY+/NyLd8gYVUjtJz7tn23
+ PCiRbF6qKqtOz+4gPA1lXU849dlLLau5R+7Y23+4YowwfX+0aVjbdaKv6/VfcO0aOSAWMR4Z
+ jxStEbToFOAj3qDyWISFDWqnTdOX4VmgPfIBmj8DbeSIXCNUwH48Ytv/MnTjLJr0Unp91yy6
+ RNwiaQsIdWFwrJmGDn68HPTAwCrDvDnZMOq59ms5Vka/poVJZB6YgEuE9FGpYJGyz3rIghDe
+ l1FcnZoPJba0mTYXzVtnRmhIXEZAV6Ij6WBkwZ/sCF2Tlfm350i0Me2cwEh38FsJYwUYNN6e
+ jIOrlh0LtOUsgVZ6RgA/ppe7r/NkXdBRbXdG6CK1XuE68Kf3rLtp7s+b0woPqnfZQZpaFC7a
+ gpkGkox1LaV3ieevFmhqc7gywlaF/NLQjQ9g==
+X-Talos-CUID: 9a23:gpDwbGABFtBopPj6ExJ4+EoJApsaSViHkl7NGXf/VkBSZqLAHA==
+X-Talos-MUID: =?us-ascii?q?9a23=3AfnE9xQxVCfJmCJx4xUxLDgKwSPWaqKmxOWsJq7o?=
+ =?us-ascii?q?9gZG/BClxNS+CjhWPeZByfw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.21,228,1763420400"; 
+   d="scan'208,217";a="258761808"
+X-MGA-submission: =?us-ascii?q?MDFkTCQpashbDVX4ZTsmV43wby0DvHwiL99Das?=
+ =?us-ascii?q?2LkcEUFjW+6q+u+OjHohtXsfk6iteoOyzvZOy7xpUjrXH/cf9sCBWE3/?=
+ =?us-ascii?q?LzMGmNRHjOeY6v7eRmWV7LM//Ui834f1ykm3UC+5bPgkRP8dU5fFW+0a?=
+ =?us-ascii?q?yRfswgBpZ2TZuYpT+i6a92Rg=3D=3D?=
+Received: from smtphub2.cc.ic.ac.uk ([146.179.32.47])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2026 15:09:49 +0100
+Received: from mail-uksouthazlp170110003.outbound.protection.outlook.com ([2a01:111:f403:c205::3] helo=LO2P265CU024.outbound.protection.outlook.com)
+	by smtphub2.cc.ic.ac.uk with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.98)
+	(envelope-from <dragana.milovancevic@imperial.ac.uk>)
+	id 1vgO2j-0000000AV8B-21KN;
+	Thu, 15 Jan 2026 14:09:45 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cxjfwT7sImX5YKu06UTLeXGowPWOhVo6aamSdt/up490+kTmUYDjGFoItE2Or0fnZy97xsE77i+IWMlmMzKeDdvgpYhCB1IiSHsQqBezCrBZdaGNqnF/vdzq7Gm7RjDlPNc30k2fC01oeWWiJecahrtJ0wEqnDcujMFy6G0+sNfF3Ht44mg6ihUUtqCUP2FdVR3yGhAkYk3Ic+V7W6obFV6Nf0E6CfcTFBWF9QG9K+xHFstCK3M49IJ3J18iEr5KTcBRDVAgAFw5JNb4A5fK1MPkTpjsVSkNB6oHfUk3zKMPTW/nmPAQ2cnRRC8xUaepJRcPMglqvs8Y5x4BoZJ4Ww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V2YYNBKmtdQFMa6oRuX+zI61lWF2ZiMRa5vsu/gAv8A=;
+ b=DWFkPQ6pnk83vuIX1gIJqeTtczouR6M1g7kALJT4bbM5eAM06Ilt0Jmdv0CJb3mwW20AU46dBVSafVC+GwO2p3RMqIpXgSy+yl2n83D8Jiw74lOo9YQnwp7A9ZcjJDJw+sNdG/fzK/PsRj3HWspq/4xJqnu0C+RvaDbQrZD5R6w5blA7o0jo0C/kFuLE0RsiXTMmiIsevJTUJHPsWWTAJxvxZ0L7Agd4uL8TgiSURGKA+tDgYhRNC/t2Ckex/pMJNako8e0lJZuK4QwJIlr0r+FBwvNOmr1kuIig9ulNUjPS2YKjWHOE7yAjgp2QSAzDwUClTND7BZE2s74/DxeJZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=imperial.ac.uk; dmarc=pass action=none
+ header.from=imperial.ac.uk; dkim=pass header.d=imperial.ac.uk; arc=none
+Received: from LO2P265MB1230.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:91::9) by
+ LOYP265MB2413.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:118::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9520.5; Thu, 15 Jan 2026 14:09:38 +0000
+Received: from LO2P265MB1230.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::fe9d:c28d:b878:112f]) by LO2P265MB1230.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::fe9d:c28d:b878:112f%5]) with mapi id 15.20.9520.003; Thu, 15 Jan 2026
+ 14:09:37 +0000
+From: "Milovancevic, Dragana" <dragana.milovancevic@imperial.ac.uk>
+To: "acl2@utlists.utexas.edu" <acl2@utlists.utexas.edu>, "all@cost-ic0701.org"
+	<all@cost-ic0701.org>, "announce@informatics-europe.org"
+	<announce@informatics-europe.org>, "caml-list@inria.fr" <caml-list@inria.fr>,
+	"cl-isabelle-users@lists.cam.ac.uk" <cl-isabelle-users@lists.cam.ac.uk>,
+	"coq-club@inria.fr" <coq-club@inria.fr>, "fm-announcements@lists.nasa.gov"
+	<fm-announcements@lists.nasa.gov>, "events@fmeurope.org"
+	<events@fmeurope.org>, "SREPLS@jiscmail.ac.uk" <SREPLS@jiscmail.ac.uk>,
+	"theorem-provers@ai.mit.edu" <theorem-provers@ai.mit.edu>,
+	"types-announce@lists.seas.upenn.edu" <types-announce@lists.seas.upenn.edu>,
+	"verifythis-ltc@lists.kit.edu" <verifythis-ltc@lists.kit.edu>
+CC: Mattias Ulbrich <ulbrich@kit.edu>
+Thread-Topic: Call For Papers: 6th Workshop on Program Equivalence and
+ Relational Reasoning (PERR2026 @ CAV/FLOC)
+Thread-Index: AQHchiWb0UYFlEW2mUeeeCctGk91kg==
+Date: Thu, 15 Jan 2026 14:09:37 +0000
+Message-ID:
+ <LO2P265MB12300A3EE029C7BA1F32F8FFB58CA@LO2P265MB1230.GBRP265.PROD.OUTLOOK.COM>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: LO2P265MB1230:EE_|LOYP265MB2413:EE_
+x-ms-office365-filtering-correlation-id: 018d3881-5b1c-4c6a-8caf-08de543fb7dd
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|786006|376014|7416014|366016|1800799024|38070700021|8096899003|13003099007|921020;
+x-microsoft-antispam-message-info:
+ =?iso-8859-1?Q?5ESMlA7wfyfSgid2sPTe5QatKpKOOb6U0lKMNpVkPv9UXpXL890+QaEYOJ?=
+ =?iso-8859-1?Q?VwpsFhDmDFV45Skz+GdaLv2RYGAJL9aAoUDxItpd0CsMpY+c2Yr5zefYRh?=
+ =?iso-8859-1?Q?VmfU0Np0ybyXXmLrJmB6MqrUh7DBsGS3PTqejp0ncjuumHluPlHaB/K7+B?=
+ =?iso-8859-1?Q?plsWK6w0pijNN7KZCASQlk2vBCo9yGMt10geNOwkH6ZKzQSe++FlBumY0P?=
+ =?iso-8859-1?Q?+DqatkQu4yzcCCRsobz8oat/WzWyhjVQYkUMMWVRbXytcXQhW07gGhQPjY?=
+ =?iso-8859-1?Q?YabpO8ktBXNWGdb7mxrTLu5ggGH83b7yPyHxdNp6D3X2gwx+AdUMDTT+YL?=
+ =?iso-8859-1?Q?0lRcvtqFVqIMVDW1f74fUm6FEJJWbf73WLQDrqxl4OyIBhwV9IFRTmHobP?=
+ =?iso-8859-1?Q?ORAhcVp2jSvkaT8HCiTsjuoQUIPBYNgUG8ArVSU3UphxJ5ACYYXBgXOjEE?=
+ =?iso-8859-1?Q?IJUOdta3uOr4c8Cnol5KZ3bllt1DIDz96w3ReyPtdO1V4MZf/RSAITyvDV?=
+ =?iso-8859-1?Q?GNteafisvEa3Mpltp7+/bANYFdqieJ/walKVqCqIZfrH0nFFfj9rU8qxKg?=
+ =?iso-8859-1?Q?KjTSIiqcgYnbed4Pp91iSrI08++dNjGm/RqOvzVQ25/EltaqTb9A6aSZwj?=
+ =?iso-8859-1?Q?slLBqegq7wUs/WOgmFW/EF2WcWEWfQHwSqrwfmXRtmY/REK1U2LbH/vyvG?=
+ =?iso-8859-1?Q?ZjhAKangbqprRfCDB8m7AMTm1UB49ZN3GAD7EK3ORMP8EJCVH4i40wVPcM?=
+ =?iso-8859-1?Q?32ueDfc0uINhp/2Qzg2Huw8UC+Xkw385LraipY/17yoPAqyONtr69k/214?=
+ =?iso-8859-1?Q?hb9WJPmOhCpixDaU6TWWyeeDPVtdudA0fYgEQp+oxxLFzVlwU4vQJohYC9?=
+ =?iso-8859-1?Q?yNPoj8v7o1l/yw0RrgkJS3QTQx4bSo/RxOYGz1Tn59NwiqSdBAfnZpbI6/?=
+ =?iso-8859-1?Q?EuqU60TyWQoISiyBTIpAbBUyjXXjH3QgRwNbtJWxIb0F/2ddS2+hy5CvRe?=
+ =?iso-8859-1?Q?8POR4C9Q6X8MqcLs/ryN6m1Ysscg1j4dgvjplvegFIiVbpHbHJa3hmKNp0?=
+ =?iso-8859-1?Q?F/JZ2+VAUP8NEDEM98dU8W5syak5eK0jzit6q2DaErbk+y4dPavD79JzJE?=
+ =?iso-8859-1?Q?P8cAgqIpqF7F9wV3eo4ieWnSSaDWw8+d9y4QifxWX5iRGO3Fbe/A+wewiM?=
+ =?iso-8859-1?Q?6lAOr7mq0NjcVm2bzuXmcqxZrWRrvCwt/XUiph7JHfkjJ9w9l10OOuV1VK?=
+ =?iso-8859-1?Q?n4yOv6NsI/KyqfOzDmGFuoDNF1ZTH9O9mbzvzXLGi+RfePT5udV4FgVth+?=
+ =?iso-8859-1?Q?qOdFraSH59DnYFBNiRxrSzCc+dzy6XD4acaeog/Zd6V+gBF0xlavgy+ou+?=
+ =?iso-8859-1?Q?tmeln6Muo7pxLm3R0L+rXyMFSNw8DxfXGz8Na6bihKwe+UH2XctTWHj28P?=
+ =?iso-8859-1?Q?2sFiQbbIux43tJ4XDIXMyJI2oU9YXrDUQfgCUKkhvcsM8beawjJ5Xu01zd?=
+ =?iso-8859-1?Q?AHAu5CWU1LRzYHw9BUMBqaSW8mhQwwc6M9xVi7pPPV0bwly7YSchimDfWC?=
+ =?iso-8859-1?Q?+Rncudzg/+GXUwT3TqbH5b5+rqvRufkBoyAZN/ZI221ey27dC66la03Zy3?=
+ =?iso-8859-1?Q?adr9D9mR5R1pO8i9zJzybZNiOJ8ITDWGPA?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LO2P265MB1230.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(786006)(376014)(7416014)(366016)(1800799024)(38070700021)(8096899003)(13003099007)(921020);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?al5bmC/j3meBkHWBboWz2ujLVKjrO+TRFAoOUtVbvGeJwqcdqZvoZLGOIn?=
+ =?iso-8859-1?Q?WTt5nLRS5qc9aARreLJcWqksGTSiUFgBvhV09On8mpiv++aQBxuV2dRa45?=
+ =?iso-8859-1?Q?DwfqrAdkbvKHcv3v+QmUtjIGSYT65sq9ZzCIUaFqs/Q44yg0BBIkP96vyF?=
+ =?iso-8859-1?Q?5CKLqmU0uWb9QX45vzpo54WEwJviVC6/xdBZopgvSFseAKr+G1+1YS/ijD?=
+ =?iso-8859-1?Q?0sHDVhi4yuupgfktmCRVix6euUa25HzqxuWnhMeQqGNUbq4x9xIJEPluIm?=
+ =?iso-8859-1?Q?fmIh7JrmJE6uhhlD6szPLphlyHQxF2z0XD/ASb9F04eIIY0pVcVUJLjaU+?=
+ =?iso-8859-1?Q?V5xL4I0eTqkObO87m/jKgWHnADfHF0Hq+UwhpsXgkeSvVVMc59xdAaIVSP?=
+ =?iso-8859-1?Q?xKOcuR5n10whoTE018jDFwqBLPi4MgEqK39J7jeB9991Qe4OElQwvdtefH?=
+ =?iso-8859-1?Q?lKVxyqHrTakziEf/9Rr13O2TdrYKLeo1P/vwM3AQDsbJpOg4Pg9HzqWDvO?=
+ =?iso-8859-1?Q?vltlHybPf6VXcuYo191hAX+i+bUO9ePPaZ64M+opPDO2K+TK5UC2rCwSfc?=
+ =?iso-8859-1?Q?DV2bCmFu2ibp9j8q4ZqdCof57CgqdQ0oZo4ZvUiyl27d+kUY0/NP5L058b?=
+ =?iso-8859-1?Q?IgTWfGVnebSjv3Hd3C0RHGwOjH1oGhSGOYxdkrUC8mmxv6v49OPUKvOP8i?=
+ =?iso-8859-1?Q?atAs4GCRiiVvv6YQ5xW0JzxOhQhJGbwRCs0u558Qau4O+nINQpo3Qq4jJq?=
+ =?iso-8859-1?Q?hw1Vz9ZzqWW0yIygptaKUluZJ3WXy9GRYR0XtAtoZIJhyx/usFllGyHgdG?=
+ =?iso-8859-1?Q?ubGRtiDsgEQmGnLnOUBtJwvNp7C1LB/GWH9NXyYqRms6edkvaLK3msw3tc?=
+ =?iso-8859-1?Q?mwGlL1iFY+vM9lfP+WFLFhEOkYQHB8654fIx+xKCD+6Dk35kjo702pWwGd?=
+ =?iso-8859-1?Q?Op1/10MSjkG0USoZkEeLOIcRtU1uxODUC8WdXiHO2cH6QHWIOqraL1Mij1?=
+ =?iso-8859-1?Q?MXGZ49QQKKM9KErOMDP1oNaJtmlEc2JxAyqOkhnBHuHnmkGYq1jlyoDyqx?=
+ =?iso-8859-1?Q?dEbGggLsBeA9So7zHac1kl1NI3eLNtM7w8xEz22vOKfypOmk3FMCp1X1nj?=
+ =?iso-8859-1?Q?4IkL2LpWnxsHtKLOaCYF1/ezILipC2bYs5nta+KarJ1F/f0i00zaP5H41B?=
+ =?iso-8859-1?Q?bi+zWhblWIbWHqW/J9EkQkk6SYMTEtDAuvqrAbVIFBjMi4N0pALqSdNKWa?=
+ =?iso-8859-1?Q?GfwXDfuz3FfpoQ3Ii7QDRIGXHq/lS+gdIaRwYXpP1uLBwFA7a6D1pEYCzO?=
+ =?iso-8859-1?Q?NxSCzrwD6f6PgqIMWKVXQQvQBoF0Ss5u3pjzftcaow+q0mujqCYTV4y2Rl?=
+ =?iso-8859-1?Q?YZXSJZqwhfqzEiXouDgrjoLK/6HcYR/5dSXYPeLrR3B5y8Dpca871jPXBA?=
+ =?iso-8859-1?Q?e7ZiiNqLJea9SHzSWVyTsMlOiUqjBekZaxpCdTxdxsolyqlUotQh32cXQ8?=
+ =?iso-8859-1?Q?zN+wm71ybZASDQNWiCiWO+bzr5HF++tW/wwRlT6I47rUHk1HhH60mdxlmo?=
+ =?iso-8859-1?Q?Iroi+r6qFg+0b5qSn2Sw3p1B4SutBovXQo7s2oW47IbDZg57G8WE0q+NaI?=
+ =?iso-8859-1?Q?qHmWT8vgvzPPro342E9OSVXf6DnLXlA3BTTIaIQ4bsSFUVAVEeEWxOkF0k?=
+ =?iso-8859-1?Q?M/mKfXyiXyLojYwklHkK6YpiNn/hMvflpcXnrRZx3vLknnEpZw0EsyH7kk?=
+ =?iso-8859-1?Q?STHrW90l1WbolqioXwbkhzwKg2zn9Hg0lg63nVaUD7Yg5a?=
+Content-Type: multipart/alternative;
+	boundary="_000_LO2P265MB12300A3EE029C7BA1F32F8FFB58CALO2P265MB1230GBRP_"
+MIME-Version: 1.0
+X-OriginatorOrg: imperial.ac.uk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: LO2P265MB1230.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 018d3881-5b1c-4c6a-8caf-08de543fb7dd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2026 14:09:37.0339
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 2b897507-ee8c-4575-830b-4f8267c3d307
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: d4nPSxZaafseny1k/Q90ktemF9VBcBnRYixtLVaowJ2cKcHFVj1BoMMHSA90tSBkzFjF6E5Y7iJ9nWWPinpgTw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LOYP265MB2413
+X-IC-MsgID: 1vgO2j-0000000AV8B-21KN
+X-Validation-by: dragana.milovancevic@imperial.ac.uk
+Subject: [Caml-list] Call For Papers: 6th Workshop on Program Equivalence
+ and Relational Reasoning (PERR2026 @ CAV/FLOC)
+Reply-To: "Milovancevic, Dragana" <dragana.milovancevic@imperial.ac.uk>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19428
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <https://sympa.inria.fr/sympa/help>, <mailto:sympa_inria@inria.fr?subject=HELP>
+List-Subscribe: <https://sympa.inria.fr/sympa/subscribe/caml-list>, <mailto:sympa_inria@inria.fr?subject=SUB%20caml-list>
+List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/caml-list>, <mailto:sympa_inria@inria.fr?subject=SIG%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/msg/caml-list/2026-01/_JJiKkjzbps38U_LPldbvg>
+
+--_000_LO2P265MB12300A3EE029C7BA1F32F8FFB58CALO2P265MB1230GBRP_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+[with apologies for cross-postings]
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+       6th Workshop on Program Equivalence and Relational Reasoning
+                24 July 2026 at ISCTE campus, Lisbon, Portugal
+                  associated with CAV 2026 at FLOC 2026
+                   https://perr-workshop.github.io/2026
+
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+Submission Deadline: Friday, 24 April, 2026 (AoE)
+
+Submit at: https://submissions.floc26.org/perr
+
+CALL FOR PAPERS/PRESENTATIONS
+
+PERR is an annual international workshop dedicated to the formal verificati=
+on of program equivalence and related relational problems. It is the 6th in=
+ a series of meetings that bring together researchers from different areas =
+interested in equivalence and related questions. PERR 2026 will be a worksh=
+op at FLOC 2026, and a satellite event to CAV 2026.
+
+Program equivalence is arguably one of the most interesting and at the same=
+ time important problems in formal verification. It is a cross-cutting topi=
+c that has attracted the interest of several research communities: the fiel=
+d of denotational (game) semantics, deductive software verification, bounde=
+d model checking, specification inference, software evolution and regressio=
+n testing, etc.
+
+The goal of the workshop is to bring researchers of the different fields in=
+ touch and to stimulate an exchange of ideas leading to forging a community=
+ working on PERR. It welcomes contributions from the topics mentioned above=
+ but is also open to new questions regarding program equivalence. This incl=
+udes related research areas of relational reasoning like program refinement=
+ or the verification of hyperproperties, in particular of secure informatio=
+n flow.
+
+      - regression verification
+      - program equivalence
+      - equivalence of higher order programs
+      - product programs, relational calculi
+      - verification of hyperproperties
+      - program refinement, refinement calculus
+      - specification of differences between programs
+      - inferring semantic differences between programs
+      - transformation validation
+      - correct compiler transformations
+      - automata bisimulation
+      - AI-supported equivalence checking
+      - relational properties of AI-based systems
+      - code equivalence checking in teaching and marking
+
+This is an informal workshop that welcomes work in progress, overviews of m=
+ore extensive work, programmatic or position papers and tool presentations.
+
+SUBMISSION GUIDELINES
+
+We invite two types of submissions:
+
+      - Regular papers. Regular papers should be at most 15 pages (excludin=
+g references). They should present original research results, tools, or cas=
+e studies.
+
+      - Extended Abstracts. Extended abstracts should be at most 3 pages (e=
+xcluding references). They should introduce work that has recently been pub=
+lished or is under review, or work in progress.
+
+Submissions should be made using the PERR 2026 submission site:
+
+https://submissions.floc26.org/perr
+
+Submissions must be a single PDF file, in LNCS format.
+
+The workshop will have informal proceedings, posted on the webpage, and spe=
+akers will be asked to consider submitting papers towards a post-proceeding=
+s volume.
+
+IMPORTANT DATES
+
+    Submission Deadline: Friday, 24 April, 2026 (AoE)
+    Notification: Thursday, 28 May, 2026
+    Workshop: Friday, 24 July, 2026
+
+ORGANIZERS
+
+    Mattias Ubrich, Karlsruhe Institute of Technology, Germany
+    Dragana Milovancevic, Imperial College London, UK
+
+--_000_LO2P265MB12300A3EE029C7BA1F32F8FFB58CALO2P265MB1230GBRP_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+[with apologies for cross-postings]</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6th Workshop on Program Equivalen=
+ce and Relational Reasoning</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;24 July 2026 at ISCTE campus, Lisbon, Portugal</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;associated with CAV 2026 at FLOC 2026</div=
+>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style=3D"color: rgb(17, 85, 204);">=
+<u><a style=3D"color: rgb(17, 85, 204);" class=3D"OWAAutoLink" id=3D"OWA4de=
+82bee-78a1-ed41-854b-8b1db599e54e" href=3D"https://perr-workshop.github.io/=
+2026">https://perr-workshop.github.io/2026</a></u></span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+Submission Deadline: Friday, 24 April, 2026 (AoE)</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+Submit at: <span style=3D"color: rgb(17, 85, 204);"><u><a style=3D"color: r=
+gb(17, 85, 204);" class=3D"OWAAutoLink" id=3D"OWA43c1dc27-fc07-0959-a03e-6d=
+765ebe2905" href=3D"https://submissions.floc26.org/perr">https://submission=
+s.floc26.org/perr</a></u></span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+CALL FOR PAPERS/PRESENTATIONS</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+PERR is an annual international workshop dedicated to the formal verificati=
+on of program equivalence and related relational problems. It is the 6th in=
+ a series of meetings that bring together researchers from different areas =
+interested in equivalence and related
+ questions. PERR 2026 will be a workshop at FLOC 2026, and a satellite even=
+t to CAV 2026.</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+Program equivalence is arguably one of the most interesting and at the same=
+ time important problems in formal verification. It is a cross-cutting topi=
+c that has attracted the interest of several research communities: the fiel=
+d of denotational (game) semantics,
+ deductive software verification, bounded model checking, specification inf=
+erence, software evolution and regression testing, etc.</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+The goal of the workshop is to bring researchers of the different fields in=
+ touch and to stimulate an exchange of ideas leading to forging a community=
+ working on PERR. It welcomes contributions from the topics mentioned above=
+ but is also open to new questions
+ regarding program equivalence. This includes related research areas of rel=
+ational reasoning like program refinement or the verification of hyperprope=
+rties, in particular of secure information flow.</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- regression verification</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- program equivalence</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- equivalence of higher order programs<=
+/div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- product programs, relational calculi<=
+/div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- verification of hyperproperties</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- program refinement, refinement calcul=
+us</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- specification of differences between =
+programs</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- inferring semantic differences betwee=
+n programs</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- transformation validation</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- correct compiler transformations</div=
+>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- automata bisimulation</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- AI-supported equivalence checking&nbs=
+p;</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- relational properties of AI-based sys=
+tems</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- code equivalence checking in teaching=
+ and marking</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+This is an informal workshop that welcomes work in progress, overviews of m=
+ore extensive work, programmatic or position papers and tool presentations.=
+</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+SUBMISSION GUIDELINES</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+We invite two types of submissions:</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Regular papers. Regular papers should=
+ be at most 15 pages (excluding references). They should present original r=
+esearch results, tools, or case studies.</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Extended Abstracts. Extended abstract=
+s should be at most 3 pages (excluding references). They should introduce w=
+ork that has recently been published or is under review, or work in progres=
+s.</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+Submissions should be made using the PERR 2026 submission site:</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(17, 85, 204);">
+<u><a style=3D"color: rgb(17, 85, 204);" class=3D"OWAAutoLink" id=3D"OWAcfa=
+320d9-4a17-c273-c71a-cb487b955a09" href=3D"https://submissions.floc26.org/p=
+err">https://submissions.floc26.org/perr</a></u></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+Submissions must be a single PDF file, in LNCS format.&nbsp;</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+The workshop will have informal proceedings, posted on the webpage, and spe=
+akers will be asked to consider submitting papers towards a post-proceeding=
+s volume.</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+IMPORTANT DATES</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;Submission Deadline: Friday, 24 April, 2026 (AoE)</=
+div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;Notification: Thursday, 28 May, 2026</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;Workshop: Friday, 24 July, 2026</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+ORGANIZERS</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;Mattias Ubrich, Karlsruhe Institute of Technology, =
+Germany</div>
+<div class=3D"elementToProof" style=3D"direction: ltr; line-height: 1.38; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);">
+&nbsp;&nbsp;&nbsp;&nbsp;Dragana Milovancevic, Imperial College London, UK</=
+div>
+</body>
+</html>
+
+--_000_LO2P265MB12300A3EE029C7BA1F32F8FFB58CALO2P265MB1230GBRP_--
