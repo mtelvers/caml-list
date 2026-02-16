@@ -1,0 +1,561 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=nR0q0Fnh;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by plum.tunbury.org (Postfix) with ESMTP id D8C39400A2
+	for <caml-list@tunbury.org>; Mon, 16 Feb 2026 20:30:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:cc:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=oBh+dElECAAPtYPJjIZQyF2acYj2wzkVQajQiFD19OU=;
+  b=nR0q0FnhXmP+ifm49A7Zz9nVSYmkD6hoXH3+rxBNgHWazvkQbuJYGN/8
+   NeCA4ja1ARzrgO9QkCVH8L/QmOWq+cmclnbqaQg+X8uhCS1aVxfNpAZ03
+   iRzher7Ao8SzA8LIKJ5K83ufG9nf6Tq5BVVYEIEH/eDcaD2xMYBzXJ9Qp
+   w=;
+X-CSE-ConnectionGUID: EPxEMWm4SAG65dtR7qNanQ==
+X-CSE-MsgGUID: 3wVhTa1PQtGYBLsC41SP1w==
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
+Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
+  domain of caml-list-owner@inria.fr is inclined to not
+  designate 128.93.162.27 as permitted sender)
+  identity=mailfrom; client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@prod-sympa-app.inria.fr) identity=helo;
+  client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@prod-sympa-app.inria.fr";
+  x-conformance=spf_only
+X-IronPort-AV: E=Sophos;i="6.21,294,1763420400"; 
+   d="scan'208,217";a="263733393"
+Received: from prod-sympa-app.inria.fr ([128.93.162.27])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 16 Feb 2026 21:30:41 +0100
+Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
+	id 8039382B00; Mon, 16 Feb 2026 21:30:41 +0100 (CET)
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id D0A0B80286;
+	Mon, 16 Feb 2026 20:53:13 +0100 (CET)
+X-CSE-ConnectionGUID: jJU2wTvXR56in656aIyt4A==
+X-CSE-MsgGUID: t4sSeee5R2iUFI+Jxr5t7Q==
+IronPort-SDR: 6993759a_CIwaQgxRbOieDEMQq8NGtHxIexVy9M5cxRbSjOPPCLxMtoy
+ K/bX0XqT8jFqfy59SYt3XuSf0dH705hI7rh7BaQ==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0FPAgBAdZNpgyqR50NAGoEJgVCBPTFTgQUCgRIECxkBA?=
+ =?us-ascii?q?S6IJAOFLIZYoD4UgV4LEQEDAQsBAS4BCBoEAQEDAQOSIgIeBwEEMgcOAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBAQEBAQ0BAQUBAQECAQECBAYBAhABAQEBOQcOO4ZPDYJFU?=
+ =?us-ascii?q?XGBJQEBAQEBAQEBAQEBAQEdAg00KgEhBREuAQE3AREBGGcnBA4NGoJgAYIdD?=
+ =?us-ascii?q?ApAAwECDpxKQ2cLAR42IwFIAlZCiRIBAQF2gTSBAYIMAQEGgQg+BdpfgWcDB?=
+ =?us-ascii?q?oFNgRaEWYJlASqBNQGJDicbgUlEgVeEeII3FYQ6gi+BEoEUgQ6BeYtJL4V2g?=
+ =?us-ascii?q?UQiAyYzLAFVExcLBwWBZgOBBm4yHYEjPhczWBsHBYd9D4l/boEfgQQDC209N?=
+ =?us-ascii?q?xQbAwSBNQWNWFtBglKBG4EdR4ETlhiMKYF8oXqEJoFkDIoulXAXqmuZBo4Jl?=
+ =?us-ascii?q?WQThRYCBAIEBQIQAQEGgW8HLIFcMxojgW4JgUBPHA9XkUqFE7otRTM8AgcLA?=
+ =?us-ascii?q?QEDCYZIi1aBSwEB?=
+IronPort-PHdr: A9a23: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
+ 8bEkg==
+IronPort-Data: A9a23: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
+ b4bh4dA3oxO5kEuhA==
+IronPort-HdrOrdr: A9a23:0hbNDKpWPZsiIxe3BLEwTaUaV5tMLNV00zEX/kB9WHVpm5Oj+f
+ xGzc516farslossSkb6Ku90KnpewK4yXcH2/hqAV7CZnishILMFutfBOTZskTd8kHFh41gPM
+ RbAuJD4b/LfCBHZK/BiWHSfrdB/DDtytHNuQ6q9QYKcegcUdAG0+4WMHf4LqX0LzM2XKYRJd
+ 653I5qtjCgcXMYYoCQHX8eRdXOoNXNidbPfQMGLwRP0njDsRqYrJrBVzSI1BYXVD1ChZ0493
+ LergD/7qK/99mm1x7n0XPJ5Zg+oqqv9jIDPr3DtiEmEESttu+aXvUjZ1REhkF2nAib0idqrD
+ ALmWZkAy080QKUQoj/m2qR5+Cp6kdT15al8y7UvVLT5fXjQjQ0EsxAgp8cXCf4xiMbzZZB+Z
+ MO5nmesZVPCxPGgWDa3PjnEz9Xtmfcmwtlrccjy0VFV40QcblQqpFaxlpcFNMsED/z6IU8VM
+ VoBqjnla5rmJehHivkVmUD+q3SYl0jWhiMBlIFptee31Ft7QNE5lpdy8oFknga8pUhD5FC+u
+ TfK6xt0KpDV8kMcMtGdZE8qOaMexjwqCj3QRWvCEWiELtCN2PGqpbx7rlw7Oa2eIYQxJ93nJ
+ jaSltXuWM7ZkqrUKS1rdV22wGIRH/4USXmy8lY6ZQ8srrgRKDzOSnGTFw1icOvr/gWH8WeUf
+ euP5BdBePlMALVaM909hy7X4MXJWgVUcUTtNp+U1WSotjTIomvreDfeOa7HsuZLd/lYBKMPp
+ IuZkmCGCwb1DHUZpbRummhZ0/Q
+X-Talos-CUID: =?us-ascii?q?9a23=3A+MnAuGqbY5dRTvneHLuQ+sXmUcIHTyfC8GngGRL?=
+ =?us-ascii?q?mCGA3FeOcaE6MpIoxxg=3D=3D?=
+X-Talos-MUID: 9a23:SWKwpwteZYgjFUlfnc2nmG15D8pl7vmUUkEwv7RFmdmeaDAvAmLI
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.21,294,1763420400"; 
+   d="scan'208,217";a="138969037"
+X-MGA-submission: =?us-ascii?q?MDF0HMhd06vrVKQW3dGcu6040J3UwRi8fL3VBG?=
+ =?us-ascii?q?3ooq0cKHYXCvu4vD50QRuS8w2EXup724fZVAE4cAmKs5zHkOUmQl94m8?=
+ =?us-ascii?q?sHSbszaS22+P2E6I1EoDT0Jk7JABZKc8wgeR4a3pWgmOxXENtmxOWki7?=
+ =?us-ascii?q?31QdzcHWYJDV80IjVXTIJ26Q=3D=3D?=
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42])
+  by mail3-smtp-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2026 20:52:58 +0100
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+	by mx0a-00082601.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61GGRdVl231215;
+	Mon, 16 Feb 2026 11:49:34 -0800
+Received: from co1pr03cu002.outbound.protection.outlook.com (mail-westus2azon11010046.outbound.protection.outlook.com [52.101.46.46])
+	by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 4cc6s9jh93-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Mon, 16 Feb 2026 11:49:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ELX25nmhYf2a+RanmmK66p27izA926cyv4e55JgvVCCNxVZskEX2PUCqIuLYuSB9RBzTgfO/DhZnV6MP2wlI/y77zShE7CD2SbWMKbrtvIN7SSgr9j6T/+1c7mZiZyqr6s1kTnZPofQsLD0BNLw67Fui7l/0Afg56j70zocC5BYISyjr4VR9YsrNXDXJ+KwSQLRh33MCzhS4O31c6IwScap97+LqivGJd28rYarR/LLG8jwqCUtkTnXxYQiFku7c9yg6WZJJsF4hMXL5xrIvpPBViAqpsuVTi5ic8/66D2J5mtGAVCtUw/b5nfVQ+Wxg/y8LNOXz7kXleKVfNBBBAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oBh+dElECAAPtYPJjIZQyF2acYj2wzkVQajQiFD19OU=;
+ b=W/BPkxOtPAoxXLxddNza1uLBBM4YTyour3QlJcl7pqtY8Hr67Zbqag2EP8WQcjfJ+hbQ61nbnW9DNC9ngS0ng9FBeusm6jrGBkA+2FU0FJ8B6dhmQP2azxBAcMuaa0YpuyXMHQ2rZS5OdrpV74pusGGPXu35sfVGsj+8TRiQ1AFu3eSMoLPhJ5RdqSOVc644POzKYrfTp1wTh9zJ4ptE5LG8fNBh7H976RXRtruhjd/p5oHUZ+5Shr1Jmd5ydQkYn8RjwqgdVIljZxbC4ioQW+47fm1l6vHR7obRADBCTLRK0bh6XMEUuoM3g1bYFKPSV+44jFUWC4NwMXMoY2Fk9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=meta.com; dmarc=pass action=none header.from=meta.com;
+ dkim=pass header.d=meta.com; arc=none
+Received: from PH7PR15MB5426.namprd15.prod.outlook.com (2603:10b6:510:1fe::14)
+ by BY3PR15MB4947.namprd15.prod.outlook.com (2603:10b6:a03:3c6::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9611.10; Mon, 16 Feb
+ 2026 19:49:27 +0000
+Received: from PH7PR15MB5426.namprd15.prod.outlook.com
+ ([fe80::76ea:90aa:8395:f7ec]) by PH7PR15MB5426.namprd15.prod.outlook.com
+ ([fe80::76ea:90aa:8395:f7ec%4]) with mapi id 15.20.9611.013; Mon, 16 Feb 2026
+ 19:49:27 +0000
+From: Akos Hajdu <akoshajdu@meta.com>
+To: Akos Hajdu <akoshajdu@meta.com>
+CC: "caml-list@inria.fr" <caml-list@inria.fr>,
+        "comm-theory@ieee.org"
+	<comm-theory@ieee.org>,
+        "facs-events@jiscmail.ac.uk"
+	<facs-events@jiscmail.ac.uk>,
+        "theorynt@listserv.nodak.edu"
+	<theorynt@listserv.nodak.edu>,
+        "acl2@utlists.utexas.edu"
+	<acl2@utlists.utexas.edu>,
+        "agents@cs.umbc.edu" <agents@cs.umbc.edu>,
+        "ascens@maillist.ifi.lmu.de" <ascens@maillist.ifi.lmu.de>,
+        "concurrency@listserver.tue.nl" <concurrency@listserver.tue.nl>,
+        "dbworld@cs.wisc.edu" <dbworld@cs.wisc.edu>,
+        "dipartimento@di.unipi.it"
+	<dipartimento@di.unipi.it>,
+        "events@fmeurope.org" <events@fmeurope.org>,
+        "fg-arc@lists.uni-paderborn.de" <fg-arc@lists.uni-paderborn.de>,
+        "fmics@inrialpes.fr" <fmics@inrialpes.fr>,
+        "hol-info@lists.sourceforge.net"
+	<hol-info@lists.sourceforge.net>,
+        "ic.eatcs@di.unipi.it"
+	<ic.eatcs@di.unipi.it>,
+        "maude-users@cs.uiuc.edu" <maude-users@cs.uiuc.edu>,
+        "moca-announce@list.it.uu.se" <moca-announce@list.it.uu.se>,
+        "nwpt-info@lists.ioc.ee" <nwpt-info@lists.ioc.ee>,
+        "petrinet@informatik.uni-hamburg.de" <petrinet@informatik.uni-hamburg.de>,
+        "resist@laas.fr" <resist@laas.fr>,
+        "sci-diku-prog-lang@list.ku.dk"
+	<sci-diku-prog-lang@list.ku.dk>,
+        "security@FOSAD.ORG" <security@FOSAD.ORG>,
+        "theory-a@listserv.nodak.edu" <theory-a@listserv.nodak.edu>,
+        "agda@lists.chalmers.se" <agda@lists.chalmers.se>,
+        "clean-list@science.ru.nl"
+	<clean-list@science.ru.nl>,
+        "cphc-conf@jiscmail.ac.uk"
+	<cphc-conf@jiscmail.ac.uk>,
+        "humanist@lists.princeton.edu"
+	<humanist@lists.princeton.edu>,
+        "isabelle-users@cl.cam.ac.uk"
+	<isabelle-users@cl.cam.ac.uk>,
+        "prog-lang@diku.dk" <prog-lang@diku.dk>,
+        "relmics-l@mcmaster.ca" <relmics-l@mcmaster.ca>,
+        "announce@informatics-europe.org" <announce@informatics-europe.org>,
+        "fmnet@jiscmail.ac.uk" <fmnet@jiscmail.ac.uk>,
+        "procos@jiscmail.ac.uk"
+	<procos@jiscmail.ac.uk>,
+        "sbc-l@sbc.org.br" <sbc-l@sbc.org.br>,
+        "sensoria-core@di.unipi.it" <sensoria-core@di.unipi.it>,
+        "types-announce@lists.seas.upenn.edu" <types-announce@lists.seas.upenn.edu>,
+        "yices@csl.sri.com" <yices@csl.sri.com>,
+        "zforum@jiscmail.ac.uk"
+	<zforum@jiscmail.ac.uk>,
+        "DMANET@zpr.uni-koeln.de" <DMANET@zpr.uni-koeln.de>,
+        "gdr.gpl@imag.fr" <gdr.gpl@imag.fr>,
+        "lfcs-interest@dcs.ed.ac.uk"
+	<lfcs-interest@dcs.ed.ac.uk>,
+        "ecoop-info@ecoop.org" <ecoop-info@ecoop.org>,
+        "ifip@ifip.or.at" <ifip@ifip.or.at>,
+        "aisworld@lists.aisnet.org"
+	<aisworld@lists.aisnet.org>,
+        "concurrency@listserver.tue.nl"
+	<concurrency@listserver.tue.nl>,
+        "fmics@inria.fr" <fmics@inria.fr>,
+        "fmindia@cmi.ac.in" <fmindia@cmi.ac.in>,
+        "fmxsocandbpm@cs.unibo.it"
+	<fmxsocandbpm@cs.unibo.it>,
+        "fttc@dependability.org"
+	<fttc@dependability.org>,
+        "gpce-news@cs.rice.edu" <gpce-news@cs.rice.edu>,
+        "gratra@upb.de" <gratra@upb.de>,
+        "grin-eventi-owner@grin-informatica.it"
+	<grin-eventi-owner@grin-informatica.it>,
+        "hipeac.publicity@lists.ugent.be"
+	<hipeac.publicity@lists.ugent.be>,
+        "hscc@lists.illinois.edu"
+	<hscc@lists.illinois.edu>,
+        "ic.eatcs@di.unipi.it" <ic.eatcs@di.unipi.it>,
+        "ipalist@listserver.tue.nl" <ipalist@listserver.tue.nl>,
+        "logic@math.uni-bonn.de" <logic@math.uni-bonn.de>,
+        "maude-users@cs.uiuc.edu"
+	<maude-users@cs.uiuc.edu>,
+        "moca-announce@list.it.uu.se"
+	<moca-announce@list.it.uu.se>,
+        "nwpt-info@lists.ioc.ee"
+	<nwpt-info@lists.ioc.ee>,
+        "petrinet@informatik.uni-hamburg.de"
+	<petrinet@informatik.uni-hamburg.de>,
+        "reflective-middleware@cs.uiuc.edu"
+	<reflective-middleware@cs.uiuc.edu>,
+        "revcomp-list@jiscmail.ac.uk"
+	<revcomp-list@jiscmail.ac.uk>
+Thread-Topic: FTfJP CfP, deadline extended
+Thread-Index: AQHcn31Dul1xKeT6P0W8McdT/97W7g==
+Date: Mon, 16 Feb 2026 19:49:27 +0000
+Message-ID:
+ <PH7PR15MB5426E7609681AAA98E990A6BCC6CA@PH7PR15MB5426.namprd15.prod.outlook.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH7PR15MB5426:EE_|BY3PR15MB4947:EE_
+x-ms-office365-filtering-correlation-id: 5315dafb-3e3e-47ba-6f43-08de6d947e48
+x-fb-source: Internal
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|376014|7416014|366016|1800799024|8096899003|38070700021;
+x-microsoft-antispam-message-info:
+ =?iso-8859-1?Q?pt35zEpTSojdS/MyxaySPUiWZR3QmvMFsH2DsAg5mJvtAplTYJpmzImLgN?=
+ =?iso-8859-1?Q?Esem67hJPQXAUy1ZPDLCBYYzPfmb4o/rLOAjoqlq62OREr+x0/COyWsUK/?=
+ =?iso-8859-1?Q?4UUELCX/feMeHuUlJ1aXCXuYD1KlcVNOiiso201J9HRtoqxy0WJu9d3a/7?=
+ =?iso-8859-1?Q?nqpVsD41rM/8CJr8PYVF4w0kcGodLGEcDuojJJzZoDhnz5ce+icZzqkhwk?=
+ =?iso-8859-1?Q?vYP9E4jezZhWafGTyoL8qYdh6Reqmc1f+O++zoJKu7PEhnQmhniuOvceTU?=
+ =?iso-8859-1?Q?1AEmmIPPPrH0c/fk9Ckuf8j2QKKIg8gJdLnegBHr7TJ4c6FXPNDW8LlBaQ?=
+ =?iso-8859-1?Q?VEraxObzYmjp9svWcPw4eCokmnyO/KkUEAfo1O2yyrznZhnaSbR58Z++c8?=
+ =?iso-8859-1?Q?j2zl7uTLiLOWmlQJuXjM1MW3Np48rqxQVFn7lU5IF+nM1H9l5xSa0sTSPY?=
+ =?iso-8859-1?Q?b0k1dGABfBxrAVpC/KsCCgyVF/CGdHcpGHWPw43SwB3ICwjS2HHA1h7qp6?=
+ =?iso-8859-1?Q?YvKdEkcH/hBK08XIN7kUANtPZKKeNZMhKwY8oUqjHE+H+RnwihTFnD20Oe?=
+ =?iso-8859-1?Q?Agcbz/r9yb6PKXjXaOltxXiK2eHnKdBlezVjl7n91MMqWkp/aWoyPO4X3u?=
+ =?iso-8859-1?Q?ULUaJ/z3rvIQy5dnWSDNozhg//joSjIlm0/EWQCUJyOby/gl4HdumKGwyX?=
+ =?iso-8859-1?Q?8WI8gGsRueZvmL6YxiPdFMzvKhCWb7eHQXHYm9fKtHOPqLOmfENNlm7pCp?=
+ =?iso-8859-1?Q?r9+KeOhLnikr7gVZDQg+Vdez9FDZH2E1Ec9rpCa9IBKPJfuVlIQ9qmj7ro?=
+ =?iso-8859-1?Q?anUpzUaGPTE0tnO5xYNPVL5W+hF/04iZQWvcRaNiLHVdlO/IhFpKZxa9MW?=
+ =?iso-8859-1?Q?m5Vyzx6B0PD3yXDK1wLARtZIWzKF/dOsF6wcRWZ+ceUG6xSL8O81PMkemQ?=
+ =?iso-8859-1?Q?C0UerBZrajLngoUcIKhHZW5SE5DIEb6ANdkvTgi3zPSrl9DXmhVwSvXQRw?=
+ =?iso-8859-1?Q?QAm4wqeXNVjxPZSiDWp/wZwRvxNKE2jz0/km1tTvGw+/db7oVsVYx536A9?=
+ =?iso-8859-1?Q?fBYeqRxGDO5bC1fvOazvDFJbts0s5W1GQ2Dkn7dz0OB0q1ezVAA3mUgnzT?=
+ =?iso-8859-1?Q?s3+HUAwuGkPNcLeivJMR6Ydz2JrYQTELZE68//Jy76gcQK1EQR1YjYlO9j?=
+ =?iso-8859-1?Q?X/3B4S8yFjX8ONt0rldW57WqDwlwW+P81dwUSO1IPlarSamci686+EnC6k?=
+ =?iso-8859-1?Q?QQK7xPKXF/T6biUbNA26GiDgkmiDAwarzquE7C0ZVZASvCyoB0hx2LUeun?=
+ =?iso-8859-1?Q?6zQ3lbX7FJWYJWPpqhcoLpq+P7jtqXuB+EOM9qoTUGuT38xz8hTYBIL0eq?=
+ =?iso-8859-1?Q?xRxzJgluFjtOg3hyqMfgr4LZenSVy7uAXhDUb8zCKdgR+W48JaR7k1eN8l?=
+ =?iso-8859-1?Q?0GsIjXVZFFOcd2z1peYBlQeXaaveLd2q8JglZpF265qGIQzN0oB4Xf6B86?=
+ =?iso-8859-1?Q?WziBdrwcSbApPk5aQ3BEUkLCYXEtxe68n08q6qWFosM3tGdVg/601M6tTj?=
+ =?iso-8859-1?Q?rbnPufsxwicLxUqic+RRBs0t1IAYsVldyLUFWP0u+Y5yhR066Ks5kVWUwt?=
+ =?iso-8859-1?Q?/PQUagkdOnZ3l90+I+DwB5S+OyTn6BQl8+cwApOUfB+kFLZKheHYnouRE5?=
+ =?iso-8859-1?Q?mMoZcruu4nmCMeZU0A0=3D?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR15MB5426.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(8096899003)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?F3UYktGVFtaRcPK+tIBy9OGkRnpWt1WFWGb9k18Z+UJmhIufdIfqQ2AkQ0?=
+ =?iso-8859-1?Q?9vOEHLGMUEJf8KAIV36C5mHsXU2fg3uMKX7tFmYvdg29kbwwra05I9419v?=
+ =?iso-8859-1?Q?o+aqf0nEdxrtl1KVOzNKiiucyAJWwWfjXbw+mqqtkDXHILcah0ysS508sN?=
+ =?iso-8859-1?Q?Ypq/A+2oUJ0UiLzpl7Di5kcQ6NaggT64CPrQjV61qBQJjDTG61rNs6qen+?=
+ =?iso-8859-1?Q?0XRTxIDprLWb/mDx83km5l/vU3wHRVv4GP7mR/xH13TwCpC8VVq1jDfgIx?=
+ =?iso-8859-1?Q?tzG+26hGjHMtQwX/IqVsxPMS9TTDAZKfkDGRrTgwlpwJCUYcdMmoGMV+5x?=
+ =?iso-8859-1?Q?ZAuZ9HnLZiKSThYEltJ1/m7s2/rEMjYtIHzNZUtoy31qclJ0kaFJA0eB+a?=
+ =?iso-8859-1?Q?bxF9erV6+bj3LDP2pnYuh2pntDZ8wz1XKq0I6qgC5m7weKdWLUqUZJ3qve?=
+ =?iso-8859-1?Q?YfArbJBqlG5/HWPaej6FYJimJX3ZJFWvj2yz8MQ/KuYmL6lDaQF7cT2+8L?=
+ =?iso-8859-1?Q?WKdfQCBNUVaFJ3pA2JR1EdwMy2fGGqBCb81gdF/SyBTglIBNSF19CMk8gG?=
+ =?iso-8859-1?Q?jaEe7YxABHJc8GkDRdjKBA0GqKM/GrtAjRq7TwEAw2X2oXpVlHHaQ8FMry?=
+ =?iso-8859-1?Q?BndgbL5QdDejXzuevn4PZo6kDe8xBzORC7KPOrII7g+vyysuuR0QIvBsqs?=
+ =?iso-8859-1?Q?Vv6Y7mbsTjWyYGRbdXcW4okcTMgt15KWaF+Rd9x7q2uJ0X93k14xh1kyf6?=
+ =?iso-8859-1?Q?IID4IGwcgmKV3+FQQGHI4bJCZSUoi8gphhAn8Q2xMsp0qIcjKdP8ddfUet?=
+ =?iso-8859-1?Q?5jOaaSh/x1o6OjsGr4NV1y6Hmo0AB7QIQaXr0RO4M6HaKIso/5VDibko2D?=
+ =?iso-8859-1?Q?a5EkpiqwmzHTG05GVl/UOMpmEV37mc8QpdagDH2oHLswhjgpBY5Zuf/xt8?=
+ =?iso-8859-1?Q?mgvQ3qE3zLS25O0h9XfdSr4MXijcYGplHuySEYra0SW7eDhuhCw9gq/aUw?=
+ =?iso-8859-1?Q?Ty2c48fcy9Jo61eSgzXLsXDYJ7W3ZAu51WVSxLMNXH/7ULlSL6qUN/XNFf?=
+ =?iso-8859-1?Q?1P92R4a5sej3kh2O4V529FbREp4nYEbTGr8gBA7JQkQyz2yN5md6inTIaI?=
+ =?iso-8859-1?Q?RXyzfFOnyNDi9ZXeWhblO6dlOywSJB92E1F44BF8ZhkRQcoqVItS185o0s?=
+ =?iso-8859-1?Q?gBYOXNrFDbSV69ajjxP6nvElIcFrMSGAXtmv8tZ1/D6pj0EQWm4fZxTTsx?=
+ =?iso-8859-1?Q?/D/Xk6du8jdCZU6Ob116iv/LFD8fZc9kxdFAR2u5VVaMR1P6KahGnv4PSH?=
+ =?iso-8859-1?Q?tMJAQCMe1zQU1qDZovlbU4qMXavMrNWlNGbhsXG2l54LjQUwrrCd1diueM?=
+ =?iso-8859-1?Q?cPKF7LguB4Kbd9RrnIv+mK3z6L7lp8dICNfmR6dgJ5OWjDRjMyBXm6zEev?=
+ =?iso-8859-1?Q?cfVpBTf41M8IGCwNubq0FjLQYOafaK8r9AGBfLd5BXtqFTBkc4HaR13tb1?=
+ =?iso-8859-1?Q?a6bsT9oN2beoQqRgoeYEnycRFcmoPADgOxAf6u+aVnciH5WdxjbV+m2Myp?=
+ =?iso-8859-1?Q?/MJohw59Ta2VOuhyRiCOf+RMvUFaAWBRi7UbT/zYCy/fD8ivABRCh95Cu0?=
+ =?iso-8859-1?Q?YWQN4ejG/oOJCvtupn1KU4oXzBkAsnGvFDE+bqgSjZvkSKZkS+pLBG8GL9?=
+ =?iso-8859-1?Q?uG12T8pFC85miYXynDHlq1ZlJzfpPDYzvaE20rMjQlScQGlaGMMUW3pVcX?=
+ =?iso-8859-1?Q?6Ss2cuYj0FNKFNQ/CdpzCtshPrMlkQ68/4rj1/M3ddaANn?=
+Content-Type: multipart/alternative;
+	boundary="_000_PH7PR15MB5426E7609681AAA98E990A6BCC6CAPH7PR15MB5426namp_"
+MIME-Version: 1.0
+X-OriginatorOrg: meta.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR15MB5426.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5315dafb-3e3e-47ba-6f43-08de6d947e48
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2026 19:49:27.3964
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mJLLI1kcbQ7P6oksPcRgoQIufpC9W+YAhuMCM7XDlx+xDFndnNzvDdEvFjmLTYkka+LhrDVs/M2xlNjspjSAMg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR15MB4947
+X-Proofpoint-GUID: 727q9-VurzoLLKMQgtIEk1odyPLqI_ge
+X-Proofpoint-ORIG-GUID: 727q9-VurzoLLKMQgtIEk1odyPLqI_ge
+X-Authority-Analysis: v=2.4 cv=R40O2NRX c=1 sm=1 tr=0 ts=699374ce cx=c_pps
+ a=BcPl/o76WFXIZ3b3OvynCQ==:117 a=7E+Lg0hS2erdyBn295RJLQjl35E=:19
+ a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
+ a=xqWC_Br6kY4A:10 a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=Mpw57Om8IfrbqaoTuvik:22 a=GgsMoib0sEa3-_RKJdDe:22 a=rZ5RKEERAAAA:8
+ a=Rbf08oNUgSnAnlB0WmEA:9 a=wPNLvfGTeEIA:10 a=EfX8IiPQCXneQhN-Yf4A:9
+ a=9gBCAK2Bi513vzbf:21 a=frz4AuCg-hUA:10 a=_W_S_7VecoQA:10
+ a=TssTZV_SuRnlhkurg6Uc:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDE2NiBTYWx0ZWRfX+FHOAVLZaAz7
+ dYTOWMJFOBQK41ue4Sp5m6wdccocHsrjVH8Xm2hQRc/BYR5Vy8DoXMUxoZQlWDRCZdJqJGUwoeV
+ eKoZE/33d6/4QZY2AprqYLbH2tLVOL3vQDerF/lbIz4Y/Fa742lVPsWS8bwklyWAF+GXVRQBxMR
+ z69IZra2Zr+UjUpwrVOj7J4E7e8w3gRwcr6wSXmIgDNOPpIqktKYZuyii+2lpm8/dga7W5XvyrL
+ uzN0bVA5XVEBaywHFWXfEiXFwGhaZLJjfct/Gy69EhPasqJr0PF6RjTiMjXCZ5zaAd80I0G96rN
+ AKqLyAkoWKm6PSEV72+fPUnbHAhXR9IQ5UXqESRcXXNj4n2pHaxW+O3ckxIXjAhS005NqImRevO
+ 43q0P1VVKjM47E0F+If6TpsTZmAlpdWv3k9hgTJr37cLZHImbTQ2wdC0vlAPS77b8BcU+683xzG
+ 89xRKdJ1IUlQjwjuFRw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-16_06,2026-02-16_04,2025-10-01_01
+X-Validation-by: akoshajdu@meta.com
+Subject: [Caml-list] FTfJP CfP, deadline extended
+Reply-To: Akos Hajdu <akoshajdu@meta.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19447
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <https://sympa.inria.fr/sympa/help>, <mailto:sympa_inria@inria.fr?subject=HELP>
+List-Subscribe: <https://sympa.inria.fr/sympa/subscribe/caml-list>, <mailto:sympa_inria@inria.fr?subject=SUB%20caml-list>
+List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/caml-list>, <mailto:sympa_inria@inria.fr?subject=SIG%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/msg/caml-list/2026-02/n5DAGXEOcOT4_MLU3TcUrA>
+
+--_000_PH7PR15MB5426E7609681AAA98E990A6BCC6CAPH7PR15MB5426namp_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Dear researchers,
+
+We would like to invite you to submit your work as a paper to FTfJP 2026 (h=
+ttps://2026.ecoop.org/home/FTfJP-2026). The Formal Techniques for Judicious=
+ Programming (FTfJP) workshop is an established workshop which has run annu=
+ally since 1999 alongside ECOOP, with the goal of bringing together people =
+working in both fields.
+
+Important dates
+- Submission deadline: 25th February, 2026 (extended)
+- Notification: 1st April, 2026
+- Camera ready: 30th April, 2026
+- Workshop: 30th June, 2026
+
+We have also confirmed the following invited speakers:
+Bart Jacobs (KU Leuven)
+Julien Lange (Royal Holloway, University of London)
+
+Best regards,
+Akos Hajdu
+Meta
+PC Chair
+
+--_000_PH7PR15MB5426E7609681AAA98E990A6BCC6CAPH7PR15MB5426namp_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">Dear researchers,</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<br>
+</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">We would like to invite you to submit your w=
+ork as a paper to FTfJP 2026 (https://2026.ecoop.org/home/FTfJP-2026). The =
+Formal Techniques for Judicious Programming (FTfJP) workshop is an establis=
+hed workshop which has run annually
+ since 1999 alongside ECOOP, with the goal of bringing together people work=
+ing in both fields.</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<br>
+</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">Important dates</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">- Submission deadline: 25th February, 2026 (=
+extended)</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">- Notification: 1st April, 2026</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">- Camera ready: 30th April, 2026</span></div=
+>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">- Workshop: 30th June, 2026</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<br>
+</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">We have also confirmed the following invited=
+ speakers:</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">Bart Jacobs (KU Leuven)</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">Julien Lange (Royal Holloway, University of =
+London)</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<br>
+</div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">Best regards,</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">Akos Hajdu</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">Meta</span></div>
+<div style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, =
+Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" clas=
+s=3D"elementToProof">
+<span class=3D"elementToProof">PC Chair</span></div>
+</body>
+</html>
+
+--_000_PH7PR15MB5426E7609681AAA98E990A6BCC6CAPH7PR15MB5426namp_--
