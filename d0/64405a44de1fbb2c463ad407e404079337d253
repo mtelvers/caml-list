@@ -1,0 +1,989 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=KbABfi+a;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by plum.tunbury.org (Postfix) with ESMTP id CFA73400A5
+	for <caml-list@tunbury.org>; Wed, 25 Feb 2026 14:20:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:date:message-id:mime-version:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=mBCgaUjz2U82XywzKmE+upg3KiEDl57VkyDx/cN8j4U=;
+  b=KbABfi+a5QMLR+2xAbXRII0hF2ahnKDjOIdQwav8xLSpEEniDGqyz55S
+   Su4z4DIgLBw6C6AJoicR5Cxn6t0cF2uN406qnvOjFakw0gJNS8X5ZsvMy
+   R8qlSIgxKJ6oYTE5y6A6iBHQyF+Y8Dmx5AmBWD1Ky2P2FyJeq41783QlF
+   c=;
+X-CSE-ConnectionGUID: Vt2l58q4Q3u9x37JT/A83w==
+X-CSE-MsgGUID: Y5sSw+c2Rt6kRuTSMIR1FQ==
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
+Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
+  domain of caml-list-owner@inria.fr is inclined to not
+  designate 128.93.162.27 as permitted sender)
+  identity=mailfrom; client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  include:mailout.safebrands.com a:basic-mail.safebrands.com
+  a:basic-mail01.safebrands.com a:basic-mail02.safebrands.com
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@prod-sympa-app.inria.fr) identity=helo;
+  client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@prod-sympa-app.inria.fr";
+  x-conformance=spf_only
+X-IronPort-AV: E=Sophos;i="6.21,310,1763420400"; 
+   d="scan'208,217";a="265133321"
+Received: from prod-sympa-app.inria.fr ([128.93.162.27])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 25 Feb 2026 15:20:40 +0100
+Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
+	id 9703281DE5; Wed, 25 Feb 2026 15:20:40 +0100 (CET)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id 9D37F81DCB
+	for <caml-list@sympa.inria.fr>; Wed, 25 Feb 2026 15:05:39 +0100 (CET)
+X-CSE-ConnectionGUID: m+yilI38QfKYnIzuSqEQLA==
+X-CSE-MsgGUID: 9DM6wGB0TReKw3Snm4XfCg==
+IronPort-SDR: 699f01b3_mDBcjbj63XjgcjtyltS7yp+TvCdD95UYkRUA0eJtvoXlKqR
+ SXshXxgWsiVL6yIvbL4YVerpgtEzruDTFmUkrwA==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0HLAQC3AJ9pjz6QN49AGoEJgw0xU4EFAoESBAtJiCQDh?=
+ =?us-ascii?q?SyGWIIhkU2MZIFCKQYJAQMBCwEBRA0EAQEDBIIMgnQCjSACHgcBBDQTAQIEA?=
+ =?us-ascii?q?QEBAQMCAwEBAQEBAQEBAQ0BAQUBAQECAQECBAYBAhABAQEBAQE5BQ47hk8BD?=
+ =?us-ascii?q?IJigSWBJgEBAQEBAQEBAQEBAQEBAQEBARcCCAwtKgE3CyMBASYFDREBNQsBB?=
+ =?us-ascii?q?jgUEwQKCQgMDoJgAYIdBw9AAwECDkWaNENnCwEeNiMBSAJWQohcNgEBAXaBN?=
+ =?us-ascii?q?IEBggwBAQbbZy0WgWcDBoFNhW+CZQEqgTUBhEyEQicPgVVEgRVCgmiCEHgXB?=
+ =?us-ascii?q?Bh/CAIIAQsHASM0CYNWgi+CJnoUHYFcimUFhlOBRCIDJjMsAVUTFwsHBYFmA?=
+ =?us-ascii?q?yovLW4yHYEjPhczWBsHBYZcD4pagRyBdgMLGyExPTcUGwMEgTWNMQdVP4FCE?=
+ =?us-ascii?q?VoCBhVGGRwFAyETDS8BAy8bEgUZAwEJKg8BDBEgFRGSWiUfngKUYzQHhB+BX?=
+ =?us-ascii?q?gYMii6VcBeEBI0TmVSGQJJGIo1nhSOQETATCROEegIEAgQFAhABAQaBfyNsc?=
+ =?us-ascii?q?DMaNB6DCE8DGQ9XjWODZ4RYgyG8KkUzPAIHCwEBAwmRagImBwWBSwEB?=
+IronPort-PHdr: A9a23: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
+IronPort-Data: A9a23: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
+IronPort-HdrOrdr: A9a23:0WeVUK8ZWhkLD7OrMlduk+FAdr1zdoMgy1knxilNoENuHPBwxv
+ rAoB1E73PJYW4qKQkdcKO7SdK9qBLnhNZICOwqV4tKMzOW3ldAQLsSjrcKoAeQUBEWlNQtrJ
+ uIGpIWYLacbDhHZK3BkWyF+qMbsb66GdeT9IPjJhlWPGNXgyIK1XYgNi+rVmlNACVWD5swE5
+ SRouJBujqbYHwSKuirG3UfWODHhtvT0LbrewQPCRIL4BSHyWrA0s+2LzGomjMlFx9fy7Yr9m
+ bI1yT/+6WYqvm+jjPMymPJ6JxSud35jv9OHtaFhMQ5IijlziyoeINicbufuy1dmpDk1H8a1P
+ 335zswNcV67H3cOkuvpwH25gXm2DEyr1f/1F6xmxLY0IPEbQN/L/AEqZNScxPf5UZllsp7yr
+ h302WQsIcSJQ/cnR76+8PDW3hR5wSJSDsZ4K8uZk5kIMgjgYxq3M4iFYRuYdI99RfBmcAa+S
+ 9VfYXhDbhtABSnhjvizxNSKZSXLwkO91G9MwQ/k/3Q6iNRmn9hyUse2YgwolcsnahNDaVs1q
+ D8KaJvm6hJTsgKKYRHJMlEb/eWJwX2MEnxGVPXGE/gEq4fPXLLttrM+b0woMynZZQJyYF3tJ
+ PKOWko7FLbdy/VeLGz9YwO/RbXTGqnWzPxjslY+phio7X5AKHmKCuZVTkV4r+dStgkc7/mss
+ yISedrKu6mKXGrFZdC3gX4VZUXIX4CUNcNstJ+X16VuMrEJoDjq+SeKZ/oVczQOCdhXnm6Dm
+ oIXTD1KskF5ke3WmXgiByUX3/2YETw8Z95DaCfp4EoucEwH5wJthJQhUWy58mNJzEHuqsqfF
+ FmKLeilq+gv2G58WvB8m0sMBtACURe5qnmThpx1Hg3GlKxdaxGt8SUeGhU0nfCLhhjT9nOGA
+ oavFhz8bLfFe3i+cnjMaPWDou3tQpjmJvRdeZipkSq37aaRq8F
+X-Talos-CUID: 9a23:QSSy4m60c8aqt4/ijdss8Q0FG8QEKS3kwlThJW6qFF1wZYSxYArF
+X-Talos-MUID: =?us-ascii?q?9a23=3AlefFvQzXjJqP6/IYRde6M7TgG66aqPWCLR4Svr9?=
+ =?us-ascii?q?eh/OJFjMrADGY0AS5aYByfw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.21,310,1763420400"; 
+   d="scan'208,217";a="265130477"
+X-MGA-submission: =?us-ascii?q?MDHMisXzyvAdx3lIC6AMaKLjLawwXsUD7R+rdN?=
+ =?us-ascii?q?SQwNOfIE1bwv7EuFYxbdzfttUy7yxCqeMdSbezYapSL/9HGCN0yeMVrr?=
+ =?us-ascii?q?qhCMcN7F0PR593dVcpydpBGZse8LG7Blr1QYQ1C6W2QmxXluYV1qVeMh?=
+ =?us-ascii?q?opQRxHs/GEVsy8Q3RDUKwEiA=3D=3D?=
+Received: from mx07-0053d701.pphosted.com ([143.55.144.62])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2026 15:05:38 +0100
+Received: from pps.filterd (m0307607.ppops.net [127.0.0.1])
+	by mx08-0053d701.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61P6A1Mw3279409
+	for <caml-list@inria.fr>; Wed, 25 Feb 2026 14:05:38 GMT
+Received: from lo0p265cu003.outbound.protection.outlook.com (mail-uksouthazon11022073.outbound.protection.outlook.com [52.101.96.73])
+	by mx08-0053d701.pphosted.com (PPS) with ESMTPS id 4cha4gbrs6-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT)
+	for <caml-list@inria.fr>; Wed, 25 Feb 2026 14:05:37 +0000 (GMT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=NRc3a3ld5GC4awxepouv723hA6zLkh2xi59C+PdYLysTJZ0OfWM/0iEVoJPa1jxjfb/qKMjXEQTdQszr6AuV0pypVgTmBLXQwH5lLPOKli+kzk7bGHhxF7ttejZ8pVDe+Rj9iLnOwO7pUmxa8H+edAatUIuz8FeydnPT5y+vXfd5rLvDr4WfiHZnvzVks51BH5zbUYbwQkK9abLMCKuUenwAVRU95ER8vJzMdvjNPFDcFwzldB2SfzcxDvZC2gCl/Q8Fl6uKf8TpgMYY9WNFA9792VBkOx+bAenMPPBN9mRVai+OhejUu7YLmNH94Ce63tkngaa++2nbYb/BUt4lTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mBCgaUjz2U82XywzKmE+upg3KiEDl57VkyDx/cN8j4U=;
+ b=aTrji/+9IRknNfGIPeRg3rSSvJUe+EEY56uCATPyZOuohN2MgarwZtzCSdcl1/aE2DI3e5u0gUo7JQibJace+fCo4ccBKU4GbNgJKa9ZtGfrqoUXIMvE862z6DhS69Z1ldGpKPDU3NhDMQwXVzYxavqPnFHsbZ4t/tDEZDb6QgZ176nzTZxbkJzK3XIRl5mFwiE0k9hpwyuJ4tZjX8Hhb+fmuCKpoLcICFvSGv4tygeUGu4KECdDfApesvbDGv73NYcJMBEPP0egARdrezKZUuvT5cyYbVbzN1mj0JvSyRSPfilnLMRcyzR5BIFNmjia93p8fDz8+XMqxEYRWmgvGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=manchester.ac.uk; dmarc=pass action=none
+ header.from=manchester.ac.uk; dkim=pass header.d=manchester.ac.uk; arc=none
+Received: from CWLP265MB5089.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:15d::13)
+ by LO0P265MB7123.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:2d6::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.23; Wed, 25 Feb
+ 2026 14:05:36 +0000
+Received: from CWLP265MB5089.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::fa6c:9d4:676b:4882]) by CWLP265MB5089.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::fa6c:9d4:676b:4882%4]) with mapi id 15.20.9632.017; Wed, 25 Feb 2026
+ 14:05:35 +0000
+From: Marie Farrell <marie.farrell@manchester.ac.uk>
+To: "caml-list@inria.fr" <caml-list@inria.fr>
+Thread-Topic: RExAI Call for Papers
+Thread-Index: AQHcpl+1U0ZI6sgHEEGWM0Cz7gIcwg==
+Date: Wed, 25 Feb 2026 14:05:35 +0000
+Message-ID:
+ <CWLP265MB50891BD2282015C3E40C2688C475A@CWLP265MB5089.GBRP265.PROD.OUTLOOK.COM>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CWLP265MB5089:EE_|LO0P265MB7123:EE_
+x-ms-office365-filtering-correlation-id: f3486709-9d59-4574-7e08-08de7476f242
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|786006|376014|10070799003|366016|7142099003|13003099007|38070700021|8096899003;
+x-microsoft-antispam-message-info:
+ tHEQe1cGXhVr0ykIJbEPIzbiQ8ZnX76L+++QattaYq6I4eV1Ggs/DJcxdlXj7YfaN+XCPzlX7tCaVUCdf5wJd0hTZEbGrgx1SjbCWt7JEv9dsblukRefzpG1J6kAD3zRW/8Zf2nN3JjSqcHrl5WcrpKwruWahhBvC1JLbBPDUXAEuoRapoyKnhD0777uZs6l1hZBlYRwNLdW+mG1AFqKg6DeZ0Cjni4Nl/YOdS2Kzh6/zwWfsT4iZ3beYtKMmmmt2+5LmWGj6vhu5KRl9Wg73iuTonb5TJM3uoQBsBu87VsRr/WDyFGzSFoJGBARIjtYh185TYffIKQffJgNq7PrftFdCNsJp8suswR6ddV6Vxuv01jN0BWSWqXSkH6z6wEycQ46mlS1H7OqaLzm5EMgmf30vxeN4hHfGgerARRCHFVVzKMNTFS/aHU96DxiTD51d53L3Xte1ZHqE0IEsdxw3Bwo/fOvJIa0qOPPcbE1ee/CVwk08Dvm8/FIj1QeztsHHXel9gAWjRDITefTAbRRYL1aot3qGZYICM+8OR9uASdAkiWUBh5Qs/HaIK/dVPLEmxIeRdfOyDJCrNAlLArfQiRqXBqaS42e19O6aBaJq7KmtFCmT9HcuoYjRIGP4gFmZ+zUP0aEiiN7O/7hTND3jin0HD8gwBnSZsiEmPJW/QTI/DQintmNqn3Fq8uOy9iNCauaWlznn47yfX83GE6BgMomy9fXSqJZtyaVSqmCUTYTBdaZP6dyWiBH8s67OnRt
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWLP265MB5089.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(786006)(376014)(10070799003)(366016)(7142099003)(13003099007)(38070700021)(8096899003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 2
+x-ms-exchange-antispam-messagedata-0:
+ =?Windows-1252?Q?TUe4fULFPbPCsCwSeyWiECkLq1gdRH2YiYJd9CCN+8iwZJG4DVTcjsSO?=
+ =?Windows-1252?Q?IrR4M/GccU30pjoi8V1y/Nhesu7m1El3CAwzMCMwyS/hbyOfn58Ejvbu?=
+ =?Windows-1252?Q?+MR5VrSPQRz5ID5ECugr1L4GB4dowEwF83KoXcfKiyw2YaBTcgi/q1Uf?=
+ =?Windows-1252?Q?KwiysP+pRwisbJSdHvRpcTvIOlYlIYa26qKG0TYw8p4HftozGHyxLIVJ?=
+ =?Windows-1252?Q?HJxPYNCAhJW/WEiPhUk/vDSIJYKfGn0W2phpMqma140TsW5HZ/XQ7R5b?=
+ =?Windows-1252?Q?fUoI+l/9/siT8Kd/JAqY8KjgfTmOXSIo1RC2YbuaazV8E/LPPMSgA83d?=
+ =?Windows-1252?Q?yleIx3RXO0jbKZwT0X5xheqNHLfCrTWynsqA52HaZI0Wdx3ywEi4pgEY?=
+ =?Windows-1252?Q?rh5McWaShYL+T7GhQb5HSxhoBES6tgYBIF6MgYNStzv6qUEvoW5tWnes?=
+ =?Windows-1252?Q?YBk0LIgAw6BArlE6/AapxUowcijQtpQvd0LeAARJNZzkixHqeZ6snQha?=
+ =?Windows-1252?Q?Jh+JXVBzEwKBSXb2T21Gn3fh18YRgRsXAoKD4fe5kvMyc7c54+Mc+4oU?=
+ =?Windows-1252?Q?MBxPObNjbO9vM4GdlYbIglEYQwIxgBXE1zPbTiYwJrZ2tMWkj/+yxtpr?=
+ =?Windows-1252?Q?KsKa/oz8Uo+5MR87eeyAPy/pvDe0KcA7A2PwnXODvx7SjdB3UeQSJBy8?=
+ =?Windows-1252?Q?mk8NAgiFz6EGzesv6CWzdugF7JZGtaWHddbm0AUQsYaHjqTr02+DTM++?=
+ =?Windows-1252?Q?WLC5CFjbPhMPgmzkEVeGpxykHdAKPzCG2qgcLV21Pqhss0rlAfh4K1Tr?=
+ =?Windows-1252?Q?8tUPiL/eHtJirtKF+gdlACHShymdj8WniUYfvWbfxF+ndq2hjdbR37hm?=
+ =?Windows-1252?Q?RnSNmIUr3V2ClyYdZakP4sFLgiODi4iyyxqIiA0GEJfk8QbsjM1ulxyr?=
+ =?Windows-1252?Q?w2SzaQzcWSXSBLMoJV8x36Bevnvxdk7tGd9mpEVEvUyL5jqt6DIMdUn8?=
+ =?Windows-1252?Q?oFK21cEYCokqgLO7a+dH9oqm2ab5jPb3iZuKOeN9ykTeQzAVcSYIEEY0?=
+ =?Windows-1252?Q?0D2u97tN5TsKOMnN3yK9jMVul745V84RyD0xPKwO8m0M0G0nkad+sGU+?=
+ =?Windows-1252?Q?+FMi1cEZnLCOFJY8NLi/nt+3jz2mK0aUMkOmVXFzrW/qeWx8AXmMxPj2?=
+ =?Windows-1252?Q?K0DmoivjD6FXBeNwPQjMpiVf9bYWMpKJac/Aa9mW+S0ic28BLIjbuIvl?=
+ =?Windows-1252?Q?fFpWiFNzZ3rkectumqXEDJ7BoKrpm2gofTWy4V0mqhLOIahi0ceHobdQ?=
+ =?Windows-1252?Q?PhhIpP9YiC5kEm2PngBv3gWhxXF/xwF6abN5slalIwK+5V8XqI3VaK6D?=
+ =?Windows-1252?Q?k5eIPwmS1YFUV+TB1WBrKnsMPMCbzTjnkHVWqgQhJWkJh3hEfVnO+N6A?=
+ =?Windows-1252?Q?acm7nDV4hm82TzNl4Hlv2Ga8cmuCnWYW4LelLqpjsaD1jThybjdqwjUn?=
+ =?Windows-1252?Q?5iOlYWj59T/YkCCz7JT+tsi6rBYDCcVpIXb57FOvyHQ0YxK13K9PRh/8?=
+ =?Windows-1252?Q?BrwnTrvkFo7Jow7ZEJ5EzIKfb5oTTw0+dPZqvOjGoF7l4OTgqCHcTgWu?=
+ =?Windows-1252?Q?PHZBQO7o2Rap4X4aHbH2BJhRhd0qSdDbpjED6PlvjPoQ28uUKvaC7h+3?=
+ =?Windows-1252?Q?k7y4wNKqjaTS2Rwqnhd8XxjtxwD31oSJb2KFnUMrNo4TMOdOwllmEh7j?=
+ =?Windows-1252?Q?Hitq7oQZRSDMo854cDpoO/9PCK0uMYZkgYda36BozKG07pG3Srbc03YU?=
+ =?Windows-1252?Q?Ppptdx2qV96hF/AJ9Hq+gk+0gI6PDImi7Ixy0KtazmdAXmqVgqSirxSi?=
+ =?Windows-1252?Q?K+4aEuQQq0+nV0BgO8MBVlOzoY3BLcWqVnnTZfR5rnqBRmQpMmzR+1ry?=
+ =?Windows-1252?Q?Wiw6Ytws?=
+x-ms-exchange-antispam-messagedata-1: ixX4/O0+X+HwnJDnlrP9Og+/kld4AJpuBA4=
+Content-Type: multipart/alternative;
+	boundary="_000_CWLP265MB50891BD2282015C3E40C2688C475ACWLP265MB5089GBRP_"
+MIME-Version: 1.0
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	R6ey145wG/0u4YPorgAJDCuQhSccbOYovpSQqvQITPBkmLzzNPIHx/IcDPcKN4ufe1kBpVQecKfpO/Oi4nHQnyIwKFoRsANglG7y8uQR/pbWL1F72qGsEjQ3ZEYIluHC9rMwREgqpXOg2aTxHhn7eQeW92K8fVFP5EoJCe5yUiQspXePOoX71Iv8l2/C7DRzSz0H4dCLNaLJG4Aq1bIIO7NNtEdE9BHvgywdbZjCGGpiIpr/sLyexsDOm19RS5LDzNaujABcVH1EgCPzoNKb4EJ2QBpu1tM4aPQAvMCUgqmfeGOIZCLSwVqgJ74NrxamZqYNRZCnWRNcfBU5o/7tvrrHv02oIDV/Vkj0PPTcTrop5PFaGMAYAht12IufD7GtSyy94SOlw/ZVpdvNCBA7Fm8xYN4GfU9nJ2af6QytSwV2VakMdMZutY00qzHKnbAPE9IqfZFeDjjxNFHRE3WHDjQWLRF2RcIEUefXfYyo8cNwgerD7DATHs/0lNyoyNZ193wik/NkQctdI7xI0tXNtIOm84zfFH4p2mPpfWvFIfJ7fTvquoq9aTjrBEjhoQZsVkg03Gh2XngsCbFgOwlGR/NUBZ06YLLfWrxz+ESW7Xm2O3A6nlmmoUv6U2uR709vaglQKZzGzRfzg0KnuJXXwpATgZ1IflsM5hTxq2h0r4/AEI7MSX4nI/sUc7t3TCbnS2pY+8S3IyaY8AQ3lhtpJg==
+X-OriginatorOrg: manchester.ac.uk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWLP265MB5089.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3486709-9d59-4574-7e08-08de7476f242
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Feb 2026 14:05:35.2268
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c152cb07-614e-4abb-818a-f035cfa91a77
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ih7rq0tnubxhIiS3II/b5DnM9CYsUKhWymp6SZ36Hz3+leertMGpDD3hduhm5fOYN0f2lRpoL1UlfApnvQJTk47i6Irg5h98zHz68sly/N8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO0P265MB7123
+X-Proofpoint-GUID: k4NspREXqfPmlBuL87JyVY8FOzP1Ha2h
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI1MDEzNSBTYWx0ZWRfX3EnAztXmE60w
+ vgd5OG3fJZY7vd6DbFaRW4HcIngx6EwM5ujjN3e2mNpISsO0Z1tlxErFTwwlOQvrZu+LknGyuot
+ mcGj5LJOZR6FPF7mHZP2yB43fSdX0wo+g44Rz76LYr62TR0v3+By/xcy4UcHZ6WQDz6FHRfcWCP
+ xcxUbfSAQrwBpLAJFDGjU2uw5ZxZ9x7973JiaOZX+PIxYzvvKfnhJzexqNmIAAypWaPcoTiverT
+ uWmTU8SYD4voZta5VFohd659wKRKziG8HHYQQ+6YCcVqtW9TmZf6dNaxYahl2/oI+3nIlekJYwR
+ Fc4GA7RXM6ExSVziHM6xmZ6+3F80/fwzXQmXDRJJZ+EN9YMDcNeDQKH9pIaF+mg543upGjeZ9W5
+ /UDcpWrnLPcmng2/gfu5ekLGv3QvFlFevZtNdti0LWWE/wTIQKs0ONycGmFL8qQHvF1vudrlZjW
+ fItFYVwHwX/4P3xBgow==
+X-Authority-Analysis: v=2.4 cv=a4g9NESF c=1 sm=1 tr=0 ts=699f01b1 cx=c_pps
+ a=VxxoUJIN6/MM77s8xSKKEw==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
+ a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=HzLeVaNsDn8A:10
+ a=x7bEGLp0ZPQA:10 a=VkNPw1HP01LnGYTKEx00:22 a=U0PLaED1fD_lPDkOSJpg:22
+ a=FUko_Qj7yqU7gHa4G8gS:22 a=tBhPLD96AAAA:8 a=mAq4dkRcAAAA:8 a=qx0WVkawAAAA:8
+ a=LmdfH-cbhGCXgeWPp5QA:9 a=lqcHg5cX4UMA:10 a=pILNOxqGKmIA:10
+ a=2wG5VZIVuBY0Sn-2L2EA:9 a=YgOFqNmUM60Hzxua:21 a=frz4AuCg-hUA:10
+ a=_W_S_7VecoQA:10 a=RTUhX12CqPwUwF5o1jke:22
+X-Proofpoint-ORIG-GUID: k4NspREXqfPmlBuL87JyVY8FOzP1Ha2h
+X-Validation-by: marie.farrell@manchester.ac.uk
+Subject: [Caml-list] RExAI Call for Papers
+Reply-To: Marie Farrell <marie.farrell@manchester.ac.uk>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19459
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <https://sympa.inria.fr/sympa/help>, <mailto:sympa_inria@inria.fr?subject=HELP>
+List-Subscribe: <https://sympa.inria.fr/sympa/subscribe/caml-list>, <mailto:sympa_inria@inria.fr?subject=SUB%20caml-list>
+List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/caml-list>, <mailto:sympa_inria@inria.fr?subject=SIG%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/msg/caml-list/2026-02/L_8im5qXj1W1JWMsDFnjAA>
+
+--_000_CWLP265MB50891BD2282015C3E40C2688C475ACWLP265MB5089GBRP_
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+Call for Papers: RExAI 2026
+International Workshop on Formal Requirements Engineering and Artificial In=
+telligence
+May 4, 2026
+co-located with NFM 2026 (May 5 - May 7, 2026), Los Angeles, California, US=
+A
+
+Overview
+This workshop explores the intersection of formal requirements engineering =
+and artificial intelligence (AI), addressing a central challenge in modern =
+software and AI system development: how to precisely specify requirements f=
+or increasingly complex, heterogeneous, and autonomous systems, and how to =
+verify and validate that such systems meet those requirements.
+
+As AI technologies become deeply embedded in safety and mission-critical do=
+mains, from autonomous vehicles to medical diagnostics, financial systems t=
+o industrial automation and space exploration, the need for rigorous, forma=
+l approaches to requirements is becoming increasingly important. At the sam=
+e time, traditional requirements engineering methods face new challenges wh=
+en applied to systems with learning-enabled components, unpredictable behav=
+iors, and emergent properties. The opacity of AI models and the semantic ga=
+p between high-level requirements and low-level model inputs and internals =
+create significant impediments to verifying and validating that such system=
+s meet their specified requirements.
+
+The workshop welcomes extended abstract contributions on formal specificati=
+on languages for AI systems, verification and validation techniques, requir=
+ements for trustworthy AI, case studies from real-world applications, and n=
+ovel applications of AI to requirements engineering itself. We aim to foste=
+r dialogue between communities that have traditionally worked separately, b=
+uilding bridges toward more reliable, safe, and trustworthy AI systems grou=
+nded in rigorous requirements practices. Extended abstracts can summarize a=
+nd cite results from recent published paper(s) and/or state your perspectiv=
+e.
+
+Areas of interest include but are not limited to:
+
+  *
+How can we formally specify requirements for systems with learning-enabled =
+components?
+  *
+How can formal frameworks capture fairness, safety, robustness and explaina=
+bility requirements for AI systems?
+  *
+How do we verify that AI systems meet their specified requirements?
+  *
+What role can AI play in automating requirements elicitation, formalization=
+ analysis, and validation?
+  *
+How do we bridge high-level requirements and behavior of AI-enabled systems=
+ to enable traceability, safety assurance, and certification?
+
+
+
+
+Important dates:
+
+  *
+Submission deadline: March 16, 2026
+  *
+Notification: April 3, 2026
+  *
+Workshop: May 4, 2026
+
+Paper submission guidelines
+We invite extended abstracts of 2-4 pages (excluding references) in LNCS fo=
+rmat, https://www.springer.com/gp/computer-science/lncs/conference-proceedi=
+ngs-guidelines. All submissions must be in English and fall into one of the=
+ following categories:
+
+  1.
+New and Emerging Work: Presents novel research in the focus areas of the wo=
+rkshop. Submissions will be evaluated primarily on "novelty".
+  2.
+Summary of Recent Results: Presents existing work and highlights its contri=
+bution in terms of relevance and impact in the focus areas of the workshop.=
+ Submissions will be evaluated primarily on "impact".
+
+Please note that:
+
+  *
+No Formal Proceedings: We welcome submissions of work that has already been=
+ presented or submitted elsewhere. No copyright transfer is required; we on=
+ly request permission to post accepted abstracts on the workshop website.
+  *
+Journal Special Issue: Authors of selected accepted abstracts will be invit=
+ed to submit extended versions for a journal special issue.
+
+All submissions will be reviewed by members of the Program Committee. The p=
+aper review process is single-blind, which means that the author identities=
+ are not required to be anonymous and are visible to the PC members/reviewe=
+rs, but reviewer identities are not visible to the authors. No special effo=
+rts are required to anonymize content in the paper (such as referencing the=
+ authors=92 prior work).
+Policy on the use of Gen AI (same as NFM)
+We understand the convenience afforded by the use of generative AI-based la=
+rge language models to produce text in the submitted manuscript. However, w=
+e strongly encourage the authors to check the generated text for factual er=
+rors and inconsistencies. We encourage the authors to adopt appropriate sta=
+ndards for citing products obtained using generative AI (such as text, tabl=
+es, graphics). Use of AI-based coding assistants is permitted, and we encou=
+rage authors to disclose the use of such tools as the community may find th=
+is scientifically interesting.
+Submission will be via the OpenReview link:
+https://openreview.net/group?id=3DNFM/2026/Workshop/RExAI
+To submit a paper on OpenReview, you must first create a profile and log in=
+ to the system. Then, navigate to the specific conference or venue=92s page=
+ on OpenReview, find the =93Conference Submission=94 link, and click on it.=
+ Fill out the submission form, which will prompt you for paper details like=
+ title, authors, abstract, and keywords, before uploading the PDF of your p=
+aper.
+Step-by-Step Submission Process
+
+  1.
+Create an Account & Log in
+     *
+If you don=92t have one, sign up for an account on OpenReview<https://openr=
+eview.net/>.
+     *
+Log in using your credentials.
+  2.
+Find Your Conference
+     *
+Navigate to the workshop=92s page on OpenReview (NFM Workshop RExAI 2026<ht=
+tps://openreview.net/group?id=3DNFM/2026>)
+  3.
+Locate the Submission Link
+     *
+Select =93NFM 2026 Workshop RExAI Submission=94 to access the submission fo=
+rm.
+  4.
+Complete the Submission Form
+     *
+Add Paper Details: Enter the title of your paper and all authors (each must=
+ have an OpenReview account).
+     *
+Provide Keywords & Summary: Add relevant keywords and a short abstract.
+     *
+Upload Your PDF: Submit the full PDF version of your paper.
+  5.
+Finalize Submission
+     *
+Follow any final instructions (e.g., license agreement, confirmation).
+     *
+Submit and confirm.
+
+Important Considerations
+
+  *
+Author Profiles: All submitting authors must have an active OpenReview prof=
+ile.
+  *
+Email Address: Your profile=92s preferred email is used for notifications.
+  *
+Editing: You can edit your submission and upload new versions until the sub=
+mission deadline.
+
+ Chairs
+
+  *
+Anastasia Mavridou, KBR Inc., NASA Ames =97 anastasia.mavridou@nasa.gov<mai=
+lto:anastasia.mavridou@nasa.gov>
+  *
+Marie Farrell, The University of Manchester =97 marie.farrell@manchester.ac=
+.uk
+  *
+Divya Gopinath, KBR Inc., NASA Ames =97 divya.gopinath@nasa.gov
+  *
+Hazel Taylor, The University of Manchester =97 hazel.taylor@manchester.ac.u=
+k
+
+
+--_000_CWLP265MB50891BD2282015C3E40C2688C475ACWLP265MB5089GBRP_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
+252">
+<style type=3D"text/css" style=3D"display:none;"> P {margin-top:0;margin-bo=
+ttom:0;} </style>
+</head>
+<body dir=3D"ltr">
+<div style=3D"direction: ltr; text-align: center; line-height: 1.595455; ma=
+rgin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont, =
+Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; color=
+: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 700;">Call for Papers: RExAI 2026<br>
+</span><span style=3D"font-weight: 400;">International Workshop on Formal R=
+equirements Engineering and Artificial Intelligence<br>
+May 4, 2026<br>
+co-located with NFM 2026 (May 5 - May 7, 2026), Los Angeles, California, US=
+A</span></div>
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService,=
+ Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" cla=
+ss=3D"elementToProof">
+<span style=3D"font-weight: 400;"><br>
+</span><span style=3D"font-weight: 700;">Overview</span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 400;">This workshop explores the </span><span s=
+tyle=3D"font-weight: 700;">intersection of formal requirements engineering =
+and artificial intelligence (AI)</span><span style=3D"font-weight: 400;">, =
+addressing a central challenge in modern
+ software and AI system development: how to precisely specify requirements =
+for increasingly complex, heterogeneous, and autonomous systems, and how to=
+ verify and validate that such systems meet those requirements.</span></div=
+>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);" class=3D"elementToProof">
+<br>
+</div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 400;">As AI technologies become deeply embedded=
+ in safety and mission-critical domains, from autonomous vehicles to medica=
+l diagnostics, financial systems to industrial automation and space explora=
+tion, the need for rigorous, formal
+ approaches to requirements is becoming increasingly important. At the same=
+ time, traditional requirements engineering methods face new challenges whe=
+n applied to systems with learning-enabled components, unpredictable behavi=
+ors, and emergent properties. The
+ opacity of AI models and the semantic gap between high-level requirements =
+and low-level model inputs and internals create significant impediments to =
+verifying and validating that such systems meet their specified requirement=
+s.</span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);" class=3D"elementToProof">
+<br>
+</div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 400;">The workshop welcomes extended abstract c=
+ontributions on formal specification languages for AI systems, verification=
+ and validation techniques, requirements for trustworthy AI, case studies f=
+rom real-world applications, and novel
+ applications of AI to requirements engineering itself. We aim to foster di=
+alogue between communities that have traditionally worked separately, build=
+ing bridges toward more reliable, safe, and trustworthy AI systems grounded=
+ in rigorous requirements practices.
+ Extended abstracts can summarize and cite results from recent published pa=
+per(s) and/or state your perspective.</span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);" class=3D"elementToProof">
+<br>
+</div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont,=
+ Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; colo=
+r: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 700;">Areas of interest</span><span style=3D"fo=
+nt-weight: 400;">&nbsp;include but are not limited to:</span></div>
+<ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 10pt; margin-bottom: 0pt;" role=3D"presentation" class=3D"elemen=
+tToProof">
+How can we formally specify requirements for systems with learning-enabled =
+components?</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt;" role=3D"presentation" class=3D"element=
+ToProof">
+How can formal frameworks capture fairness, safety, robustness and explaina=
+bility requirements for AI systems?</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt;" role=3D"presentation" class=3D"element=
+ToProof">
+How do we verify that AI systems meet their specified requirements?</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt;" role=3D"presentation" class=3D"element=
+ToProof">
+What role can AI play in automating requirements elicitation, formalization=
+ analysis, and validation?</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 10pt;" role=3D"presentation" class=3D"elemen=
+tToProof">
+How do we bridge high-level requirements and behavior of AI-enabled systems=
+ to enable traceability, safety assurance, and certification?</div>
+</li></ul>
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService,=
+ Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" cla=
+ss=3D"elementToProof">
+<br>
+</div>
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService,=
+ Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" cla=
+ss=3D"elementToProof">
+<br>
+</div>
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService,=
+ Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" cla=
+ss=3D"elementToProof">
+<br>
+</div>
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService,=
+ Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" cla=
+ss=3D"elementToProof">
+<br>
+</div>
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService,=
+ Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" cla=
+ss=3D"elementToProof">
+<span style=3D"font-weight: 700;">Important dates</span><span style=3D"font=
+-weight: 400;">:</span></div>
+<ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 10pt; marg=
+in-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Submission deadline: March 16, 2026</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Notification: April 3, 2026</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 10pt;" role=3D"presentation" class=3D"elementToProof">
+Workshop: May 4, 2026</div>
+</li></ul>
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt; padding: 0pt 0pt 8pt; font-family: Aptos, Aptos_EmbeddedFont=
+, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; col=
+or: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 700;">Paper submission guidelines</span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 12pt; font-family: Aptos, Aptos_EmbeddedFont=
+, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; col=
+or: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 400;">We invite extended abstracts of 2-4 pages=
+ (excluding references) in LNCS format,
+<u><a style=3D"color: rgb(17, 85, 204);" class=3D"OWAAutoLink" id=3D"OWA81c=
+7d45c-c17c-eb83-d917-9153d9711f5a" href=3D"https://www.springer.com/gp/comp=
+uter-science/lncs/conference-proceedings-guidelines">https://www.springer.c=
+om/gp/computer-science/lncs/conference-proceedings-guidelines</a></u>.
+ All submissions must be in English and fall into one of the following cate=
+gories:</span></div>
+<ol style=3D"margin-top: 0px; margin-bottom: 0px;" start=3D"1">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: decimal;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt;" role=3D"presentation" class=3D"element=
+ToProof">
+<span style=3D"font-weight: 700;">New and Emerging Work:</span>&nbsp;Presen=
+ts novel research in the focus areas of the workshop. Submissions will be e=
+valuated primarily on &quot;novelty&quot;.</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: decimal;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 12pt;" role=3D"presentation" class=3D"elemen=
+tToProof">
+<span style=3D"font-weight: 700;">Summary of Recent Results</span>: Present=
+s existing work and highlights its contribution in terms of relevance and i=
+mpact in the focus areas of the workshop. Submissions will be evaluated pri=
+marily on &quot;impact&quot;.</div>
+</li></ol>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 12pt; font-family: Aptos, Aptos_EmbeddedFont=
+, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; col=
+or: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 400;">Please note that:</span></div>
+<ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt;" role=3D"presentation" class=3D"element=
+ToProof">
+<span style=3D"font-weight: 700;">No Formal Proceedings:</span>&nbsp;We wel=
+come submissions of work that has already been presented or submitted elsew=
+here. No copyright transfer is required; we only request permission to post=
+ accepted abstracts on the workshop website.</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 12pt;" role=3D"presentation" class=3D"elemen=
+tToProof">
+<span style=3D"font-weight: 700;">Journal Special Issue:</span>&nbsp;Author=
+s of selected accepted abstracts will be invited to submit extended version=
+s for a journal special issue.</div>
+</li></ul>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; padding: 0pt 0pt 12pt; font-family: Apt=
+os, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helvetica, sans-serif=
+; font-size: 12pt; color: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 400;">All submissions will be reviewed by membe=
+rs of the Program Committee. The paper review process is single-blind, whic=
+h means that the author identities are not required to be anonymous and are=
+ visible to the PC members/reviewers,
+ but reviewer identities are not visible to the authors. No special efforts=
+ are required to anonymize content in the paper (such as referencing the au=
+thors=92 prior work).</span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; padding: 0pt 0pt 12pt; font-family: Apt=
+os, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helvetica, sans-serif=
+; font-size: 12pt; color: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 700;">Policy on the use of Gen AI (same as NFM)=
+</span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; padding: 0pt 0pt 12pt; font-family: Apt=
+os, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helvetica, sans-serif=
+; font-size: 12pt; color: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 400;">We understand the convenience afforded by=
+ the use of generative AI-based large language models to produce text in th=
+e submitted manuscript. However, we strongly encourage the authors to check=
+ the generated text for factual errors
+ and inconsistencies. We encourage the authors to adopt appropriate standar=
+ds for citing products obtained using generative AI (such as text, tables, =
+graphics). Use of AI-based coding assistants is permitted, and we encourage=
+ authors to disclose the use of
+ such tools as the community may find this scientifically interesting.</spa=
+n></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; padding: 0pt 0pt 12pt; font-family: Apt=
+os, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helvetica, sans-serif=
+; font-size: 12pt; color: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 700;">Submission will be via the OpenReview lin=
+k:</span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; padding: 0pt 0pt 12pt; font-family: Apt=
+os, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helvetica, sans-serif=
+; font-size: 12pt; color: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 700;"><u><a style=3D"color: rgb(17, 85, 204);" =
+class=3D"OWAAutoLink" id=3D"OWA6e2e7ec6-8d69-03fa-c037-388779b24632" href=
+=3D"https://openreview.net/group?id=3DNFM/2026/Workshop/RExAI">https://open=
+review.net/group?id=3DNFM/2026/Workshop/RExAI</a></u></span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.595455; m=
+argin-top: 0pt; margin-bottom: 0pt; padding: 0pt 0pt 12pt; font-family: Apt=
+os, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helvetica, sans-serif=
+; font-size: 12pt; color: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 400;">To submit a paper on OpenReview, you must=
+ first create a profile and log in to the system. Then, navigate to the spe=
+cific conference or venue=92s page on OpenReview, find the =93Conference Su=
+bmission=94 link, and click on it. Fill
+ out the submission form, which will prompt you for paper details like titl=
+e, authors, abstract, and keywords, before uploading the PDF of your paper.=
+</span></div>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.44; margi=
+n-top: 0pt; margin-bottom: 2pt; font-family: Aptos, Aptos_EmbeddedFont, Apt=
+os_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; color: r=
+gb(0, 0, 0);" class=3D"elementToProof">
+<b>Step-by-Step Submission Process</b></div>
+<ol style=3D"margin-top: 0px; margin-bottom: 0px;" start=3D"1">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: decimal;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Create an Account &amp; Log in</div>
+</li><ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+If you don=92t have one, sign up for an account on <a style=3D"color: rgb(0=
+, 0, 0);" class=3D"OWAAutoLink" id=3D"OWAacc19048-92dc-8e99-0146-c35b57d1f2=
+19" href=3D"https://openreview.net/">
+OpenReview</a>.</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Log in using your credentials.</div>
+</li></ul>
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: decimal;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Find Your Conference</div>
+</li><ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Navigate to the workshop=92s page on OpenReview (NFM Workshop RExAI<a style=
+=3D"color: rgb(0, 0, 0);" class=3D"OWAAutoLink" id=3D"OWA0c7a872f-3798-7a93=
+-4650-6a7ec6012ed6" href=3D"https://openreview.net/group?id=3DNFM/2026">&nb=
+sp;2026</a>)</div>
+</li></ul>
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: decimal;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Locate the Submission Link</div>
+</li><ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Select =93NFM 2026 Workshop RExAI Submission=94 to access the submission fo=
+rm.</div>
+</li></ul>
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: decimal;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Complete the Submission Form</div>
+</li><ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Add Paper Details: Enter the title of your paper and all authors (each must=
+ have an OpenReview account).</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Provide Keywords &amp; Summary: Add relevant keywords and a short abstract.=
+</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Upload Your PDF: Submit the full PDF version of your paper.</div>
+</li></ul>
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: decimal;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Finalize Submission</div>
+</li><ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Follow any final instructions (e.g., license agreement, confirmation).</div=
+>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: circle;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 12pt;" role=3D"presentation" class=3D"elementToProof">
+Submit and confirm.</div>
+</li></ul>
+</ol>
+<div style=3D"direction: ltr; text-align: justify; line-height: 1.44; margi=
+n-top: 0pt; margin-bottom: 2pt; font-family: Aptos, Aptos_EmbeddedFont, Apt=
+os_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; color: r=
+gb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-weight: 700;">Important Considerations</span></div>
+<ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Author Profiles: All submitting authors must have an active OpenReview prof=
+ile.</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Email Address: Your profile=92s preferred email is used for notifications.<=
+/div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 12pt;" role=3D"presentation" class=3D"elementToProof">
+Editing: You can edit your submission and upload new versions until the sub=
+mission deadline.</div>
+</li></ul>
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt; font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService,=
+ Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);" cla=
+ss=3D"elementToProof">
+<span style=3D"font-weight: 400;">&nbsp;</span><span style=3D"font-weight: =
+700;">Chairs</span></div>
+<ul style=3D"margin-top: 0px; margin-bottom: 0px;">
+<li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, C=
+alibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; color: rg=
+b(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 10pt; marg=
+in-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Anastasia Mavridou, KBR Inc., NASA Ames =97 <u><a style=3D"color: rgb(17, 8=
+5, 204);" class=3D"OWAAutoLink" id=3D"OWA238cafd2-4d0a-51d1-a422-e639ef4dfb=
+3e" href=3D"mailto:anastasia.mavridou@nasa.gov">anastasia.mavridou@nasa.gov=
+</a></u></div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Marie Farrell, The University of Manchester =97 marie.farrell@manchester.ac=
+.uk</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.595455; margin-top: 0pt; margi=
+n-bottom: 0pt;" role=3D"presentation" class=3D"elementToProof">
+Divya Gopinath, KBR Inc., NASA Ames =97 divya.gopinath@nasa.gov</div>
+</li><li style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontServi=
+ce, Calibri, Helvetica, sans-serif; font-size: 12pt; font-weight: 400; colo=
+r: rgb(0, 0, 0); direction: ltr; list-style-type: disc;">
+<div style=3D"direction: ltr; line-height: 1.585714; margin-top: 0pt; margi=
+n-bottom: 3pt;" role=3D"presentation" class=3D"elementToProof">
+<b>Hazel Taylor, The University of Manchester =97 hazel.taylor@manchester.a=
+c.uk</b></div>
+</li></ul>
+<div style=3D"font-family: Calibri, Arial, Helvetica, sans-serif; font-size=
+: 12pt; color: rgb(0, 0, 0);" class=3D"elementToProof">
+<span style=3D"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService,=
+ Calibri, Helvetica, sans-serif;"></span><br>
+</div>
+<div class=3D"elementToProof" id=3D"Signature">
+<div style=3D"background-color: rgb(255, 255, 255);" class=3D"elementToProo=
+f"></div>
+</div>
+</body>
+</html>
+
+--_000_CWLP265MB50891BD2282015C3E40C2688C475ACWLP265MB5089GBRP_--
