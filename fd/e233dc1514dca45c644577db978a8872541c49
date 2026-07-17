@@ -1,0 +1,532 @@
+Return-Path: <caml-list-owner@inria.fr>
+Authentication-Results: plum.tunbury.org;
+	dkim=pass (1024-bit key; unprotected) header.d=inria.fr header.i=@inria.fr header.a=rsa-sha256 header.s=dc header.b=E5bJc99s;
+	dkim-atps=neutral
+Received-SPF: Pass (mailfrom) identity=mailfrom; client-ip=192.134.164.83; helo=mail2-relais-roc.national.inria.fr; envelope-from=caml-list-owner@inria.fr; receiver=tunbury.org 
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by plum.tunbury.org (Postfix) with ESMTP id 5E97440022
+	for <caml-list@tunbury.org>; Fri, 17 Jul 2026 14:52:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=mime-version:from:date:message-id:to:subject:reply-to:
+   sender:list-id:list-help:list-subscribe:list-unsubscribe:
+   list-post:list-owner:list-archive;
+  bh=WlUIZdVfNLtEDJeS8kw3+wQjc9Vt+KDarUx4M9EUb3c=;
+  b=E5bJc99shL++rtR967Um99SIllFoZQXDxfep6XjsMixqQfEueVNE8aDx
+   1ZszHLIH3a5qwvQy6ZaR2OIwSQnuKcyVSCl3Dq/GCnfMtlEjw8FOAMlq6
+   IxHUiVK3SoQz4Hfw6yxUbtS65StoVsYSVi+h3TeHqqhgA0R+6iMHXLLfR
+   o=;
+X-CSE-ConnectionGUID: nDcyXWCdSNKSz2YZGoMscg==
+X-CSE-MsgGUID: sCxmwCU3S9yKuCn6Hz+PYQ==
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=caml-list-owner@inria.fr; spf=None smtp.helo=postmaster@prod-sympa-app.inria.fr
+Received-SPF: SoftFail (mail2-relais-roc.national.inria.fr:
+  domain of caml-list-owner@inria.fr is inclined to not
+  designate 128.93.162.27 as permitted sender)
+  identity=mailfrom; client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="caml-list-owner@inria.fr"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1
+  ip4:128.93.142.0/24 ip4:192.134.164.0/24 ip4:128.93.162.160
+  ip4:128.93.162.3 ip4:128.93.162.88 ip4:89.107.174.7 mx ~all"
+Received-SPF: None (mail2-relais-roc.national.inria.fr: no sender
+  authenticity information available from domain of
+  postmaster@prod-sympa-app.inria.fr) identity=helo;
+  client-ip=128.93.162.27;
+  receiver=mail2-relais-roc.national.inria.fr;
+  envelope-from="caml-list-owner@inria.fr";
+  x-sender="postmaster@prod-sympa-app.inria.fr";
+  x-conformance=spf_only
+X-IronPort-AV: E=Sophos;i="6.25,169,1779141600"; 
+   d="scan'208,217";a="286799066"
+Received: from prod-sympa-app.inria.fr ([128.93.162.27])
+  by mail2-relais-roc.national.inria.fr with ESMTP; 17 Jul 2026 16:52:59 +0200
+Received: by prod-sympa-app.inria.fr (Postfix, from userid 990)
+	id 2940981775; Fri, 17 Jul 2026 16:52:59 +0200 (CEST)
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+	by prod-sympa-app.inria.fr (Postfix) with ESMTP id D578281778
+	for <caml-list@sympa.inria.fr>; Fri, 17 Jul 2026 16:52:48 +0200 (CEST)
+X-CSE-ConnectionGUID: UDy9y6WiQbqtlHZmeKhi3w==
+X-CSE-MsgGUID: OTaWg50hRqOa6qefHwPW2A==
+IronPort-SDR: 6a5a41bf_CCaQxp25C/IDNF/9zU9lcwPwTdMd9CK44Qg/tH8dVHnX569
+ nULxWFUe3YS4j4Tc/WC2RIEkbv5snhpEKfKwk0Q==
+X-ThreatScanner-Verdict: Negative
+X-IPAS-Result: =?us-ascii?q?A0FLEgDzQFpqfDOgVdFagluBO4EEYSleNAQLSYRYgSOCL?=
+ =?us-ascii?q?FOLMKI7AgwDAQMBDT0UBAEBAQIBA4R+jVQCHgcBBDUFDQECBAMCAwEBAQEBA?=
+ =?us-ascii?q?QEBAQEBCwEBAQQBAQECAQECBAMBAQEBAhABASIZBw4SKYZPCwKCRQEEAQEBA?=
+ =?us-ascii?q?QMDAwEBDAEwcYElAQEBAQEBAQEBAQEBAR0CDR8/FyELBh0BJxIDEhA3AiMSA?=
+ =?us-ascii?q?QUBKAEuOYIogiIBBhABAzcDEa84giSBAkKJdQKBRoEygQGCDQaBCT4F2RwKQ?=
+ =?us-ascii?q?Q1ygQ1cAgEGFi6BCoR3eYJrAYFfAQIOhAYBhSMPgVVEgRU1gkVvgQWDa4MuF?=
+ =?us-ascii?q?oJUBIIiehKRRiMDJgMHBw4rRg4BIQMmMywBVRMXCwcFLVcKA1UBAgFfCB4yP?=
+ =?us-ascii?q?AECLwYXgSM+FzRYGwcFVh8CJh8lGycqAgIGIAQNAw8DBjYaA0EUFg0HJQMDA?=
+ =?us-ascii?q?hwEAwIDAxkHBgMQBAIDAwYDAwMEBQkjAiUOOQUFBgMRCgMDAw0DAgcDAwMDA?=
+ =?us-ascii?q?wMDDgQDAw4DAwgDAwMMBQMDAwUDAgQDAwYCAwMRDgMDAwMDBB0DBwQDAwMgA?=
+ =?us-ascii?q?wMKAwcDBgEGAgMHAwMFAwsDAgMUFgYDAwMDCAIDAwUDAwMIDAMDBwIQBgMDA?=
+ =?us-ascii?q?gMDCAMPAwIHAwMEAwMIEw4LEAMQCQUCAw4JCwQbAgIQCAUDAwgCAQMIISodA?=
+ =?us-ascii?q?yASFyECAgwRAwoDBQMIJAIIBgMDBA4BCQMDBwMDDwcEAgMDBwMDAwMCBRQEA?=
+ =?us-ascii?q?gUCBgwDAgMQBQQFCwMCBAILAgIDAwMBAwYHAxgGAwUDAwMHAwICAgMDAwoDA?=
+ =?us-ascii?q?wMDBAMDAwgHBQMDEAMMAwMKAgMDIwMLYgs9NykESo4rI4N5E37HbDQHK4N1g?=
+ =?us-ascii?q?WYMii+VVDOBTqkepxKVWoVOESSBXCKBXDQZI4EBbQmBQFADGQ+OOINrhRPJQ?=
+ =?us-ascii?q?ysyPQEBBwIHDgMLgWiSAAEB?=
+IronPort-PHdr: A9a23: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
+ JV6G3c=
+IronPort-Data: A9a23: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
+ RvKeodG34xaNrH/d0fkVxLFTJKY0c62I/U=
+IronPort-HdrOrdr: A9a23:MOV3/K/ujUOGROdLlZJuk+GTdb1zdoMgy1knxilNoH1uHfBx9a
+ iV9sjzsCWYtN9/YhAdcLy7VJVoP0mslqKdkLN+AV7KZmCP01dAR7sD0WKN+UyDJwTOssF26J
+ tLN4VTKJnLLXI/qc775TOzG9EmzMLvytHPuc7ui1hGcD1BL4xNz0NCKizeNkV3QTNNDZ0/GI
+ HZydFAo1ObCAwqR/X+KVM5Y8KGivHq0KjHS1ojDx4j0gOHijSl8/rbPnGjr3AjegIK7p0ezU
+ KAviDYop+CmbWewh/Y7WXa6JNbg5/AzdREH8iFl8gSLVzX+2KVTbUkdJe+gBpwjc2OrGwLup
+ 3pqxckBc567HTcZSWOuBPo8Qjt2jRG0Q6a9bbhuwqHnSXmfkNAN/Z8
+X-Talos-CUID: 9a23:7PnG420ZXmWIA2RkyaSmubxfJ+w0I2yD83bpKVakDUZbTbC2SV7L5/Yx
+X-Talos-MUID: =?us-ascii?q?9a23=3AWOZzdQyzvHtsRm2ukdaeipz7bPyaqIOSAX8CzM0?=
+ =?us-ascii?q?GgdCjPHJpNjm9kwyIGKZyfw=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="6.25,169,1779141600"; 
+   d="scan'208,217";a="286798845"
+X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
+X-MGA-submission: =?us-ascii?q?MDFMH8A6jcawMTHCpggiRCfmGQghWIWS60OAFQ?=
+ =?us-ascii?q?h8Tq4t5NJFdc5XHhvBiKrrhEDDa20KpV/jKZp+phDbG66CXBiGsnQlFj?=
+ =?us-ascii?q?73hNOcMyRUuk7StVJ7hBDWMvX2ejdXEGadKMxYAb1+YEa8xS4D4lWtzX?=
+ =?us-ascii?q?tWK/LcHcJvMODXMVwTj19pwQ=3D=3D?=
+Received: from mail-oa1-f51.google.com ([209.85.160.51])
+  by mail2-smtp-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2026 16:52:48 +0200
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-45133d2974fso4710467fac.1
+        for <caml-list@inria.fr>; Fri, 17 Jul 2026 07:52:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1784299967; cv=none;
+        d=google.com; s=arc-20260327;
+        b=dtyKw0lSw/iTpOfXzSoPfYEHA2oSzckHmMgIDCzhgq2e5l/iLhRdMlRLHjv4GAZHqS
+         jiU0CMOsPT3DH9elJIJHpXGdJ1u6RI/mqsZrVPcvtsfNEqV+dzTLsIa04gh8P7lusjrL
+         zpUkVaHvRP9Z4HMeSHPPfXVOSRZ/ZvhOWfH80TiKPKhnKSp3yRbLPIpVHVgiQnmskEMJ
+         ugHM36TxKIZPwPbndb6zuf/GlYbvW1ZVE3GznjZ9GzgdhktcG3CrMvSJ0wyuySzx4ugE
+         sxGUoFQCtG0jj0DfvcoH3OzTl9tVj6MEeDU+9M99I1HB16RB/uGGjR4HDuK24L/gCm0a
+         L+Hg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=WlUIZdVfNLtEDJeS8kw3+wQjc9Vt+KDarUx4M9EUb3c=;
+        fh=P1I2DSUhqtArjoCuhdkWY/M3Xk7lKgeef66vPcqJAHM=;
+        b=lXz3AfTcgrUwfPgZJKzSqTRsazKaXwdNQQCNYY3oUPkKKH84P6LhIT3MOm89navv9A
+         YRRLvBTaqK55VtXo+iYnQjLgJquNU+6cSBpX7YbIhH3cHY8Xyv2suPh8vj9O4/iaohuP
+         /CwdyjGgGHRtcXVwpbmwGYEzK3ASP8XMKP7rziUeq+x3Dal3vCNNZldKZZQoNgnaS2Tz
+         kWMBLMnqGRDP71HAK/0xueJlSAQj3DLv8EtmHUIXpbSJ/jf9yWU5sg1HxoFYbkqZvayj
+         AvX/NU2m0CpqiHFrN9HMJ4UeXMoPwpxad1+vkqxPjvO2sJ2UBidT0KNiwAHn+UUySkmX
+         YhuQ==;
+        darn=inria.fr
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784299967; x=1784904767;
+        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=WlUIZdVfNLtEDJeS8kw3+wQjc9Vt+KDarUx4M9EUb3c=;
+        b=mnG2W+1JfIOgWn58vCqKYCDE9/AAQcKGXxJHkpwfurSE8DG2lrqkLfrkGrPx84Bx4e
+         Xq3x1OeLdN27F5CJ59OiuYvMSSWdWtndubQr9PqbM47mFS4NGYdsPKtyEb/Pb2pVBSLw
+         qHFJdZTwFSKb0KSpYiIqvT0U9/+/dDePS04GJHG8xzCYjUkZ7IRwFwVOTiHeKp5yaxVY
+         34mgwHCd44izH8Cx0yi540dDaYBRyrT4fYHpEjy18a/TLQj1omT17gBUZ7Msdr9cGMwa
+         WHisPMuXgl7vlG1EjwYtQcKX1rnzPCh56cdZzuheaz85FAUYHwHE5d2LwYDeQe8ouXwt
+         Ucdw==
+X-Forwarded-Encrypted: i=1; AHgh+RoN3AwpIlQdbF2w4fz+iHybDlcSC/QENVteT60vZQ4VINH+UipFyh83PrgRlnn9t96dtmA/7QqYV58=@inria.fr
+X-Gm-Message-State: AOJu0Yy+EmxkHJVzq/yWPJRT2Y+uKyJWIsYKKkBEAiFQKsIL1Ej2+wRS
+	ysaqt2RAs2C2ICYpwxd9ub75lE/b8gkqUqFxtNISylqQlbtRa5kngFW94rqXBK/81vMu9WkH5Yh
+	dXcaOws3yHbpQ6rFOcZXEVSq5S8V2Ofk=
+X-Gm-Gg: AfdE7cmrfap9phEpMI6qkOfOrbSqCYj4uRu2hoD4n6qfJzkee5F9desfd/pyO94QtXk
+	dUetrhwk3pN9+rzsJyqmixuSMO8fxysJD/1J4ZV3A53m6DZYkrwd2bKJ/zyBboDJpHAi+QtYdSB
+	StIGashZqK1rBVOS7FLpU4c8ro974PYqd6YHw9lEvbBzE/4/9g7UzpUExnNgOKkj19a9wMsjoQg
+	Sfv8ueuv53BLpppsxC0BwzurrK63PINuy0s/44tTLUacAYhfmo1jL0XXd7Xgu6lZ5hqN6hDDyYT
+	1JkwfrqcFc9lddqmNnbh
+X-Received: by 2002:a05:6808:1513:b0:486:8a11:6e8b with SMTP id
+ 5614622812f47-4a4d016406dmr1236699b6e.2.1784299966470; Fri, 17 Jul 2026
+ 07:52:46 -0700 (PDT)
+MIME-Version: 1.0
+From: ICFP Publicity <icfp.publicity@googlemail.com>
+Date: Fri, 17 Jul 2026 10:52:35 -0400
+X-Gm-Features: AUfX_mx_3Z60_MXZEQ9b_7PSY3htDAvpu0uMv4BdbtXBJL93SSZCWaII7q45D3E
+Message-ID: <CAAmpXijzasHdhmfow35dCWd443CuzmRqt6o+rM3c==bD46706w@mail.gmail.com>
+To: undisclosed-recipients:;
+Content-Type: multipart/alternative; boundary="000000000000ac9dbe0656cfb530"
+Subject: [Caml-list] ICFP'26: Call for Participation and Early Registration
+ Discount until July 25
+Reply-To: ICFP Publicity <icfp.publicity@googlemail.com>
+X-Loop: caml-list@inria.fr
+X-Sequence: 19552
+Errors-To: caml-list-owner@inria.fr
+Precedence: list
+Precedence: bulk
+Sender: caml-list-request@inria.fr
+X-no-archive: yes
+List-Id: <caml-list.inria.fr>
+List-Help: <https://sympa.inria.fr/sympa/help>, <mailto:sympa_inria@inria.fr?subject=HELP>
+List-Subscribe: <https://sympa.inria.fr/sympa/subscribe/caml-list>, <mailto:sympa_inria@inria.fr?subject=SUB%20caml-list>
+List-Unsubscribe: <https://sympa.inria.fr/sympa/signoff/caml-list>, <mailto:sympa_inria@inria.fr?subject=SIG%20caml-list>
+List-Post: <mailto:caml-list@inria.fr>
+List-Owner: <mailto:caml-list-request@inria.fr>
+List-Archive: <https://sympa.inria.fr/sympa/arc/caml-list>
+Archived-At: <https://sympa.inria.fr/sympa/msg/caml-list/2026-07/z08TwgtdU0Fp4AgnDsXlQQ>
+
+--000000000000ac9dbe0656cfb530
+Content-Type: text/plain; charset="UTF-8"
+
+ICFP'26: Call for Participation and Early Registration Reminder
+
+The 31st ACM SIGPLAN International Conference on Functional Programming
+(ICFP 2026) and affiliated events invite you to participate in a full week
+dedicated to functional programming!
+
+https://icfp26.sigplan.org
+
+Indianapolis, Indiana, USA; Aug 24-29, 2026
+Early Registration Open Until July 25
+
+*Register here*: https://icfp26.sigplan.org/attending/registration
+
+*Early registration discount* is available until *July 25*!
+ICFP Overview
+
+ICFP is a celebration of the art and science of functional programming,
+providing a forum for researchers and developers to engage on a variety of
+topics, from foundations to features, and from abstraction to application.
+
+   -
+
+   Accepted Papers: https://icfp26.sigplan.org/track/icfp-2026-icfp-papers
+   -
+
+   Registration: https://icfp26.sigplan.org/attending/registration (Early
+   registration discount available until *July 25*!)
+   -
+
+   Venue: Indiana University Indianapolis
+   https://icfp26.sigplan.org/venue/icfp-2026-venue1
+   -
+
+   Hotel Blocks: https://icfp26.sigplan.org/attending/hotel-blocks
+   -
+
+   Tutorials: https://icfp26.sigplan.org/track/icfp-2026-icfp-tutorials
+
+Keynotes
+
+Keynote speakers this year:
+
+   -
+
+   Edward Lee (UC Berkeley): "Deterministic Concurrency"
+   -
+
+   Lindsey Kuper (UC Santa Cruz): "Interpreters everywhere!"
+   -
+
+   Daan Leijen (Microsoft Research): "Efficient strong functional
+   programming with effects and compiler guided reference counting"
+
+More info: https://icfp26.sigplan.org/track/icfp-2026-icfp-keynotes
+Co-Located Events
+
+There are several events co-located with ICFP:
+
+*Monday, August 24*
+
+   - PLMW: https://icfp26.sigplan.org/home/PLMW-ICFP-2026
+   - HOPE: https://icfp26.sigplan.org/home/hope-2026
+   - miniKanren: https://icfp26.sigplan.org/home/minikanren-2026
+   - FARM: https://icfp26.sigplan.org/home/farm-2026
+
+*Tuesday-Thursday, August 25-27*
+
+   - ICFP - Main conference
+
+*Friday, August 28*
+
+   - Haskell (Aug 28-29): https://icfp26.sigplan.org/home/haskellsymp-2026
+   - Erlang: https://icfp26.sigplan.org/home/erlang-2026
+   - ML Family: https://icfp26.sigplan.org/home/mlfamilyworkshop-2026
+   - LOPSTR+PPDP (Aug 27-29):
+   https://icfp26.sigplan.org/home/lopstr-ppdp-2026
+
+*Saturday, August 29*
+
+   - Haskell (Aug 28-29): https://icfp26.sigplan.org/home/haskellsymp-2026
+   - Scheme: https://icfp26.sigplan.org/home/scheme-2026
+   - FUNARCH: https://icfp26.sigplan.org/home/funarch-2026
+   - LOPSTR+PPDP (Aug 27-29):
+   https://icfp26.sigplan.org/home/lopstr-ppdp-2026
+
+--000000000000ac9dbe0656cfb530
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><h1 class=3D"gmail-code-line" dir=3D"auto" id=3D"gmail-icf=
+p26-call-for-participation-and-early-registration-reminder" style=3D"margin=
+-top:0px;margin-bottom:16px;line-height:1.25;padding-bottom:0.3em;border-bo=
+ttom:1px solid rgba(0,0,0,0.18);border-top-color:rgba(0,0,0,0.18);border-ri=
+ght-color:rgba(0,0,0,0.18);border-left-color:rgba(0,0,0,0.18);color:rgb(59,=
+59,59);font-family:-apple-system,&quot;system-ui&quot;,&quot;Segoe WPC&quot=
+;,&quot;Segoe UI&quot;,system-ui,Ubuntu,&quot;Droid Sans&quot;,sans-serif">=
+ICFP&#39;26: Call for Participation and Early Registration Reminder</h1><h1=
+ class=3D"gmail-code-line" dir=3D"auto" id=3D"gmail-icfp26-call-for-partici=
+pation-and-early-registration-reminder" style=3D"margin-top:0px;margin-bott=
+om:16px;line-height:1.25;padding-bottom:0.3em;border-bottom:1px solid rgba(=
+0,0,0,0.18);border-top-color:rgba(0,0,0,0.18);border-right-color:rgba(0,0,0=
+,0.18);border-left-color:rgba(0,0,0,0.18);color:rgb(59,59,59);font-family:-=
+apple-system,&quot;system-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&quo=
+t;,system-ui,Ubuntu,&quot;Droid Sans&quot;,sans-serif"><p class=3D"gmail-co=
+de-line" dir=3D"auto" style=3D"margin-top:0px;margin-bottom:16px;font-size:=
+14px;font-weight:400">The 31st ACM SIGPLAN International Conference on Func=
+tional Programming (ICFP 2026) and affiliated events invite you to particip=
+ate in a full week dedicated to functional programming!</p><p class=3D"gmai=
+l-code-line" dir=3D"auto" style=3D"margin-top:0px;margin-bottom:16px;font-s=
+ize:14px;font-weight:400"><a href=3D"https://icfp26.sigplan.org/" style=3D"=
+color:rgb(0,95,184);text-decoration:none">https://icfp26.sigplan.org</a></p=
+><p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;margin-b=
+ottom:16px;font-size:14px;font-weight:400">Indianapolis, Indiana, USA; Aug =
+24-29, 2026</p></h1><h2 class=3D"gmail-code-line" dir=3D"auto" id=3D"early-=
+registration-open-until-july-25" style=3D"margin-top:24px;margin-bottom:16p=
+x;line-height:1.25;padding-bottom:0.3em;border-bottom:1px solid rgba(0,0,0,=
+0.18);border-top-color:rgba(0,0,0,0.18);border-right-color:rgba(0,0,0,0.18)=
+;border-left-color:rgba(0,0,0,0.18);color:rgb(59,59,59);font-family:-apple-=
+system,&quot;system-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&quot;,sys=
+tem-ui,Ubuntu,&quot;Droid Sans&quot;,sans-serif">Early Registration Open Un=
+til July 25</h2><h1 class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-=
+top:0px;margin-bottom:16px;line-height:1.25;padding-bottom:0.3em;border-bot=
+tom:1px solid rgba(0,0,0,0.18);border-top-color:rgba(0,0,0,0.18);border-rig=
+ht-color:rgba(0,0,0,0.18);border-left-color:rgba(0,0,0,0.18);color:rgb(59,5=
+9,59);font-family:-apple-system,&quot;system-ui&quot;,&quot;Segoe WPC&quot;=
+,&quot;Segoe UI&quot;,system-ui,Ubuntu,&quot;Droid Sans&quot;,sans-serif"><=
+p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;margin-bot=
+tom:16px;font-size:14px;font-weight:400"><strong>Register here</strong>:=C2=
+=A0<a href=3D"https://icfp26.sigplan.org/attending/registration" style=3D"c=
+olor:rgb(0,95,184);text-decoration:none">https://icfp26.sigplan.org/attendi=
+ng/registration</a></p><p class=3D"gmail-code-line" dir=3D"auto" style=3D"m=
+argin-top:0px;margin-bottom:16px;font-size:14px;font-weight:400"><strong>Ea=
+rly registration discount</strong>=C2=A0is available until=C2=A0<strong>Jul=
+y 25</strong>!</p></h1><h2 class=3D"gmail-code-line" dir=3D"auto" id=3D"gma=
+il-icfp-overview" style=3D"margin-top:24px;margin-bottom:16px;line-height:1=
+.25;padding-bottom:0.3em;border-bottom:1px solid rgba(0,0,0,0.18);border-to=
+p-color:rgba(0,0,0,0.18);border-right-color:rgba(0,0,0,0.18);border-left-co=
+lor:rgba(0,0,0,0.18);color:rgb(59,59,59);font-family:-apple-system,&quot;sy=
+stem-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&quot;,system-ui,Ubuntu,&=
+quot;Droid Sans&quot;,sans-serif">ICFP Overview</h2><h1 class=3D"gmail-code=
+-line" dir=3D"auto" style=3D"margin-top:0px;margin-bottom:16px;line-height:=
+1.25;padding-bottom:0.3em;border-bottom:1px solid rgba(0,0,0,0.18);border-t=
+op-color:rgba(0,0,0,0.18);border-right-color:rgba(0,0,0,0.18);border-left-c=
+olor:rgba(0,0,0,0.18);color:rgb(59,59,59);font-family:-apple-system,&quot;s=
+ystem-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&quot;,system-ui,Ubuntu,=
+&quot;Droid Sans&quot;,sans-serif"><p class=3D"gmail-code-line" dir=3D"auto=
+" style=3D"margin-top:0px;margin-bottom:16px;font-size:14px;font-weight:400=
+">ICFP is a celebration of the art and science of functional programming, p=
+roviding a forum for researchers and developers to engage on a variety of t=
+opics, from foundations to features, and from abstraction to application.</=
+p><ul class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;margin=
+-bottom:0.7em;font-size:14px;font-weight:400"><li class=3D"gmail-code-line"=
+ dir=3D"auto"><p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top=
+:0px;margin-bottom:0.7em">Accepted Papers:=C2=A0<a href=3D"https://icfp26.s=
+igplan.org/track/icfp-2026-icfp-papers" style=3D"color:rgb(0,95,184);text-d=
+ecoration:none">https://icfp26.sigplan.org/track/icfp-2026-icfp-papers</a><=
+/p></li><li class=3D"gmail-code-line" dir=3D"auto"><p class=3D"gmail-code-l=
+ine gmail-code-active-line" dir=3D"auto" style=3D"margin-top:0px;margin-bot=
+tom:0.7em">Registration:=C2=A0<a href=3D"https://icfp26.sigplan.org/attendi=
+ng/registration" style=3D"color:rgb(0,95,184);text-decoration:none">https:/=
+/icfp26.sigplan.org/attending/registration</a>=C2=A0(Early registration dis=
+count available until=C2=A0<strong>July 25</strong>!)</p></li><li class=3D"=
+gmail-code-line" dir=3D"auto"><p class=3D"gmail-code-line" dir=3D"auto" sty=
+le=3D"margin-top:0px;margin-bottom:0.7em">Venue: Indiana University Indiana=
+polis=C2=A0<a href=3D"https://icfp26.sigplan.org/venue/icfp-2026-venue1" st=
+yle=3D"color:rgb(0,95,184);text-decoration:none">https://icfp26.sigplan.org=
+/venue/icfp-2026-venue1</a></p></li><li class=3D"gmail-code-line" dir=3D"au=
+to"><p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;margi=
+n-bottom:0.7em">Hotel Blocks:=C2=A0<a href=3D"https://icfp26.sigplan.org/at=
+tending/hotel-blocks" style=3D"color:rgb(0,95,184);text-decoration:none">ht=
+tps://icfp26.sigplan.org/attending/hotel-blocks</a></p></li><li class=3D"gm=
+ail-code-line" dir=3D"auto"><p class=3D"gmail-code-line" dir=3D"auto" style=
+=3D"margin-top:0px;margin-bottom:0.7em">Tutorials:=C2=A0<a href=3D"https://=
+icfp26.sigplan.org/track/icfp-2026-icfp-tutorials" style=3D"color:rgb(0,95,=
+184);text-decoration:none">https://icfp26.sigplan.org/track/icfp-2026-icfp-=
+tutorials</a></p></li></ul></h1><h2 class=3D"gmail-code-line" dir=3D"auto" =
+id=3D"gmail-keynotes" style=3D"margin-top:24px;margin-bottom:16px;line-heig=
+ht:1.25;padding-bottom:0.3em;border-bottom:1px solid rgba(0,0,0,0.18);borde=
+r-top-color:rgba(0,0,0,0.18);border-right-color:rgba(0,0,0,0.18);border-lef=
+t-color:rgba(0,0,0,0.18);color:rgb(59,59,59);font-family:-apple-system,&quo=
+t;system-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&quot;,system-ui,Ubun=
+tu,&quot;Droid Sans&quot;,sans-serif">Keynotes</h2><h1 class=3D"gmail-code-=
+line" dir=3D"auto" style=3D"margin-top:0px;margin-bottom:16px;line-height:1=
+.25;padding-bottom:0.3em;border-bottom:1px solid rgba(0,0,0,0.18);border-to=
+p-color:rgba(0,0,0,0.18);border-right-color:rgba(0,0,0,0.18);border-left-co=
+lor:rgba(0,0,0,0.18);color:rgb(59,59,59);font-family:-apple-system,&quot;sy=
+stem-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&quot;,system-ui,Ubuntu,&=
+quot;Droid Sans&quot;,sans-serif"><p class=3D"gmail-code-line" dir=3D"auto"=
+ style=3D"margin-top:0px;margin-bottom:16px;font-size:14px;font-weight:400"=
+>Keynote speakers this year:</p><ul class=3D"gmail-code-line" dir=3D"auto" =
+style=3D"margin-top:0px;margin-bottom:0.7em;font-size:14px;font-weight:400"=
+><li class=3D"gmail-code-line" dir=3D"auto"><p class=3D"gmail-code-line" di=
+r=3D"auto" style=3D"margin-top:0px;margin-bottom:0.7em">Edward Lee (UC Berk=
+eley): &quot;Deterministic Concurrency&quot;</p></li><li class=3D"gmail-cod=
+e-line" dir=3D"auto"><p class=3D"gmail-code-line" dir=3D"auto" style=3D"mar=
+gin-top:0px;margin-bottom:0.7em">Lindsey Kuper (UC Santa Cruz): &quot;Inter=
+preters everywhere!&quot;</p></li><li class=3D"gmail-code-line" dir=3D"auto=
+"><p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;margin-=
+bottom:0.7em">Daan Leijen (Microsoft Research): &quot;Efficient strong func=
+tional programming with effects and compiler guided reference counting&quot=
+;</p></li></ul><p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-to=
+p:0px;margin-bottom:16px;font-size:14px;font-weight:400">More info:=C2=A0<a=
+ href=3D"https://icfp26.sigplan.org/track/icfp-2026-icfp-keynotes" style=3D=
+"color:rgb(0,95,184);text-decoration:none">https://icfp26.sigplan.org/track=
+/icfp-2026-icfp-keynotes</a></p></h1><h2 class=3D"gmail-code-line" dir=3D"a=
+uto" id=3D"gmail-co-located-events" style=3D"margin-top:24px;margin-bottom:=
+16px;line-height:1.25;padding-bottom:0.3em;border-bottom:1px solid rgba(0,0=
+,0,0.18);border-top-color:rgba(0,0,0,0.18);border-right-color:rgba(0,0,0,0.=
+18);border-left-color:rgba(0,0,0,0.18);color:rgb(59,59,59);font-family:-app=
+le-system,&quot;system-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&quot;,=
+system-ui,Ubuntu,&quot;Droid Sans&quot;,sans-serif">Co-Located Events</h2><=
+h1 class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;margin-bo=
+ttom:16px;line-height:1.25;padding-bottom:0.3em;border-bottom:1px solid rgb=
+a(0,0,0,0.18);border-top-color:rgba(0,0,0,0.18);border-right-color:rgba(0,0=
+,0,0.18);border-left-color:rgba(0,0,0,0.18);color:rgb(59,59,59);font-family=
+:-apple-system,&quot;system-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&q=
+uot;,system-ui,Ubuntu,&quot;Droid Sans&quot;,sans-serif"><p class=3D"gmail-=
+code-line" dir=3D"auto" style=3D"margin-top:0px;margin-bottom:16px;font-siz=
+e:14px;font-weight:400">There are several events co-located with ICFP:</p><=
+p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;margin-bot=
+tom:16px;font-size:14px;font-weight:400"><strong>Monday, August 24</strong>=
+</p><ul class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;marg=
+in-bottom:0.7em;font-size:14px;font-weight:400"><li class=3D"gmail-code-lin=
+e" dir=3D"auto">PLMW:=C2=A0<a href=3D"https://icfp26.sigplan.org/home/PLMW-=
+ICFP-2026" style=3D"color:rgb(0,95,184);text-decoration:none">https://icfp2=
+6.sigplan.org/home/PLMW-ICFP-2026</a></li><li class=3D"gmail-code-line" dir=
+=3D"auto">HOPE:=C2=A0<a href=3D"https://icfp26.sigplan.org/home/hope-2026" =
+style=3D"color:rgb(0,95,184);text-decoration:none">https://icfp26.sigplan.o=
+rg/home/hope-2026</a></li><li class=3D"gmail-code-line" dir=3D"auto">miniKa=
+nren:=C2=A0<a href=3D"https://icfp26.sigplan.org/home/minikanren-2026" styl=
+e=3D"color:rgb(0,95,184);text-decoration:none">https://icfp26.sigplan.org/h=
+ome/minikanren-2026</a></li><li class=3D"gmail-code-line" dir=3D"auto">FARM=
+:=C2=A0<a href=3D"https://icfp26.sigplan.org/home/farm-2026" style=3D"color=
+:rgb(0,95,184);text-decoration:none">https://icfp26.sigplan.org/home/farm-2=
+026</a></li></ul><p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-=
+top:0px;margin-bottom:16px;font-size:14px;font-weight:400"><strong>Tuesday-=
+Thursday, August 25-27</strong></p><ul class=3D"gmail-code-line" dir=3D"aut=
+o" style=3D"margin-top:0px;margin-bottom:0.7em;font-size:14px;font-weight:4=
+00"><li class=3D"gmail-code-line" dir=3D"auto">ICFP - Main conference</li><=
+/ul><p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px;margi=
+n-bottom:16px;font-size:14px;font-weight:400"><strong>Friday, August 28</st=
+rong></p><ul class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-top:0px=
+;margin-bottom:0.7em;font-size:14px;font-weight:400"><li class=3D"gmail-cod=
+e-line" dir=3D"auto">Haskell (Aug 28-29):=C2=A0<a href=3D"https://icfp26.si=
+gplan.org/home/haskellsymp-2026" style=3D"color:rgb(0,95,184);text-decorati=
+on:none">https://icfp26.sigplan.org/home/haskellsymp-2026</a></li><li class=
+=3D"gmail-code-line" dir=3D"auto">Erlang:=C2=A0<a href=3D"https://icfp26.si=
+gplan.org/home/erlang-2026" style=3D"color:rgb(0,95,184);text-decoration:no=
+ne">https://icfp26.sigplan.org/home/erlang-2026</a></li><li class=3D"gmail-=
+code-line" dir=3D"auto">ML Family:=C2=A0<a href=3D"https://icfp26.sigplan.o=
+rg/home/mlfamilyworkshop-2026" style=3D"color:rgb(0,95,184);text-decoration=
+:none">https://icfp26.sigplan.org/home/mlfamilyworkshop-2026</a></li><li cl=
+ass=3D"gmail-code-line" dir=3D"auto">LOPSTR+PPDP (Aug 27-29):=C2=A0<a href=
+=3D"https://icfp26.sigplan.org/home/lopstr-ppdp-2026" style=3D"color:rgb(0,=
+95,184);text-decoration:none">https://icfp26.sigplan.org/home/lopstr-ppdp-2=
+026</a></li></ul><p class=3D"gmail-code-line" dir=3D"auto" style=3D"margin-=
+top:0px;margin-bottom:16px;font-size:14px;font-weight:400"><strong>Saturday=
+, August 29</strong></p><ul class=3D"gmail-code-line" dir=3D"auto" style=3D=
+"margin-top:0px;margin-bottom:0.7em;font-size:14px;font-weight:400"><li cla=
+ss=3D"gmail-code-line" dir=3D"auto">Haskell (Aug 28-29):=C2=A0<a href=3D"ht=
+tps://icfp26.sigplan.org/home/haskellsymp-2026" style=3D"color:rgb(0,95,184=
+);text-decoration:none">https://icfp26.sigplan.org/home/haskellsymp-2026</a=
+></li><li class=3D"gmail-code-line" dir=3D"auto">Scheme:=C2=A0<a href=3D"ht=
+tps://icfp26.sigplan.org/home/scheme-2026" style=3D"color:rgb(0,95,184);tex=
+t-decoration:none">https://icfp26.sigplan.org/home/scheme-2026</a></li><li =
+class=3D"gmail-code-line" dir=3D"auto">FUNARCH:=C2=A0<a href=3D"https://icf=
+p26.sigplan.org/home/funarch-2026" style=3D"color:rgb(0,95,184);text-decora=
+tion:none">https://icfp26.sigplan.org/home/funarch-2026</a></li><li class=
+=3D"gmail-code-line" dir=3D"auto">LOPSTR+PPDP (Aug 27-29):=C2=A0<a href=3D"=
+https://icfp26.sigplan.org/home/lopstr-ppdp-2026" style=3D"color:rgb(0,95,1=
+84);text-decoration:none">https://icfp26.sigplan.org/home/lopstr-ppdp-2026<=
+/a></li></ul></h1><ul class=3D"gmail-code-line" dir=3D"auto" style=3D"margi=
+n-top:0px;margin-bottom:0.7em;color:rgb(59,59,59);font-family:-apple-system=
+,&quot;system-ui&quot;,&quot;Segoe WPC&quot;,&quot;Segoe UI&quot;,system-ui=
+,Ubuntu,&quot;Droid Sans&quot;,sans-serif;font-size:14px"></ul></div>
+
+--000000000000ac9dbe0656cfb530--
